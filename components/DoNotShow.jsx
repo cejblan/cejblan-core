@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 
 export default function DoNotShow({ children }) {
     const pathname = usePathname();
-    const adriliciausPattern = /\/adriliciaus\/?/;
+    const adriliciausPattern = /\/?/;
     const isAdriliciausPage = adriliciausPattern.test(pathname);
     const suspirosPattern = /\/suspirosyponkes\/?/;
     const isSuspirosPage = suspirosPattern.test(pathname);

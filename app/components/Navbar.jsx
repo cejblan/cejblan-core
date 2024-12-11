@@ -70,8 +70,8 @@ export default function NavbarAdri() {
               <TiThMenu className={`w-4 h-4 hover:fill-slate-800 ${isOpen ? "hidden" : ""}`} cursor="pointer" />
               <TiTimes className={`w-4 h-4 hover:fill-slate-800 ${isOpen ? "" : "hidden"}`} cursor="pointer" />
               <div className="menu bg-slate-500 text-2xl grid grid-cols-1 gap-1 gap-white absolute left-5 top-5 p-1 rounded-xl z-20">
-                <Link href="/adriliciaus" className="hover:text-slate-900">
-                  <p className={`${urlClass("/adriliciaus")} rounded-xl px-2 flex justify-center items-center`}>
+                <Link href="/" className="hover:text-slate-900">
+                  <p className={`${urlClass("/")} rounded-xl px-2 flex justify-center items-center`}>
                     Inicio
                     <FaBookOpen className="ml-1" />
                   </p>
@@ -109,7 +109,7 @@ export default function NavbarAdri() {
                 <button
                   className="hover:text-slate-900 bg-slate-700 rounded-xl px-2 flex justify-center items-center"
                   onClick={() => signOut({
-                    callbackUrl: "/adriliciaus",
+                    callbackUrl: "/",
                   })}
                 >
                   Cerrar Sesión <FaSignOutAlt className="ml-1" />
@@ -138,7 +138,7 @@ export default function NavbarAdri() {
             <FaSignInAlt className="m-auto w-4 h-4 max-[420px]:hidden" />
           </button>
         }
-        <Link href="/adriliciaus" className="max-[420px]:col-start-2 max-[420px]:col-end-6 col-start-5 col-end-9 z-10">
+        <Link href="/" className="max-[420px]:col-start-2 max-[420px]:col-end-6 col-start-5 col-end-9 z-10">
           <Image className="m-auto max-[420px]:w-full w-3/5" src={LogoAdri} alt="Logo Adriliciaus" width={200} height={200} />
         </Link>
         {session?.user ? (

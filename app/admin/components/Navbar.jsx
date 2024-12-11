@@ -24,11 +24,11 @@ export default function NavbarAdriAdmin({ children }) {
   const pathname = usePathname();
   const tablero = "/admin";
   const users = "/admin/users";
-  const usersId = /\/adriliciaus\/admin\/users\/?/;
+  const usersId = /\/admin\/users\/?/;
   const usersIdVerified = usersId.test(pathname);
   const newUsers = "/admin/users/new";
   const products = "/admin/products";
-  const productsId = /\/adriliciaus\/admin\/products\/?/;
+  const productsId = /\/admin\/products\/?/;
   const productsIdVerified = productsId.test(pathname);
   const newProduct = "/admin/products/new";
   const categories = "/admin/categories";
@@ -80,7 +80,7 @@ export default function NavbarAdriAdmin({ children }) {
             <TiThMenu className={`hover:fill-slate-500 w-4 h-4 ${isOpen ? "hidden" : "md:hidden"}`} cursor="pointer" />
             <TiTimes className={`hover:fill-slate-500 w-4 h-4 ${isOpen ? "md:hidden" : "hidden"}`} cursor="pointer" />
           </div>
-          <Link href="/adriliciaus" className="hover:bg-slate-700 hover:text-blue-300 p-1 flex items-center">
+          <Link href="/" className="hover:bg-slate-700 hover:text-blue-300 p-1 flex items-center">
             <FaHome className="mr-1 w-3 h-3" />
             <h1 className="font-bold max-[420px]:hidden">AdriliciausShop</h1>
           </Link>
@@ -139,7 +139,7 @@ export default function NavbarAdriAdmin({ children }) {
             <button
               className={`bg-slate-700 hover:bg-slate-600 py-1 px-2 rounded-b-xl w-max absolute top-5 right-0 flex justify-center items-center ${isOpenThree ? "" : "hidden"}`}
               onClick={() => signOut({
-                callbackUrl: "/adriliciaus",
+                callbackUrl: "/",
               })}>
               Cerrar Sesión <FaSignOutAlt className="ml-1" />
             </button>

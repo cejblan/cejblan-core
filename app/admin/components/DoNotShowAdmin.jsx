@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 
 export default function DoNotShowAdmin({ children }) {
     const pathname = usePathname();
-    const adminPattern = /\/adriliciaus\/admin\/?/;
+    const adminPattern = /\/admin\/?/;
     const isAdmin = adminPattern.test(pathname);
 
     if (isAdmin) {
