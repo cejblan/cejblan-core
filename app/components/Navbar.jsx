@@ -5,7 +5,7 @@ import { signIn, useSession, signOut } from "next-auth/react";
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import LogoAdri from "public/adriliciaus/logo_adriliciaus.png"
+import LogoAdri from "public/logo_adriliciaus.png"
 import { TiThMenu, TiTimes } from "react-icons/ti";
 import { PiMagnifyingGlassBold } from "react-icons/pi";
 import { FaCartShopping, FaBookOpen } from "react-icons/fa6";
@@ -76,32 +76,32 @@ export default function NavbarAdri() {
                     <FaBookOpen className="ml-1" />
                   </p>
                 </Link>
-                <Link href="/adriliciaus/products" className="hover:text-slate-900">
-                  <p className={`${urlClass("/adriliciaus/products")} rounded-xl px-2 flex justify-center items-center`}>
+                <Link href="/products" className="hover:text-slate-900">
+                  <p className={`${urlClass("/products")} rounded-xl px-2 flex justify-center items-center`}>
                     Productos
                     <IoLogoOctocat className="ml-1" />
                   </p>
                 </Link>
-                <Link href="/adriliciaus/wishlist" className="hover:text-slate-900 max-[420px]:block hidden">
-                  <p className={`${urlClass("/adriliciaus/wishlist")} rounded-xl px-2 flex justify-center items-center`}>
+                <Link href="/wishlist" className="hover:text-slate-900 max-[420px]:block hidden">
+                  <p className={`${urlClass("/wishlist")} rounded-xl px-2 flex justify-center items-center`}>
                     Favoritos
                     <IoIosHeart className="ml-1" />
                   </p>
                 </Link>
-                <Link href="/adriliciaus/cart" className="hover:text-slate-900 max-[420px]:block hidden">
-                  <p className={`${urlClass("/adriliciaus/cart")} rounded-xl px-2 flex justify-center items-center`}>
+                <Link href="/cart" className="hover:text-slate-900 max-[420px]:block hidden">
+                  <p className={`${urlClass("/cart")} rounded-xl px-2 flex justify-center items-center`}>
                     Carrito
                     <FaCartShopping className="ml-1" />
                   </p>
                 </Link>
-                <Link href="/adriliciaus/orders" className="hover:text-slate-900">
-                  <p className={`${urlClass("/adriliciaus/orders")} rounded-xl px-2 flex justify-center items-center`}>
+                <Link href="/orders" className="hover:text-slate-900">
+                  <p className={`${urlClass("/orders")} rounded-xl px-2 flex justify-center items-center`}>
                     Pedidos
                     <MdBorderColor className="ml-1" />
                   </p>
                 </Link>
-                <Link href="/adriliciaus/profile" className="hover:text-slate-900">
-                  <p className={`${urlClass("/adriliciaus/profile")} rounded-xl px-2 flex justify-center items-center`}>
+                <Link href="/profile" className="hover:text-slate-900">
+                  <p className={`${urlClass("/profile")} rounded-xl px-2 flex justify-center items-center`}>
                     Perfil
                     <IoPersonSharp className="ml-1" />
                   </p>
@@ -116,14 +116,14 @@ export default function NavbarAdri() {
                 </button>
               </div>
             </div>
-            <Link href="/adriliciaus/wishlist" className="hover:text-slate-900 text-sm max-[420px]:hidden col-start-2 col-end-3 block">
-              <p className={`${urlClass2("/adriliciaus/wishlist")} hover:border-slate-900 rounded-xl`}>
+            <Link href="/wishlist" className="hover:text-slate-900 text-sm max-[420px]:hidden col-start-2 col-end-3 block">
+              <p className={`${urlClass2("/wishlist")} hover:border-slate-900 rounded-xl`}>
                 Favoritos
                 <IoIosHeart className="m-auto w-4 h-4" />
               </p>
             </Link>
-            <Link href="/adriliciaus/cart" className="hover:text-slate-900 text-sm max-[420px]:hidden col-start-3 col-end-4 block">
-              <p className={`${urlClass2("/adriliciaus/cart")} hover:border-slate-900 rounded-xl w-4/5`}>
+            <Link href="/cart" className="hover:text-slate-900 text-sm max-[420px]:hidden col-start-3 col-end-4 block">
+              <p className={`${urlClass2("/cart")} hover:border-slate-900 rounded-xl w-4/5`}>
                 Carrito
                 <FaCartShopping className="m-auto w-4 h-4" />
               </p>
@@ -146,12 +146,12 @@ export default function NavbarAdri() {
             <span className="text-lg max-[420px]:hidden mr-1">¡Hola, {session?.user.name}!</span>
             {session?.user.admin ? (
               <div className="hover:bg-slate-500 bg-slate-600 text-4xl py-0.5 pl-1 pr-0.5 rounded-full shadow-6xl w-6 h-6">
-                <Link href="/adriliciaus/admin">
+                <Link href="/admin">
                   <MdAdminPanelSettings />
                 </Link>
               </div>
             ) : (
-              <Link href="/adriliciaus/profile">
+              <Link href="/profile">
                 <Image src={session?.user.image}
                   alt="Imagen de Usuario"
                   className="rounded-full w-6 h-6"

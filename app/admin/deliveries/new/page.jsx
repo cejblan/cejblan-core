@@ -73,12 +73,12 @@ export default function DeliveryForm() {
     }    
 
     form.current.reset();
-    router.push("/adriliciaus/admin/deliveries");
+    router.push("/admin/deliveries");
     router.refresh(); // Solo actualiza los componentes del servidor
   };
   return (
     <>
-      <Link href={params.id ? `/adriliciaus/admin/deliveries/${params.id}` : "/adriliciaus/admin/deliveries"} className=" bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl">
+      <Link href={params.id ? `/admin/deliveries/${params.id}` : "/admin/deliveries"} className=" bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl">
         <FaArrowLeft />
       </Link>
       <form onSubmit={handleSubmit} ref={form} >

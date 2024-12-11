@@ -42,7 +42,7 @@ export default function PaymentsPage() {
                   <td className="border-r border-t border-slate-900">{payments.status}</td>
                   <td className="py-1 border-t border-slate-900">
                     <Link
-                      href={`/adriliciaus/admin/payments/${payments.id}`}
+                      href={`/admin/payments/${payments.id}`}
                       className="text-white bg-blue-700 hover:bg-blue-900 font-bold px-2 rounded-xl shadow-6xl m-auto w-fit block"
                     >
                       Ver

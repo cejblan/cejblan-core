@@ -23,7 +23,7 @@ function Buttons({ userId }) {
                   method: "DELETE",
                 });
                 if (res.status === 204) {
-                  router.push("/adriliciaus/admin/users");
+                  router.push("/admin/users");
                   router.refresh();
                 } else {
                   throw new Error(`Error: ${res.status} ${res.statusText}`);
@@ -40,7 +40,7 @@ function Buttons({ userId }) {
       <button
         className="text-white bg-blue-700 hover:bg-blue-900 font-bold py-1 px-2 rounded-xl shadow-6xl"
         onClick={() => {
-          router.push(`/adriliciaus/admin/users/${userId}/edit`);
+          router.push(`/admin/users/${userId}/edit`);
         }}
       >
         Editar

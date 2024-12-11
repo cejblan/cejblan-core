@@ -83,12 +83,12 @@ function Buttons(product) {
 
     alert("Agregado en el carrito");
     form.current.reset();
-    router.push("/adriliciaus/products");
+    router.push("/products");
   };
 
   if (product.product.quantity === "0") {
     alert("No hay existencia disponible de este producto");
-    router.push("/adriliciaus/products");
+    router.push("/products");
   } else if (data.quantity > product.product.quantity) {
     alert("No puedes superar el maximo de existencia");
     router.refresh();

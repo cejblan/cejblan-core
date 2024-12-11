@@ -41,7 +41,7 @@ export default function UsersPage() {
                 <td className="border-r border-t border-slate-900">{users.rol}</td>
                 <td className="py-1 border-t border-slate-900">
                   <Link
-                    href={`/adriliciaus/admin/users/${users.id}`}
+                    href={`/admin/users/${users.id}`}
                     className="text-white bg-blue-700 hover:bg-blue-900 font-bold px-2 rounded-xl shadow-6xl m-auto w-fit block"
                   >
                     Ver

@@ -7,7 +7,7 @@ export const metadata = {
   openGraph: {
     title: "Modulo Administrativo - Adriliciaus",
     description: "Espacio solo para Administradores (Admin).",
-    url: "https://www.cejblan.com/adriliciaus/admin",
+    url: "https://www.cejblan.com/admin",
   },
 };
 

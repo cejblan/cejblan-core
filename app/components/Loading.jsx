@@ -1,5 +1,5 @@
 import Image from "next/image"
-import Logo from "public/adriliciaus/logo_adriliciaus.png"
+import Logo from "public/logo_adriliciaus.png"
 
 export default function Loading(zIndex) {
   return (

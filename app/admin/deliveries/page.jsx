@@ -42,7 +42,7 @@ export default function DeliveriesPage() {
                   <td className="border-r border-t border-slate-900">{deliveries.status}</td>
                   <td className="py-1 border-t border-slate-900">
                     <Link
-                      href={`/adriliciaus/admin/deliveries/${deliveries.id}`}
+                      href={`/admin/deliveries/${deliveries.id}`}
                       className="text-white bg-blue-700 hover:bg-blue-900 font-bold px-2 rounded-xl shadow-6xl m-auto w-fit block"
                     >
                       Ver

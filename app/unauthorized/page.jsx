@@ -6,7 +6,7 @@ export const metadata = {
   openGraph: {
     title: "No Autorizado - Adriliciaus",
     description: "Página de acceso no autorizado (unauthorized).",
-    url: "https://www.cejblan.com/adriliciaus/unauthorized",
+    url: "https://www.cejblan.com/unauthorized",
   },
 };
 

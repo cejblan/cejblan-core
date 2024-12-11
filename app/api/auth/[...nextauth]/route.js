@@ -63,7 +63,7 @@ const handler = NextAuth({
     },
   },
   pages: {
-    signIn: "/adriliciaus/login",
+    signIn: "/login",
   },
 });
 

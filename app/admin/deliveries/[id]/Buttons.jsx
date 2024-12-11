@@ -25,7 +25,7 @@ function Buttons({ deliveryId }) {
 
                 if (res.status === 204) {
                   // Redirecciona y actualiza la página
-                  router.push("/adriliciaus/admin/deliveries");
+                  router.push("/admin/deliveries");
                   router.refresh();
                 } else {
                   // Manejo de errores en caso de que el estado no sea 204
@@ -47,7 +47,7 @@ function Buttons({ deliveryId }) {
       <button
         className="text-white bg-blue-700 hover:bg-blue-900 font-bold py-1 px-2 rounded-xl shadow-6xl"
         onClick={() => {
-          router.push(`/adriliciaus/admin/deliveries/${deliveryId}/edit`);
+          router.push(`/admin/deliveries/${deliveryId}/edit`);
         }}
       >
         Editar

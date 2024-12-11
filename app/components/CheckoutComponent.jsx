@@ -123,7 +123,7 @@ export default function CheckoutComponent() {
         }
 
         alert("Pedido Enviado");
-        router.push("/adriliciaus/orders");
+        router.push("/orders");
       } else {
         alert("Error al enviar el pedido");
       }
@@ -180,7 +180,7 @@ export default function CheckoutComponent() {
         !data[0]?.longitude
       ) {
         alert("Debes llenar tus datos en el perfil para poder comprar");
-        router.push("/adriliciaus/profile");
+        router.push("/profile");
       }
     }
   }, [isDataLoaded, data, router]);

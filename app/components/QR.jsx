@@ -19,7 +19,7 @@ export default function QR(product) {
           <BsQrCode />
         </button><div>
           <div className={`m-auto justify-center flex ${isOpen ? "" : "hidden"}`}>
-            <QRCode value={`https://www.cejblan.com/adriliciaus/products/${product.id}`} className="max-[420px]:min-w-12 min-w-14 max-[420px]:max-w-12 max-w-14 max-[420px]:min-h-12 min-h-14 max-[420px]:max-h-12 max-h-14 z-10" />
+            <QRCode value={`https://www.cejblan.com/products/${product.id}`} className="max-[420px]:min-w-12 min-w-14 max-[420px]:max-w-12 max-w-14 max-[420px]:min-h-12 min-h-14 max-[420px]:max-h-12 max-h-14 z-10" />
           </div>
           <div className={`m-auto justify-center flex ${isOpen ? "hidden" : ""}`}>
             {product.image &&
@@ -32,9 +32,9 @@ export default function QR(product) {
         <button className="bg-blue-700 hover:bg-blue-500 text-white absolute right-1 top-1 p-1 rounded-xl z-20" onClick={handleClick}>
           <BsQrCode />
         </button>
-        <Link href={`/adriliciaus/products/${product.id}`}>
+        <Link href={`/products/${product.id}`}>
           <div className={`m-auto justify-center flex ${isOpen ? "" : "hidden"}`}>
-            <QRCode value={`https://www.cejblan.com/adriliciaus/products/${product.id}`} className="max-[420px]:min-w-12 min-w-14 max-[420px]:max-w-12 max-w-14 max-[420px]:min-h-12 min-h-14 max-[420px]:max-h-12 max-h-14 z-10" />
+            <QRCode value={`https://www.cejblan.com/products/${product.id}`} className="max-[420px]:min-w-12 min-w-14 max-[420px]:max-w-12 max-w-14 max-[420px]:min-h-12 min-h-14 max-[420px]:max-h-12 max-h-14 z-10" />
           </div>
           <div className={`m-auto justify-center flex ${isOpen ? "hidden" : ""}`}>
             {product.image &&

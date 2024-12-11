@@ -6,7 +6,7 @@ export const metadata = {
   openGraph: {
     title: "Productos - Adriliciaus",
     description: "Página de los productos de la tienda (products).",
-    url: "https://www.cejblan.com/adriliciaus/products",
+    url: "https://www.cejblan.com/products",
   },
 };
 

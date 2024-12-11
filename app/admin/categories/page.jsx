@@ -58,7 +58,7 @@ export default function CategoriesPage() {
                   <td className="border-r border-t border-slate-900">{categories.status}</td>
                   <td className="py-1 border-t border-slate-900">
                     <Link
-                      href={`/adriliciaus/admin/categories/${categories.id}`}
+                      href={`/admin/categories/${categories.id}`}
                       className="text-white bg-blue-700 hover:bg-blue-900 font-bold px-2 rounded-xl shadow-6xl m-auto w-fit block"
                     >
                       Ver

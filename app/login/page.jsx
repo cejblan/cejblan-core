@@ -6,7 +6,7 @@ export const metadata = {
   openGraph: {
     title: "Login - Adriliciaus",
     description: "Página de inicio de sesión (login).",
-    url: "https://www.cejblan.com/adriliciaus/login",
+    url: "https://www.cejblan.com/login",
   },
 };
 

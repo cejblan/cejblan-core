@@ -17,7 +17,7 @@ function Buttons({ categoryId }) {
           
               if (res.status === 204) {
                 // Redirecciona y actualiza la página
-                router.push("/adriliciaus/admin/categories");
+                router.push("/admin/categories");
                 router.refresh();
               } else {
                 // Manejo de errores en caso de que el estado no sea 204
@@ -38,7 +38,7 @@ function Buttons({ categoryId }) {
       <button
         className="text-white bg-blue-700 hover:bg-blue-900 font-bold py-1 px-2 rounded-xl shadow-6xl"
         onClick={() => {
-          router.push(`/adriliciaus/admin/categories/${categoryId}/edit`);
+          router.push(`/admin/categories/${categoryId}/edit`);
         }}
       >
         Editar

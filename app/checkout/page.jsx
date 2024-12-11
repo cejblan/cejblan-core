@@ -6,7 +6,7 @@ export const metadata = {
   openGraph: {
     title: "Verificar Pedido - Adriliciaus",
     description: "Página de verificacion de pedido, pago y entrega (checkout).",
-    url: "https://www.cejblan.com/adriliciaus/checkout",
+    url: "https://www.cejblan.com/checkout",
   },
 };
 

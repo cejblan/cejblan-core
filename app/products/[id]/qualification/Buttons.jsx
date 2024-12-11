@@ -47,7 +47,7 @@ export default function Buttons({ params, users }) {
       setValue([false, false, false, false, false]);
       setComment("");
       // Redirigir al usuario
-      router.push("/adriliciaus/products");
+      router.push("/products");
     } catch (error) {
       console.error("Error al enviar calificación:", error);
       alert("Hubo un error al enviar tu calificación. Intenta nuevamente.");
@@ -56,7 +56,7 @@ export default function Buttons({ params, users }) {
 
   if (users.includes(session?.user.email)) {
     alert("Ya calificaste este producto");
-    router.push("/adriliciaus/products");
+    router.push("/products");
   }
 
   return (

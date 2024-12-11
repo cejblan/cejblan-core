@@ -74,12 +74,12 @@ export default function PayForm() {
 
     alert("Forma de pago registrada");
     form.current.reset();
-    router.push("/adriliciaus/admin/payments");
+    router.push("/admin/payments");
     router.refresh(); // Solo actualiza los componentes del servidor
   };
   return (
     <>
-      <Link href={params.id ? `/adriliciaus/admin/payments/${params.id}` : "/adriliciaus/admin/payments"} className=" bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl">
+      <Link href={params.id ? `/admin/payments/${params.id}` : "/admin/payments"} className=" bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl">
         <FaArrowLeft />
       </Link>
       <form onSubmit={handleSubmit} ref={form} >

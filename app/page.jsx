@@ -9,7 +9,7 @@ export const metadata = {
   openGraph: {
     title: "Inicio - Adriliciaus",
     description: "Página de inicio.",
-    url: "https://www.cejblan.com/adriliciaus/",
+    url: "https://www.cejblan.com/",
   },
 };
 

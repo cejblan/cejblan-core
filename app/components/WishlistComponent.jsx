@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useState, useCallback, useEffect } from "react";
-import ProductCard from "@/app/adriliciaus/components/ProductCard";
+import ProductCard from "@/app/components/ProductCard";
 
 export default function WishlistComponent() {
 

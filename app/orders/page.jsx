@@ -8,7 +8,7 @@ export const metadata = {
   openGraph: {
     title: "Pedidos - Adriliciaus",
     description: "Página de los pedidos de cada usaurio (orders).",
-    url: "https://www.cejblan.com/adriliciaus/orders",
+    url: "https://www.cejblan.com/orders",
   },
 };
 

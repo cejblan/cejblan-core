@@ -1,6 +1,6 @@
 User-agent: *
-Disallow: /adriliciaus/admin/
-Disallow: /adriliciaus/login/
+Disallow: /admin/
+Disallow: /login/
 Disallow: /private/
 
 Sitemap: https://www.cejblan.com/sitemap.xml

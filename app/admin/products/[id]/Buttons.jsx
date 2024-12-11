@@ -15,7 +15,7 @@ function Buttons({ productId }) {
                 method: "DELETE",
               });
               if (res.status === 204) {
-                router.push("/adriliciaus/admin/products");
+                router.push("/admin/products");
                 router.refresh();
               } else {
                 throw new Error(`Error: ${res.status} ${res.statusText}`);
@@ -31,7 +31,7 @@ function Buttons({ productId }) {
       <button
         className="text-white bg-blue-700 hover:bg-blue-900 font-bold py-1 px-2 rounded-xl shadow-6xl"
         onClick={() => {
-          router.push(`/adriliciaus/admin/products/${productId}/edit`);
+          router.push(`/admin/products/${productId}/edit`);
         }}
       >
         Editar

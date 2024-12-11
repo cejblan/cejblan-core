@@ -5,7 +5,7 @@ import Link from "next/link";
 import { FaArrowLeft } from "react-icons/fa";
 import { PiCurrencyDollarSimpleFill } from "react-icons/pi";
 import dynamic from "next/dynamic";
-const Maps = dynamic(() => import("@/app/adriliciaus/components/Maps"), { ssr: false });
+const Maps = dynamic(() => import("@/app/components/Maps"), { ssr: false });
 
 export default function OrderForm() {
   const [order, setOrder] = useState({
@@ -117,7 +117,7 @@ export default function OrderForm() {
       alert("Ocurrió un error al actualizar el pedido. Por favor, inténtalo nuevamente.");
     }
 
-    router.push("/adriliciaus/admin/orders");
+    router.push("/admin/orders");
   };
 
   if (order.id.length === 0) {
@@ -129,7 +129,7 @@ export default function OrderForm() {
   };
   return (
     <>
-      <Link href={`/adriliciaus/admin/orders/`} className=" bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl">
+      <Link href={`/admin/orders/`} className=" bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl">
         <FaArrowLeft />
       </Link>
       <form onSubmit={handleSubmit}>

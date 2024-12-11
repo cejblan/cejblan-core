@@ -75,7 +75,7 @@ export default function ProductCard({ product }) {
         className="bg-white hover:bg-slate-100 text-start text-black text-xl font-bold relative grid grid-cols-3 justify-center items-center shadow-6xl rounded-2xl py-1 pl-1 pr-2 z-10"
       >
         <QR id={product.id} name={product.name} image={product.image} />
-        <Link href={`/adriliciaus/products/${product.id}`} className="col-start-2 col-end-4">
+        <Link href={`/products/${product.id}`} className="col-start-2 col-end-4">
           <div className="py-2 px-1">
             <div className="flex">
               <h1 className="flex-1 leading-6 min-h-7">{product.name}</h1>

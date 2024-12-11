@@ -16,7 +16,7 @@ function Buttons({ payId }) {
               });
           
               if (res.status === 204) {
-                router.push("/adriliciaus/admin/payments");
+                router.push("/admin/payments");
                 router.refresh();
               } else {
                 const errorData = await res.json();
@@ -34,7 +34,7 @@ function Buttons({ payId }) {
       <button
         className="text-white bg-blue-700 hover:bg-blue-900 font-bold py-1 px-2 rounded-xl shadow-6xl"
         onClick={() => {
-          router.push(`/adriliciaus/admin/payments/${payId}/edit`);
+          router.push(`/admin/payments/${payId}/edit`);
         }}
       >
         Editar

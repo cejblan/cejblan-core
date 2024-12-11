@@ -19,7 +19,7 @@ export default async function ProductPage({ params }) {
 
   return (
     <>
-      <Link href="/adriliciaus/admin/products" className=" bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md block absolute top-2 left-2 shadow-6xl">
+      <Link href="/admin/products" className=" bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md block absolute top-2 left-2 shadow-6xl">
         <FaArrowLeft />
       </Link>
       <div className="grid max-[420px]:grid-cols-1 grid-cols-2 gap-2 justify-center mb-4">

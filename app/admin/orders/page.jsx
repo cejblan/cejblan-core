@@ -29,7 +29,7 @@ export default function OrdersPageAdmin() {
           <Link
             key={order.id}
             className="bg-white hover:bg-slate-300 text-slate-800 text-lg max-[420px]:text-xs tracking-normal leading-5 shadow-6xl rounded-xl p-2 z-10"
-            href={`/adriliciaus/admin/orders/${order.id}`}
+            href={`/admin/orders/${order.id}`}
           >
             <div className="text-justify">
               <h3 className="text-xlmax-[420px]:text-sm text-center font-bold mb-1">#Pedido: {order.id}</h3>

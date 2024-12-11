@@ -11,7 +11,7 @@ import { Providers } from "./Providers"
 export const metadata = {
   property: "og:Cejblan",
   icons: {
-    icon: "/adriliciaus/favicon.ico",
+    icon: "/favicon.ico",
   },
 }
 

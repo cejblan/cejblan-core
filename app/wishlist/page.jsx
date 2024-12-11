@@ -7,7 +7,7 @@ export const metadata = {
   openGraph: {
     title: "Favoritos - Adriliciaus",
     description: "Página de lista de favoritos (Wish List).",
-    url: "https://www.cejblan.com/adriliciaus/wishlist",
+    url: "https://www.cejblan.com/wishlist",
   },
 };
 

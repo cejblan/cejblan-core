@@ -88,7 +88,7 @@ export default function CartCard({ onProductCountChange }) {
         return (
           <tr key={product.id}>
             <td className="border-r border-b border-slate-900 text-blue-700 hover:text-blue-900 underline">
-              <Link href={`/adriliciaus/products/${product.id}`}>{product.name}</Link>
+              <Link href={`/products/${product.id}`}>{product.name}</Link>
             </td>
             <td className="border-r border-b border-slate-900">{product.quantity}</td>
             <td className="border-r border-b border-slate-900">{product.price}$</td>

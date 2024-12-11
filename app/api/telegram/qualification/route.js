@@ -12,10 +12,10 @@ export async function POST(request) {
 
   const products = data.dataOrder.productsIds
   .split(",") // Convertir la cadena en un array
-  .map((id) => ` ✅ <a href="https://www.cejblan.com/adriliciaus/products/${id}/qualification">👉🏻${id}👈🏻</a>`)
+  .map((id) => ` ✅ <a href="https://www.cejblan.com/products/${id}/qualification">👉🏻${id}👈🏻</a>`)
   .join("\n");
   const chatId = data.dataOrder.chatId;
-  const message = `<b>Hemos actualizado el estado de tu pedido <a href="https://www.cejblan.com/adriliciaus/orders">#${data.dataOrder.id}</a> como:</b>
+  const message = `<b>Hemos actualizado el estado de tu pedido <a href="https://www.cejblan.com/orders">#${data.dataOrder.id}</a> como:</b>
 
 ⏳ Estado: ${data.dataOrder.status}
 

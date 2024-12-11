@@ -50,7 +50,7 @@ export async function generateMetadata({ params }) {
     openGraph: {
       title: `${product.name} - Adriliciaus`,
       description: product.description,
-      url: `https://www.cejblan.com/adriliciaus/products/${id}`,
+      url: `https://www.cejblan.com/products/${id}`,
       images: [
         {
           url: product.image,

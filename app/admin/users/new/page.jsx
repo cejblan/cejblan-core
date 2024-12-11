@@ -87,7 +87,7 @@ export default function UserForm() {
 
     alert("Usuario registrado");
     form.current.reset();
-    router.push("/adriliciaus/admin/users");
+    router.push("/admin/users");
     router.refresh(); // Solo actualiza los componentes del servidor
   };
   //Estilos input
@@ -108,7 +108,7 @@ export default function UserForm() {
   //Fin estilos input
   return (
     <>
-      <Link href={params.id ? `/adriliciaus/admin/users/${params.id}` : "/adriliciaus/admin/users"} className=" bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl">
+      <Link href={params.id ? `/admin/users/${params.id}` : "/admin/users"} className=" bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl">
         <FaArrowLeft />
       </Link>
       <form onSubmit={handleSubmit} ref={form} >
