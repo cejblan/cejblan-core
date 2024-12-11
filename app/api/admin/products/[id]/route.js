@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { conexion2 } from "@/libs/mysql";
+import { conexion } from "@/libs/mysql";
 import cloudinary from "@/libs/cloudinary";
 import { processImage } from "@/libs/processImage";
 
 export async function GET(req, { params }) {
   try {
-    const result = await conexion2.query("SELECT * FROM products WHERE id = ?", [
+    const result = await conexion.query("SELECT * FROM products WHERE id = ?", [
       params.id,
     ]);
 
@@ -32,14 +32,14 @@ export async function GET(req, { params }) {
       { status: 500 }
     );
   } finally {
-    await conexion2.end();
+    await conexion.end();
   }
 }
 
 export async function DELETE(request, { params }) {
   try {
     // Obtén el producto de la base de datos para verificar si tiene imagen
-    const [product] = await conexion2.query(
+    const [product] = await conexion.query(
       "SELECT image FROM products WHERE id = ?",
       [params.id]
     );
@@ -58,7 +58,7 @@ export async function DELETE(request, { params }) {
       await cloudinary.uploader.destroy(publicId);
     }
     // Elimina el producto de la base de datos
-    const result = await conexion2.query("DELETE FROM products WHERE id = ?", [
+    const result = await conexion.query("DELETE FROM products WHERE id = ?", [
       params.id,
     ]);
 
@@ -77,7 +77,7 @@ export async function DELETE(request, { params }) {
       { status: 500 }
     );
   } finally {
-    await conexion2.end();
+    await conexion.end();
   }
 }
 
@@ -127,7 +127,7 @@ export async function PUT(request, { params }) {
       updateData.image = res.secure_url;
     }
 
-    const result = await conexion2.query("UPDATE products SET ? WHERE id = ?", [
+    const result = await conexion.query("UPDATE products SET ? WHERE id = ?", [
       updateData,
       params.id,
     ]);
@@ -143,7 +143,7 @@ export async function PUT(request, { params }) {
       );
     }
 
-    const updatedProduct = await conexion2.query(
+    const updatedProduct = await conexion.query(
       "SELECT * FROM products WHERE id = ?",
       [params.id]
     );
@@ -159,6 +159,6 @@ export async function PUT(request, { params }) {
       { status: 500 }
     );
   } finally {
-    await conexion2.end();
+    await conexion.end();
   }
 }

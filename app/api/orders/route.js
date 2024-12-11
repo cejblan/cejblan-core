@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { conexion2 } from "@/libs/mysql";
+import { conexion } from "@/libs/mysql";
 import cloudinary from "@/libs/cloudinary";
 import { processImage } from "@/libs/processImage";
 
@@ -7,7 +7,7 @@ export async function GET(request, res) {
   const { searchParams } = new URL(request.url);
   const customerEmail = searchParams.get("customerEmail");
   try {
-    const results = await conexion2.query("SELECT * FROM orders WHERE email = ?",
+    const results = await conexion.query("SELECT * FROM orders WHERE email = ?",
       [customerEmail]
     );
     // Devuelve la respuesta con los encabezados configurados dentro de NextResponse
@@ -25,7 +25,7 @@ export async function GET(request, res) {
       }
     );
   } finally {
-    await conexion2.end();
+    await conexion.end();
   }
 }
 
@@ -35,7 +35,7 @@ export async function POST(request) {
     const image = data.get("image");
 
     if (!image) {
-      const result = await conexion2.query("INSERT INTO orders SET ?", {
+      const result = await conexion.query("INSERT INTO orders SET ?", {
         productsIds: data.get("productsIds"),
         productsQuantity: data.get("productsQuantity"),
         totalPrice: data.get("totalPrice"),
@@ -87,7 +87,7 @@ export async function POST(request) {
           )
           .end(buffer);
       });
-      const result = await conexion2.query("INSERT INTO orders SET ?", {
+      const result = await conexion.query("INSERT INTO orders SET ?", {
         productsIds: data.get("productsIds"),
         productsQuantity: data.get("productsQuantity"),
         totalPrice: data.get("totalPrice"),
@@ -135,6 +135,6 @@ export async function POST(request) {
       }
     );
   } finally {
-    await conexion2.end();
+    await conexion.end();
   }
 }

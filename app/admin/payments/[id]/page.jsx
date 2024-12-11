@@ -1,14 +1,14 @@
 import Buttons from "./Buttons";
-import { conexion2 } from "@/libs/mysql";
+import { conexion } from "@/libs/mysql";
 import { FaArrowLeft } from "react-icons/fa";
 import Link from "next/link";
 import { PiCurrencyDollarSimpleFill } from "react-icons/pi";
 
 async function LoadPay(payId) {
-  const [data] = await conexion2.query("SELECT * FROM payments WHERE id = ?", [
+  const [data] = await conexion.query("SELECT * FROM payments WHERE id = ?", [
     payId,
   ]);
-  await conexion2.end();
+  await conexion.end();
   return data;
 }
 

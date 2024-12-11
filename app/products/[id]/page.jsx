@@ -1,20 +1,20 @@
 import Buttons from "./Buttons";
-import { conexion2 } from "@/libs/mysql";
+import { conexion } from "@/libs/mysql";
 import { HiOutlineStar, HiStar } from "react-icons/hi2";
 import Image from "next/image";
 import Titulos from "@/components/Titulos";
 
 async function loadProduct(productId) {
-  const [productData] = await conexion2.query(
+  const [productData] = await conexion.query(
     "SELECT * FROM products WHERE id = ?",
     [productId]
   );
-  const qualifications = await conexion2.query(
+  const qualifications = await conexion.query(
     "SELECT value FROM qualification WHERE product = ?",
     [productId]
   );
 
-  await conexion2.end();
+  await conexion.end();
 
   return {
     ...productData,  // Usa el spread operator para incluir todo el producto

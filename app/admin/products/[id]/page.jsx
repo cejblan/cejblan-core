@@ -1,5 +1,5 @@
 import Buttons from "./Buttons";
-import { conexion2 } from "@/libs/mysql";
+import { conexion } from "@/libs/mysql";
 import { HiOutlineStar, HiStar } from "react-icons/hi2";
 import { FaArrowLeft } from "react-icons/fa";
 import Image from "next/image";
@@ -7,10 +7,10 @@ import Link from "next/link";
 import ImageNotSupported from "@/public/ImageNotSupported.webp";
 
 async function loadProduct(productId) {
-  const [data] = await conexion2.query("SELECT * FROM products WHERE id = ?", [
+  const [data] = await conexion.query("SELECT * FROM products WHERE id = ?", [
     productId,
   ]);
-  await conexion2.end();
+  await conexion.end();
   return data;
 }
 

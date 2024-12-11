@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { conexion2 } from "@/libs/mysql";
+import { conexion } from "@/libs/mysql";
 
 export async function POST(request) {
   const update = await request.json(); // Datos recibidos de Telegram
@@ -29,19 +29,19 @@ export async function POST(request) {
         // Código de verificación recibido
         const code = messageText;
 
-        const data = await conexion2.query(
+        const data = await conexion.query(
           "SELECT verified, chatId FROM users WHERE code = ?",
           code
         );
         if (data) {
           if (data.verified === verifiedTrue && data.chatId !== chatId) {
-            await conexion2.query("UPDATE users SET chatId = ? WHERE code = ?", [
+            await conexion.query("UPDATE users SET chatId = ? WHERE code = ?", [
               chatId,
               code,
             ]);
             responseMessage = `<b>Hola, ${userName}</b>. Tu chat ha sido actualizado correctamente 😉`;
           } else if (!data.verified && !data.chatId) {
-            await conexion2.query("UPDATE users SET verified = ?, chatId = ? WHERE code = ?", [
+            await conexion.query("UPDATE users SET verified = ?, chatId = ? WHERE code = ?", [
               verifiedTrue,
               chatId,
               code,
@@ -64,7 +64,7 @@ export async function POST(request) {
         message: "Ha ocurrido un error interno. Inténtalo de nuevo más tarde.",
       });
     } finally {
-      await conexion2.end(); // Cerrar la conexión
+      await conexion.end(); // Cerrar la conexión
     }
     // Enviar mensaje a Telegram
     const token = process.env.BOT_TOKEN;

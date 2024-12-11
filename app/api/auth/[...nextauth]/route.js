@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import { conexion2 } from "@/libs/mysql";
+import { conexion } from "@/libs/mysql";
 
 const handler = NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
@@ -16,14 +16,14 @@ const handler = NextAuth({
   callbacks: {
     async signIn({ user }) {
       try {
-        const [existingUser] = await conexion2.query(
+        const [existingUser] = await conexion.query(
           "SELECT * FROM users WHERE email = ?",
           [user.email]
         );
 
         if (!existingUser) {
           // Insertar el nuevo usuario en la base de datos
-          await conexion2.query(
+          await conexion.query(
             "INSERT INTO users (name, email, rol, verified) VALUES (?, ?, ?, ?)",
             [user.name, user.email, "Cliente", "0"]
           );
@@ -32,14 +32,14 @@ const handler = NextAuth({
         console.error("Error al registrar el usuario:", error);
         return false; // Impide el inicio de sesión si hay un error crítico
       } finally {
-        await conexion2.end();
+        await conexion.end();
       }
       return true; // Permite el inicio de sesión
     },
     async jwt({ token }) {
       try {
         if (token) {
-          const admin = await conexion2.query("SELECT rol FROM users WHERE email = ?", token.email);
+          const admin = await conexion.query("SELECT rol FROM users WHERE email = ?", token.email);
           if (admin[0].rol === "Admin") {
             token.admin = true;
           } else {
@@ -51,7 +51,7 @@ const handler = NextAuth({
         console.error("Error en la consulta de rol:", error);
         token.admin = false;
       } finally {
-        await conexion2.end();
+        await conexion.end();
       }
       return token;
     },

@@ -1,15 +1,15 @@
 import Buttons from "./Buttons";
-import { conexion2 } from "@/libs/mysql";
+import { conexion } from "@/libs/mysql";
 import { FaArrowLeft } from "react-icons/fa";
 import Image from "next/image";
 import Link from "next/link";
 import ImageNotSupported from "@/public/ImageNotSupported.webp";
 
 async function loadUser(userId) {
-  const [data] = await conexion2.query("SELECT * FROM users WHERE id = ?", [
+  const [data] = await conexion.query("SELECT * FROM users WHERE id = ?", [
     userId,
   ]);
-  await conexion2.end();
+  await conexion.end();
   return data;
 }
 

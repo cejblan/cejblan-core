@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { conexion2 } from "@/libs/mysql";
+import { conexion } from "@/libs/mysql";
 
 export async function GET(req, { params }) {
   try {
-    const result = await conexion2.query("SELECT * FROM orders WHERE id = ?", [
+    const result = await conexion.query("SELECT * FROM orders WHERE id = ?", [
       params.id,
     ]);
 
@@ -31,14 +31,14 @@ export async function GET(req, { params }) {
       { status: 500 }
     );
   } finally {
-    await conexion2.end();
+    await conexion.end();
   }
 }
 
 export async function DELETE(request, { params }) {
   try {
     // Obtén el pedido de la base de datos para obtener el enlace de la imagen
-    const [order] = await conexion2.query(
+    const [order] = await conexion.query(
       "SELECT image FROM orders WHERE id = ?",
       [params.id]
     );
@@ -57,7 +57,7 @@ export async function DELETE(request, { params }) {
       await cloudinary.uploader.destroy(publicId);
     }
     // Elimina el pedido de la base de datos
-    const result = await conexion2.query("DELETE FROM orders WHERE id = ?", [
+    const result = await conexion.query("DELETE FROM orders WHERE id = ?", [
       params.id,
     ]);
 
@@ -76,7 +76,7 @@ export async function DELETE(request, { params }) {
       { status: 500 }
     );
   } finally {
-    await conexion2.end();
+    await conexion.end();
   }
 }
 
@@ -88,7 +88,7 @@ export async function PUT(request, { params }) {
       status: data.get("status"),
     };
 
-    const result = await conexion2.query("UPDATE orders SET ? WHERE id = ?", [
+    const result = await conexion.query("UPDATE orders SET ? WHERE id = ?", [
       updateData,
       params.id,
     ]);
@@ -104,7 +104,7 @@ export async function PUT(request, { params }) {
       );
     }
 
-    const updatedProduct = await conexion2.query(
+    const updatedProduct = await conexion.query(
       "SELECT * FROM orders WHERE id = ?",
       [params.id]
     );
@@ -120,6 +120,6 @@ export async function PUT(request, { params }) {
       { status: 500 }
     );
   } finally {
-    await conexion2.end();
+    await conexion.end();
   }
 }

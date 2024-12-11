@@ -1,18 +1,18 @@
-import { conexion2 } from "@/libs/mysql";
+import { conexion } from "@/libs/mysql";
 import Titulos from "@/components/Titulos";
 import Buttons from "./Buttons";
 
 async function loadProduct(productId) {
-  const [productData] = await conexion2.query(
+  const [productData] = await conexion.query(
     "SELECT name FROM products WHERE id = ?",
     [productId]
   );
-  const users = await conexion2.query(
+  const users = await conexion.query(
     "SELECT user FROM qualification WHERE product = ?",
     [productId]
   );
 
-  await conexion2.end();
+  await conexion.end();
 
   const userList = users.map((item) => item.user);
   const combinedData = {

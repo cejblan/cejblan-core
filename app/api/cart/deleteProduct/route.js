@@ -1,4 +1,4 @@
-import { conexion2 } from "@/libs/mysql";
+import { conexion } from "@/libs/mysql";
 import { getServerSession, authOptions } from "next-auth";
 
 export async function DELETE(req) {
@@ -24,7 +24,7 @@ export async function DELETE(req) {
     const query = `DELETE FROM cart WHERE id IN (${placeholders}) AND customer = ?`;
     const queryParams = [...productsIds, userEmail];
     // Ejecución de la consulta sin destructuración
-    const result = await conexion2.query(query, queryParams);
+    const result = await conexion.query(query, queryParams);
     // Validar si la eliminación tuvo éxito
     if (result && result.affectedRows > 0) {
       return new Response(
@@ -47,6 +47,6 @@ export async function DELETE(req) {
     );
   } finally {
     // Se asegura de cerrar la conexión si es necesario
-    if (conexion2 && conexion2.end) await conexion2.end();
+    if (conexion && conexion.end) await conexion.end();
   }
 }

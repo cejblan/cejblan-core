@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { conexion2 } from "@/libs/mysql";
+import { conexion } from "@/libs/mysql";
 import cloudinary from "@/libs/cloudinary";
 import { processImage } from "@/libs/processImage";
 
 export async function GET(req, res) {
   try {
-    const results = await conexion2.query("SELECT * FROM products");
+    const results = await conexion.query("SELECT * FROM products");
     // Devuelve la respuesta con los encabezados configurados dentro de NextResponse
     return NextResponse.json(results, {
       status: 200,
@@ -21,7 +21,7 @@ export async function GET(req, res) {
       }
     );
   } finally {
-    await conexion2.end();
+    await conexion.end();
   }
 }
 
@@ -31,7 +31,7 @@ export async function POST(request) {
     const image = data.get("image");
 
     if (!image) {
-      const result = await conexion2.query("INSERT INTO products SET ?", {
+      const result = await conexion.query("INSERT INTO products SET ?", {
         name: data.get("name"),
         description: data.get("description"),
         price: data.get("price"),
@@ -72,7 +72,7 @@ export async function POST(request) {
         )
         .end(buffer);
     });
-    const result = await conexion2.query("INSERT INTO products SET ?", {
+    const result = await conexion.query("INSERT INTO products SET ?", {
       name: data.get("name"),
       description: data.get("description"),
       price: data.get("price"),
@@ -107,6 +107,6 @@ export async function POST(request) {
       }
     );
   } finally {
-    await conexion2.end();
+    await conexion.end();
   }
 }

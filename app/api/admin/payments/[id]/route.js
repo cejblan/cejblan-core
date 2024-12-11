@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { conexion2 } from "@/libs/mysql";
+import { conexion } from "@/libs/mysql";
 
 export async function GET(req, { params }) {
   try {
-    const result = await conexion2.query("SELECT * FROM payments WHERE id = ?", [
+    const result = await conexion.query("SELECT * FROM payments WHERE id = ?", [
       params.id,
     ]);
 
@@ -31,13 +31,13 @@ export async function GET(req, { params }) {
       { status: 500 }
     );
   } finally {
-    await conexion2.end();
+    await conexion.end();
   }
 }
 
 export async function DELETE(request, { params }) {
   try {
-    const result = await conexion2.query("DELETE FROM payments WHERE id = ?", [
+    const result = await conexion.query("DELETE FROM payments WHERE id = ?", [
       params.id,
     ]);
     if (result.affectedRows === 0) {
@@ -63,7 +63,7 @@ export async function DELETE(request, { params }) {
       { status: 500 }
     );
   } finally {
-    await conexion2.end();
+    await conexion.end();
   }
 }
 
@@ -87,7 +87,7 @@ export async function PUT(request, { params }) {
       );
     }
 
-    const result = await conexion2.query("UPDATE payments SET ? WHERE id = ?", [
+    const result = await conexion.query("UPDATE payments SET ? WHERE id = ?", [
       updateData,
       params.id,
     ]);
@@ -103,7 +103,7 @@ export async function PUT(request, { params }) {
       );
     }
 
-    const updatedProduct = await conexion2.query(
+    const updatedProduct = await conexion.query(
       "SELECT * FROM payments WHERE id = ?",
       [params.id]
     );
@@ -119,6 +119,6 @@ export async function PUT(request, { params }) {
       { status: 500 }
     );
   } finally {
-    await conexion2.end();
+    await conexion.end();
   }
 }

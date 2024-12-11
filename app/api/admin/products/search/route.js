@@ -1,6 +1,6 @@
 export const dynamic = "force-dynamic";
 
-import { conexion2 } from "@/libs/mysql";
+import { conexion } from "@/libs/mysql";
 
 export async function GET(request) {
   try {
@@ -9,7 +9,7 @@ export async function GET(request) {
     if (!query.trim()) {
       return new Response(JSON.stringify([]), { status: 200 });
     }
-    const products = await conexion2.query(
+    const products = await conexion.query(
       'SELECT name FROM products WHERE name LIKE ? ORDER BY name ASC LIMIT 10',
       [`%${query}%`]
     );
@@ -21,6 +21,6 @@ export async function GET(request) {
       { status: 500 }
     );
   } finally {
-    await conexion2.end();
+    await conexion.end();
   }
 }

@@ -1,4 +1,4 @@
-import { conexion2 } from "@/libs/mysql";
+import { conexion } from "@/libs/mysql";
 import { NextResponse } from "next/server";
 
 export async function GET(req, { params }) {
@@ -11,7 +11,7 @@ export async function GET(req, { params }) {
     }
 
     // Consulta para verificar si el producto ya está en la wishlist
-    const [rows] = await conexion2.query(
+    const [rows] = await conexion.query(
       "SELECT * FROM wishlist WHERE id = ? AND customer = ?",
       [id, customer]
     );
@@ -28,6 +28,6 @@ export async function GET(req, { params }) {
     console.log(error);
     return NextResponse.json({ error: "Error en el servidor" }, { status: 500 });
   } finally {
-    await conexion2.end(); // Asegúrate de cerrar la conexión
+    await conexion.end(); // Asegúrate de cerrar la conexión
   }
 }

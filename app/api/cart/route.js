@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"; // Importar NextResponse
-import { conexion2 } from "@/libs/mysql";
+import { conexion } from "@/libs/mysql";
 
 export async function GET(req, res) {
   const { searchParams } = new URL(req.url);
@@ -11,13 +11,13 @@ export async function GET(req, res) {
 
   try {
     // Primera consulta: obtener los productos del carrito filtrados por el cliente
-    const cartItems = await conexion2.query(
+    const cartItems = await conexion.query(
       "SELECT id, quantity FROM cart WHERE customer = ?",
       [customerEmail]
     );
 
     if (cartItems.length === 0) {
-      await conexion2.end();
+      await conexion.end();
       return NextResponse.json([], { status: 200 }); // Si el carrito está vacío, retornamos un arreglo vacío
     }
     // Agrupar los productos por ID y sumar sus quantities
@@ -33,7 +33,7 @@ export async function GET(req, res) {
     // Obtener los ids de los productos agrupados
     const productIds = groupedCartItems.map(item => item.id);
     // Segunda consulta: obtener todos los detalles de los productos según los ids obtenidos del carrito
-    const products = await conexion2.query(
+    const products = await conexion.query(
       "SELECT * FROM products WHERE id IN (?)",
       [productIds]
     );
@@ -53,20 +53,20 @@ export async function GET(req, res) {
     console.log(error);
     return NextResponse.json({ error: "Error en el servidor" }, { status: 500 });
   } finally {
-    await conexion2.end(); // Asegúrate de cerrar la conexión
+    await conexion.end(); // Asegúrate de cerrar la conexión
   }
 }
 
 export async function POST(request) {
   try {
     const data = await request.formData();
-    const result = await conexion2.query("INSERT INTO cart SET ?", {
+    const result = await conexion.query("INSERT INTO cart SET ?", {
       id: data.get("id"),
       quantity: data.get("quantity"),
       customer: data.get("customer"),
     });
 
-    const result2 = await conexion2.query(
+    const result2 = await conexion.query(
       "SELECT quantity FROM products WHERE id = ?",
       [data.get("id")]
     );
@@ -89,7 +89,7 @@ export async function POST(request) {
       );
     }
 
-    const result3 = await conexion2.query(
+    const result3 = await conexion.query(
       "UPDATE products SET quantity = ? WHERE id = ?",
       [newQuantity, data.get("id")]
     );
@@ -117,6 +117,6 @@ export async function POST(request) {
       }
     );
   } finally {
-    await conexion2.end();
+    await conexion.end();
   }
 }

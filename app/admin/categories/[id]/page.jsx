@@ -1,14 +1,14 @@
 import Buttons from "./Buttons";
-import { conexion2 } from "@/libs/mysql";
+import { conexion } from "@/libs/mysql";
 import { FaArrowLeft } from "react-icons/fa";
 import Link from "next/link";
 import { MdCategory } from "react-icons/md";
 
 async function loadCategory(categoryId) {
-  const [data] = await conexion2.query("SELECT * FROM categories WHERE id = ?", [
+  const [data] = await conexion.query("SELECT * FROM categories WHERE id = ?", [
     categoryId,
   ]);
-  await conexion2.end();
+  await conexion.end();
   return data;
 }
 

@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { conexion2 } from "@/libs/mysql";
+import { conexion } from "@/libs/mysql";
 
 export async function GET(req, res) {
   try {
-    const results = await conexion2.query("SELECT * FROM orders");
+    const results = await conexion.query("SELECT * FROM orders");
     // Devuelve la respuesta con los encabezados configurados dentro de NextResponse
     return NextResponse.json(results, {
       status: 200,
@@ -19,14 +19,14 @@ export async function GET(req, res) {
       }
     );
   } finally {
-    await conexion2.end();
+    await conexion.end();
   }
 }
 
 export async function POST(request) {
   try {
     const data = await request.formData();
-    const result = await conexion2.query("INSERT INTO orders SET ?", {
+    const result = await conexion.query("INSERT INTO orders SET ?", {
       name: data.get("name"),
       date: data.get("date"),
       status: data.get("status"),
@@ -48,6 +48,6 @@ export async function POST(request) {
       }
     );
   } finally {
-    await conexion2.end();
+    await conexion.end();
   }
 }

@@ -1,4 +1,4 @@
-import { conexion2 } from "@/libs/mysql";
+import { conexion } from "@/libs/mysql";
 import { NextResponse } from "next/server";
 
 export async function GET(req, res) {
@@ -10,7 +10,7 @@ export async function GET(req, res) {
   }
 
   try {
-    const profileItems = await conexion2.query(
+    const profileItems = await conexion.query(
       "SELECT * FROM users WHERE email = ?",
       [customerEmail]
     );
@@ -26,7 +26,7 @@ export async function GET(req, res) {
     console.error("Error al obtener productos:", error);
     return NextResponse.json({ error: "Error en el servidor" }, { status: 500 });
   } finally {
-    await conexion2.end();
+    await conexion.end();
   }
 }
 
@@ -46,14 +46,14 @@ export async function PUT(request) {
     values.push(data.email);
     // Actualizar datos del usuario
     const query = `UPDATE users SET ${fields} WHERE email = ?`;
-    await conexion2.query(query, values);
+    await conexion.query(query, values);
     // Iniciar cuenta regresiva para establecer el código en null después de 1 minuto
     const { code, email } = data;
 
     if (code) {
       setTimeout(async () => {
         try {
-          const updateResult = await conexion2.query(
+          const updateResult = await conexion.query(
             "UPDATE users SET code = NULL WHERE email = ? AND code = ?",
             [email, code]
           );
@@ -78,6 +78,6 @@ export async function PUT(request) {
       { status: 500 }
     );
   } finally {
-    await conexion2.end(); // Cerrar la conexión
+    await conexion.end(); // Cerrar la conexión
   }
 }
