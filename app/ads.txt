@@ -1,0 +1,3 @@
+# Declaración de vendedores autorizados de publicidad digital
+
+google.com, pub-6341118636252822, DIRECT, f08c47fec0942fa0

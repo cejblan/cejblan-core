@@ -1,0 +1,158 @@
+"use client";
+import { useRef, useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
+import Link from "next/link";
+import { FaArrowLeft } from "react-icons/fa";
+import { PiCurrencyDollarSimpleFill } from "react-icons/pi";
+
+export default function PayForm() {
+  const [pay, setPay] = useState({
+    id: "",
+    name: "",
+    data: "",
+    status: "",
+  });
+  const form = useRef(null);
+  const router = useRouter();
+  const params = useParams();
+  const handleChange = (e) => {
+    setPay({
+      ...pay,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  useEffect(() => {
+    const fetchPayment = async () => {
+      try {
+        if (params.id) {
+          const res = await fetch(`/api/admin/payments/${params.id}`);
+          if (!res.ok) {
+            throw new Error(`Error: ${res.status} ${res.statusText}`);
+          }
+          const data = await res.json();
+          setPay({
+            id: data.id,
+            name: data.name,
+            data: data.data,
+            status: data.status,
+          });
+        }
+      } catch (error) {
+        console.error("Error al cargar el pago:", error);
+      }
+    };
+  
+    fetchPayment();
+  }, [params.id]);  
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("name", pay.name);
+    formData.append("data", pay.data);
+    formData.append("status", pay.status);
+
+    try {
+      const res = await fetch(
+        params.id ? `/api/admin/payments/${params.id}` : "/api/admin/payments",
+        {
+          method: params.id ? "PUT" : "POST",
+          body: formData,
+        }
+      );
+    
+      if (!res.ok) {
+        throw new Error("Error en la solicitud de pago");
+      }
+    
+      alert("El pago se guardó correctamente.");
+    } catch (error) {
+      console.error("Error al guardar el pago:", error);
+      alert("Ocurrió un error al guardar el pago. Por favor, inténtalo nuevamente.");
+    }    
+
+    alert("Forma de pago registrada");
+    form.current.reset();
+    router.push("/adriliciaus/admin/payments");
+    router.refresh(); // Solo actualiza los componentes del servidor
+  };
+  return (
+    <>
+      <Link href={params.id ? `/adriliciaus/admin/payments/${params.id}` : "/adriliciaus/admin/payments"} className=" bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl">
+        <FaArrowLeft />
+      </Link>
+      <form onSubmit={handleSubmit} ref={form} >
+        <div className="grid max-[420px]:grid-cols-1 grid-cols-2 gap-2 justify-center mb-4">
+          <div className="max-[420px]:text-center text-left max-[420px]:pt-4 max-[420px]:mx-auto ml-4 max-[420px]:w-full">
+            <div className="mb-1">
+              <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Id:</h2>
+              <h3 className="bg-white text-gray-400 py-1 px-2 rounded-md">{pay.id || "####"}</h3>
+            </div>
+            <div className="mb-1">
+              <label htmlFor="name" className="text-lg font-semibold pr-1 mb-1 block">
+                Nombre:
+              </label>
+              <input
+                name="name"
+                id="name"
+                type="text"
+                placeholder="Nombre"
+                onChange={handleChange}
+                value={pay.name}
+                className="bg-white max-[420px]:text-center py-1 px-2 rounded-md w-full"
+                autoFocus
+                required
+              />
+            </div>
+            <div className="mb-1">
+              <label htmlFor="data" className="text-lg font-semibold pr-1 mb-1 block">
+                Datos:
+              </label>
+              <input
+                name="data"
+                id="data"
+                type="text"
+                placeholder="Datos"
+                onChange={handleChange}
+                value={pay.data}
+                className="bg-white max-[420px]:text-center py-1 px-2 rounded-md w-full"
+                required
+              />
+            </div>
+            <div className="mb-1">
+              <label htmlFor="status" className="text-lg font-semibold pr-1 mb-1 block">
+                Condición:
+              </label>
+              <select
+                name="status"
+                id="status"
+                onChange={handleChange}
+                value={pay.status}
+                className="hover:bg-blue-200 max-[420px]:text-center py-1 px-2 rounded-md w-full"
+                required
+              >
+                <option value="">Selecciona la condición</option>
+                <option value="Activado">Activado</option>
+                <option value="Desactivado">Desactivado</option>
+              </select>
+            </div>
+          </div>
+          <div className="max-[420px]:text-center text-left mx-auto">
+            <label htmlFor="image" className="text-lg font-semibold pr-1 mb-1 block">
+              Imagen:
+            </label>
+            <div className="grid grid-cols-1">
+              <div className="relative">
+                <PiCurrencyDollarSimpleFill className="text-[18rem]" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <button className="text-white bg-blue-700 hover:bg-blue-900 font-bold py-1 px-2 rounded-xl shadow-6xl mx-auto w-fit">
+          {params.id ? "Actualizar forma de pago" : "Crear forma de pago"}
+        </button>
+      </form>
+    </>
+  );
+}

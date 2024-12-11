@@ -1,0 +1,17 @@
+/* Global */
+
+/* Fin Global */
+/* Navbar */
+#navAdriliciausAdmin .burger {
+    .menu {
+        display: none;
+    }
+}
+
+#navAdriliciausAdmin .burger.open {
+    .menu {
+        display: grid;
+    }
+}
+
+/*Fin Navbar */
