@@ -1,6 +1,6 @@
 {
-  "name": "cejblan-site",
-  "version": "0.9.7",
+  "name": "cejblan-cms",
+  "version": "0.9.9",
   "private": true,
   "scripts": {
     "dev": "next dev",
