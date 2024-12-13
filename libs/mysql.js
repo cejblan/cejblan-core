@@ -1,4 +1,4 @@
-import mysql from 'serverless-mysql'
+import mysql from "serverless-mysql"
 
 export const conexion = mysql({
     config: {
@@ -8,7 +8,7 @@ export const conexion = mysql({
         port: 3306,
         database: process.env.DATABASE,
         waitForConnections: true,
-        connectionLimit: 15,  // Máximo número de conexiones simultáneas
-        queueLimit: 0,        // No limitamos la cantidad de conexiones en espera
+        connectionLimit: 5,
+        queueLimit: 10,
     }
 })
