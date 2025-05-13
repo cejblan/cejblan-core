@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import Image from "next/image"
 import Link from "next/link"
 import React from "react"
-import Logo from "public/logo_cejblan.webp"
-import Logo2 from "public/Logo-CejBlan.webp"
+import Logo from "public/nuevo_logo_cejblan.webp"
+import Logo2 from "public/logo_cejblan_2.webp"
 import Loading from "../components/Loading";
 
 export default function LoginComponent() {
