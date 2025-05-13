@@ -1,10 +1,10 @@
 import { GiCat } from "react-icons/gi";
 
 export const metadata = {
-  title: "No Autorizado - Adriliciaus",
+  title: "No Autorizado - Cejblan",
   description: "Página de acceso no autorizado (unauthorized).",
   openGraph: {
-    title: "No Autorizado - Adriliciaus",
+    title: "No Autorizado - Cejblan",
     description: "Página de acceso no autorizado (unauthorized).",
     url: "https://www.cejblan.com/unauthorized",
   },

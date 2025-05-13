@@ -13,7 +13,7 @@ export default function TruncateCart() {
     setLoading(true); // Mostrar estado de cargando
 
     try {
-      if (confirm("¿Adri, segura que quieres borrar todos los carritos?")) {
+      if (confirm("¿seguro quieres borrar todos los carritos?")) {
         const response = await fetch('/api/admin/truncateCart', { method: 'DELETE' });
         if (response.ok) {
           alert("¡Carrito vaciado con éxito!");

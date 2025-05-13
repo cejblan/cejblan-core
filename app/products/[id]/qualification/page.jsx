@@ -29,10 +29,10 @@ export async function generateMetadata({ params }) {
   const product = await loadProduct(id);
 
   return {
-    title: `${product.name} - Adriliciaus`,
+    title: `${product.name} - Cejblan`,
     description: `Califica la calidad de ${product.name }.`,
     openGraph: {
-      title: `${product.name} - Adriliciaus`,
+      title: `${product.name} - Cejblan`,
       description: `Califica la calidad de ${product.name }.`,
       url: `https://www.cejblan.com/products/${id}/qualification`,
     },

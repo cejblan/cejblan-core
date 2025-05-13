@@ -9,7 +9,7 @@ function Buttons({ productId }) {
       <button
         className="text-white bg-red-600 hover:bg-red-800 font-bold py-1 px-2 rounded-xl shadow-6xl"
         onClick={async () => {
-          if (confirm("¿Adri, segura que lo quieres eliminar?")) {
+          if (confirm("¿seguro lo quieres eliminar?")) {
             try {
               const res = await fetch(`/api/admin/products/${productId}`, {
                 method: "DELETE",

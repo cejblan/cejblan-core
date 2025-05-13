@@ -4,13 +4,13 @@ import { usePathname } from "next/navigation";
 
 export default function DoNotShow({ children }) {
     const pathname = usePathname();
-    const adriliciausPattern = /\/?/;
-    const isAdriliciausPage = adriliciausPattern.test(pathname);
+    const cejblanPattern = /\/?/;
+    const isCejblanPage = cejblanPattern.test(pathname);
     const suspirosPattern = /\/suspirosyponkes\/?/;
     const isSuspirosPage = suspirosPattern.test(pathname);
 
-    if (isAdriliciausPage || isSuspirosPage) {
-        return null; // Renderiza nada en páginas de "adriliciaus"
+    if (isCejblanPage || isSuspirosPage) {
+        return null; // Renderiza nada en páginas de "cejblan"
     } else {
         return children; // Renderiza los hijos en otras rutas
     }

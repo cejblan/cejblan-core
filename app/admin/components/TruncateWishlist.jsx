@@ -13,7 +13,7 @@ export default function TruncateWishlist() {
     setLoading(true); // Mostrar estado de cargando
 
     try {
-      if (confirm("¿Adri, segura que quieres borrar todos los favoritos?")) {
+      if (confirm("¿seguro quieres borrar todos los favoritos?")) {
         const response = await fetch('/api/admin/truncateWishlist', { method: 'DELETE' });
         if (response.ok) {
           alert("¡Favoritos vaciado con éxito!");

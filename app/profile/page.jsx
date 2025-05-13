@@ -1,10 +1,10 @@
 import ProfileComponent from "../components/ProfileComponent";
 
 export const metadata = {
-  title: "Perfil - Adriliciaus",
+  title: "Perfil - Cejblan",
   description: "Página del perfil de los usuarios (profile).",
   openGraph: {
-    title: "Perfil - Adriliciaus",
+    title: "Perfil - Cejblan",
     description: "Página del perfil de los usuarios (profile).",
     url: "https://www.cejblan.com/profile",
   },

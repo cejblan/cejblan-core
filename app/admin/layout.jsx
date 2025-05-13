@@ -1,20 +1,20 @@
-import NavbarAdriAdmin from "./components/Navbar"
+import NavbarAdmin from "./components/Navbar"
 import "./styles.css"
 
 export const metadata = {
-  title: "Modulo Administrativo - Adriliciaus",
+  title: "Modulo Administrativo - Cejblan",
   description: "Espacio solo para Administradores (Admin).",
   openGraph: {
-    title: "Modulo Administrativo - Adriliciaus",
+    title: "Modulo Administrativo - Cejblan",
     description: "Espacio solo para Administradores (Admin).",
     url: "https://www.cejblan.com/admin",
   },
 };
 
-export default function RootAdriliciausAdmin({ children }) {
+export default function RootCejblanAdmin({ children }) {
   return (
-    <NavbarAdriAdmin>
+    <NavbarAdmin>
       {children}
-    </NavbarAdriAdmin>
+    </NavbarAdmin>
   )
 }

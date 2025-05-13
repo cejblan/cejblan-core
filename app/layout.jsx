@@ -1,7 +1,7 @@
 import "./globals.css"
 import React from "react";
-import NavbarAdri from "./components/Navbar";
-import FooterAdri from "./components/Footer";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import WhatsappButton from "@/components/WhatsappButton"
 import PaypalButton from "@/components/PaypalButton"
 import { Providers } from "./Providers"
@@ -24,13 +24,13 @@ export default function RootLayout({ children }) {
       </head>
       <body className=/*{*/"text-center select-none "/* + inter.className}*/>
         <Providers>
-          <NavbarAdri />
-          <section id="Adriliciaus" className="Destacado2 bg-gradient-to-b from-slate-700 via-black to-slate-700">
+          <Navbar />
+          <section id="Cejblan" className="Destacado2 bg-gradient-to-b bg-[#0A192F]">
             {children}
           </section>
           <PaypalButton />
           <WhatsappButton />
-          <FooterAdri />
+          <Footer />
         </Providers>
       </body>
     </html>

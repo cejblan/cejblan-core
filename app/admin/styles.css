@@ -2,13 +2,13 @@
 
 /* Fin Global */
 /* Navbar */
-#navAdriliciausAdmin .burger {
+#navCejblanAdmin .burger {
     .menu {
         display: none;
     }
 }
 
-#navAdriliciausAdmin .burger.open {
+#navCejblanAdmin .burger.open {
     .menu {
         display: grid;
     }

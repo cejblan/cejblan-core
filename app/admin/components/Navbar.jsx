@@ -16,7 +16,7 @@ import Image from "next/image";
 import Loading from "../../components/Loading";
 import Link from "next/link";
 
-export default function NavbarAdriAdmin({ children }) {
+export default function NavbarAdmin({ children }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenTwo, setIsOpenTwo] = useState(false);
   const [isOpenThree, setIsOpenThree] = useState(false);
@@ -74,7 +74,7 @@ export default function NavbarAdriAdmin({ children }) {
 
   return (
     <>
-      <nav id="navAdriliciausAdmin" className="text-white text-base h-5 w-full fixed z-20">
+      <nav id="navCejblanAdmin" className="text-white text-base h-5 w-full fixed z-20">
         <div className="bg-slate-800 w-full flex items-center">
           <div className={`max-[420px]:m-auto ${isOpen ? "open" : ""}`} onClick={handleClick}>
             <TiThMenu className={`hover:fill-slate-500 w-4 h-4 ${isOpen ? "hidden" : "md:hidden"}`} cursor="pointer" />
@@ -82,7 +82,7 @@ export default function NavbarAdriAdmin({ children }) {
           </div>
           <Link href="/" className="hover:bg-slate-700 hover:text-blue-300 p-1 flex items-center">
             <FaHome className="mr-1 w-3 h-3" />
-            <h1 className="font-bold max-[420px]:hidden">AdriliciausShop</h1>
+            <h1 className="font-bold max-[420px]:hidden">CejblanShop</h1>
           </Link>
           <div className={`burger max-[420px]:m-auto flex justify-center items-center relative ${isOpenTwo ? "open" : ""}`} onClick={handleClickTwo}>
             <FaPlus className={`hover:fill-slate-500 w-3 h-3 ${isOpenTwo ? "hidden" : "md:hidden"}`} cursor="pointer" />

@@ -45,10 +45,10 @@ export async function generateMetadata({ params }) {
   const product = await loadProduct(id);
 
   return {
-    title: `${product.name} - Adriliciaus`,
+    title: `${product.name} - Cejblan`,
     description: product.description || "Descubre este producto increíble en nuestra tienda.",
     openGraph: {
-      title: `${product.name} - Adriliciaus`,
+      title: `${product.name} - Cejblan`,
       description: product.description,
       url: `https://www.cejblan.com/products/${id}`,
       images: [
@@ -60,7 +60,7 @@ export async function generateMetadata({ params }) {
     },
     twitter: {
       card: "summary_large_image",
-      title: `${product.name} - Adriliciaus`,
+      title: `${product.name} - Cejblan`,
       description: product.description,
       images: [product.image],
     },
