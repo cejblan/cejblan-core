@@ -110,11 +110,12 @@ export default function ProductForm() {
           }
           const data = await res.json();
           setProduct({
-            name: data.name,
-            price: data.price,
-            description: data.description,
-            category: data.category,
-            image: data.image,
+            name: data.name ?? "",
+            price: data.price ?? "",
+            description: data.description ?? "",
+            category: data.category ?? "",
+            quantity: data.quantity ?? "",
+            image: data.image ?? "",
           });
         }
       } catch (error) {
