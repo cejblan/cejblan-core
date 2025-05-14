@@ -10,6 +10,7 @@ import { FaPlus, FaSignOutAlt, FaTelegram } from "react-icons/fa";
 import { TiThMenu, TiTimes } from "react-icons/ti";
 import { VscTriangleLeft } from "react-icons/vsc";
 import { MdCategory, MdDeliveryDining, MdBorderColor } from "react-icons/md";
+import { PiBlueprintFill } from "react-icons/pi";
 import { PiCurrencyDollarSimpleFill } from "react-icons/pi";
 import { RiPaintBrushFill } from "react-icons/ri";
 import Image from "next/image";
@@ -38,6 +39,7 @@ export default function NavbarAdmin({ children }) {
   const deliveries = "/admin/deliveries";
   const newDelivery = "/admin/deliveries/new";
   const orders = "/admin/orders";
+  const deliveryNote = "/admin/deliveryNote";
   const telegram = "/admin/telegram";
   const appearance = "/admin/appearance";
   const handleClick = () => {
@@ -182,6 +184,11 @@ export default function NavbarAdmin({ children }) {
             <MdBorderColor className="mr-1 w-2 h-2" />
             <h3>Pedidos</h3>
             <VscTriangleLeft className={`${urlIcon(orders)} text-slate-200 ml-auto w-3 h-3 relative left-1`} />
+          </Link>
+          <Link href={deliveryNote} className={`${urlClass(deliveryNote)} hover:bg-slate-600 hover:text-blue-300 py-1 pl-1 border-b border-slate-600 flex items-center`}>
+            <PiBlueprintFill className="mr-1 w-2 h-2" />
+            <h3>Notas de Entrega</h3>
+            <VscTriangleLeft className={`${urlIcon(deliveryNote)} text-slate-200 ml-auto w-3 h-3 relative left-1`} />
           </Link>
           <Link href={telegram} className={`${urlClass(telegram)} hover:bg-slate-600 hover:text-blue-300 py-1 pl-1 border-b border-slate-600 flex items-center`}>
             <FaTelegram className="mr-1 w-2 h-2" />
