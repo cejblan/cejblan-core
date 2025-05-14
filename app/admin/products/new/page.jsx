@@ -110,12 +110,12 @@ export default function ProductForm() {
           }
           const data = await res.json();
           setProduct({
-            name: data.name ?? "",
-            price: data.price ?? "",
-            description: data.description ?? "",
-            category: data.category ?? "",
-            quantity: data.quantity ?? "",
-            image: data.image ?? "",
+            name: data[0].name ?? "",
+            price: data[0].price ?? "",
+            description: data[0].description ?? "",
+            category: data[0].category ?? "",
+            quantity: data[0].quantity ?? "",
+            image: data[0].image ?? "",
           });
         }
       } catch (error) {
@@ -190,7 +190,7 @@ export default function ProductForm() {
                 placeholder="Cantidad"
                 onChange={handleChange}
                 value={product.quantity || 1}
-                min="1"
+                min="0"
                 className="bg-white max-[420px]:text-center py-1 px-2 rounded-md w-full"
                 required
               />
