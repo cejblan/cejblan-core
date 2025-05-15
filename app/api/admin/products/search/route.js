@@ -10,7 +10,7 @@ export async function GET(request) {
       return new Response(JSON.stringify([]), { status: 200 });
     }
     const products = await conexion.query(
-      'SELECT name FROM products WHERE name LIKE ? ORDER BY name ASC LIMIT 10',
+      'SELECT name, price, quantity FROM products WHERE name LIKE ? ORDER BY name ASC LIMIT 10',
       [`%${query}%`]
     );
     return new Response(JSON.stringify(products), { status: 200 });
