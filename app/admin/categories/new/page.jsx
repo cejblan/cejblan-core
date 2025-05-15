@@ -6,7 +6,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import { MdCategory } from "react-icons/md";
 
 export default function CategoryForm() {
-  const [delivery, setCategory] = useState({
+  const [category, setCategory] = useState({
     id: "",
     name: "",
     data: "",
@@ -17,7 +17,7 @@ export default function CategoryForm() {
   const params = useParams();
   const handleChange = (e) => {
     setCategory({
-      ...delivery,
+      ...category,
       [e.target.name]: e.target.value,
     });
   };
@@ -49,9 +49,9 @@ export default function CategoryForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append("name", delivery.name);
-    formData.append("data", delivery.data);
-    formData.append("status", delivery.status);
+    formData.append("name", category.name);
+    formData.append("data", category.data);
+    formData.append("status", category.status);
 
     const url = params.id ? `/api/admin/categories/${params.id}` : "/api/admin/categories";
     const method = params.id ? "PUT" : "POST";
@@ -93,7 +93,7 @@ export default function CategoryForm() {
           <div className="max-[420px]:text-center text-left max-[420px]:pt-4 max-[420px]:mx-auto ml-4 max-[420px]:w-full">
             <div className="mb-1">
               <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Id:</h2>
-              <h3 className="bg-white text-gray-400 py-1 px-2 rounded-md">{delivery.id || "####"}</h3>
+              <h3 className="bg-white text-gray-400 py-1 px-2 rounded-md">{category.id || "####"}</h3>
             </div>
             <div className="mb-1">
               <label htmlFor="name" className="text-lg font-semibold pr-1 mb-1 block">
@@ -105,7 +105,7 @@ export default function CategoryForm() {
                 type="text"
                 placeholder="Nombre"
                 onChange={handleChange}
-                value={delivery.name}
+                value={category.name}
                 className="bg-white max-[420px]:text-center py-1 px-2 rounded-md w-full"
                 autoFocus
                 required
@@ -121,7 +121,7 @@ export default function CategoryForm() {
                 type="text"
                 placeholder="Descripción"
                 onChange={handleChange}
-                value={delivery.data}
+                value={category.data}
                 className="bg-white max-[420px]:text-center py-1 px-2 rounded-md w-full"
                 required
               />
@@ -134,7 +134,7 @@ export default function CategoryForm() {
                 name="status"
                 id="status"
                 onChange={handleChange}
-                value={delivery.status}
+                value={category.status}
                 className="hover:bg-blue-200 max-[420px]:text-center py-1 px-2 rounded-md w-full"
                 required
               >
