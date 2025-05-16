@@ -1,13 +1,16 @@
 "use client"
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
 import SearchProduct from "../components/SearchProduct";
+import { LoadPayments } from "../components/LoadPayments";
+import EditorDeFormato from "../components/EditorDeFormato";
 
-export default function PrintModal() {
+export default function DeliveryNote() {
+  const [payments, setPayments] = useState([]);
   const [products, setProducts] = useState([
     { id: 1, product: null, price: "", quantity: "" },
   ]);
@@ -32,6 +35,16 @@ export default function PrintModal() {
     ]);
   };
 
+  const [formato, setFormato] = useState({
+    blocks: {
+      header: { alignment: "left", visible: true },
+      noteInfo: { alignment: "left", visible: true },
+      client: { alignment: "left", visible: true },
+      products: { alignment: "left", visible: true },
+      totals: { alignment: "right", visible: true },
+    },
+  });
+
   const handlePrint = () => {
     const content = document.getElementById("print-area")?.innerHTML;
     const printWindow = window.open("", "_blank");
@@ -41,12 +54,42 @@ export default function PrintModal() {
           <title>Nota de Entrega</title>
           <style>
             @media print {
-              @page { margin: 0; }
-              body { margin: 0; padding: 20px; }
+              @page {
+                size: 80mm auto;
+                margin: 0;
+              }
+              body {
+                margin: 0;
+                padding: 0;
+              }
             }
-            body { font-family: sans-serif; font-size: 13px; white-space: pre-wrap; padding: 20px; }
-            .center { text-align: center; }
-            .line { border-top: 1px dashed #000; margin: 4px 0; }
+  
+            body {
+              font-family: sans-serif;
+              font-size: 11px;
+              width: 80mm;
+              padding: 10px;
+              margin: auto;
+              white-space: pre-wrap;
+            }
+  
+            .center {
+              text-align: center;
+            }
+  
+            .line {
+              border-top: 1px dashed #000;
+              margin: 4px 0;
+            }
+  
+            .total {
+              font-weight: bold;
+              text-align: right;
+            }
+  
+            .footer {
+              margin-top: 10px;
+            }
           </style>
         </head>
         <body>
@@ -79,6 +122,14 @@ export default function PrintModal() {
 
   const now = new Date();
   const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  const canPrint = products.some(
+    (p) => p.product && p.price && p.quantity && parseInt(p.quantity) > 0
+  );
+
+  useEffect(() => {
+    LoadPayments(setPayments);
+  }, [setPayments]);
 
   return (
     <div>
@@ -133,7 +184,7 @@ export default function PrintModal() {
                   placeholder="Cantidad"
                 />
               </td>
-              <td className="font-bold border-t border-slate-900">
+              <td className="font-bold border-r border-t border-slate-900">
                 {item.price && item.quantity
                   ? (parseFloat(item.price) * parseInt(item.quantity)).toFixed(2) + " Bs"
                   : "-"}
@@ -215,15 +266,19 @@ export default function PrintModal() {
           <div className="mt-4">
             <select className="border rounded-md px-4 py-2 w-full" value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
               <option value="">Seleccione forma de pago</option>
-              <option value="Efectivo">Efectivo</option>
-              <option value="Transferencia">Transferencia</option>
-              <option value="Pago móvil">Pago móvil</option>
-              <option value="Zelle">Zelle</option>
+              {
+                payments.map((payments, index) => {
+                  return (
+                    <option key={index} value={payments.name}>{payments.name}</option>
+                  )
+                })}
             </select>
           </div>
 
           <div className="flex justify-between mt-6">
-            <Button onClick={handlePrint}>Imprimir</Button>
+            <Button onClick={handlePrint} disabled={!canPrint} title={!canPrint ? "Debe ingresar al menos un producto con cantidad mayor a cero" : ""}>
+              Imprimir
+            </Button>
             <Button variant="outline" onClick={() => setShowFormatModal(true)}>
               Formato de impresión
             </Button>
@@ -231,41 +286,23 @@ export default function PrintModal() {
 
           {showFormatModal && (
             <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 flex justify-center items-center z-50">
-              <div className="bg-white p-6 rounded-xl shadow-lg max-w-xl w-full relative">
+              <div className="bg-white p-4 rounded shadow-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
                 <button
-                  className="absolute right-4 top-4 text-gray-500 hover:text-black"
+                  className="absolute right-3 text-gray-500 hover:text-black"
                   onClick={() => setShowFormatModal(false)}
                 >
                   <X />
                 </button>
-                <h2 className="text-lg font-bold mb-4">Editor de Formato</h2>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Título del documento</label>
-                    <Input value={customHeader} onChange={(e) => setCustomHeader(e.target.value)} />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Dirección del negocio</label>
-                    <Input value={customAddress} onChange={(e) => setCustomAddress(e.target.value)} />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">RIF del negocio</label>
-                    <Input value={customRif} onChange={(e) => setCustomRif(e.target.value)} />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <input type="checkbox" checked={showPhone} onChange={(e) => setShowPhone(e.target.checked)} />
-                    <label className="text-sm">Mostrar teléfono del cliente</label>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <input type="checkbox" checked={showAddress} onChange={(e) => setShowAddress(e.target.checked)} />
-                    <label className="text-sm">Mostrar dirección del cliente</label>
-                  </div>
-                </div>
+                <EditorDeFormato
+                  config={formato}
+                  setConfig={setFormato}
+                  onClose={() => setShowFormatModal(false)}
+                />
               </div>
             </div>
           )}
         </DialogContent>
       </Dialog>
-    </div>
+    </div >
   );
 }
