@@ -21,6 +21,7 @@ export default function PrintModal() {
   const [showFormatModal, setShowFormatModal] = useState(false);
   const [customHeader, setCustomHeader] = useState("MI NEGOCIO, C.A.");
   const [customAddress, setCustomAddress] = useState("Dirección del negocio editable");
+  const [customRif, setCustomRif] = useState("J-000000000");
   const [showPhone, setShowPhone] = useState(true);
   const [showAddress, setShowAddress] = useState(true);
 
@@ -43,7 +44,7 @@ export default function PrintModal() {
               @page { margin: 0; }
               body { margin: 0; padding: 20px; }
             }
-            body { font-family: monospace; font-size: 13px; white-space: pre-wrap; padding: 20px; }
+            body { font-family: sans-serif; font-size: 13px; white-space: pre-wrap; padding: 20px; }
             .center { text-align: center; }
             .line { border-top: 1px dashed #000; margin: 4px 0; }
           </style>
@@ -160,7 +161,7 @@ export default function PrintModal() {
           <div id="print-area" className="hidden">
             <p className="center">{customHeader}</p>
             <p className="center">{customAddress}</p>
-            <p className="center">RIF: J-000000000</p>
+            <p className="center">RIF: {customRif}</p>
             <p>Fecha: {now.toLocaleDateString()}  Hora: {time}</p>
             <div className="line" />
             <p>Cliente: {clientName}</p>
@@ -246,6 +247,10 @@ export default function PrintModal() {
                   <div>
                     <label className="block text-sm font-medium text-gray-700">Dirección del negocio</label>
                     <Input value={customAddress} onChange={(e) => setCustomAddress(e.target.value)} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">RIF del negocio</label>
+                    <Input value={customRif} onChange={(e) => setCustomRif(e.target.value)} />
                   </div>
                   <div className="flex items-center gap-2">
                     <input type="checkbox" checked={showPhone} onChange={(e) => setShowPhone(e.target.checked)} />
