@@ -35,6 +35,7 @@ export default function DeliveryNote() {
     ]);
   };
 
+  const [mostrarEditor, setMostrarEditor] = useState(false);
   const [formato, setFormato] = useState({
     blocks: {
       header: { alignment: "left", visible: true },
@@ -286,23 +287,41 @@ export default function DeliveryNote() {
 
           {showFormatModal && (
             <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 flex justify-center items-center z-50">
-              <div className="bg-white p-4 rounded shadow-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="bg-white p-6 rounded-xl shadow-lg max-w-xl w-full relative">
                 <button
-                  className="absolute right-3 text-gray-500 hover:text-black"
+                  className="absolute right-4 top-4 text-gray-500 hover:text-black"
                   onClick={() => setShowFormatModal(false)}
                 >
                   <X />
                 </button>
-                <EditorDeFormato
-                  config={formato}
-                  setConfig={setFormato}
-                  onClose={() => setShowFormatModal(false)}
-                />
+                <h2 className="text-lg font-bold mb-4">Editor de Formato</h2>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Título del documento</label>
+                    <Input value={customHeader} onChange={(e) => setCustomHeader(e.target.value)} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Dirección del negocio</label>
+                    <Input value={customAddress} onChange={(e) => setCustomAddress(e.target.value)} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">RIF del negocio</label>
+                    <Input value={customRif} onChange={(e) => setCustomRif(e.target.value)} />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input type="checkbox" checked={showPhone} onChange={(e) => setShowPhone(e.target.checked)} />
+                    <label className="text-sm">Mostrar teléfono del cliente</label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input type="checkbox" checked={showAddress} onChange={(e) => setShowAddress(e.target.checked)} />
+                    <label className="text-sm">Mostrar dirección del cliente</label>
+                  </div>
+                </div>
               </div>
             </div>
           )}
         </DialogContent>
       </Dialog>
-    </div >
+    </div>
   );
 }
