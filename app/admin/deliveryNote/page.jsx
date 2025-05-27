@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
 import SearchProduct from "../components/SearchProduct";
 import { LoadPayments } from "../components/LoadPayments";
-import EditorDeFormato from "../components/EditorDeFormato";
 
 export default function DeliveryNote() {
   const [payments, setPayments] = useState([]);
