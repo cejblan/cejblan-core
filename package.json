@@ -27,7 +27,6 @@
     "next": "14.0.1",
     "next-auth": "^4.24.8",
     "next-cloudinary": "^6.6.2",
-    "node-fetch": "^3.3.2",
     "nodemailer": "^6.9.16",
     "react": "^18",
     "react-dnd": "^16.0.1",
