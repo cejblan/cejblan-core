@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
 import SearchProduct from "../components/SearchProduct";
 import { LoadPayments } from "../components/LoadPayments";
+import Titulos from "@/components/Titulos";
 
 export default function DeliveryNote() {
   const [payments, setPayments] = useState([]);
@@ -132,8 +133,8 @@ export default function DeliveryNote() {
   }, [setPayments]);
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-2">Notas de Entrega</h2>
+    <>
+      <Titulos texto="Notas de Entrega" />
       <table className="table-auto bg-white text-slate-900 tracking-tight rounded-t-xl rounded-ee-xl shadow-6xl w-full mb-4">
         <thead className="bg-slate-300 max-[420px]:text-xs text-lg font-semibold">
           <tr>
@@ -321,6 +322,6 @@ export default function DeliveryNote() {
           )}
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 }
