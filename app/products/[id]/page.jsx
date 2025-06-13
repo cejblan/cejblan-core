@@ -3,6 +3,7 @@ import { conexion } from "@/libs/mysql";
 import { HiOutlineStar, HiStar } from "react-icons/hi2";
 import Image from "next/image";
 import Titulos from "@/components/Titulos";
+import PrecioProducto from "@/app/components/PrecioProducto";
 
 async function loadProduct(productId) {
   const [productData] = await conexion.query(
@@ -79,10 +80,8 @@ export default async function ProductPage({ params }) {
         <div className="bg-white bg-opacity-95 rounded-xl shadow-6xl max-[420px]:block flex w-full h-full justify-center">
           <div className="p-3 w-full h-full">
             <h3 className="text-4xl font-bold min-h-10">{product.name}</h3>
-            <h4 className="text-4xl text-purple-700 font-bold my-2">{product.price}$
-              <span className="bg-slate-300 text-slate-600 max-[420px]:text-xl md:text-2xl px-1 rounded-xl ml-1">o al cambio BCV</span>
-            </h4>
-            <p className="text-slate-800 max-[420px]:text-base text-lg font-bold min-h-28">{product.description}</p>
+            <PrecioProducto precio={product.price} />
+            <p className="text-slate-800 max-[420px]:text-base text-lg font-bold min-h-14">{product.description}</p>
             <p className="text-pink-700 text-xl text-left font-bold pl-1 mt-2">Categoría:
               <span className="text-purple-700 ml-1">{product.category}</span>
             </p>
