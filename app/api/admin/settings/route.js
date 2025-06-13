@@ -1,51 +1,56 @@
 import { NextResponse } from "next/server";
 import { conexion } from "@/libs/mysql";
 
-export async function GET(req, res) {
+// Obtener todos los settings
+export async function GET(req) {
   try {
     const results = await conexion.query("SELECT * FROM settings");
-    return NextResponse.json(results, {
-      status: 200,
-    });
+    return NextResponse.json(results, { status: 200 });
   } catch (error) {
-    console.log(error);
-    return NextResponse.json(
-      {
-        message: error.message,
-      },
-      {
-        status: 500,
-      }
-    );
+    console.error(error);
+    return NextResponse.json({ message: error.message }, { status: 500 });
   } finally {
     await conexion.end();
   }
 }
 
+// Crear nuevo setting
 export async function POST(request) {
   try {
-    const data = await request.formData();
+    const description = await request.formData();
     const result = await conexion.query("INSERT INTO settings SET ?", {
-      name: data.get("name"),
-      data: data.get("data"),
-      value: data.get("value"),
+      name: description.get("name"),
+      description: description.get("description"),
+      value: description.get("value"),
     });
 
     return NextResponse.json({
-      name: data.get("name"),
-      data: data.get("data"),
-      value: data.get("value"),
+      name: description.get("name"),
+      description: description.get("description"),
+      value: description.get("value"),
     });
   } catch (error) {
-    console.log(error);
-    return NextResponse.json(
-      {
-        message: error.message,
-      },
-      {
-        status: 500,
-      }
+    console.error(error);
+    return NextResponse.json({ message: error.message }, { status: 500 });
+  } finally {
+    await conexion.end();
+  }
+}
+
+// Actualizar setting existente
+export async function PUT(request) {
+  const body = await request.json();
+  const { name, value } = body;
+
+  try {
+    await conexion.query(
+      "UPDATE settings SET value = ? WHERE name = ?",
+      [value, name]
     );
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ message: error.message }, { status: 500 });
   } finally {
     await conexion.end();
   }
