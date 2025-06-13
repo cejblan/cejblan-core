@@ -43,7 +43,7 @@ export default function NavbarAdmin({ children }) {
   const deliveryNote = "/admin/deliveryNote";
   const coins = "/admin/coins";
   const telegram = "/admin/telegram";
-  const appearance = "/admin/appearance";
+  const settings = "/admin/settings";
   const handleClick = () => {
     setIsOpen(!isOpen);
   };
@@ -202,10 +202,10 @@ export default function NavbarAdmin({ children }) {
             <h3>Telegram</h3>
             <VscTriangleLeft className={`${urlIcon(telegram)} text-slate-200 ml-auto w-3 h-3 relative left-1`} />
           </Link>
-          <Link href={appearance} className={`${urlClass(appearance)} hover:bg-slate-600 hover:text-blue-300 py-1 pl-1 border-b border-slate-600 flex items-center`}>
+          <Link href={settings} className={`${urlClass(settings)} hover:bg-slate-600 hover:text-blue-300 py-1 pl-1 border-b border-slate-600 flex items-center`}>
             <RiPaintBrushFill className="mr-1 w-2 h-2" />
-            <h3>Apariencia</h3>
-            <VscTriangleLeft className={`${urlIcon(appearance)} text-slate-200 ml-auto w-3 h-3 relative left-1`} />
+            <h3>Configuración</h3>
+            <VscTriangleLeft className={`${urlIcon(settings)} text-slate-200 ml-auto w-3 h-3 relative left-1`} />
           </Link>
         </div>
         <div className={`max-[420px]:min-w-16 min-w-48 ${isOpen ? "" : "max-[420px]:hidden"}`} />
