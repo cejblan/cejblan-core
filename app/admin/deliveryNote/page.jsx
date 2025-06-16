@@ -187,8 +187,7 @@ export default function DeliveryNote() {
               </td>
               <td className="font-bold border-r border-t border-slate-900">
                 {item.price && item.quantity
-                  ? (parseFloat(item.price) * parseInt(item.quantity)).toFixed(2) + " Bs"
-                  : "-"}
+                  ? (parseFloat(item.price) * parseInt(item.quantity)).toFixed(2) : "-"}
               </td>
               <td className="border-t border-slate-900 text-center">
                 <button
