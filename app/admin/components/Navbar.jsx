@@ -86,7 +86,7 @@ export default function NavbarAdmin({ children }) {
           </div>
           <Link href="/" className="hover:bg-slate-700 hover:text-blue-300 p-1 flex items-center">
             <FaHome className="mr-1 w-3 h-3" />
-            <h1 className="font-bold max-[420px]:hidden">CejblanShop</h1>
+            <h1 className="font-bold max-[420px]:hidden">CejblanCMS</h1>
           </Link>
           <div className={`burger max-[420px]:m-auto flex justify-center items-center relative ${isOpenTwo ? "open" : ""}`} onClick={handleClickTwo}>
             <FaPlus className={`hover:fill-slate-500 w-3 h-3 ${isOpenTwo ? "hidden" : "md:hidden"}`} cursor="pointer" />
