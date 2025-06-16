@@ -173,7 +173,7 @@ export default function ProfileComponent() {
                     <span className="text-blue-500 font-bold">Telegram</span>
                     <FaTelegram className="text-blue-500 h-4 w-4" />
                   </span>
-                  <Link href="https://t.me/CejblanShopBot" className="text-xl text-blue-700 hover:text-blue-900 underline" target="_blank">@CejblanShopBot</Link>
+                  <Link href="https://t.me/CejblanBot" className="text-xl text-blue-700 hover:text-blue-900 underline" target="_blank">@CejblanBot</Link>
                 </div>
                 {
                   code ?
