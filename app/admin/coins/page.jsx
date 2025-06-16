@@ -60,6 +60,28 @@ export default function Coins() {
   return (
     <>
       <Titulos texto="Tasas de Cambio" />
+      <div className="flex gap-2 content-center items-center">
+        {Array.isArray(coins) && coins.length > 0 ? (
+          coins.map((coin) => (
+            <div className="mb-4 mx-auto block">
+              <div key={coin.id} className="flex gap-2 items-center">
+                <p className="text-2xl font-bold">{coin.moneda}:</p>
+                <label
+                  readOnly
+                  className="bg-white text-xl py-1 px-2 border border-gray-400 rounded-xl"
+                >
+                  {coin.valor}
+                </label>
+                <span className="text-xl max-[420px]:text-sm font-bold">
+                  {moment(coin.fecha).subtract(4, "hours").format("DD/MM/YYYY")}
+                </span>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="text-gray-500">No hay tasas registradas.</p>
+        )}
+      </div>
       <div className="grid gap-6 max-w-xl mx-auto">
         <form
           ref={form}
@@ -89,27 +111,6 @@ export default function Coins() {
             Registrar
           </button>
         </form>
-
-        <div className="grid gap-2">
-          {Array.isArray(coins) && coins.length > 0 ? (
-            coins.map((coin) => (
-              <div key={coin.id} className="flex gap-2 items-center">
-                <p className="text-2xl font-bold">{coin.moneda}:</p>
-                <label
-                  readOnly
-                  className="bg-white text-xl py-1 px-2 border border-gray-400 rounded-xl"
-                >
-                  {coin.valor}
-                </label>
-                <span className="text-xl max-[420px]:text-sm font-bold">
-                  {moment(coin.fecha).subtract(4, "hours").format("DD/MM/YYYY")}
-                </span>
-              </div>
-            ))
-          ) : (
-            <p className="text-gray-500">No hay tasas registradas.</p>
-          )}
-        </div>
       </div>
     </>
   );
