@@ -1,25 +1,32 @@
 'use client';
 import { useConversion } from '@/app/admin/components/Conversion';
 
-export default function PrecioProducto({ precio }) {
-  const { convertir, conversionActiva, tasa, monedaBase } = useConversion();
+export default function PrecioProducto({ precio, format }) {
+  const { convertir, conversionActiva, tasa } = useConversion();
 
   const precioBs = convertir(precio);
 
   return (
-    <>
-      <h4 className="text-4xl text-purple-700 font-bold my-2">
-        ${precio.toFixed(2)}
-        {conversionActiva && tasa && (
-          <>
-            <p className="bg-slate-300 text-slate-600 max-[420px]:text-xl md:text-2xl px-1 rounded-xl my-1 mx-auto w-fit">
-              al cambio BCV
-            </p><p>
-              {precioBs.toFixed(2)} bs
-            </p>
-          </>
-        )}
-      </h4>
+    <>{
+      format === 1 ?
+        <h4 className="text-3xl text-purple-700 font-bold my-2">
+          ${precio.toFixed(2)}
+          {conversionActiva && tasa && (
+            <>
+              <p className="bg-slate-300 text-slate-600 text-lg px-1 rounded-xl m-auto w-fit">
+                al cambio BCV
+              </p>
+              <p className='text-xl'>
+                {precioBs.toFixed(2)} bs
+              </p>
+            </>
+          )}
+        </h4>
+        :
+        <p>
+          {precioBs.toFixed(2)} bs
+        </p>
+    }
     </>
   );
 }
