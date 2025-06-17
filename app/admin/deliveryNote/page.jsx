@@ -188,7 +188,7 @@ export default function DeliveryNote() {
               </td>
               <td className="font-bold border-r border-t border-slate-900">
                 {item.price && item.quantity
-                ? <PrecioProducto precio={Number((parseFloat(item.price) * parseInt(item.quantity)).toFixed(2))} format={0} /> : "-"}
+                  ? <PrecioProducto precio={Number((parseFloat(item.price) * parseInt(item.quantity)).toFixed(2))} format={0} /> : "-"}
               </td>
               <td className="border-t border-slate-900 text-center">
                 <button
@@ -225,13 +225,13 @@ export default function DeliveryNote() {
               <div key={p.id}>
                 <p>{p.product?.name || "-"}</p>
                 <p>{p.quantity} x {p.price} Bs</p>
-                <p>Total: {(parseFloat(p.price) * parseInt(p.quantity)).toFixed(2)} Bs</p>
+                <p>Total: <PrecioProducto precio={parseFloat(p.price) * parseInt(p.quantity)} format={0} /></p>
                 <div className="line" />
               </div>
             ))}
-            <p className="total">SUBTOTAL: {baseAmount.toFixed(2)} Bs</p>
-            <p className="total">IVA (16%): {ivaAmount.toFixed(2)} Bs</p>
-            <p className="total">TOTAL: {total.toFixed(2)} Bs</p>
+            <p className="total">SUBTOTAL: <PrecioProducto precio={baseAmount} format={0} /></p>
+            <p className="total">IVA (16%): <PrecioProducto precio={ivaAmount} format={0} /></p>
+            <p className="total">TOTAL: <PrecioProducto precio={total} format={0} /></p>
             <p className="footer">Forma de pago: {paymentMethod}</p>
           </div>
 
