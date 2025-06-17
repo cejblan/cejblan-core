@@ -54,10 +54,10 @@ export default function Settings() {
       return alert('Debes completar al menos "name" y "value"')
     }
 
-    const formDescription = new FormDescription()
+    const formDescription = new FormData()
     formDescription.append("name", nuevoNombre)
     formDescription.append("value", nuevoValor)
-    formDescription.append("data", nuevoDescription)
+    formDescription.append("description", nuevoDescription)
 
     try {
       const res = await fetch("/api/admin/settings", {
