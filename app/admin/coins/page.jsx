@@ -79,7 +79,7 @@ export default function Coins() {
             </div>
           ))
         ) : (
-          <p className="text-gray-500">No hay tasas registradas.</p>
+          <p className="text-gray-500 text-2xl mb-4 mx-auto">No hay tasas registradas</p>
         )}
       </div>
       <div className="grid gap-6 max-w-xl mx-auto">
