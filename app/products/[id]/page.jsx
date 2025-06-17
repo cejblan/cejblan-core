@@ -80,7 +80,7 @@ export default async function ProductPage({ params }) {
         <div className="bg-white bg-opacity-95 rounded-xl shadow-6xl max-[420px]:block flex w-full h-full justify-center">
           <div className="p-3 w-full h-full">
             <h3 className="text-4xl font-bold min-h-10">{product.name}</h3>
-            <PrecioProducto precio={product.price} />
+            <PrecioProducto precio={product.price} format={1} />
             <p className="text-slate-800 max-[420px]:text-base text-lg font-bold min-h-14">{product.description}</p>
             <p className="text-pink-700 text-xl text-left font-bold pl-1 mt-2">Categoría:
               <span className="text-purple-700 ml-1">{product.category}</span>
