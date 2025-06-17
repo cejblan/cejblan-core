@@ -8,6 +8,7 @@ import { X } from "lucide-react";
 import SearchProduct from "../components/SearchProduct";
 import { LoadPayments } from "../components/LoadPayments";
 import Titulos from "@/components/Titulos";
+import PrecioProducto from "@/app/components/PrecioProducto";
 
 export default function DeliveryNote() {
   const [payments, setPayments] = useState([]);
@@ -187,7 +188,7 @@ export default function DeliveryNote() {
               </td>
               <td className="font-bold border-r border-t border-slate-900">
                 {item.price && item.quantity
-                  ? (parseFloat(item.price) * parseInt(item.quantity)).toFixed(2) : "-"}
+                ? <PrecioProducto precio={Number((parseFloat(item.price) * parseInt(item.quantity)).toFixed(2))} format={0} /> : (parseFloat(item.price) * parseInt(item.quantity)).toFixed(2)}
               </td>
               <td className="border-t border-slate-900 text-center">
                 <button
