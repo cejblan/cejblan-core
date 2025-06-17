@@ -24,13 +24,10 @@ export default function PrecioProducto({ precio, format }) {
         </h4>
         :
         conversionActiva && tasa ? (
-          <p>
-            {precioBs.toFixed(2)} bs
-          </p>
-        ) :
-          <p>
-            ${precio.toFixed(2)}
-          </p>
+          precioBs.toFixed(2) + "bs"
+        ) : (
+          "$" + precio.toFixed(2)
+        )
     }
     </>
   );
