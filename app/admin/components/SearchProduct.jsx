@@ -31,7 +31,6 @@ export default function SearchProduct({ onSelectProduct }) {
   };
 
   const OnClick = (product) => {
-    console.log(JSON.stringify(product))
     setQuery(product.name)
     setAction(product.name)
     onSelectProduct && onSelectProduct(product); // 🧠 Aquí "avisamos" al padre
