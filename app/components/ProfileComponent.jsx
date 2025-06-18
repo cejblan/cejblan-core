@@ -1,7 +1,7 @@
 "use client"
 
 import { useSession } from "next-auth/react";
-import { useState, useEffect } from "react";
+import { useCallback, useState, useEffect } from "react";
 import Image from "next/image";
 import { RiUserFill } from "react-icons/ri";
 import { TfiEmail } from "react-icons/tfi";
@@ -62,13 +62,7 @@ export default function ProfileComponent() {
     }
   }, [latitude, longitude]);
 
-  useEffect(() => {
-    if (session?.user?.email) {
-      loadData();
-    }
-  }, [session]);
-  // Función para cargar los datos del cliente
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const response = await fetch(`/api/profile?customerEmail=${encodeURIComponent(session.user.email)}`, {
         method: "GET",
@@ -86,7 +80,14 @@ export default function ProfileComponent() {
     } finally {
       setIsLoading(false); // Indica que los datos han cargado
     }
-  };
+  }, [session?.user?.email]); // ← solo depende del email
+
+  useEffect(() => {
+    if (session?.user?.email) {
+      loadData();
+    }
+  }, [session, loadData]);
+
   const dataSubmit = async (e) => {
     e.preventDefault();
     try {

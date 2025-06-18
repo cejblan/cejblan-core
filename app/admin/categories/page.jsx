@@ -26,7 +26,7 @@ export default function CategoriesPage() {
 
   useEffect(() => {
     LoadCategories(setCategories);
-  });
+  }, []);
 
   if (categories.length === 0) {
     return (

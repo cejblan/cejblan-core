@@ -27,7 +27,7 @@ export default function ProductCard({ product }) {
     if (session?.user?.email) {
       CheckWish(product, session, setIsInWishlist);
     }
-  }, [session]);
+  }, [product, session]);
 
   return (
     product.quantity === "0" ?

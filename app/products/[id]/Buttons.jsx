@@ -43,7 +43,7 @@ function Buttons(product) {
     if (session?.user?.email) {
       CheckWish(product.product, session, setIsInWishlist);
     }
-  }, [session]);
+  }, [product.product, session]);
 
   useEffect(() => {
     if (!data.quantity) {
