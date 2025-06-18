@@ -105,13 +105,13 @@ export default function Settings() {
     <div className="max-w-xl mx-auto p-4 grid gap-6">
       <h1 className="text-2xl font-bold">Configuración general</h1>
       <div className="border rounded p-4 bg-gray-50 space-y-4">
-        <div className="flex items-center gap-2">
-          <label className="font-semibold">¿Activar conversión a Bs?</label>
+        <div className="flex gap-2 items-center">
+          <label className="font-semibold ml-auto">¿Activar conversión a Bs?</label>
           <input
             type="checkbox"
             checked={activa}
             onChange={(e) => setActiva(e.target.checked)}
-            className="w-2 h-2"
+            className="mr-auto w-2 h-2"
           />
         </div>
         <div>
