@@ -7,7 +7,7 @@ export const metadata = {
   openGraph: {
     title: "Modulo Administrativo - Cejblan",
     description: "Espacio solo para Administradores (Admin).",
-    url: "https://www.cejblan.com/admin",
+    url: "https://www.cejblan-cms.vercel.app/admin",
   },
 };
 

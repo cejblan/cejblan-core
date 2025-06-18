@@ -8,7 +8,7 @@ export const metadata = {
   openGraph: {
     title: "Pedidos - Cejblan",
     description: "Página de los pedidos de cada usaurio (orders).",
-    url: "https://www.cejblan.com/orders",
+    url: "https://www.cejblan-cms.vercel.app/orders",
   },
 };
 

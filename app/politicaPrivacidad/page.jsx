@@ -4,7 +4,7 @@ export const metadata = {
     openGraph: {
         title: "Política de Privacidad - Cejblan",
         description: "Página de Políticas de Privacidad.",
-        url: "https://www.cejblan.com/politicaPrivacidad",
+        url: "https://www.cejblan-cms.vercel.app/politicaPrivacidad",
     },
 };
 

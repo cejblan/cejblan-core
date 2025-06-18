@@ -7,7 +7,7 @@ export const metadata = {
   openGraph: {
     title: "No Autorizado - Cejblan",
     description: "Página de acceso no autorizado (unauthorized).",
-    url: "https://www.cejblan.com/unauthorized",
+    url: "https://www.cejblan-cms.vercel.app/unauthorized",
   },
 };
 

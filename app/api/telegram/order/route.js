@@ -13,7 +13,7 @@ export async function POST(request) {
   }
   const products = data.dataOrder.productsIds
   .split(",") // Convertir la cadena en un array
-  .map((id) => `   ✅ <a href="https://www.cejblan.com/products/${id}">${id}</a>`)
+  .map((id) => `   ✅ <a href="https://www.cejblan-cms.vercel.app/products/${id}">${id}</a>`)
   .join("\n");
   const quantity = data.dataOrder.productsQuantity
   .split(",") // Convertir la cadena en un array

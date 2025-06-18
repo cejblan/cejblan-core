@@ -6,7 +6,7 @@ export const metadata = {
   openGraph: {
     title: "Perfil - Cejblan",
     description: "Página del perfil de los usuarios (profile).",
-    url: "https://www.cejblan.com/profile",
+    url: "https://www.cejblan-cms.vercel.app/profile",
   },
 };
 

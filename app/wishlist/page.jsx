@@ -7,7 +7,7 @@ export const metadata = {
   openGraph: {
     title: "Favoritos - Cejblan",
     description: "Página de lista de favoritos (Wish List).",
-    url: "https://www.cejblan.com/wishlist",
+    url: "https://www.cejblan-cms.vercel.app/wishlist",
   },
 };
 

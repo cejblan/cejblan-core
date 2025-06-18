@@ -34,7 +34,7 @@ export async function generateMetadata({ params }) {
     openGraph: {
       title: `${product.name} - Cejblan`,
       description: `Califica la calidad de ${product.name }.`,
-      url: `https://www.cejblan.com/products/${id}/qualification`,
+      url: `https://www.cejblan-cms.vercel.app/products/${id}/qualification`,
     },
   };
 }

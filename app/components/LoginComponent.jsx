@@ -23,7 +23,7 @@ export default function LoginComponent() {
   return (
     <div className="py-8">
       <div className="bg-white shadow-md rounded-xl pt-4 pb-3 px-4 mx-auto grid grid-cols-1 w-fit">
-        <Link href="https://cejblan.com/" className="mb-2">
+        <Link href="https://cejblan-cms.vercel.app/" className="mb-2">
           <Image
             className="rounded-full shadow-6xl m-auto"
             src={Logo}

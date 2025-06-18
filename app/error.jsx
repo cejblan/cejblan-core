@@ -6,7 +6,7 @@ import { FaRegWindowMinimize, FaRegWindowMaximize, FaRegWindowClose } from "reac
 import Gato404 from "public/Gato500.webp"
 
 const images = [
-  "https://www.cejblan.com/Gato500.webp",
+  "https://www.cejblan-cms.vercel.app/Gato500.webp",
 ];
 
 export const metadata = {
@@ -15,7 +15,7 @@ export const metadata = {
   openGraph: {
     title: "Error 500 - Cejblan",
     description: "Página de error 500 y otros.",
-    url: "https://www.cejblan.com/error",
+    url: "https://www.cejblan-cms.vercel.app/error",
     images: images.map((url) => ({ url })),
   },
 };

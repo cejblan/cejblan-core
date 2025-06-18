@@ -19,7 +19,7 @@ export default function QR(product) {
           <BsQrCode />
         </button><div>
           <div className={`m-auto justify-center flex ${isOpen ? "" : "hidden"}`}>
-            <QRCode value={`https://www.cejblan.com/products/${product.id}`} className="max-[420px]:min-w-12 min-w-14 max-[420px]:max-w-12 max-w-14 max-[420px]:min-h-12 min-h-14 max-[420px]:max-h-12 max-h-14 z-10" />
+            <QRCode value={`https://www.cejblan-cms.vercel.app/products/${product.id}`} className="max-[420px]:min-w-12 min-w-14 max-[420px]:max-w-12 max-w-14 max-[420px]:min-h-12 min-h-14 max-[420px]:max-h-12 max-h-14 z-10" />
           </div>
           <div className={`m-auto justify-center flex ${isOpen ? "hidden" : ""}`}>
             {product.image &&
@@ -34,7 +34,7 @@ export default function QR(product) {
         </button>
         <Link href={`/products/${product.id}`}>
           <div className={`m-auto justify-center flex ${isOpen ? "" : "hidden"}`}>
-            <QRCode value={`https://www.cejblan.com/products/${product.id}`} className="max-[420px]:min-w-12 min-w-14 max-[420px]:max-w-12 max-w-14 max-[420px]:min-h-12 min-h-14 max-[420px]:max-h-12 max-h-14 z-10" />
+            <QRCode value={`https://www.cejblan-cms.vercel.app/products/${product.id}`} className="max-[420px]:min-w-12 min-w-14 max-[420px]:max-w-12 max-w-14 max-[420px]:min-h-12 min-h-14 max-[420px]:max-h-12 max-h-14 z-10" />
           </div>
           <div className={`m-auto justify-center flex ${isOpen ? "hidden" : ""}`}>
             {product.image &&

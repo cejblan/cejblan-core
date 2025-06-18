@@ -51,7 +51,7 @@ export async function generateMetadata({ params }) {
     openGraph: {
       title: `${product.name} - Cejblan`,
       description: product.description,
-      url: `https://www.cejblan.com/products/${id}`,
+      url: `https://www.cejblan-cms.vercel.app/products/${id}`,
       images: [
         {
           url: product.image,

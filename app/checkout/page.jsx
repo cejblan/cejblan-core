@@ -6,7 +6,7 @@ export const metadata = {
   openGraph: {
     title: "Verificar Pedido - Cejblan",
     description: "Página de verificacion de pedido, pago y entrega (checkout).",
-    url: "https://www.cejblan.com/checkout",
+    url: "https://www.cejblan-cms.vercel.app/checkout",
   },
 };
 
