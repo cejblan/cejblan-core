@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
 import SearchProduct from "../components/SearchProduct";
@@ -133,6 +133,28 @@ export default function DeliveryNote() {
     LoadPayments(setPayments);
   }, [setPayments]);
 
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch(`/api/admin/settings`);
+        const data = await response.json();
+  
+        const nombre = data.find(item => item.name === "nombre_tienda")?.value || "MI NEGOCIO, C.A.";
+        const direccion = data.find(item => item.name === "direccion_tienda")?.value || "Dirección del negocio editable";
+        const rif = data.find(item => item.name === "rif_tienda")?.value || "J-000000000";
+  
+        setCustomHeader(nombre);
+        setCustomAddress(direccion);
+        setCustomRif(rif);
+  
+      } catch (error) {
+        console.error("Error al cargar ajustes:", error);
+      }
+    };
+  
+    fetchSettings();
+  }, []);
+  
   return (
     <>
       <Titulos texto="Notas de Entrega" />
@@ -171,6 +193,7 @@ export default function DeliveryNote() {
                   }}
                   className="bg-white max-[420px]:text-center py-1 px-2 w-full"
                   placeholder="00.00$"
+                  disabled
                 />
               </td>
               <td className="border-r border-t border-slate-900">
@@ -211,6 +234,7 @@ export default function DeliveryNote() {
         </DialogTrigger>
         <DialogContent className="max-w-3xl">
           <div id="print-area" className="hidden">
+          <DialogTitle></DialogTitle>
             <p className="center">{customHeader}</p>
             <p className="center">{customAddress}</p>
             <p className="center">RIF: {customRif}</p>
