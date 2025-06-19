@@ -8,12 +8,12 @@ async function LoadPay(payId) {
   const [data] = await conexion.query("SELECT * FROM payments WHERE id = ?", [
     payId,
   ]);
-  await conexion.end();
   return data;
 }
 
 export default async function PayPage({ params }) {
-  const pay = await LoadPay(params.id);
+  const { id } = await params;
+  const pay = await LoadPay(id);
 
   return (
     <>

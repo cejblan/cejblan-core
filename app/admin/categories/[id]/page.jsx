@@ -8,12 +8,12 @@ async function loadCategory(categoryId) {
   const [data] = await conexion.query("SELECT * FROM categories WHERE id = ?", [
     categoryId,
   ]);
-  await conexion.end();
   return data;
 }
 
 export default async function CategoryPage({ params }) {
-  const category = await loadCategory(params.id);
+  const { id } = await params;
+  const category = await loadCategory(id);
 
   return (
     <>
@@ -42,7 +42,7 @@ export default async function CategoryPage({ params }) {
         <div className="max-[420px]:text-center text-left mx-auto">
           <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Imagen:</h2>
           <div className="grid grid-cols-1">
-          <MdCategory className="text-[18rem]" />
+            <MdCategory className="text-[18rem]" />
           </div>
         </div>
       </div>

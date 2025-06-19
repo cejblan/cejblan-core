@@ -9,12 +9,13 @@ async function loadUser(userId) {
   const [data] = await conexion.query("SELECT * FROM users WHERE id = ?", [
     userId,
   ]);
-  await conexion.end();
+
   return data;
 }
 
 export default async function ProductPage({ params }) {
-  const user = await loadUser(params.id);
+  const { id } = await params;
+  const user = await loadUser(id);
 
   return (
     <>

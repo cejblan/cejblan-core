@@ -8,12 +8,12 @@ async function LoadDelivery(deliveryId) {
   const [data] = await conexion.query("SELECT * FROM deliveries WHERE id = ?", [
     deliveryId,
   ]);
-  await conexion.end();
   return data;
 }
 
 export default async function DeliveryPage({ params }) {
-  const delivery = await LoadDelivery(params.id);
+  const { id } = await params;
+  const delivery = await LoadDelivery(id);
 
   return (
     <>
