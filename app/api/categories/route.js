@@ -4,7 +4,7 @@ import { conexion } from "@/libs/mysql";
 export async function GET(req, res) {
   try {
     const activado = "Activado";
-    const results = await conexion.query("SELECT name, data FROM categories WHERE status = ?", activado);
+    const [results] = await conexion.query("SELECT name, data FROM categories WHERE status = ?", activado);
 
     // Devuelve la respuesta con los encabezados configurados dentro de NextResponse
     return NextResponse.json(results, {
@@ -20,15 +20,13 @@ export async function GET(req, res) {
         status: 500,
       }
     );
-  } finally {
-    await conexion.end();
   }
 }
 
 export async function POST(request) {
   try {
     const data = await request.formData();
-    const result = await conexion.query("INSERT INTO categories SET ?", {
+    const [result] = await conexion.query("INSERT INTO categories SET ?", {
       name: data.get("name"),
       data: data.get("data"),
       status: data.get("status"),
@@ -49,7 +47,5 @@ export async function POST(request) {
         status: 500,
       }
     );
-  } finally {
-    await conexion.end();
   }
 }

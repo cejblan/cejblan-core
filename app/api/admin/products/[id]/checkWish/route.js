@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function GET(req, { params }) {
   const customer = new URL(req.url).searchParams.get("customerEmail");
-  const { id } = params;  // Obtener el id desde los parámetros de la ruta dinámica
+  const { id } = await params;  // Obtener el id desde los parámetros de la ruta dinámica
 
   try {
     if (!id || !customer) {
@@ -27,7 +27,5 @@ export async function GET(req, { params }) {
   } catch (error) {
     console.log(error);
     return NextResponse.json({ error: "Error en el servidor" }, { status: 500 });
-  } finally {
-    await conexion.end(); // Asegúrate de cerrar la conexión
   }
 }

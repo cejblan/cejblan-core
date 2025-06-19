@@ -3,7 +3,7 @@ import { conexion } from "@/libs/mysql";
 
 export async function GET(req, res) {
   try {
-    const results = await conexion.query("SELECT * FROM deliveries");
+    const [results] = await conexion.query("SELECT * FROM deliveries");
     // Devuelve la respuesta con los encabezados configurados dentro de NextResponse
     return NextResponse.json(results, {
       status: 200,
@@ -18,15 +18,13 @@ export async function GET(req, res) {
         status: 500,
       }
     );
-  } finally {
-    await conexion.end();
   }
 }
 
 export async function POST(request) {
   try {
     const data = await request.formData();
-    const result = await conexion.query("INSERT INTO deliveries SET ?", {
+    const [result] = await conexion.query("INSERT INTO deliveries SET ?", {
       name: data.get("name"),
       data: data.get("data"),
       status: data.get("status"),
@@ -47,7 +45,5 @@ export async function POST(request) {
         status: 500,
       }
     );
-  } finally {
-    await conexion.end();
   }
 }

@@ -29,7 +29,7 @@ export async function POST(request) {
         // Código de verificación recibido
         const code = messageText;
 
-        const data = await conexion.query(
+        const [data] = await conexion.query(
           "SELECT verified, chatId FROM users WHERE code = ?",
           code
         );
@@ -63,8 +63,6 @@ export async function POST(request) {
         status: "error",
         message: "Ha ocurrido un error interno. Inténtalo de nuevo más tarde.",
       });
-    } finally {
-      await conexion.end(); // Cerrar la conexión
     }
     // Enviar mensaje a Telegram
     const token = process.env.BOT_TOKEN;

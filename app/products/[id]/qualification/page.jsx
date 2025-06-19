@@ -7,12 +7,10 @@ async function loadProduct(productId) {
     "SELECT name FROM products WHERE id = ?",
     [productId]
   );
-  const users = await conexion.query(
+  const [users] = await conexion.query(
     "SELECT user FROM qualification WHERE product = ?",
     [productId]
   );
-
-  await conexion.end();
 
   const userList = users.map((item) => item.user);
   const combinedData = {
@@ -25,22 +23,23 @@ async function loadProduct(productId) {
 
 // Generar metadatos dinámicos
 export async function generateMetadata({ params }) {
-  const { id } = params;
+  const { id } = await params;
   const product = await loadProduct(id);
 
   return {
     title: `${product.name} - Cejblan`,
-    description: `Califica la calidad de ${product.name }.`,
+    description: `Califica la calidad de ${product.name}.`,
     openGraph: {
       title: `${product.name} - Cejblan`,
-      description: `Califica la calidad de ${product.name }.`,
+      description: `Califica la calidad de ${product.name}.`,
       url: `https://www.cejblan-cms.vercel.app/products/${id}/qualification`,
     },
   };
 }
 
 export default async function Qualification({ params }) {
-  const product = await loadProduct(params.id);
+  const { id } = await params;
+  const product = await loadProduct(id);
 
   return (
     <div className="py-6">

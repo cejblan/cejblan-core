@@ -6,7 +6,7 @@ import { processImage } from "@/libs/processImage";
 
 export async function GET(req, res) {
   try {
-    const results = await conexion.query("SELECT * FROM users");
+    const [results] = await conexion.query("SELECT * FROM users");
     // Devuelve la respuesta con los encabezados configurados dentro de NextResponse
     return NextResponse.json(results, {
       status: 200,
@@ -21,8 +21,6 @@ export async function GET(req, res) {
         status: 500,
       }
     );
-  } finally {
-    await conexion.end(); // Asegúrate de cerrar la conexión
   }
 }
 
@@ -34,7 +32,7 @@ export async function POST(request) {
     //const hashedPassword = await hash(password, 10); // 10 es el número de saltos (nivel de seguridad)
     const image = data.get("image");
     if (!image) {
-      const result = await conexion.query("INSERT INTO users SET ?", {
+      const [result] = await conexion.query("INSERT INTO users SET ?", {
         name: data.get("name"),
         email: data.get("email"),
         //password: hashedPassword,
@@ -65,7 +63,7 @@ export async function POST(request) {
           )
           .end(buffer);
       });
-      const result = await conexion.query("INSERT INTO users SET ?", {
+      const [result] = await conexion.query("INSERT INTO users SET ?", {
         name: data.get("name"),
         email: data.get("email"),
         //password: hashedPassword,
@@ -91,7 +89,5 @@ export async function POST(request) {
         status: 500,
       }
     );
-  } finally {
-    await conexion.end();
   }
 }

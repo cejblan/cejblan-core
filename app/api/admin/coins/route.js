@@ -3,7 +3,7 @@ import { conexion } from "@/libs/mysql";
 
 export async function GET(req, res) {
   try {
-    const tasas = await conexion.query("SELECT * FROM coins");
+    const [tasas] = await conexion.query("SELECT * FROM coins");
     return NextResponse.json({ tasas });
   } catch (error) {
     console.log(error);
@@ -11,8 +11,6 @@ export async function GET(req, res) {
       { message: error.message },
       { status: 500 }
     );
-  } finally {
-    await conexion.end();
   }
 }
 
@@ -40,7 +38,5 @@ export async function POST(req) {
       { message: error.message },
       { status: 500 }
     );
-  } finally {
-    await conexion.end();
   }
 }

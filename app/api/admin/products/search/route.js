@@ -9,7 +9,7 @@ export async function GET(request) {
     if (!query.trim()) {
       return new Response(JSON.stringify([]), { status: 200 });
     }
-    const products = await conexion.query(
+    const [products] = await conexion.query(
       'SELECT name, price, quantity FROM products WHERE name LIKE ? ORDER BY name ASC LIMIT 10',
       [`%${query}%`]
     );
@@ -20,7 +20,5 @@ export async function GET(request) {
       JSON.stringify({ error: 'Hubo un problema al procesar la solicitud.' }),
       { status: 500 }
     );
-  } finally {
-    await conexion.end();
   }
 }

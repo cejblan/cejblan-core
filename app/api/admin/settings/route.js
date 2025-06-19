@@ -4,13 +4,11 @@ import { conexion } from "@/libs/mysql";
 // Obtener todos los settings
 export async function GET(req) {
   try {
-    const results = await conexion.query("SELECT * FROM settings");
+    const [results] = await conexion.query("SELECT * FROM settings");
     return NextResponse.json(results, { status: 200 });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ message: error.message }, { status: 500 });
-  } finally {
-    await conexion.end();
   }
 }
 
@@ -18,7 +16,7 @@ export async function GET(req) {
 export async function POST(request) {
   try {
     const description = await request.formData();
-    const result = await conexion.query("INSERT INTO settings SET ?", {
+    const [result] = await conexion.query("INSERT INTO settings SET ?", {
       name: description.get("name"),
       description: description.get("description"),
       value: description.get("value"),
@@ -32,8 +30,6 @@ export async function POST(request) {
   } catch (error) {
     console.error(error);
     return NextResponse.json({ message: error.message }, { status: 500 });
-  } finally {
-    await conexion.end();
   }
 }
 
@@ -51,7 +47,5 @@ export async function PUT(request) {
   } catch (error) {
     console.error(error);
     return NextResponse.json({ message: error.message }, { status: 500 });
-  } finally {
-    await conexion.end();
   }
 }

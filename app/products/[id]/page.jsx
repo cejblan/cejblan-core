@@ -10,12 +10,10 @@ async function loadProduct(productId) {
     "SELECT * FROM products WHERE id = ?",
     [productId]
   );
-  const qualifications = await conexion.query(
+  const [qualifications] = await conexion.query(
     "SELECT value FROM qualification WHERE product = ?",
     [productId]
   );
-
-  await conexion.end();
 
   return {
     ...productData,  // Usa el spread operator para incluir todo el producto
@@ -42,7 +40,7 @@ const renderStars = (average) => {
 
 // Generar metadatos dinámicos
 export async function generateMetadata({ params }) {
-  const { id } = params;
+  const { id } = await params;
   const product = await loadProduct(id);
 
   return {
@@ -69,7 +67,9 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function ProductPage({ params }) {
-  const product = await loadProduct(params.id);
+  const { id } = await params;
+  const product = await loadProduct(id);
+
   const average = calculateAverage(product.qualifications);
   const totalRatings = product.qualifications.length; // Número total de calificaciones
 

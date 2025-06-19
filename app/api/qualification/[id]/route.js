@@ -3,7 +3,7 @@ import { conexion } from "@/libs/mysql";
 
 export async function GET(req, { params }) {
   try {
-    const result = await conexion.query("SELECT value FROM qualification WHERE product = ?", [
+    const [result] = await conexion.query("SELECT value FROM qualification WHERE product = ?", [
       params.id,
     ]);
 
@@ -29,14 +29,12 @@ export async function GET(req, { params }) {
       },
       { status: 500 }
     );
-  } finally {
-    await conexion.end();
   }
 }
 
 export async function DELETE(request, { params }) {
   try {
-    const result = await conexion.query("DELETE FROM qualification WHERE id = ?", [
+    const [result] = await conexion.query("DELETE FROM qualification WHERE id = ?", [
       params.id,
     ]);
     if (result.affectedRows === 0) {
@@ -61,8 +59,6 @@ export async function DELETE(request, { params }) {
       },
       { status: 500 }
     );
-  } finally {
-    await conexion.end();
   }
 }
 
@@ -86,7 +82,7 @@ export async function PUT(request, { params }) {
       );
     }
 
-    const result = await conexion.query("UPDATE qualification SET ? WHERE id = ?", [
+    const [result] = await conexion.query("UPDATE qualification SET ? WHERE id = ?", [
       updateData,
       params.id,
     ]);
@@ -102,7 +98,7 @@ export async function PUT(request, { params }) {
       );
     }
 
-    const updatedProduct = await conexion.query(
+    const [updatedProduct] = await conexion.query(
       "SELECT * FROM qualification WHERE id = ?",
       [params.id]
     );
@@ -117,7 +113,5 @@ export async function PUT(request, { params }) {
       },
       { status: 500 }
     );
-  } finally {
-    await conexion.end();
   }
 }

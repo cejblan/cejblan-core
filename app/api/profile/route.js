@@ -10,7 +10,7 @@ export async function GET(req, res) {
   }
 
   try {
-    const profileItems = await conexion.query(
+    const [profileItems] = await conexion.query(
       "SELECT * FROM users WHERE email = ?",
       [customerEmail]
     );
@@ -18,15 +18,12 @@ export async function GET(req, res) {
     if (profileItems.length === 0) {
       return NextResponse.json(false, { status: 200 }); // Si el usuario no esta registrado, devuelve false
     }
-
     return NextResponse.json(profileItems, {
       status: 200,
     });
   } catch (error) {
     console.error("Error al obtener productos:", error);
     return NextResponse.json({ error: "Error en el servidor" }, { status: 500 });
-  } finally {
-    await conexion.end();
   }
 }
 
@@ -45,7 +42,7 @@ export async function PUT(request) {
     // Añadir el email como último parámetro
     values.push(data.email);
     // Actualizar datos del usuario
-    const query = `UPDATE users SET ${fields} WHERE email = ?`;
+    const [query] = `UPDATE users SET ${fields} WHERE email = ?`;
     await conexion.query(query, values);
     // Iniciar cuenta regresiva para establecer el código en null después de 1 minuto
     const { code, email } = data;
@@ -53,7 +50,7 @@ export async function PUT(request) {
     if (code) {
       setTimeout(async () => {
         try {
-          const updateResult = await conexion.query(
+          const [updateResult] = await conexion.query(
             "UPDATE users SET code = NULL WHERE email = ? AND code = ?",
             [email, code]
           );
@@ -77,7 +74,5 @@ export async function PUT(request) {
       { message: error.message },
       { status: 500 }
     );
-  } finally {
-    await conexion.end(); // Cerrar la conexión
   }
 }

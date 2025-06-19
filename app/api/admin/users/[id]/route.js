@@ -6,7 +6,7 @@ import { processImage } from "@/libs/processImage";
 
 export async function GET(req, { params }) {
   try {
-    const result = await conexion.query("SELECT * FROM users WHERE id = ?", [
+    const [result] = await conexion.query("SELECT * FROM users WHERE id = ?", [
       params.id,
     ]);
 
@@ -33,8 +33,6 @@ export async function GET(req, { params }) {
       },
       { status: 500 }
     );
-  } finally {
-    await conexion.end();
   }
 }
 
@@ -60,7 +58,7 @@ export async function DELETE(request, { params }) {
       await cloudinary.uploader.destroy(publicId);
     }
     // Elimina el producto de la base de datos
-    const result = await conexion.query("DELETE FROM users WHERE id = ?", [
+    const [result] = await conexion.query("DELETE FROM users WHERE id = ?", [
       params.id,
     ]);
 
@@ -78,8 +76,6 @@ export async function DELETE(request, { params }) {
       { message: error.message },
       { status: 500 }
     );
-  } finally {
-    await conexion.end();
   }
 }
 
@@ -130,7 +126,7 @@ export async function PUT(request, { params }) {
       updateData.image = res.secure_url;
     }
 
-    const result = await conexion.query("UPDATE users SET ? WHERE id = ?", [
+    const [result] = await conexion.query("UPDATE users SET ? WHERE id = ?", [
       updateData,
       params.id,
     ]);
@@ -146,7 +142,7 @@ export async function PUT(request, { params }) {
       );
     }
 
-    const updatedProduct = await conexion.query(
+    const [updatedProduct] = await conexion.query(
       "SELECT * FROM users WHERE id = ?",
       [params.id]
     );
@@ -161,7 +157,5 @@ export async function PUT(request, { params }) {
       },
       { status: 500 }
     );
-  } finally {
-    await conexion.end();
   }
 }

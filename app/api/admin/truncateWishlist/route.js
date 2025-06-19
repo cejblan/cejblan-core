@@ -8,7 +8,5 @@ export async function DELETE() {
   } catch (error) {
     console.error("Error truncando la tabla:", error);
     return NextResponse.json({ message: "Error al truncar la tabla" }, { status: 500 });
-  } finally {
-    await conexion.end(); // Asegúrate de cerrar la conexión
   }
 }

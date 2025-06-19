@@ -10,8 +10,6 @@ export async function GET() {
   } catch (error) {
     console.error("Error al obtener setting:", error);
     return NextResponse.json({ message: error.message }, { status: 500 });
-  } finally {
-    await conexion.end();
   }
 }
 
@@ -28,7 +26,5 @@ export async function PUT(req) {
   } catch (error) {
     console.error("Error al actualizar setting:", error);
     return NextResponse.json({ message: error.message }, { status: 500 });
-  } finally {
-    await conexion.end();
   }
 }

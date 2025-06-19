@@ -3,7 +3,7 @@ import { conexion } from "@/libs/mysql";
 
 export async function GET(req, { params }) {
   try {
-    const result = await conexion.query("SELECT * FROM orders WHERE id = ?", [
+    const [result] = await conexion.query("SELECT * FROM orders WHERE id = ?", [
       params.id,
     ]);
 
@@ -30,8 +30,6 @@ export async function GET(req, { params }) {
       },
       { status: 500 }
     );
-  } finally {
-    await conexion.end();
   }
 }
 
@@ -57,7 +55,7 @@ export async function DELETE(request, { params }) {
       await cloudinary.uploader.destroy(publicId);
     }
     // Elimina el pedido de la base de datos
-    const result = await conexion.query("DELETE FROM orders WHERE id = ?", [
+    const [result] = await conexion.query("DELETE FROM orders WHERE id = ?", [
       params.id,
     ]);
 
@@ -75,8 +73,6 @@ export async function DELETE(request, { params }) {
       { message: error.message },
       { status: 500 }
     );
-  } finally {
-    await conexion.end();
   }
 }
 
@@ -88,7 +84,7 @@ export async function PUT(request, { params }) {
       status: data.get("status"),
     };
 
-    const result = await conexion.query("UPDATE orders SET ? WHERE id = ?", [
+    const [result] = await conexion.query("UPDATE orders SET ? WHERE id = ?", [
       updateData,
       params.id,
     ]);
@@ -104,7 +100,7 @@ export async function PUT(request, { params }) {
       );
     }
 
-    const updatedProduct = await conexion.query(
+    const [updatedProduct] = await conexion.query(
       "SELECT * FROM orders WHERE id = ?",
       [params.id]
     );
@@ -119,7 +115,5 @@ export async function PUT(request, { params }) {
       },
       { status: 500 }
     );
-  } finally {
-    await conexion.end();
   }
 }

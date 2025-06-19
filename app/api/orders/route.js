@@ -7,7 +7,7 @@ export async function GET(request, res) {
   const { searchParams } = new URL(request.url);
   const customerEmail = searchParams.get("customerEmail");
   try {
-    const results = await conexion.query("SELECT * FROM orders WHERE email = ?",
+    const [results] = await conexion.query("SELECT * FROM orders WHERE email = ?",
       [customerEmail]
     );
     // Devuelve la respuesta con los encabezados configurados dentro de NextResponse
@@ -24,8 +24,6 @@ export async function GET(request, res) {
         status: 500,
       }
     );
-  } finally {
-    await conexion.end();
   }
 }
 
@@ -35,7 +33,7 @@ export async function POST(request) {
     const image = data.get("image");
 
     if (!image) {
-      const result = await conexion.query("INSERT INTO orders SET ?", {
+      const [result] = await conexion.query("INSERT INTO orders SET ?", {
         productsIds: data.get("productsIds"),
         productsQuantity: data.get("productsQuantity"),
         totalPrice: data.get("totalPrice"),
@@ -87,7 +85,8 @@ export async function POST(request) {
           )
           .end(buffer);
       });
-      const result = await conexion.query("INSERT INTO orders SET ?", {
+      
+      const [result] = await conexion.query("INSERT INTO orders SET ?", {
         productsIds: data.get("productsIds"),
         productsQuantity: data.get("productsQuantity"),
         totalPrice: data.get("totalPrice"),
@@ -134,7 +133,5 @@ export async function POST(request) {
         status: 500,
       }
     );
-  } finally {
-    await conexion.end();
   }
 }
