@@ -14,7 +14,7 @@ export async function POST(request) {
     let responseMessage;
     // Respuestas personalizadas
     const responses = {
-      start: () => `¡Hola, ${userName}! Has comenzado un chat con el bot de CejblanCMS. Para recibir notificaciones sobre tus pedidos, debes enviar por aquí el código de 6 dígitos.\n Si no sabes a qué código nos referimos, puedes ingresar a www.cejblan-cms.vercel.app, registrarte e ir a tu perfil.`,
+      start: () => `¡Hola, ${userName}! Has comenzado un chat con el bot de CejblanCMS. Para recibir notificaciones sobre tus pedidos, debes enviar por aquí el código de 6 dígitos.\n\nSi no sabes a qué código nos referimos, puedes ingresar a www.cejblan-cms.vercel.app, registrarte e ir a tu perfil.`,
       hola: () => `¡Hola, ${userName}! ¿Cómo puedo ayudarte hoy?`,
       ayuda: () => `Claro, ${userName}, dime qué necesitas y trataré de asistirte`,
       adiós: () => `¡Hasta luego, ${userName}! Espero verte pronto 🤗`,
@@ -34,14 +34,14 @@ export async function POST(request) {
           "SELECT verified, chatId, code FROM users WHERE code = ?",
           code
         );
-        if (data) {
-          if (data.verified === verifiedTrue && data.chatId !== chatId) {
+        if (data[0]) {
+          if (data[0].verified === verifiedTrue && data[0].chatId !== chatId) {
             await conexion.query("UPDATE users SET chatId = ? WHERE code = ?", [
               chatId,
               code,
             ]);
             responseMessage = `<b>Hola, ${userName}</b>. Tu chat ha sido actualizado correctamente 😉`;
-          } else if (!data.verified && !data.chatId && data.code == code) {
+          } else if (!data[0].verified && !data[0].chatId && data[0].code == code) {
             await conexion.query("UPDATE users SET verified = ?, chatId = ? WHERE code = ?", [
               verifiedTrue,
               chatId,
