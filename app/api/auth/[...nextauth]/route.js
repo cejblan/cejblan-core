@@ -23,7 +23,7 @@ const handler = NextAuth({
           [user.email]
         );
 
-        if (!existingUser) {
+        if (existingUser.length === 0) {
           await conexion.query(
             "INSERT INTO users (name, email, rol, verified) VALUES (?, ?, ?, ?)",
             [user.name, user.email, "Cliente", "0"]
@@ -42,19 +42,15 @@ const handler = NextAuth({
             "SELECT rol FROM users WHERE email = ?",
             [token.email]
           );
-          
-          function detectarTipo(valor) {
-            if (Array.isArray(valor)) return "array";
-            if (valor === null) return "null";
-            return typeof valor;
-          }
-          console.log(detectarTipo(admin));
 
-          token.admin = admin[0].rol === "Admin";
+          if (admin[0].rol === "Admin") {
+            token.admin = admin[0].rol === "Admin";
+          } else {
+            token.admin = false;
+          }
         }
       } catch (error) {
         console.error("Error en la consulta de rol:", error);
-        token.admin = false;
       }
       return token;
     },
