@@ -18,11 +18,10 @@ export async function GET(req, res) {
     if (profileItems.length === 0) {
       return NextResponse.json(false, { status: 200 }); // Si el usuario no esta registrado, devuelve false
     }
-    return NextResponse.json(profileItems, {
-      status: 200,
-    });
+
+    return NextResponse.json(profileItems, { status: 200 });
   } catch (error) {
-    console.error("Error al obtener productos:", error);
+    console.error("Error al obtener perfil:", error);
     return NextResponse.json({ error: "Error en el servidor" }, { status: 500 });
   }
 }
@@ -39,10 +38,10 @@ export async function PUT(request) {
     if (!fields) {
       return new Response("No hay datos para actualizar", { status: 400 });
     }
-    // Añadir el email como último parámetro
+
     values.push(data.email);
-    // Actualizar datos del usuario
-    const [query] = `UPDATE users SET ${fields} WHERE email = ?`;
+    const query = `UPDATE users SET ${fields} WHERE email = ?`;
+
     await conexion.query(query, values);
     // Iniciar cuenta regresiva para establecer el código en null después de 1 minuto
     const { code, email } = data;
@@ -55,24 +54,19 @@ export async function PUT(request) {
             [email, code]
           );
           if (updateResult.affectedRows > 0) {
-            console.log(`Código ${code} establecido en NULL para ${email}`);
+            console.log(`Código ${code} eliminado para ${email}`);
           } else {
-            console.log(`El código ${code} ya había sido eliminado o no existía para ${email}`);
+            console.log(`El código ${code} ya no existía para ${email}`);
           }
         } catch (err) {
-          console.error(`Error estableciendo el código en NULL para ${email}:`, err.message);
+          console.error(`Error eliminando código para ${email}:`, err.message);
         }
-      }, 60 * 1000); // 1 minuto
+      }, 60 * 1000);
     }
 
-    return NextResponse.json({
-      updatedData: data,
-    });
+    return NextResponse.json({ updatedData: data });
   } catch (error) {
     console.log(error);
-    return NextResponse.json(
-      { message: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: error.message }, { status: 500 });
   }
 }
