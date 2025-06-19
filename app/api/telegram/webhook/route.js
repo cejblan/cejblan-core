@@ -40,7 +40,7 @@ export async function POST(request) {
               code,
             ]);
             responseMessage = `<b>Hola, ${userName}</b>. Tu chat ha sido actualizado correctamente 😉`;
-          } else if (!data.verified && !data.chatId && data.code === code) {
+          } else if (!data.verified && !data.chatId) {
             await conexion.query("UPDATE users SET verified = ?, chatId = ? WHERE code = ?", [
               verifiedTrue,
               chatId,
