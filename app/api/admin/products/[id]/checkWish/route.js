@@ -1,9 +1,9 @@
 import { conexion } from "@/libs/mysql";
 import { NextResponse } from "next/server";
 
-export async function GET(req, { params }) {
+export async function GET(req, context) {
   const customer = new URL(req.url).searchParams.get("customerEmail");
-  const { id } = params; // Obtener el id desde los parámetros de la ruta dinámica
+  const { id } = await context.params; // Obtener el id desde los parámetros de la ruta dinámica
 
   try {
     if (!id || !customer) {
