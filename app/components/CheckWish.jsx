@@ -6,7 +6,7 @@ export const CheckWish = async (data, session, setIsInWishlist) => {
     const { rows } = await response.json(); // Obtener el valor "rows" de la respuesta
 
     if (response.ok) {
-      setIsInWishlist(rows); // Almacenar solo el valor booleano
+      setIsInWishlist(rows[0]); // Almacenar solo el valor booleano
     } else {
       console.error("Error:", rows);
     }
