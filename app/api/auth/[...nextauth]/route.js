@@ -8,8 +8,8 @@ const handler = NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID.toString(),
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET.toString(),
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
   ],
   session: {
@@ -24,42 +24,43 @@ const handler = NextAuth({
         );
 
         if (!existingUser) {
-          // Insertar el nuevo usuario en la base de datos
           await conexion.query(
             "INSERT INTO users (name, email, rol, verified) VALUES (?, ?, ?, ?)",
             [user.name, user.email, "Cliente", "0"]
           );
         }
+        return true;
       } catch (error) {
         console.error("Error al registrar el usuario:", error);
-        return false; // Impide el inicio de sesión si hay un error crítico
-      } finally {
-        await conexion.end();
+        return false;
       }
-      return true; // Permite el inicio de sesión
     },
     async jwt({ token }) {
       try {
-        if (token) {
-          const admin = await conexion.query("SELECT rol FROM users WHERE email = ?", token.email);
-          if (admin[0].rol === "Admin") {
-            token.admin = true;
-          } else {
-            token.admin = false;
+        if (token?.email) {
+          const [admin] = await conexion.query(
+            "SELECT rol FROM users WHERE email = ?",
+            [token.email]
+          );
+          
+          function detectarTipo(valor) {
+            if (Array.isArray(valor)) return "array";
+            if (valor === null) return "null";
+            return typeof valor;
           }
+          console.log(detectarTipo(admin));
+
+          token.admin = admin[0].rol === "Admin";
         }
-        return token;
       } catch (error) {
         console.error("Error en la consulta de rol:", error);
         token.admin = false;
-      } finally {
-        await conexion.end();
       }
       return token;
     },
     async session({ session, token }) {
-      if (token.admin === true) {
-        session.user.admin = token.admin;
+      if (token?.admin) {
+        session.user.admin = true;
       }
       return session;
     },
