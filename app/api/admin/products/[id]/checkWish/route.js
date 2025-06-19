@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function GET(req, { params }) {
   const customer = new URL(req.url).searchParams.get("customerEmail");
-  const { id } = await params;  // Obtener el id desde los parámetros de la ruta dinámica
+  const { id } = params; // Obtener el id desde los parámetros de la ruta dinámica
 
   try {
     if (!id || !customer) {
