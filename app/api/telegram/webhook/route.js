@@ -14,6 +14,7 @@ export async function POST(request) {
     let responseMessage;
     // Respuestas personalizadas
     const responses = {
+      start: () => `¡Hola, ${userName}! Haz comenzado un chat con el bot de CejblanCMS, para recibir notificaciones de tus pedidos, debes pasar por aqui el codigo de 6 digitos. Si no sabes de que codigo se trata, puedes ingresar a www.cejblan-cms.vercel.app registrar e ingresar a tu perfil.`,
       hola: () => `¡Hola, ${userName}! ¿Cómo puedo ayudarte hoy?`,
       ayuda: () => `Claro, ${userName}, dime qué necesitas y trataré de asistirte.`,
       adiós: () => `¡Hasta luego, ${userName}! Espero verte pronto.`,
@@ -40,13 +41,13 @@ export async function POST(request) {
               code,
             ]);
             responseMessage = `<b>Hola, ${userName}</b>. Tu chat ha sido actualizado correctamente 😉`;
-          } else if (!data.verified && !data.chatId) {
+          } else if (!data.verified && !data.chatId && data.code === code) {
             await conexion.query("UPDATE users SET verified = ?, chatId = ? WHERE code = ?", [
               verifiedTrue,
               chatId,
               code,
             ]);
-            responseMessage = `<b>Hola, ${data}</b>. Tu cuenta ha sido enlazada correctamente con el bot. Ahora podre entregarte los datos de tus pedidos por aqui 😏. Recuerda completar los datos del perfil para que puedas comprar en nuestra tienda 🥰`;
+            responseMessage = `<b>Hola, ${userName}</b>. Tu cuenta ha sido enlazada correctamente con el bot. Ahora podre entregarte los datos de tus pedidos por aqui 😏. Recuerda completar los datos del perfil para que puedas comprar en nuestra tienda 🥰`;
           }
         } else {
           responseMessage = `<b>Hola, ${userName}</b>. El código ingresado no es válido o no coincide con tu cuenta 🤷🏻‍♂️`;
