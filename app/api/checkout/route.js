@@ -22,15 +22,13 @@ export async function GET(req, res) {
         status: 500,
       }
     );
-  } finally {
-    await conexion.end();
   }
 }
 
 export async function POST(request) {
   try {
     const data = await request.formData();
-    const result = await conexion.query("INSERT INTO payments SET ?", {
+    const [result] = await conexion.query("INSERT INTO payments SET ?", {
       name: data.get("name"),
       data: data.get("data"),
       status: data.get("status"),
@@ -51,7 +49,5 @@ export async function POST(request) {
         status: 500,
       }
     );
-  } finally {
-    await conexion.end();
   }
 }
