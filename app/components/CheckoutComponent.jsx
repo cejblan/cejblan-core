@@ -75,7 +75,9 @@ export default function CheckoutComponent() {
     formData.append("latitude", data[0].latitude);
     formData.append("longitude", data[0].longitude);
     formData.append("chatId", data[0].chatId);
-    const deliveryMethodData = dataCheckout[1].find(option => option.name === data[0]?.deliveryMethod);
+
+    const deliveryMethodData = dataCheckout[1][0].find(option => option.name === data[0]?.deliveryMethod);
+
     if (deliveryMethodData) {
       formData.append("deliveryMethodData", deliveryMethodData.data);
     }
@@ -252,11 +254,11 @@ export default function CheckoutComponent() {
               required
             >
               <option value="">Seleccione una opción</option>
-              {dataCheckout[0].map((option, index) => (
+              {dataCheckout[0][0].map((option, index) => (
                 <option key={index} value={option.name}>{option.name}</option>
               ))}
             </select>
-            {dataCheckout[0].map((option, index) => (
+            {dataCheckout[0][0].map((option, index) => (
               data[0]?.paymentMethod === option.name && (
                 <p key={index} className="block bg-slate-100 text-slate-500 text-center border border-slate-400 py-1 max-[420px]:px-1 px-2 mt-1 w-full rounded-xl">
                   {option.data}
@@ -311,11 +313,11 @@ export default function CheckoutComponent() {
               required
             >
               <option value="">Seleccione una opción</option>
-              {dataCheckout[1].map((option, index) => (
+              {dataCheckout[1][0].map((option, index) => (
                 <option key={index} value={option.name}>{option.name}</option>
               ))}
             </select>
-            {dataCheckout[1].map((option, index) => (
+            {dataCheckout[1][0].map((option, index) => (
               data[0]?.deliveryMethod === option.name && (
                 <p key={index} className="block bg-slate-100 text-slate-500 text-center border border-slate-400 py-1 max-[420px]:px-1 px-2 mt-1 w-full rounded-xl">
                   {option.data}
