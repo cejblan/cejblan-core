@@ -10,7 +10,7 @@ export default function PrecioProducto({ precio, format }) {
     <>{
       format === 1 ?
         <h4 className="text-3xl text-purple-700 font-bold my-2">
-          ${precio.toFixed(2)}
+          ${precio}
           {conversionActiva && tasa && (
             <>
               <p className="bg-slate-300 text-slate-600 text-lg px-1 rounded-xl m-auto w-fit">
