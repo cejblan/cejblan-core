@@ -16,7 +16,7 @@ async function loadProduct(productId) {
   );
 
   return {
-    ...productData,  // Usa el spread operator para incluir todo el producto
+    ...productData[0],  // Usa el spread operator para incluir todo el producto
     qualifications: qualifications.map((item) => item.value), // Simplificar el array de calificaciones
   };
 }
