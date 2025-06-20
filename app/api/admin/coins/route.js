@@ -23,12 +23,16 @@ export async function POST(req) {
     // Verificar si ya existe una tasa para esa moneda
     const [existente] = await conexion.query("SELECT id FROM coins WHERE moneda = ?", [moneda]);
 
-    if (existente && existente.id) {
-      // Si existe, actualizar
-      await conexion.query("UPDATE coins SET valor = ?, fecha = NOW() WHERE id = ?", [valor, existente.id]);
+    if (existente.length > 0) {
+      await conexion.query(
+        "UPDATE coins SET valor = ?, fecha = NOW() WHERE id = ?",
+        [valor, existente[0].id]
+      );
     } else {
-      // Si no existe, insertar
-      await conexion.query("INSERT INTO coins (moneda, valor) VALUES (?, ?)", [moneda, valor]);
+      await conexion.query(
+        "INSERT INTO coins (moneda, valor) VALUES (?, ?)",
+        [moneda, valor]
+      );
     }
 
     return NextResponse.json({ moneda, valor });
