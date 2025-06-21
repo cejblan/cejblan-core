@@ -64,44 +64,9 @@ export async function POST(request) {
       customer: data.get("customer"),
     });
 
-    const [result2] = await conexion.query(
-      "SELECT quantity FROM products WHERE id = ?",
-      [data.get("id")]
-    );
-    // Extrae el valor de `quantity` del resultado
-    const productQuantity = result2[0]?.quantity;
-
-    if (productQuantity === undefined) {
-      return NextResponse.json(
-        { message: "Producto no encontrado en la tabla 'products'" },
-        { status: 404 }
-      );
-    }
-    // Asegúrate de convertir `data.get("quantity")` a un número
-    const newQuantity = productQuantity - Number(data.get("quantity"));
-
-    if (isNaN(newQuantity)) {
-      return NextResponse.json(
-        { message: "La cantidad calculada es inválida (NaN)" },
-        { status: 400 }
-      );
-    }
-
-    const [result3] = await conexion.query(
-      "UPDATE products SET quantity = ? WHERE id = ?",
-      [newQuantity, data.get("id")]
-    );
-
-    if (result3.affectedRows === 0) {
-      return NextResponse.json(
-        { message: "Producto no encontrado al intentar actualizar" },
-        { status: 404 }
-      );
-    }
-
     return NextResponse.json({
       id: data.get("id"),
-      newQuantity,
+      quantity: data.get("quantity"),
       customer: data.get("customer"),
     });
   } catch (error) {
