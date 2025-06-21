@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PrecioProducto from "@/app/components/PrecioProducto";
 
 export default function OrderCard({ order }) {
   const moment = require("moment");
@@ -27,7 +28,9 @@ export default function OrderCard({ order }) {
         <div className="ml-1">
           <p>{order.productsIds}</p>
           <p>{order.productsQuantity}</p>
-          <h2 className="text-lg text-purple-700 font-bold">{order.totalPrice}$</h2>
+          <h2 className="text-lg text-purple-700 font-bold">
+            <PrecioProducto precio={order.totalPrice} format={0} />
+          </h2>
         </div>
       </div>
       <div className="col-start-8 col-end-11 border-r max-[420px]:border-slate-200 border-slate-400 flex">
