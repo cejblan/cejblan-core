@@ -10,7 +10,7 @@ async function loadProduct(productId) {
   const [data] = await conexion.query("SELECT * FROM products WHERE id = ?", [
     productId,
   ]);
-  return data;
+  return data[0];
 }
 
 export default async function ProductPage({ params }) {

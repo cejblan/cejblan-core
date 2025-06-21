@@ -8,13 +8,13 @@ async function loadCategory(categoryId) {
   const [data] = await conexion.query("SELECT * FROM categories WHERE id = ?", [
     categoryId,
   ]);
-  return data;
+  return data[0];
 }
 
 export default async function CategoryPage({ params }) {
   const { id } = await params;
   const category = await loadCategory(id);
-
+  
   return (
     <>
       <Link href={`/admin/categories/`} className=" bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl">

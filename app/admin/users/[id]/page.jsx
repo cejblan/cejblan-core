@@ -10,7 +10,7 @@ async function loadUser(userId) {
     userId,
   ]);
 
-  return data;
+  return data[0];
 }
 
 export default async function ProductPage({ params }) {

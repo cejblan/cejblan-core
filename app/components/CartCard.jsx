@@ -26,7 +26,7 @@ export default function CartCard({ onProductCountChange }) {
   // Función para eliminar un producto específico
   const deleteProduct = async (id) => {
     try {
-      const productsIds = id.split(",");
+      const productsIds = [Number(id)];
       if (confirm("¿Seguro quieres eliminar este producto del carrito?")) {
         const response = await fetch('/api/cart/deleteProduct', {
           method: 'DELETE',
