@@ -5,6 +5,7 @@ import { LoadProductsCart } from "./LoadProductsCart";
 import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { CalculateTotalPrice, GroupedProducts } from "./GroupedProducts";
+import PrecioProducto from "@/app/components/PrecioProducto";
 
 export default function CartCard({ onProductCountChange }) {
   const { data: session } = useSession(); // Obtener la sesión actual del usuario
@@ -91,12 +92,16 @@ export default function CartCard({ onProductCountChange }) {
               <Link href={`/products/${product.id}`}>{product.name}</Link>
             </td>
             <td className="border-r border-b border-slate-900">{product.quantity}</td>
-            <td className="border-r border-b border-slate-900">{product.price}$</td>
+            <td className="border-r border-b border-slate-900">
+              <PrecioProducto precio={product.price} format={0} />
+            </td>
             {/* Se comento codigo innecesario
             <td className="border-r border-b border-slate-900">{priceIVA !== "E" ? `${priceIVA}$` : priceIVA}</td>
             <td className="border-r border-b border-slate-900">{subtotal}$</td>
             */}
-            <td className="border-r border-b border-slate-900">{(product.quantity * product.price).toFixed(2)}$</td>
+            <td className="border-r border-b border-slate-900">
+              <PrecioProducto precio={(product.quantity * product.price).toFixed(2)} format={0} />
+            </td>
             <td className="py-1 border-b border-slate-900">
               {/* Botón para eliminar un producto específico */}
               <button
@@ -117,7 +122,9 @@ export default function CartCard({ onProductCountChange }) {
         <td></td>
         */}
         <th className="bg-slate-300 border-x border-slate-900">Total</th>
-        <th className="bg-slate-300 border-r max-[420px]:text-sm text-xl border-slate-900">{totalPrice}$</th>
+        <th className="bg-slate-300 border-r max-[420px]:text-sm text-xl border-slate-900">
+          <PrecioProducto precio={totalPrice} format={0} />
+        </th>
       </tr>
     </>
   );
