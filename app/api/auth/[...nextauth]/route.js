@@ -39,7 +39,7 @@ const handler = NextAuth({
       }
     },
     async jwt({ token }) {
-      const connection = await conexion.getConnection();
+      const connection = await connection.getConnection();
       try {
         if (token?.email) {
           const [admin] = await connection.query(
