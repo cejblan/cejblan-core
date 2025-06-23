@@ -10,7 +10,7 @@ if (!global.pool) {
     database: process.env.DATABASE,
     port: 3306,
     waitForConnections: true,
-    connectionLimit: 1,
+    connectionLimit: 5,
     queueLimit: 0,
   });
 }
