@@ -11,7 +11,12 @@ import Loading from "./Loading";
 import Link from "next/link";
 import Countdown from "./Countdown";
 import Geolocation from "./Geolocation";
-
+import dynamic from "next/dynamic";
+// Cargar Maps dinámicamente con un componente de carga y desactiva SSR
+const Maps = dynamic(() => import("./Maps"), {
+  loading: () => <Loading zIndex={40} />,
+  ssr: false, // Solo si necesitas que se cargue solo en el lado del cliente
+});
 
 export default function ProfileComponent() {
   const { data: session, status } = useSession();
@@ -272,7 +277,8 @@ export default function ProfileComponent() {
                       </td>
                     </tr>
                   </tbody>
-                </table><button
+                </table>
+                <button
                   className="bg-pink-700 hover:bg-pink-900 text-white font-bold py-1 px-2 rounded-xl shadow-6xl mt-2 mx-auto block"
                   onClick={editData}>
                   Editar Perfil
@@ -403,7 +409,16 @@ export default function ProfileComponent() {
                     </tr>
                   </tbody>
                 </table>
-
+                {latitude && longitude ? (
+                  <div className="m-auto h-48 w-48">
+                    <Maps
+                      latitude={dataProfile[0]?.latitude || latitude}
+                      longitude={dataProfile[0]?.longitude || longitude}
+                      onPositionChange={handlePositionChange} />
+                  </div>
+                ) : (
+                  <p className="text-center m-auto">Cargando ubicación...</p>
+                )}
                 <button
                   className="bg-pink-700 hover:bg-pink-900 text-white font-bold py-1 px-2 rounded-xl shadow-6xl mt-2 mx-auto block"
                   onClick={dataSubmit}>
