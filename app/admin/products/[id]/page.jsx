@@ -7,10 +7,16 @@ import Link from "next/link";
 import ImageNotSupported from "@/public/ImageNotSupported.webp";
 
 async function loadProduct(productId) {
-  const [data] = await conexion.query("SELECT * FROM products WHERE id = ?", [
-    productId,
-  ]);
-  return data[0];
+  const connection = await conexion.getConnection();
+  try {
+    const [data] = await connection.query(
+      "SELECT * FROM products WHERE id = ?",
+      [productId]
+    );
+    return data[0];
+  } finally {
+    connection.release();
+  }
 }
 
 export default async function ProductPage({ params }) {
