@@ -4,82 +4,52 @@ import cloudinary from "@/libs/cloudinary";
 import { processImage } from "@/libs/processImage";
 
 export async function GET(req, res) {
+  const connection = await conexion.getConnection();
   try {
-    const [results] = await conexion.query("SELECT * FROM products");
-    // Devuelve la respuesta con los encabezados configurados dentro de NextResponse
-    return NextResponse.json(results, {
-      status: 200,
-    });
+    const [results] = await connection.query("SELECT * FROM products");
+    return NextResponse.json(results, { status: 200 });
   } catch (error) {
     console.log(error);
-    return NextResponse.json(
-      {
-        message: error.message,
-      },
-      {
-        status: 500,
-      }
-    );
+    return NextResponse.json({ message: error.message }, { status: 500 });
+  } finally {
+    connection.release();
   }
 }
 
 export async function POST(request) {
+  const connection = await conexion.getConnection();
   try {
     const data = await request.formData();
     const image = data.get("image");
 
-    if (!image) {
-      const [result] = await conexion.query("INSERT INTO products SET ?", {
-        name: data.get("name"),
-        description: data.get("description"),
-        price: data.get("price"),
-        /* Se comento codigo innecesario
-        iva: data.get("iva"),
-        */
-        category: data.get("category"),
-        quantity: data.get("quantity"),
-      });
+    let imageUrl = null;
 
-      return NextResponse.json({
-        id: result.insertId,
-        name: data.get("name"),
-        description: data.get("description"),
-        price: data.get("price"),
-        /* Se comento codigo innecesario
-        iva: data.get("iva"),
-        */
-        category: data.get("category"),
-        quantity: data.get("quantity"),
-      });
-    }
-    const buffer = await processImage(image);
-    const res = await new Promise((resolve, reject) => {
-      cloudinary.uploader
-        .upload_stream(
-          {
-            resource_type: "image",
-          },
-          async (err, result) => {
+    if (image) {
+      const buffer = await processImage(image);
+      const res = await new Promise((resolve, reject) => {
+        cloudinary.uploader.upload_stream(
+          { resource_type: "image" },
+          (err, result) => {
             if (err) {
               console.log(err);
               reject(err);
+            } else {
+              resolve(result);
             }
-
-            resolve(result);
           }
-        )
-        .end(buffer);
-    });
-    const [result] = await conexion.query("INSERT INTO products SET ?", {
+        ).end(buffer);
+      });
+
+      imageUrl = res.secure_url;
+    }
+
+    const [result] = await connection.query("INSERT INTO products SET ?", {
       name: data.get("name"),
       description: data.get("description"),
       price: data.get("price"),
-      /* Se comento codigo innecesario
-      iva: data.get("iva"),
-      */
       category: data.get("category"),
       quantity: data.get("quantity"),
-      image: res.secure_url,
+      image: imageUrl,
     });
 
     return NextResponse.json({
@@ -87,22 +57,14 @@ export async function POST(request) {
       name: data.get("name"),
       description: data.get("description"),
       price: data.get("price"),
-      /* Se comento codigo innecesario
-      iva: data.get("iva"),
-      */
       category: data.get("category"),
       quantity: data.get("quantity"),
-      image: res.secure_url,
+      image: imageUrl,
     });
   } catch (error) {
     console.log(error);
-    return NextResponse.json(
-      {
-        message: error.message,
-      },
-      {
-        status: 500,
-      }
-    );
+    return NextResponse.json({ message: error.message }, { status: 500 });
+  } finally {
+    connection.release();
   }
 }
