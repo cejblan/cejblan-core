@@ -1,20 +1,11 @@
-import mysql from "mysql2/promise";
+import mysql from 'serverless-mysql';
 
-let pool;
-
-if (!global.pool) {
-  global.pool = mysql.createPool({
-    host: process.env.HOST,
-    user: process.env.USER,
-    password: process.env.PASSWORD,
-    database: process.env.DATABASE,
+export const db = mysql({
+  config: {
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
     port: 3306,
-    waitForConnections: true,
-    connectionLimit: 5,
-    queueLimit: 0,
-  });
-}
-
-pool = global.pool;
-
-export const conexion = pool;
+  },
+});
