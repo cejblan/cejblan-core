@@ -5,16 +5,10 @@ import Link from "next/link";
 import { PiCurrencyDollarSimpleFill } from "react-icons/pi";
 
 async function LoadPay(payId) {
-  const connection = await conexion.getConnection();
-  try {
-    const [data] = await connection.query(
-      "SELECT * FROM payments WHERE id = ?",
-      [payId]
-    );
-    return data[0];
-  } finally {
-    connection.release(); // importante
-  }
+  const [data] = await conexion.query("SELECT * FROM payments WHERE id = ?", [
+    payId,
+  ]);
+  return data[0];
 }
 
 export default async function PayPage({ params }) {

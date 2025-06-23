@@ -5,18 +5,11 @@ import Link from "next/link";
 import { MdCategory } from "react-icons/md";
 
 async function loadCategory(categoryId) {
-  const connection = await conexion.getConnection(); // obtener una conexión del pool
-  try {
-    const [data] = await connection.query(
-      "SELECT * FROM categories WHERE id = ?",
-      [categoryId]
-    );
-    return data[0];
-  } finally {
-    connection.release(); // liberar conexión
-  }
+  const [data] = await conexion.query("SELECT * FROM categories WHERE id = ?", [
+    categoryId,
+  ]);
+  return data[0];
 }
-
 
 export default async function CategoryPage({ params }) {
   const { id } = await params;

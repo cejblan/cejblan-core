@@ -6,16 +6,10 @@ import Link from "next/link";
 import ImageNotSupported from "@/public/ImageNotSupported.webp";
 
 async function loadUser(userId) {
-  const connection = await conexion.getConnection();
-  try {
-    const [data] = await connection.query(
-      "SELECT * FROM users WHERE id = ?",
-      [userId]
-    );
-    return data[0];
-  } finally {
-    connection.release(); // libera la conexión incluso si hay error
-  }
+  const [data] = await conexion.query("SELECT * FROM users WHERE id = ?", [
+    userId,
+  ]);
+  return data[0];
 }
 
 export default async function ProductPage({ params }) {

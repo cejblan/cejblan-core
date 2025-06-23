@@ -3,12 +3,11 @@ import Titulos from "@/components/Titulos";
 import Buttons from "./Buttons";
 
 async function loadProduct(productId) {
-  const connection = await conexion.getConnection();
-  const [productData] = await connection.query(
+  const [productData] = await conexion.query(
     "SELECT name FROM products WHERE id = ?",
     [productId]
   );
-  const [users] = await connection.query(
+  const [users] = await conexion.query(
     "SELECT user FROM qualification WHERE product = ?",
     [productId]
   );

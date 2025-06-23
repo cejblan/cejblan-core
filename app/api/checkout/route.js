@@ -2,12 +2,11 @@ import { NextResponse } from "next/server";
 import { conexion } from "@/libs/mysql";
 
 export async function GET(req, res) {
-  const connection = await conexion.getConnection();
   try {
     const activado = "Activado";
     const results = [];
-    results.push(await connection.query("SELECT name, data FROM payments WHERE status = ?", activado));
-    results.push(await connection.query("SELECT name, data FROM deliveries WHERE status = ?", activado));
+    results.push(await conexion.query("SELECT name, data FROM payments WHERE status = ?", activado));
+    results.push(await conexion.query("SELECT name, data FROM deliveries WHERE status = ?", activado));
 
     // Devuelve la respuesta con los encabezados configurados dentro de NextResponse
     return NextResponse.json(results, {
@@ -23,16 +22,13 @@ export async function GET(req, res) {
         status: 500,
       }
     );
-  } finally {
-    connection.release();
   }
 }
 
 export async function POST(request) {
-  const connection = await conexion.getConnection();
   try {
     const data = await request.formData();
-    const [result] = await connection.query("INSERT INTO payments SET ?", {
+    const [result] = await conexion.query("INSERT INTO payments SET ?", {
       name: data.get("name"),
       data: data.get("data"),
       status: data.get("status"),
@@ -53,7 +49,5 @@ export async function POST(request) {
         status: 500,
       }
     );
-  } finally {
-    connection.release();
   }
 }

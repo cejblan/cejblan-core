@@ -6,12 +6,11 @@ import Titulos from "@/components/Titulos";
 import PrecioProducto from "@/app/components/PrecioProducto";
 
 async function loadProduct(productId) {
-  const connection = await conexion.getConnection();
-  const [productData] = await connection.query(
+  const [productData] = await conexion.query(
     "SELECT * FROM products WHERE id = ?",
     [productId]
   );
-  const [qualifications] = await connection.query(
+  const [qualifications] = await conexion.query(
     "SELECT value FROM qualification WHERE product = ?",
     [productId]
   );

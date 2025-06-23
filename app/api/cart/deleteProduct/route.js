@@ -2,7 +2,6 @@ import { conexion } from "@/libs/mysql";
 import { getServerSession, authOptions } from "next-auth";
 
 export async function DELETE(req) {
-  const connection = await conexion.getConnection();
   try {
     const session = await getServerSession(authOptions);
 
@@ -25,7 +24,7 @@ export async function DELETE(req) {
     const query = `DELETE FROM cart WHERE id IN (${placeholders}) AND customer = ?`;
     const queryParams = [...productsIds, userEmail];
     // Ejecución de la consulta sin destructuración
-    const [result] = await connection.query(query, queryParams);
+    const [result] = await conexion.query(query, queryParams);
     // Validar si la eliminación tuvo éxito
     if (result && result.affectedRows > 0) {
       return new Response(
@@ -46,7 +45,5 @@ export async function DELETE(req) {
       JSON.stringify({ message: "Error al eliminar el producto" }),
       { status: 500 }
     );
-  } finally {
-    connection.release();
   }
 }

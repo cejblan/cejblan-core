@@ -25,25 +25,24 @@ export async function POST(request) {
     // Verificar si el mensaje contiene una secuencia de 6 dígitos
     const codeRegex = /^\d{6}$/;
 
-    const connection = await conexion.getConnection();
     try {
       if (codeRegex.test(messageText)) {
         // Código de verificación recibido
         const code = messageText;
 
-        const [data] = await connection.query(
+        const [data] = await conexion.query(
           "SELECT verified, chatId, code FROM users WHERE code = ?",
           code
         );
         if (data[0]) {
           if (data[0].verified === verifiedTrue && data[0].chatId !== chatId) {
-            await connection.query("UPDATE users SET chatId = ? WHERE code = ?", [
+            await conexion.query("UPDATE users SET chatId = ? WHERE code = ?", [
               chatId,
               code,
             ]);
             responseMessage = `<b>Hola, ${userName}</b>. Tu chat ha sido actualizado correctamente 😉`;
           } else if (!data[0].verified && !data[0].chatId && data[0].code == code) {
-            await connection.query("UPDATE users SET verified = ?, chatId = ? WHERE code = ?", [
+            await conexion.query("UPDATE users SET verified = ?, chatId = ? WHERE code = ?", [
               verifiedTrue,
               chatId,
               code,
@@ -65,8 +64,6 @@ export async function POST(request) {
         status: "error",
         message: "Ha ocurrido un error interno. Inténtalo de nuevo más tarde.",
       });
-    } finally {
-      connection.release();
     }
     // Enviar mensaje a Telegram
     const token = process.env.BOT_TOKEN;
@@ -99,8 +96,6 @@ export async function POST(request) {
         status: "error",
         message: "No se pudo realizar la solicitud a Telegram.",
       });
-    } finally {
-      connection.release();
     }
 
     return NextResponse.json({ status: "ok", message: responseMessage });

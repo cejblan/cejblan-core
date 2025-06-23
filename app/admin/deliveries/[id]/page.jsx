@@ -5,16 +5,10 @@ import Link from "next/link";
 import { MdDeliveryDining } from "react-icons/md";
 
 async function LoadDelivery(deliveryId) {
-  const connection = await conexion.getConnection();
-  try {
-    const [data] = await connection.query(
-      "SELECT * FROM deliveries WHERE id = ?",
-      [deliveryId]
-    );
-    return data[0];
-  } finally {
-    connection.release();
-  }
+  const [data] = await conexion.query("SELECT * FROM deliveries WHERE id = ?", [
+    deliveryId,
+  ]);
+  return data[0];
 }
 
 export default async function DeliveryPage({ params }) {

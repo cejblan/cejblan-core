@@ -2,9 +2,8 @@ import { NextResponse } from "next/server";
 import { conexion } from "@/libs/mysql";
 
 export async function GET(req, res) {
-  const connection = await conexion.getConnection();
   try {
-    const [results] = await connection.query("SELECT * FROM qualification");
+    const [results] = await conexion.query("SELECT * FROM qualification");
     return NextResponse.json(results, {
       status: 200,
     });
@@ -18,16 +17,13 @@ export async function GET(req, res) {
         status: 500,
       }
     );
-  } finally {
-    connection.release();
   }
 }
 
 export async function POST(request) {
-  const connection = await conexion.getConnection();
   try {
     const data = await request.formData();
-    const [result] = await connection.query("INSERT INTO qualification SET ?", {
+    const [result] = await conexion.query("INSERT INTO qualification SET ?", {
       product: data.get("product"),
       comment: data.get("comment"),
       user: data.get("user"),
@@ -51,7 +47,5 @@ export async function POST(request) {
         status: 500,
       }
     );
-  } finally {
-    connection.release();
   }
 }
