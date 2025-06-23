@@ -9,8 +9,9 @@ export async function GET(req, res) {
     return NextResponse.json({ error: "No se proporcionó el email del cliente" }, { status: 400 });
   }
 
+  const connection = await conexion.getConnection();
   try {
-    const [profileItems] = await conexion.query(
+    const [profileItems] = await connection.query(
       "SELECT * FROM users WHERE email = ?",
       [customerEmail]
     );
@@ -23,10 +24,13 @@ export async function GET(req, res) {
   } catch (error) {
     console.error("Error al obtener perfil:", error);
     return NextResponse.json({ error: "Error en el servidor" }, { status: 500 });
+  } finally {
+    connection.release();
   }
 }
 
 export async function PUT(request) {
+  const connection = await conexion.getConnection();
   try {
     const data = await request.json(); // Recibir JSON
     // Filtrar solo las claves y valores válidos
@@ -42,14 +46,14 @@ export async function PUT(request) {
     values.push(data.email);
     const query = `UPDATE users SET ${fields} WHERE email = ?`;
 
-    await conexion.query(query, values);
+    await connection.query(query, values);
     // Iniciar cuenta regresiva para establecer el código en null después de 1 minuto
     const { code, email } = data;
 
     if (code) {
       setTimeout(async () => {
         try {
-          const [updateResult] = await conexion.query(
+          const [updateResult] = await connection.query(
             "UPDATE users SET code = NULL WHERE email = ? AND code = ?",
             [email, code]
           );
@@ -68,5 +72,7 @@ export async function PUT(request) {
   } catch (error) {
     console.log(error);
     return NextResponse.json({ message: error.message }, { status: 500 });
+  } finally {
+    connection.release();
   }
 }

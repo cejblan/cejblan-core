@@ -6,8 +6,9 @@ import { processImage } from "@/libs/processImage";
 export async function GET(request, res) {
   const { searchParams } = new URL(request.url);
   const customerEmail = searchParams.get("customerEmail");
+  const connection = await conexion.getConnection();
   try {
-    const [results] = await conexion.query("SELECT * FROM orders WHERE email = ?",
+    const [results] = await connection.query("SELECT * FROM orders WHERE email = ?",
       [customerEmail]
     );
     // Devuelve la respuesta con los encabezados configurados dentro de NextResponse
@@ -24,10 +25,13 @@ export async function GET(request, res) {
         status: 500,
       }
     );
+  } finally {
+    connection.release();
   }
 }
 
 export async function POST(request) {
+  const connection = await conexion.getConnection();
   try {
     const data = await request.formData();
     const image = data.get("image");
@@ -36,7 +40,7 @@ export async function POST(request) {
     let imageUrl = null;
 
     if (!image) {
-      [result] = await conexion.query("INSERT INTO orders SET ?", {
+      [result] = await connection.query("INSERT INTO orders SET ?", {
         productsIds: data.get("productsIds"),
         productsQuantity: data.get("productsQuantity"),
         totalPrice: data.get("totalPrice"),
@@ -73,7 +77,7 @@ export async function POST(request) {
 
       imageUrl = res.secure_url;
 
-      [result] = await conexion.query("INSERT INTO orders SET ?", {
+      [result] = await connection.query("INSERT INTO orders SET ?", {
         productsIds: data.get("productsIds"),
         productsQuantity: data.get("productsQuantity"),
         totalPrice: data.get("totalPrice"),
@@ -100,7 +104,7 @@ export async function POST(request) {
       const id = ids[i];
       const qty = quantities[i];
 
-      const [result2] = await conexion.query(
+      const [result2] = await connection.query(
         "SELECT quantity FROM products WHERE id = ?",
         [id]
       );
@@ -123,7 +127,7 @@ export async function POST(request) {
         );
       }
 
-      const [result3] = await conexion.query(
+      const [result3] = await connection.query(
         "UPDATE products SET quantity = ? WHERE id = ?",
         [newQuantity, id]
       );
@@ -164,5 +168,7 @@ export async function POST(request) {
         status: 500,
       }
     );
+  } finally {
+    connection.release();
   }
 }

@@ -17,14 +17,15 @@ const handler = NextAuth({
   },
   callbacks: {
     async signIn({ user }) {
+      const connection = await conexion.getConnection();
       try {
-        const [existingUser] = await conexion.query(
+        const [existingUser] = await connection.query(
           "SELECT * FROM users WHERE email = ?",
           [user.email]
         );
 
         if (existingUser.length === 0) {
-          await conexion.query(
+          await connection.query(
             "INSERT INTO users (name, email, rol, verified) VALUES (?, ?, ?, ?)",
             [user.name, user.email, "Cliente", "0"]
           );
@@ -33,12 +34,15 @@ const handler = NextAuth({
       } catch (error) {
         console.error("Error al registrar el usuario:", error);
         return false;
+      } finally {
+        connection.release();
       }
     },
     async jwt({ token }) {
+      const connection = await conexion.getConnection();
       try {
         if (token?.email) {
-          const [admin] = await conexion.query(
+          const [admin] = await connection.query(
             "SELECT rol FROM users WHERE email = ?",
             [token.email]
           );
@@ -51,6 +55,8 @@ const handler = NextAuth({
         }
       } catch (error) {
         console.error("Error en la consulta de rol:", error);
+      } finally {
+        connection.release();
       }
       return token;
     },

@@ -9,9 +9,10 @@ export async function GET(req, res) {
     return NextResponse.json({ error: "No se proporcionó el email del cliente" }, { status: 400 });
   }
 
+  const connection = await conexion.getConnection();
   try {
     // Primera consulta: obtener los productos del carrito filtrados por el cliente
-    const [cartItems] = await conexion.query(
+    const [cartItems] = await connection.query(
       "SELECT id, quantity FROM cart WHERE customer = ?",
       [customerEmail]
     );
@@ -33,7 +34,7 @@ export async function GET(req, res) {
     // Obtener los ids de los productos agrupados
     const productIds = groupedCartItems.map(item => item.id);
     // Segunda consulta: obtener todos los detalles de los productos según los ids obtenidos del carrito
-    const [products] = await conexion.query(
+    const [products] = await connection.query(
       "SELECT * FROM products WHERE id IN (?)",
       [productIds]
     );
@@ -52,13 +53,16 @@ export async function GET(req, res) {
   } catch (error) {
     console.log(error);
     return NextResponse.json({ error: "Error en el servidor" }, { status: 500 });
+  } finally {
+    connection.release();
   }
 }
 
 export async function POST(request) {
+  const connection = await conexion.getConnection();
   try {
     const data = await request.formData();
-    const [result] = await conexion.query("INSERT INTO cart SET ?", {
+    const [result] = await connection.query("INSERT INTO cart SET ?", {
       id: data.get("id"),
       quantity: data.get("quantity"),
       customer: data.get("customer"),
@@ -79,5 +83,7 @@ export async function POST(request) {
         status: 500,
       }
     );
+  } finally {
+    connection.release();
   }
 }

@@ -9,9 +9,10 @@ export async function GET(req, res) {
     return NextResponse.json({ error: "No se proporcionó el email del cliente" }, { status: 400 });
   }
 
+  const connection = await conexion.getConnection();
   try {
     // Obtener los IDs de los productos en la wishlist del cliente
-    const [wishlistItems] = await conexion.query(
+    const [wishlistItems] = await connection.query(
       "SELECT id FROM wishlist WHERE customer = ?",
       [customerEmail]
     );
@@ -23,7 +24,7 @@ export async function GET(req, res) {
 
     const productIds = wishlistItems.map(item => item.id); // Extraer los IDs
     // Obtener todos los detalles de los productos según los IDs
-    const [products] = await conexion.query(
+    const [products] = await connection.query(
       "SELECT * FROM products WHERE id IN (?)",
       [productIds]
     );
@@ -35,14 +36,17 @@ export async function GET(req, res) {
   } catch (error) {
     console.error("Error al obtener productos:", error);
     return NextResponse.json({ error: "Error en el servidor" }, { status: 500 });
+  } finally {
+    connection.release();
   }
 }
 
 export async function POST(request) {
+  const connection = await conexion.getConnection();
   try {
     const data = await request.formData();
 
-    const [result] = await conexion.query("INSERT INTO wishlist SET ?", {
+    const [result] = await connection.query("INSERT INTO wishlist SET ?", {
       id: data.get("id"),
       customer: data.get("customer"),
     });
@@ -61,14 +65,17 @@ export async function POST(request) {
         status: 500,
       }
     );
+  } finally {
+    connection.release();
   }
 }
 
 export async function DELETE(req) {
+  const connection = await conexion.getConnection();
   try {
     const { id, customer } = await req.json(); // Obtenemos los datos enviados en formato JSON
     // Consulta para eliminar registros que coincidan con el id y el customer
-    const [result] = await conexion.query(
+    const [result] = await connection.query(
       "DELETE FROM wishlist WHERE id = ? AND customer = ?",
       [id, customer]
     );
@@ -77,5 +84,7 @@ export async function DELETE(req) {
   } catch (error) {
     console.error("Error al eliminar registros de la wishlist:", error);
     return NextResponse.json({ error: "Error en el servidor" }, { status: 500 });
+  } finally {
+    connection.release();
   }
 }

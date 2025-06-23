@@ -5,8 +5,9 @@ import cloudinary from "@/libs/cloudinary";
 import { processImage } from "@/libs/processImage";
 
 export async function GET(req, res) {
+  const connection = await conexion.getConnection();
   try {
-    const [results] = await conexion.query("SELECT * FROM users");
+    const [results] = await connection.query("SELECT * FROM users");
     // Devuelve la respuesta con los encabezados configurados dentro de NextResponse
     return NextResponse.json(results, {
       status: 200,
@@ -21,10 +22,13 @@ export async function GET(req, res) {
         status: 500,
       }
     );
+  } finally {
+    connection.release();
   }
 }
 
 export async function POST(request) {
+  const connection = await conexion.getConnection();
   try {
     const data = await request.formData();
     //const password = data.get("password");
@@ -32,7 +36,7 @@ export async function POST(request) {
     //const hashedPassword = await hash(password, 10); // 10 es el número de saltos (nivel de seguridad)
     const image = data.get("image");
     if (!image) {
-      const [result] = await conexion.query("INSERT INTO users SET ?", {
+      const [result] = await connection.query("INSERT INTO users SET ?", {
         name: data.get("name"),
         email: data.get("email"),
         //password: hashedPassword,
@@ -63,7 +67,7 @@ export async function POST(request) {
           )
           .end(buffer);
       });
-      const [result] = await conexion.query("INSERT INTO users SET ?", {
+      const [result] = await connection.query("INSERT INTO users SET ?", {
         name: data.get("name"),
         email: data.get("email"),
         //password: hashedPassword,
@@ -89,5 +93,7 @@ export async function POST(request) {
         status: 500,
       }
     );
+  } finally {
+    connection.release();
   }
 }

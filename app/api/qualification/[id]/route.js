@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import { conexion } from "@/libs/mysql";
 
 export async function GET(req, { params }) {
+  const connection = await conexion.getConnection();
   try {
-    const [result] = await conexion.query("SELECT value FROM qualification WHERE product = ?", [
+    const [result] = await connection.query("SELECT value FROM qualification WHERE product = ?", [
       params.id,
     ]);
 
@@ -29,12 +30,15 @@ export async function GET(req, { params }) {
       },
       { status: 500 }
     );
+  } finally {
+    connection.release();
   }
 }
 
 export async function DELETE(request, { params }) {
+  const connection = await conexion.getConnection();
   try {
-    const [result] = await conexion.query("DELETE FROM qualification WHERE id = ?", [
+    const [result] = await connection.query("DELETE FROM qualification WHERE id = ?", [
       params.id,
     ]);
     if (result.affectedRows === 0) {
@@ -59,10 +63,13 @@ export async function DELETE(request, { params }) {
       },
       { status: 500 }
     );
+  } finally {
+    connection.release();
   }
 }
 
 export async function PUT(request, { params }) {
+  const connection = await conexion.getConnection();
   try {
     const data = await request.formData();
     const updateData = {
@@ -82,7 +89,7 @@ export async function PUT(request, { params }) {
       );
     }
 
-    const [result] = await conexion.query("UPDATE qualification SET ? WHERE id = ?", [
+    const [result] = await connection.query("UPDATE qualification SET ? WHERE id = ?", [
       updateData,
       params.id,
     ]);
@@ -98,7 +105,7 @@ export async function PUT(request, { params }) {
       );
     }
 
-    const [updatedProduct] = await conexion.query(
+    const [updatedProduct] = await connection.query(
       "SELECT * FROM qualification WHERE id = ?",
       [params.id]
     );
@@ -113,5 +120,7 @@ export async function PUT(request, { params }) {
       },
       { status: 500 }
     );
+  } finally {
+    connection.release();
   }
 }
