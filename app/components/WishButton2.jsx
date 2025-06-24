@@ -1,4 +1,4 @@
-export const HandleWish2 = async ({e, data, session, onRefresh}) => {
+export const HandleWish2 = async (e, data, session) => {
   e.preventDefault();
 
   try {
@@ -19,7 +19,7 @@ export const HandleWish2 = async ({e, data, session, onRefresh}) => {
 
     // Refrescar el token sin redirigir
     await fetch("/api/auth/session?update=true");
-    if (onRefresh) onRefresh();
+    window.location.reload();
 
   } catch (error) {
     console.error("Error al manejar la wishlist:", error);
