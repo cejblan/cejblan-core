@@ -87,7 +87,6 @@ const handler = NextAuth({
       } catch (error) {
         console.error("Error en jwt callback:", error);
       }
-      console.log(token)
       return token;
     },
     async session({ session, token }) {
