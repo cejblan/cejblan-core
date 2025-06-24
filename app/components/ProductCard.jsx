@@ -10,11 +10,13 @@ import { HandleWish1 } from "./WishButton1";
 import { HandleWish2 } from "./WishButton2";
 import EliminarCaracteres from "./EliminarCaracteres";
 import PrecioProducto from "@/app/components/PrecioProducto";
+import { useRouter } from "next/navigation";
 
 export default function ProductCard({ product }) {
   const { data: session } = useSession();
   const [isInWishlist, setIsInWishlist] = useState(false); // Estado para wishlist
   const form = useRef(null);
+  const router = useRouter();
 
   function iconHeart() {
     if (isInWishlist) {
@@ -29,6 +31,10 @@ export default function ProductCard({ product }) {
       CheckWish(product, session, setIsInWishlist);
     }
   }, [product, session]);
+
+  const handleRefresh = () => {
+    router.refresh();
+  };
 
   return (
     product.quantity === "0" ?
@@ -49,29 +55,37 @@ export default function ProductCard({ product }) {
             </p>
           </div>
         </div>
-        {isInWishlist ?
+        {isInWishlist ? (
           <form
             className="flex gap-x-1 items-center"
-            onSubmit={(e) => HandleWish2(e, product, session, form) + CheckWish(product, session, setIsInWishlist)}
-            ref={form}>
+            onSubmit={(e) => {
+              HandleWish2({ e, data: product, session, onRefresh: handleRefresh });
+              setIsInWishlist(false);
+            }}
+            ref={form}
+          >
             <button
               className="text-pink-700 text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center"
             >
               <IoIosHeart />
             </button>
           </form>
-          :
+        ) : (
           <form
             className="flex gap-x-1 items-center"
-            onSubmit={(e) => HandleWish1(e, product, session, form) + CheckWish(product, session, setIsInWishlist)}
-            ref={form}>
+            onSubmit={(e) => {
+              HandleWish1({ e, data: product, session, onRefresh: handleRefresh });
+              setIsInWishlist(true);
+            }}
+            ref={form}
+          >
             <button
               className="text-pink-700 text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center"
             >
               <IoIosHeartEmpty />
             </button>
           </form>
-        }
+        )}
       </div>
       :
       <div
@@ -95,7 +109,9 @@ export default function ProductCard({ product }) {
           <form
             className="flex gap-x-1 items-center"
             onSubmit={(e) => HandleWish2(e, product, session, form) + iconHeart()}
-            ref={form}>
+            ref={form}
+            onRefresh={handleRefresh}
+          >
             <button
               className="text-pink-700 text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center"
             >
@@ -106,7 +122,9 @@ export default function ProductCard({ product }) {
           <form
             className="flex gap-x-1 items-center"
             onSubmit={(e) => HandleWish1(e, product, session, form) + iconHeart()}
-            ref={form}>
+            ref={form}
+            onRefresh={handleRefresh}
+          >
             <button
               className="text-pink-700 text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center"
             >

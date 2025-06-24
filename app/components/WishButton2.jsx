@@ -1,6 +1,4 @@
-import { CheckWish } from "./CheckWish";
-
-export const HandleWish2 = async (e, data, session) => {
+export const HandleWish2 = async ({e, data, session, onRefresh}) => {
   e.preventDefault();
 
   try {
@@ -14,13 +12,17 @@ export const HandleWish2 = async (e, data, session) => {
         customer: session.user.email,
       }),
     });
-  
+
     if (!response.ok) {
       throw new Error("Error en la solicitud DELETE");
     }
-  
+
+    // Refrescar el token sin redirigir
+    await fetch("/api/auth/session?update=true");
+    if (onRefresh) onRefresh();
+
   } catch (error) {
     console.error("Error al manejar la wishlist:", error);
     alert("Ocurrió un error al eliminar el producto de la wishlist.");
-  }  
+  }
 };

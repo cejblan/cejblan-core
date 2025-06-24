@@ -1,49 +1,26 @@
-"use client";
+'use client';
 
 import { useSession } from "next-auth/react";
-import { useState, useCallback, useEffect } from "react";
+import { useState } from "react";
 import ProductCard from "@/app/components/ProductCard";
 
 export default function WishlistComponent() {
-
   const { data: session } = useSession();
-  const [products, setProducts] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1); // Estado para la página actual
-  const itemsPerPage = 9; // Número de productos por página
-  // Cálculo de los índices para la página actual
+  const products = session?.user?.wishlist ?? [];
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const itemsPerPage = 9;
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentProducts = products.slice(startIndex, endIndex);
-  // Controladores de navegación
+
   const handlePrevPage = () => {
-    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+    if (currentPage > 1) setCurrentPage(prev => prev - 1);
   };
+
   const handleNextPage = () => {
-    if (endIndex < products.length) setCurrentPage((prev) => prev + 1);
+    if (endIndex < products.length) setCurrentPage(prev => prev + 1);
   };
-  const loadProducts = useCallback(async () => {
-    try {
-      const response = await fetch(`/api/wishlist?customerEmail=${encodeURIComponent(session.user.email)}`, {
-        method: "GET",
-      });
-
-      const products = await response.json();
-
-      if (response.ok) {
-        setProducts(products);
-      } else {
-        console.error("Error:", products.error);
-      }
-    } catch (error) {
-      console.error("Error al cargar productos:", error);
-    }
-  }, [session]);
-
-  useEffect(() => {
-    if (session?.user?.email) {
-      loadProducts();
-    }
-  }, [session, loadProducts]);
 
   return (
     <>
@@ -78,5 +55,5 @@ export default function WishlistComponent() {
         Página {currentPage} de {Math.ceil(products.length / itemsPerPage)}
       </p>
     </>
-  )
+  );
 }

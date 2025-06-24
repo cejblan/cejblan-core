@@ -1,6 +1,4 @@
-import { CheckWish } from "./CheckWish";
-
-export const HandleWish1 = async (e, data, session) => {
+export const HandleWish1 = async ({e, data, session, onRefresh}) => {
   e.preventDefault();
   const formData = new FormData();
   formData.append("id", data.id);
@@ -11,12 +9,16 @@ export const HandleWish1 = async (e, data, session) => {
       method: "POST",
       body: formData,
     });
-  
+
     if (!res.ok) {
       throw new Error("Error al agregar a la wishlist");
     }
-  
+
+    // Refrescar el token sin redirigir
+    await fetch("/api/auth/session?update=true");
+    if (onRefresh) onRefresh();
+
   } catch (error) {
     console.error("Error al manejar la wishlist:", error);
-  }  
+  }
 };

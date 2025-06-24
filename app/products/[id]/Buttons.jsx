@@ -6,38 +6,16 @@ import { useSession } from "next-auth/react";
 import { FaCartShopping } from "react-icons/fa6";
 import { IoIosHeart, IoIosHeartEmpty } from "react-icons/io";
 import { RiSubtractFill, RiAddFill } from "react-icons/ri";
-import { CheckWish } from "../../components/CheckWish";
-import { HandleWish1 } from "../../components/WishButton1";
-import { HandleWish2 } from "../../components/WishButton2";
+import { CheckWish } from "@/app/components/CheckWish";
+import { HandleWish1 } from "@/app/components/WishButton1";
+import { HandleWish2 } from "@/app/components/WishButton2";
 
-function Buttons(product) {
-  const { data: session } = useSession(); // Obtener la sesión actual del usuario
-  const [isInWishlist, setIsInWishlist] = useState(false); // Estado para wishlist
+export default function Buttons(product) {
+  const { data: session } = useSession();
+  const [isInWishlist, setIsInWishlist] = useState(false);
   const form = useRef(null);
   const router = useRouter();
-  const [data, setData] = useState({
-    quantity: 1,
-  });
-  const handleChange = (e) => {
-    setData({
-      ...data,
-      [e.target.name]: Number(e.target.value), // Convertir a número
-    });
-  };
-  const incrementValue = () => {
-    if (Number(data.quantity) < product.product.quantity) {
-      setData({
-        ...data,
-        quantity: Number(data.quantity) + 1, // Incrementa solo si es menor a product.product.quantity
-      });
-    }
-  };
-  const decrementValue = () => {
-    setData({
-      ...data,
-      quantity: Math.max(1, Number(data.quantity) - 1), // Convertir cantidad a número
-    });
-  };
+  const [data, setData] = useState({ quantity: 1 });
 
   useEffect(() => {
     if (session?.user?.email) {
@@ -54,13 +32,35 @@ function Buttons(product) {
     }
   }, [data]);
 
-  let quantity = data.quantity || 1;
+  const incrementValue = () => {
+    if (Number(data.quantity) < product.product.quantity) {
+      setData({
+        ...data,
+        quantity: Number(data.quantity) + 1,
+      });
+    }
+  };
+
+  const decrementValue = () => {
+    setData({
+      ...data,
+      quantity: Math.max(1, Number(data.quantity) - 1),
+    });
+  };
+
+  const handleChange = (e) => {
+    setData({
+      ...data,
+      [e.target.name]: Number(e.target.value),
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
     formData.append("id", product.product.id);
     formData.append("name", product.product.name);
-    formData.append("quantity", quantity);
+    formData.append("quantity", data.quantity || 1);
     formData.append("price", product.product.price);
     formData.append("iva", product.product.iva);
     formData.append("customer", session.user.email);
@@ -71,26 +71,35 @@ function Buttons(product) {
         body: formData,
       });
 
-      if (!res.ok) {
-        throw new Error("Error al agregar producto al carrito");
-      }
+      if (!res.ok) throw new Error("Error al agregar producto al carrito");
 
-      const data = await res.json();
-      console.log("Producto agregado al carrito");
+      alert("Agregado en el carrito");
+      form.current.reset();
+      router.push("/products");
     } catch (error) {
       console.error("Error al manejar el carrito:", error);
     }
+  };
 
-    alert("Agregado en el carrito");
-    form.current.reset();
-    router.push("/products");
+  const handleRefresh = () => {
+    router.refresh();
+  };
+
+  const handleAddWish = (e) => {
+    HandleWish1({ e, data: product.product, session, onRefresh: handleRefresh });
+    setIsInWishlist(true);
+  };
+
+  const handleRemoveWish = (e) => {
+    HandleWish2({ e, data: product.product, session, onRefresh: handleRefresh });
+    setIsInWishlist(false);
   };
 
   if (product.product.quantity === "0") {
     alert("No hay existencia disponible de este producto");
     router.push("/products");
   } else if (data.quantity > product.product.quantity) {
-    alert("No puedes superar el maximo de existencia");
+    alert("No puedes superar el máximo de existencia");
     router.refresh();
     window.location.reload();
   }
@@ -127,31 +136,18 @@ function Buttons(product) {
           </p>
         </button>
       </form>
-      {isInWishlist ?
-        <form
-          className="flex gap-x-1 items-center"
-          onSubmit={(e) => HandleWish2(e, product.product, session, form) + CheckWish(product.product, session, setIsInWishlist)}
-          ref={form}>
-          <button
-            className="text-white bg-pink-700 hover:bg-pink-900 max-[420px]:text-lg text-3xl font-bold p-1 rounded-xl shadow-6xl"
-          >
-            <IoIosHeart />
-          </button>
-        </form>
-        :
-        <form
-          className="flex gap-x-1 items-center"
-          onSubmit={(e) => HandleWish1(e, product.product, session, form) + CheckWish(product.product, session, setIsInWishlist)}
-          ref={form}>
-          <button
-            className="text-white bg-pink-700 hover:bg-pink-900 max-[420px]:text-lg text-3xl font-bold p-1 rounded-xl shadow-6xl"
-          >
-            <IoIosHeartEmpty />
-          </button>
-        </form>
-      }
+
+      <form className="flex gap-x-1 items-center" ref={form}
+        onSubmit={(e) => isInWishlist
+          ? handleRemoveWish(e)
+          : handleAddWish(e)
+        }>
+        <button
+          className="text-white bg-pink-700 hover:bg-pink-900 max-[420px]:text-lg text-3xl font-bold p-1 rounded-xl shadow-6xl"
+        >
+          {isInWishlist ? <IoIosHeart /> : <IoIosHeartEmpty />}
+        </button>
+      </form>
     </div>
   );
 }
-
-export default Buttons;
