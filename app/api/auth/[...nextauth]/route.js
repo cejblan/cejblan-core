@@ -42,22 +42,61 @@ const handler = NextAuth({
             "SELECT rol FROM users WHERE email = ?",
             [token.email]
           );
+          token.admin = admin[0]?.rol === "Admin";
 
-          if (admin[0].rol === "Admin") {
-            token.admin = admin[0].rol === "Admin";
-          } else {
-            token.admin = false;
+          // Configuraciones
+          const [settings] = await conexion.query(
+            "SELECT name, value FROM settings WHERE name IN (?, ?)",
+            ["conversion_activa", "conversion_moneda"]
+          );
+
+          const activa = settings.find(s => s.name === "conversion_activa");
+          const moneda = settings.find(s => s.name === "conversion_moneda");
+
+          token.conversion_activa = activa?.value === "true";
+          token.conversion_moneda = moneda?.value || "USD";
+
+          // Tasa (moneda debe venir definida arriba)
+          const [tasa] = await conexion.query(
+            "SELECT valor FROM coins WHERE moneda = ? LIMIT 1",
+            [token.conversion_moneda]
+          );
+
+          token.tasa_conversion = tasa[0]?.valor ?? null;
+
+          // Obtener los IDs favoritos
+          const [wishlistItems] = await conexion.query(
+            "SELECT id FROM wishlist WHERE customer = ?",
+            [token.email]
+          );
+          const productIds = wishlistItems.map(w => w.id);
+
+          // Obtener detalles de los productos
+          let wishlist = [];
+          if (productIds.length > 0) {
+            const [products] = await conexion.query(
+              "SELECT * FROM products WHERE id IN (?)",
+              [productIds]
+            );
+            wishlist = products;
           }
+
+          token.wishlist = wishlist;
+
         }
       } catch (error) {
-        console.error("Error en la consulta de rol:", error);
+        console.error("Error en jwt callback:", error);
       }
+      console.log(token)
       return token;
     },
     async session({ session, token }) {
-      if (token?.admin) {
-        session.user.admin = true;
-      }
+      session.user.admin = !!token.admin;
+      session.user.conversion_activa = token.conversion_activa;
+      session.user.conversion_moneda = token.conversion_moneda;
+      session.user.tasa_conversion = token.tasa_conversion;
+      session.user.wishlist = token.wishlist;
+
       return session;
     },
   },
