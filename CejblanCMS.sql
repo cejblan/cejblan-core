@@ -2,9 +2,9 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Servidor: byzluukxwwmdtk07mhpe-mysql.services.clever-cloud.com:3306
--- Tiempo de generación: 18-06-2025 a las 15:47:26
--- Versión del servidor: 8.0.22-13
+-- Servidor: bbgcbcnrrmonslx6dtaj-mysql.services.clever-cloud.com:3306
+-- Tiempo de generación: 24-06-2025 a las 18:17:37
+-- Versión del servidor: 8.4.2-2
 -- Versión de PHP: 8.2.28
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `byzluukxwwmdtk07mhpe`
+-- Base de datos: `bbgcbcnrrmonslx6dtaj`
 --
 
 -- --------------------------------------------------------
@@ -93,9 +93,9 @@ CREATE TABLE `deliveries` (
 --
 
 INSERT INTO `deliveries` (`id`, `name`, `data`, `status`) VALUES
-(0001, 'Delivery', 'Solo en Araira', 'Activado'),
-(0002, 'Retiro UCV', 'Algún lugar de la UCV', 'Activado'),
-(0003, 'Retiro Araira', 'Araira, Plaza 19 de Abril', 'Activado');
+(0001, 'Delivery', 'Gratis (Condicion)', 'Activado'),
+(0002, 'Retiro 1', 'Direccion', 'Activado'),
+(0003, 'Retiro 2', 'Direccion', 'Activado');
 
 -- --------------------------------------------------------
 
@@ -113,26 +113,15 @@ CREATE TABLE `orders` (
   `phoneNumber` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `paymentMethod` varchar(33) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `deliveryMethod` varchar(33) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `deliveryMethodData` varchar(99) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `deliveryMethodData` varchar(99) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `address` varchar(99) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `latitude` varchar(12) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `longitude` varchar(12) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `latitude` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `longitude` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `image` varchar(201) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` varchar(12) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `chatId` varchar(99) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `chatId` varchar(99) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Volcado de datos para la tabla `orders`
---
-
-INSERT INTO `orders` (`id`, `productsIds`, `productsQuantity`, `totalPrice`, `name`, `email`, `phoneNumber`, `paymentMethod`, `deliveryMethod`, `deliveryMethodData`, `address`, `latitude`, `longitude`, `image`, `status`, `chatId`, `date`) VALUES
-(0083, '0001,0002,0004', '3,2,1', 12.50, 'cejblan', 'cejblan@gmail.com', '+584142245444', 'Transferencia', 'Retiro Araira', 'Araira, Plaza 19 de Abril', 'Guatire', '10.4722296', '-66.5419982', NULL, 'COMPLETADO', '6039953539', '2024-11-26 02:53:18'),
-(0084, '0002', '1', 3.00, 'cejblan', 'cejblan@gmail.com', '+584142245444', 'Transferencia', 'Retiro UCV', 'Algún lugar de la UCV', 'Guatire', '10.4722296', '-66.5419982', NULL, 'COMPLETADO', '6039953539', '2024-12-03 05:06:23'),
-(0085, '0002', '1', 3.00, 'Francisco González', 'benfran21ramon1999@gmail.com', '+584142245444', 'Transferencia', 'Retiro UCV', 'Algún lugar de la UCV', 'Guatire, Calle Sucre, Casa #59', '10.4722375', '-66.5419981', NULL, 'COMPLETADO', '6039953539', '2024-12-03 07:24:51'),
-(0086, '0002', '1', 3.00, 'cejblan', 'cejblan@gmail.com', '+584142245444', 'Transferencia', 'Retiro UCV', 'Algún lugar de la UCV', 'Guatire', '10.4722296', '-66.5419982', NULL, 'COMPLETADO', '6039953539', '2024-12-05 05:26:38'),
-(0087, '0002', '1', 3.00, 'cejblan', 'cejblan@gmail.com', '+584142245444', 'Transferencia', 'Retiro UCV', 'Algún lugar de la UCV', 'Guatire', '10.4722296', '-66.5419982', NULL, 'PROCESANDO', '6039953539', '2025-05-17 18:10:38');
 
 -- --------------------------------------------------------
 
@@ -152,8 +141,8 @@ CREATE TABLE `payments` (
 --
 
 INSERT INTO `payments` (`id`, `name`, `data`, `status`) VALUES
-(0001, 'Pago Móvil', 'Venezuela 0102 V-28.000.000 0424-2778208', 'Desactivado'),
-(0002, 'Transferencia', 'Venezuela 0102 V-28.000.000 0424-2778208', 'Activado'),
+(0001, 'Pago Móvil', 'Datos', 'Desactivado'),
+(0002, 'Transferencia', 'Datos', 'Activado'),
 (0003, 'Efectivo', 'Bolívares', 'Activado'),
 (0004, 'Dólares', 'Dólares', 'Activado');
 
@@ -175,16 +164,6 @@ CREATE TABLE `products` (
   `date` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Volcado de datos para la tabla `products`
---
-
-INSERT INTO `products` (`id`, `name`, `description`, `price`, `iva`, `category`, `quantity`, `image`, `date`) VALUES
-(0001, 'Curso PHP', 'Domina PHP, el lenguaje que impulsa millones de sitios web dinámicos. Aprenderás a crear sistemas robustos del lado del servidor, conectarte con bases de datos y desarrollar desde blogs hasta tiendas online. Ideal para quienes quieren crear soluciones completas.', 9.00, 16, 'Damas', '0', 'https://res.cloudinary.com/dugd4cv0s/image/upload/v1749831573/tjyjvxdtns7xiyz6z10x.png', '2024-06-27 19:11:46'),
-(0002, 'Curso HTML', 'Descubre el poder de HTML, el lenguaje esencial para estructurar páginas web. En este curso aprenderás desde lo más básico hasta las mejores prácticas modernas, dominando las etiquetas clave para crear contenido claro, accesible y profesional. ¡Tu viaje en el desarrollo web comienza aquí!', 6.00, 8, 'Damas', '99', 'https://res.cloudinary.com/dugd4cv0s/image/upload/v1749831264/y2qofmzxceoljxnbz5rq.png', '2024-10-03 16:48:04'),
-(0003, 'Curso CSS', 'Dale vida a tus sitios con CSS. Aprende a diseñar interfaces visualmente atractivas y responsivas, controlando cada detalle del estilo: colores, tipografías, animaciones y más. Este curso te enseñará a transformar código en experiencias visuales únicas.', 6.00, 0, 'Damas', '99', 'https://res.cloudinary.com/dugd4cv0s/image/upload/v1749831425/n4dlwoflgnarhbqcrxdm.png', '2024-10-03 17:56:23'),
-(0004, 'Curso JavaScript', 'Aprende JavaScript, el motor interactivo de la web. Desde manipular elementos dinámicamente hasta crear aplicaciones completas, este curso te lleva paso a paso en el dominio de la lógica de programación que hace posible la web moderna.', 6.00, 0, 'Damas', '99', 'https://res.cloudinary.com/dugd4cv0s/image/upload/v1749831489/o4n62o3bdw57enxhyt93.png', '2024-10-05 19:14:09');
-
 -- --------------------------------------------------------
 
 --
@@ -194,18 +173,10 @@ INSERT INTO `products` (`id`, `name`, `description`, `price`, `iva`, `category`,
 CREATE TABLE `qualification` (
   `id` int(4) UNSIGNED ZEROFILL NOT NULL,
   `product` int(4) UNSIGNED ZEROFILL NOT NULL,
-  `comment` varchar(111) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `user` varchar(33) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `comment` varchar(111) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user` varchar(33) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `value` int(1) UNSIGNED ZEROFILL NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Volcado de datos para la tabla `qualification`
---
-
-INSERT INTO `qualification` (`id`, `product`, `comment`, `user`, `value`) VALUES
-(0003, 0002, 'Excelente', 'cejblan@gmail.com', 5),
-(0006, 0002, 'Normal', 'benfran21ramon1999@gmail.com', 3);
 
 -- --------------------------------------------------------
 
@@ -215,9 +186,9 @@ INSERT INTO `qualification` (`id`, `product`, `comment`, `user`, `value`) VALUES
 
 CREATE TABLE `settings` (
   `id` int NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `value` text COLLATE utf8mb4_unicode_ci NOT NULL
+  `value` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -227,9 +198,9 @@ CREATE TABLE `settings` (
 INSERT INTO `settings` (`id`, `name`, `description`, `value`) VALUES
 (1, 'conversion_activa', 'Indica si se activa la conversión automática a bolívares', 'true'),
 (2, 'conversion_moneda', 'Define cuál moneda base se usará para la conversión a Bs', 'USD'),
-(6, 'nombre_tienda', 'Registro para editar el nombre de la tienda en la factura', 'CejblanCMS'),
-(7, 'rif_tienda', 'Registro para editar el RIF de la tienda en la factura', 'RIF por defecto'),
-(8, 'direccion_tienda', 'Registro para editar la dirección de la tienda en la factura', 'Dirección por defecto');
+(3, 'nombre_tienda', 'Registro para editar el nombre de la tienda en la factura', 'CejblanCMS'),
+(4, 'rif_tienda', 'Registro para editar el RIF de la tienda en la factura', 'RIF por defecto'),
+(5, 'direccion_tienda', 'Registro para editar la dirección de la tienda en la factura', 'Dirección por defecto');
 
 -- --------------------------------------------------------
 
@@ -250,9 +221,9 @@ CREATE TABLE `users` (
   `address` varchar(81) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `latitude` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `longitude` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `code` varchar(6) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `code` varchar(6) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `expiresAt` datetime DEFAULT NULL,
-  `chatId` varchar(99) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `chatId` varchar(99) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `verified` tinyint(1) NOT NULL,
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -262,9 +233,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `image`, `rol`, `phoneCode`, `phoneNumber`, `phoneCodeDos`, `phoneNumberDos`, `address`, `latitude`, `longitude`, `code`, `expiresAt`, `chatId`, `verified`, `date`) VALUES
-(0002, 'Francisco González', 'benfran21ramon1999@gmail.com', 'https://res.cloudinary.com/dugd4cv0s/image/upload/v1731123045/kjsfbxnr8glgxoblw4rt.png', 'Cliente', 414, 2245444, NULL, NULL, 'Guatire, Calle Sucre, Casa #59', '10.4722375', '-66.5419981', NULL, '0000-00-00 00:00:00', '6039953539', 1, '2024-11-06 17:57:13'),
-(0006, 'cejblan', 'cejblan@gmail.com', NULL, 'Admin', 414, 2245444, NULL, NULL, 'Guatire', '10.4722296', '-66.5419982', NULL, NULL, '6039953539', 1, '2024-11-20 00:09:57'),
-(0004, 'Manuel Fetta', 'manuelfetta23@gmail.com', NULL, 'Admin', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '0000-00-00 00:00:00', NULL, 0, '2024-11-11 17:20:29');
+(0001, 'cejblan', 'cejblan@gmail.com', NULL, 'Desarrollador', 414, 2245444, NULL, NULL, 'Guatire', '10.4722296', '-66.5419982', NULL, NULL, '6039953539', 1, '2024-11-20 00:09:57');
 
 -- --------------------------------------------------------
 
@@ -366,13 +335,13 @@ ALTER TABLE `coins`
 -- AUTO_INCREMENT de la tabla `deliveries`
 --
 ALTER TABLE `deliveries`
-  MODIFY `id` int(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=88;
+  MODIFY `id` int(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `payments`
@@ -384,25 +353,25 @@ ALTER TABLE `payments`
 -- AUTO_INCREMENT de la tabla `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `qualification`
 --
 ALTER TABLE `qualification`
-  MODIFY `id` int(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `settings`
 --
 ALTER TABLE `settings`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
