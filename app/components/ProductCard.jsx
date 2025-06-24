@@ -40,7 +40,7 @@ export default function ProductCard({ product }) {
             <div className="flex">
               <h1 className="flex-1 leading-6 min-h-7">{product.name}</h1>
               <h2 className="text-lg text-purple-700 font-bold mt-3">
-                {product.price}
+                ${product.price}
               </h2>
             </div>
             <p className="text-slate-900 text-base px-2 min-h-7">
@@ -84,7 +84,7 @@ export default function ProductCard({ product }) {
             <div className="flex">
               <h1 className="flex-1 leading-6 min-h-7">{product.name}</h1>
               <h2 className="text-lg text-purple-700 font-bold mt-3">
-                {product.price}
+                ${product.price}
               </h2>
             </div>
             <p className="text-slate-900 text-base px-2 min-h-7">
