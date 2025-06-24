@@ -28,7 +28,7 @@ export default function Cejblan() {
             WhatsApp<RiWhatsappLine />
           </Link>
           <Link
-            href="https://api.whatsapp.com/send?text=Hola,%20para%20preguntar%20por%20unos%20prouctos&phone=584242778208"
+            href="https://t.me/CejblanBot"
             className="bg-blue-600 hover:bg-blue-500 text-slate-200 hover:text-white text-3xl font-bold whitespace-nowrap flex content-center justify-center rounded-3xl py-1 pl-2 pr-1 max-[420px]:mt-2 max-[420px]:mx-auto w-min">
             Bot Telegram<FaTelegram />
           </Link>
