@@ -15,7 +15,6 @@ export async function GET(req, res) {
       "SELECT id FROM wishlist WHERE customer = ?",
       [customerEmail]
     );
-    console.log(wishlistItems)
 
     if (wishlistItems.length === 0) {
       return NextResponse.json([], { status: 200 }); // Si la wishlist está vacía, retornamos un arreglo vacío
@@ -27,8 +26,7 @@ export async function GET(req, res) {
       "SELECT * FROM products WHERE id IN (?)",
       [productIds]
     );
-    // Retornar los productos
-    console.log(products)
+
     return NextResponse.json(products, {
       status: 200,
     });
