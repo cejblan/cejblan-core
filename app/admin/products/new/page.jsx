@@ -37,7 +37,8 @@ export default function ProductForm() {
     formData.append("iva", product.iva);
     */
     formData.append("category", product.category);
-    formData.append("quantity", product.quantity);
+    let quantity = product.quantity || 0;
+    formData.append("quantity", quantity);
 
     if (file) {
       formData.append("image", file);
