@@ -3,6 +3,10 @@ import MonacoEditor from '@monaco-editor/react';
 
 export default function Editor({ file }) {
   const [content, setContent] = useState('');
+  const [selectedStyles, setSelectedStyles] = useState({});
+  const [tailwindMode, setTailwindMode] = useState(false);
+  const [mensaje, setMensaje] = useState('');
+
   const editorRef = useRef(null);
   const timeoutRef = useRef(null);
   const preventNextSync = useRef(false);
@@ -22,6 +26,8 @@ export default function Editor({ file }) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ file, content })
     });
+    setMensaje('Documento actualizado correctamente');
+    setTimeout(() => setMensaje(''), 3000);
   };
 
   const handleVisualInput = () => {
@@ -69,9 +75,28 @@ export default function Editor({ file }) {
 
   const formatHTML = (html) => {
     const formatted = html
-    .replace(/></g, '>' + String.fromCharCode(10) + '<')
+      .replace(/></g, '>' + String.fromCharCode(10) + '<')
+      .trim();
     return formatted;
   };
+
+  const handleElementClick = (e) => {
+    const styles = window.getComputedStyle(e.target);
+    setSelectedStyles({
+      tag: e.target.tagName,
+      display: styles.display,
+      margin: styles.margin,
+      padding: styles.padding,
+      border: styles.border,
+    });
+  };
+
+  useEffect(() => {
+    const editor = editorRef.current;
+    if (!editor) return;
+    editor.addEventListener('click', handleElementClick);
+    return () => editor.removeEventListener('click', handleElementClick);
+  }, []);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -88,6 +113,22 @@ export default function Editor({ file }) {
         <button onClick={() => document.execCommand('bold')}>Negrita</button>
         <button onClick={() => document.execCommand('italic')}>Cursiva</button>
         <button onClick={() => document.execCommand('underline')}>Subrayado</button>
+      </div>
+
+      <div style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '10px' }}>
+        <strong>Estilos del elemento seleccionado:</strong>
+        {selectedStyles.tag && (
+          <ul>
+            <li><strong>Etiqueta:</strong> {selectedStyles.tag}</li>
+            <li><strong>Display:</strong> {selectedStyles.display}</li>
+            <li><strong>Margin:</strong> {selectedStyles.margin}</li>
+            <li><strong>Padding:</strong> {selectedStyles.padding}</li>
+            <li><strong>Border:</strong> {selectedStyles.border}</li>
+          </ul>
+        )}
+        <button onClick={() => setTailwindMode(!tailwindMode)}>
+          {tailwindMode ? 'Usar estilos inline' : 'Usar TailwindCSS'}
+        </button>
       </div>
 
       <div style={{ display: 'flex', gap: '20px' }}>
@@ -122,6 +163,7 @@ export default function Editor({ file }) {
 
       <div style={{ textAlign: 'center' }}>
         <button onClick={guardar}>Guardar</button>
+        {mensaje && <p style={{ color: 'green' }}>{mensaje}</p>}
       </div>
     </div>
   );
