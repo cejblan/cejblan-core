@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
 import { useEffect, useState } from 'react';
-import Editor from './Lienzo'; // Tu componente MonacoEditor
+import Editor from './Lienzo';
 
 export default function CMS() {
   const [archivos, setArchivos] = useState([]);
@@ -11,8 +11,13 @@ export default function CMS() {
     fetch('/api/cms/list')
       .then(res => res.json())
       .then(data => {
-        setArchivos(data.files);
-        setArchivoSeleccionado(data.files[0]); // Selecciona el primero por defecto
+        if (Array.isArray(data.files) && data.files.length > 0) {
+          setArchivos(data.files);
+          setArchivoSeleccionado(data.files[0]); // primero por defecto
+        }
+      })
+      .catch(err => {
+        console.error('Error al cargar archivos:', err);
       });
   }, []);
 

@@ -1,20 +1,24 @@
-import { promises as fs } from 'fs';
-import path from 'path';
+import { NextResponse } from 'next/server';
+import { conexion } from '@/libs/mysql';
 
 export async function GET(request) {
-  const { searchParams } = new URL(request.url);
-  const file = searchParams.get('file');
-
-  if (!file || file.includes('..')) {
-    return new Response(JSON.stringify({ error: 'Ruta inválida' }), { status: 400 });
-  }
-
-  const filePath = path.join(process.cwd(), 'cms', file);
-
   try {
-    const content = await fs.readFile(filePath, 'utf-8');
-    return new Response(JSON.stringify({ content }), { status: 200 });
+    const { searchParams } = new URL(request.url);
+    const file = searchParams.get('file');
+
+    if (!file) {
+      return NextResponse.json({ error: 'No se especificó archivo' }, { status: 400 });
+    }
+
+    const [rows] = await conexion.query('SELECT content FROM cms WHERE file = ?', [file]);
+
+    if (rows.length === 0) {
+      return NextResponse.json({ content: '' }); // Archivo vacío o no existe aún
+    }
+
+    return NextResponse.json({ content: rows[0].content });
   } catch (err) {
-    return new Response(JSON.stringify({ error: 'Archivo no encontrado' }), { status: 404 });
+    console.error('Error en /api/cms/read:', err);
+    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
   }
 }

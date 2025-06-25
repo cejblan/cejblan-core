@@ -1,20 +1,24 @@
-import { promises as fs } from 'fs';
-import path from 'path';
+import { NextResponse } from 'next/server';
+import { conexion } from '@/libs/mysql';
 
 export async function POST(request) {
-  const body = await request.json();
-  const { file, content } = body;
-
-  if (!file || file.includes('..')) {
-    return new Response(JSON.stringify({ error: 'Ruta inválida' }), { status: 400 });
-  }
-
-  const filePath = path.join(process.cwd(), 'cms', file);
-
   try {
-    await fs.writeFile(filePath, content);
-    return new Response(JSON.stringify({ success: true }), { status: 200 });
+    const { file, content } = await request.json();
+
+    if (!file) {
+      return NextResponse.json({ error: 'No se especificó archivo' }, { status: 400 });
+    }
+
+    // Usamos INSERT ... ON DUPLICATE KEY UPDATE para crear o actualizar
+    await conexion.query(
+      `INSERT INTO cms (file, content, updated_at) VALUES (?, ?, NOW())
+       ON DUPLICATE KEY UPDATE content = VALUES(content), updated_at = NOW()`,
+      [file, content]
+    );
+
+    return NextResponse.json({ message: 'Archivo guardado correctamente' });
   } catch (err) {
-    return new Response(JSON.stringify({ error: 'Error al guardar' }), { status: 500 });
+    console.error('Error en /api/cms/save:', err);
+    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
   }
 }

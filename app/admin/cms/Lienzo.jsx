@@ -11,31 +11,64 @@ export default function Editor({ file }) {
   const timeoutRef = useRef(null);
   const preventNextSync = useRef(false);
 
+  // CARGA DE ARCHIVO DESDE BASE DE DATOS
   useEffect(() => {
-    fetch(`/api/cms/read?file=${file}`)
-      .then(async (res) => {
-        if (!res.ok) return;
+    const cargar = async () => {
+      try {
+        if (!file) return;
+        const res = await fetch(`/api/cms/read?file=${file}`);
+        if (!res.ok) throw new Error('No se pudo leer el archivo');
         const data = await res.json();
-        setContent(data.content);
-      });
+        setContent(data.content || '');
+      } catch (err) {
+        console.error('Error al cargar archivo:', err);
+      }
+    };
+    cargar();
   }, [file]);
 
+  // GUARDAR ARCHIVO EN BASE DE DATOS
   const guardar = async () => {
-    await fetch('/api/cms/save', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ file, content })
-    });
-    setMensaje('Documento actualizado correctamente');
-    setTimeout(() => setMensaje(''), 3000);
+    try {
+      await fetch('/api/cms/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ file, content })
+      });
+      setMensaje('Documento actualizado correctamente');
+      setTimeout(() => setMensaje(''), 3000);
+    } catch (err) {
+      console.error('Error al guardar:', err);
+    }
   };
 
+  // CREAR NUEVO ARCHIVO EN BD
+  const nuevoArchivo = async () => {
+    const nombre = prompt('Nombre del nuevo archivo (ej: nuevo.html):');
+    if (!nombre || !nombre.trim()) return;
+
+    try {
+      await fetch('/api/cms/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ file: nombre.trim(), content: '' })
+      });
+      setMensaje(`Archivo "${nombre}" creado`);
+      setTimeout(() => setMensaje(''), 3000);
+      window.location.href = `?file=${nombre}`;
+    } catch (err) {
+      console.error('Error al crear archivo:', err);
+    }
+  };
+
+  // CAMBIO EN EDITOR VISUAL
   const handleVisualInput = () => {
     preventNextSync.current = true;
     const html = editorRef.current.innerHTML;
     setContent(formatHTML(html));
   };
 
+  // SINCRONIZACIÓN: contenido HTML → editor visual
   useEffect(() => {
     if (!editorRef.current) return;
     if (preventNextSync.current) {
@@ -45,25 +78,24 @@ export default function Editor({ file }) {
 
     clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
-      editorRef.current.innerHTML = content;
+      if (editorRef.current && content !== editorRef.current.innerHTML) {
+        editorRef.current.innerHTML = content;
+      }
     }, 100);
   }, [content]);
 
+  // INSERTAR BLOQUES HTML
   const insertHTML = (html) => {
     const sel = window.getSelection();
     if (!sel || sel.rangeCount === 0) return;
     const range = sel.getRangeAt(0);
     range.deleteContents();
 
-    const block = document.createElement('div');
-    block.innerHTML = html;
-    block.style.display = 'block';
-    block.style.width = '100%';
-    block.style.textAlign = 'left';
-
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
     const frag = document.createDocumentFragment();
-    while (block.firstChild) {
-      frag.appendChild(block.firstChild);
+    while (tempDiv.firstChild) {
+      frag.appendChild(tempDiv.firstChild);
     }
     range.insertNode(frag);
     range.collapse(false);
@@ -73,13 +105,12 @@ export default function Editor({ file }) {
     setContent(editorRef.current.innerHTML);
   };
 
+  // FORMATEAR HTML PARA VISUALIZACIÓN EN CÓDIGO
   const formatHTML = (html) => {
-    const formatted = html
-      .replace(/></g, '>' + String.fromCharCode(10) + '<')
-      .trim();
-    return formatted;
+    return html.replace(/></g, '>\n<').trim();
   };
 
+  // MOSTRAR ESTILOS DEL ELEMENTO CLICKEADO
   const handleElementClick = (e) => {
     const styles = window.getComputedStyle(e.target);
     setSelectedStyles({
@@ -113,6 +144,7 @@ export default function Editor({ file }) {
         <button onClick={() => document.execCommand('bold')}>Negrita</button>
         <button onClick={() => document.execCommand('italic')}>Cursiva</button>
         <button onClick={() => document.execCommand('underline')}>Subrayado</button>
+        <button onClick={nuevoArchivo}>Nuevo archivo</button>
       </div>
 
       <div style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '10px' }}>
@@ -138,7 +170,7 @@ export default function Editor({ file }) {
             height="400px"
             defaultLanguage="html"
             value={content}
-            onChange={(value) => setContent(value)}
+            onChange={(value) => setContent(value || '')}
             options={{ minimap: { enabled: false }, fontSize: 14 }}
           />
         </div>

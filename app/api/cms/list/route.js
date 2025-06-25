@@ -1,13 +1,13 @@
-import { promises as fs } from 'fs';
-import path from 'path';
+import { NextResponse } from 'next/server';
+import { conexion } from '@/libs/mysql';
 
 export async function GET() {
-  const dirPath = path.join(process.cwd(), 'cms');
-
   try {
-    const files = await fs.readdir(dirPath);
-    return new Response(JSON.stringify({ files }), { status: 200 });
+    const [rows] = await conexion.query('SELECT file FROM cms ORDER BY updated_at DESC');
+    const files = rows.map(row => row.file);
+    return NextResponse.json({ files });
   } catch (err) {
-    return new Response(JSON.stringify({ error: 'No se pudieron listar los archivos' }), { status: 500 });
+    console.error('Error en /api/cms/list:', err);
+    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
   }
 }
