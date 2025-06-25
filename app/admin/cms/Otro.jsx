@@ -97,7 +97,6 @@ export default function Editor({ file }) {
           />
         </div>
 
-
         <div style={{ flex: 1 }}>
           <h3>Editor visual</h3>
           <div
