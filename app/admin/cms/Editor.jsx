@@ -49,15 +49,25 @@ export default function Editor({ file }) {
   const insertHTML = (html) => {
     const sel = window.getSelection();
     if (!sel || sel.rangeCount === 0) return;
-    sel.getRangeAt(0).deleteContents();
-    const temp = document.createElement('div');
-    temp.innerHTML = html;
+    const range = sel.getRangeAt(0);
+    range.deleteContents();
+
+    const block = document.createElement('div');
+    block.innerHTML = html;
+    block.style.display = 'block';
+    block.style.width = '100%';
+
+    const spacer = document.createElement('br');
+
     const frag = document.createDocumentFragment();
-    let node, lastNode;
-    while ((node = temp.firstChild)) {
-      lastNode = frag.appendChild(node);
-    }
-    sel.getRangeAt(0).insertNode(frag);
+    frag.appendChild(block);
+    frag.appendChild(spacer);
+
+    range.insertNode(frag);
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+
     setContent(editorRef.current.innerHTML);
   };
 
