@@ -27,7 +27,7 @@ export default function Editor({ file }) {
   const handleVisualInput = () => {
     preventNextSync.current = true;
     const html = editorRef.current.innerHTML;
-    setContent(html);
+    setContent(formatHTML(html));
   };
 
   useEffect(() => {
@@ -53,19 +53,24 @@ export default function Editor({ file }) {
     block.innerHTML = html;
     block.style.display = 'block';
     block.style.width = '100%';
-
-    const spacer = document.createElement('br');
+    block.style.textAlign = 'left';
 
     const frag = document.createDocumentFragment();
-    frag.appendChild(block);
-    frag.appendChild(spacer);
-
+    while (block.firstChild) {
+      frag.appendChild(block.firstChild);
+    }
     range.insertNode(frag);
     range.collapse(false);
     sel.removeAllRanges();
     sel.addRange(range);
 
     setContent(editorRef.current.innerHTML);
+  };
+
+  const formatHTML = (html) => {
+    const formatted = html
+    .replace(/></g, '>' + String.fromCharCode(10) + '<')
+    return formatted;
   };
 
   return (
@@ -108,7 +113,8 @@ export default function Editor({ file }) {
               padding: '10px',
               minHeight: '400px',
               background: '#fff',
-              overflowY: 'auto'
+              overflowY: 'auto',
+              textAlign: 'left'
             }}
           />
         </div>
