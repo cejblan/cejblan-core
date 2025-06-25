@@ -110,10 +110,13 @@ export default function Editor({ file }) {
   const formatHTML = (html) => html.replace(/></g, '>\n<').trim();
 
   const handleElementClick = (e) => {
-    const styles = window.getComputedStyle(e.target);
-    setSelectedElement(e.target);
+    const el = e.target;
+    if (!el || el === editorRef.current) return;
+
+    const styles = window.getComputedStyle(el);
+    setSelectedElement(el);
     setSelectedStyles({
-      tag: e.target.tagName,
+      tag: el.tagName,
       display: styles.display,
       margin: styles.margin,
       padding: styles.padding,
@@ -166,7 +169,10 @@ export default function Editor({ file }) {
   useEffect(() => {
     const editor = editorRef.current;
     if (!editor) return;
-    editor.addEventListener('click', handleElementClick);
+    editor.addEventListener('click', (e) => {
+      const target = e.target.closest('*');
+      if (target && target !== editor) handleElementClick(e);
+    });
     return () => editor.removeEventListener('click', handleElementClick);
   }, []);
 
