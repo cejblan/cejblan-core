@@ -166,15 +166,37 @@ export default function Editor({ file }) {
     setContent(editorRef.current.innerHTML);
   };
 
+  // Escucha clics y simula uno al cambiar de modo
   useEffect(() => {
     const editor = editorRef.current;
     if (!editor) return;
-    editor.addEventListener('click', (e) => {
+
+    const handleClick = (e) => {
       const target = e.target.closest('*');
       if (target && target !== editor) handleElementClick(e);
-    });
-    return () => editor.removeEventListener('click', handleElementClick);
-  }, []);
+    };
+
+    editor.addEventListener('click', handleClick);
+
+    if (modoEditor === 'visual') {
+      // Asegura que ya existe el contenido en el editor antes del clic simulado
+      setTimeout(() => {
+        const primerElemento = editor.querySelector('*');
+        if (primerElemento) {
+          const event = new MouseEvent('click', {
+            bubbles: true,
+            cancelable: true,
+            view: window,
+          });
+          primerElemento.dispatchEvent(event);
+        }
+      }, 50); // pequeño delay asegura orden de efectos
+    }
+
+    return () => {
+      editor.removeEventListener('click', handleClick);
+    };
+  }, [modoEditor]);
 
   // Clases comunes para botones más pequeños que el de guardar
   const btnSmall = "bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition";
