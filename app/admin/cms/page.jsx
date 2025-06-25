@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from 'react';
-import Editor from './Editor'; // Tu componente MonacoEditor
+import Editor from './Lienzo'; // Tu componente MonacoEditor
 
 export default function CMS() {
   const [archivos, setArchivos] = useState([]);
