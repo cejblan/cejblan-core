@@ -3,10 +3,11 @@ import MonacoEditor from '@monaco-editor/react';
 
 export default function Editor({ file }) {
   const [content, setContent] = useState('');
-  const [selectedElement, setSelectedElement] = useState(null);
   const [selectedStyles, setSelectedStyles] = useState({});
   const [tailwindMode, setTailwindMode] = useState(false);
+  const [modoEditor, setModoEditor] = useState('visual');
   const [mensaje, setMensaje] = useState('');
+  const [selectedElement, setSelectedElement] = useState(null);
 
   const editorRef = useRef(null);
   const timeoutRef = useRef(null);
@@ -67,17 +68,24 @@ export default function Editor({ file }) {
 
   useEffect(() => {
     if (!editorRef.current) return;
+    if (modoEditor !== 'visual') return;
     if (preventNextSync.current) {
       preventNextSync.current = false;
       return;
     }
     clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
-      if (editorRef.current && content !== editorRef.current.innerHTML) {
+      if (editorRef.current.innerHTML !== content) {
         editorRef.current.innerHTML = content;
       }
     }, 100);
-  }, [content]);
+  }, [content, modoEditor]);
+
+  useEffect(() => {
+    if (modoEditor === 'visual' && editorRef.current) {
+      editorRef.current.innerHTML = content;
+    }
+  }, [modoEditor]);
 
   const insertHTML = (html) => {
     const sel = window.getSelection();
@@ -99,9 +107,7 @@ export default function Editor({ file }) {
     setContent(editorRef.current.innerHTML);
   };
 
-  const formatHTML = (html) => {
-    return html.replace(/></g, '>\n<').trim();
-  };
+  const formatHTML = (html) => html.replace(/></g, '>\n<').trim();
 
   const handleElementClick = (e) => {
     const styles = window.getComputedStyle(e.target);
@@ -116,13 +122,10 @@ export default function Editor({ file }) {
       backgroundColor: styles.backgroundColor,
       fontSize: styles.fontSize,
       fontWeight: styles.fontWeight,
-      fontStyle: styles.fontStyle,
-      textDecoration: styles.textDecoration,
       textAlign: styles.textAlign,
       width: styles.width,
       height: styles.height,
-      lineHeight: styles.lineHeight,
-      letterSpacing: styles.letterSpacing,
+      cursor: styles.cursor,
     });
   };
 
@@ -130,20 +133,34 @@ export default function Editor({ file }) {
     if (!selectedElement) return;
     selectedElement.style[prop] = valor;
     setContent(editorRef.current.innerHTML);
-    setSelectedStyles((prev) => ({ ...prev, [prop]: valor }));
+    setSelectedStyles(prev => ({ ...prev, [prop]: valor }));
   };
 
-  const getColor = (element, prop) => {
-    if (!element) return '#000000';
-    const color = getComputedStyle(element)[prop];
-    const hex = rgbToHex(color);
-    return hex;
-  };
+  const aplicarEstilosTailwind = () => {
+    if (!selectedElement) return;
 
-  const rgbToHex = (rgb) => {
-    if (!rgb || !rgb.startsWith('rgb')) return '#000000';
-    const [r, g, b] = rgb.match(/\d+/g).map(Number);
-    return `#${[r, g, b].map(x => x.toString(16).padStart(2, '0')).join('')}`;
+    if (!tailwindMode) {
+      let clases = [];
+
+      if (selectedElement.style.margin) clases.push('m-4');
+      if (selectedElement.style.padding) clases.push('p-4');
+      if (selectedElement.style.border) clases.push('border');
+      if (selectedElement.style.color) clases.push('text-red-500');
+      if (selectedElement.style.backgroundColor) clases.push('bg-gray-100');
+
+      selectedElement.removeAttribute('style');
+      selectedElement.className = clases.join(' ');
+    } else {
+      selectedElement.className = '';
+      for (const prop in selectedStyles) {
+        if (prop !== 'tag') {
+          selectedElement.style[prop] = selectedStyles[prop];
+        }
+      }
+    }
+
+    setTailwindMode(!tailwindMode);
+    setContent(editorRef.current.innerHTML);
   };
 
   useEffect(() => {
@@ -153,111 +170,100 @@ export default function Editor({ file }) {
     return () => editor.removeEventListener('click', handleElementClick);
   }, []);
 
+  // Clases comunes para botones más pequeños que el de guardar
+  const btnSmall = "bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition";
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
-        <button onClick={() => insertHTML('<h1>Título H1</h1>')}>H1</button>
-        <button onClick={() => insertHTML('<h2>Subtítulo H2</h2>')}>H2</button>
-        <button onClick={() => insertHTML('<p>Párrafo nuevo</p>')}>Párrafo</button>
-        <button onClick={() => insertHTML('<ul><li>Elemento 1</li><li>Elemento 2</li></ul>')}>Lista</button>
-        <button onClick={() => insertHTML('<table border="1"><tr><th>Col1</th><th>Col2</th></tr><tr><td>A</td><td>B</td></tr></table>')}>Tabla</button>
-        <button onClick={() => insertHTML('<img src="https://via.placeholder.com/150" alt="imagen" />')}>Imagen</button>
-        <button onClick={() => insertHTML('<a href="https://example.com">Enlace</a>')}>Enlace</button>
-        <button onClick={() => insertHTML('<button>Botón</button>')}>Botón</button>
-        <button onClick={() => insertHTML('<hr />')}>Separador</button>
-        <button onClick={() => document.execCommand('bold')}>Negrita</button>
-        <button onClick={() => document.execCommand('italic')}>Cursiva</button>
-        <button onClick={() => document.execCommand('underline')}>Subrayado</button>
-        <button onClick={nuevoArchivo}>Nuevo archivo</button>
-      </div>
-
-      <div style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '10px' }}>
-        <strong>Estilos del elemento seleccionado:</strong>
-        {selectedElement && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', marginTop: '10px' }}>
-            <div><strong>Etiqueta:</strong> {selectedStyles.tag}</div>
-
-            <label>Display: <input type="text" value={selectedStyles.display || ''} onChange={(e) => actualizarEstilo('display', e.target.value)} /></label>
-            <label>Margin: <input type="text" value={selectedStyles.margin || ''} onChange={(e) => actualizarEstilo('margin', e.target.value)} /></label>
-            <label>Padding: <input type="text" value={selectedStyles.padding || ''} onChange={(e) => actualizarEstilo('padding', e.target.value)} /></label>
-            <label>Border: <input type="text" value={selectedStyles.border || ''} onChange={(e) => actualizarEstilo('border', e.target.value)} /></label>
-
-            <label>Color: <input type="color" value={getColor(selectedElement, 'color')} onChange={(e) => actualizarEstilo('color', e.target.value)} /></label>
-            <label>Fondo: <input type="color" value={getColor(selectedElement, 'backgroundColor')} onChange={(e) => actualizarEstilo('backgroundColor', e.target.value)} /></label>
-
-            <label>Tamaño fuente: <input type="text" value={selectedStyles.fontSize || ''} onChange={(e) => actualizarEstilo('fontSize', e.target.value)} /></label>
-            <label>Peso fuente: <input type="text" value={selectedStyles.fontWeight || ''} onChange={(e) => actualizarEstilo('fontWeight', e.target.value)} /></label>
-
-            <label>Estilo fuente:
-              <select value={selectedStyles.fontStyle || ''} onChange={(e) => actualizarEstilo('fontStyle', e.target.value)}>
-                <option value="">normal</option>
-                <option value="italic">italic</option>
-                <option value="oblique">oblique</option>
-              </select>
-            </label>
-
-            <label>Decoración:
-              <select value={selectedStyles.textDecoration || ''} onChange={(e) => actualizarEstilo('textDecoration', e.target.value)}>
-                <option value="">ninguna</option>
-                <option value="underline">subrayado</option>
-                <option value="line-through">tachado</option>
-                <option value="overline">línea arriba</option>
-              </select>
-            </label>
-
-            <label>Alineación:
-              <select value={selectedStyles.textAlign || ''} onChange={(e) => actualizarEstilo('textAlign', e.target.value)}>
-                <option>left</option>
-                <option>center</option>
-                <option>right</option>
-                <option>justify</option>
-              </select>
-            </label>
-
-            <label>Ancho: <input type="text" value={selectedStyles.width || ''} onChange={(e) => actualizarEstilo('width', e.target.value)} /></label>
-            <label>Alto: <input type="text" value={selectedStyles.height || ''} onChange={(e) => actualizarEstilo('height', e.target.value)} /></label>
-            <label>Altura línea: <input type="text" value={selectedStyles.lineHeight || ''} onChange={(e) => actualizarEstilo('lineHeight', e.target.value)} /></label>
-            <label>Espaciado letras: <input type="text" value={selectedStyles.letterSpacing || ''} onChange={(e) => actualizarEstilo('letterSpacing', e.target.value)} /></label>
-          </div>
-        )}
-        <button onClick={() => setTailwindMode(!tailwindMode)}>
-          {tailwindMode ? 'Usar estilos inline' : 'Usar TailwindCSS'}
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap gap-2">
+        <button className={btnSmall} onClick={() => insertHTML('<h1>Título H1</h1>')}>H1</button>
+        <button className={btnSmall} onClick={() => insertHTML('<p>Párrafo nuevo</p>')}>Párrafo</button>
+        <button className={btnSmall} onClick={() => insertHTML('<ul><li>Item 1</li><li>Item 2</li></ul>')}>Lista</button>
+        <button className={btnSmall} onClick={() => insertHTML('<img src="https://via.placeholder.com/150" />')}>Imagen</button>
+        <button className={btnSmall} onClick={nuevoArchivo}>Nuevo archivo</button>
+        <button className={btnSmall} onClick={() => setModoEditor(modoEditor === 'visual' ? 'codigo' : 'visual')}>
+          {modoEditor === 'visual' ? 'Ver Código' : 'Ver Visual'}
         </button>
       </div>
 
-      <div style={{ display: 'flex', gap: '20px' }}>
-        <div style={{ flex: 1 }}>
-          <h3>Editor de código</h3>
-          <MonacoEditor
-            height="400px"
-            defaultLanguage="html"
-            value={content}
-            onChange={(value) => setContent(value || '')}
-            options={{ minimap: { enabled: false }, fontSize: 14 }}
-          />
+      {/* Solo mostramos configuraciones y tailwind si estamos en modo visual */}
+      {modoEditor === 'visual' && (
+        <div className="border p-4">
+          <strong>Estilos del elemento seleccionado:</strong>
+          {selectedStyles.tag ? (
+            <div className="flex flex-col gap-2 mt-2">
+              <span><strong>Etiqueta:</strong> {selectedStyles.tag}</span>
+              {[
+                { label: 'Display', prop: 'display' },
+                { label: 'Margin', prop: 'margin' },
+                { label: 'Padding', prop: 'padding' },
+                { label: 'Border', prop: 'border' },
+                { label: 'Color', prop: 'color' },
+                { label: 'Background Color', prop: 'backgroundColor' },
+                { label: 'Font Size', prop: 'fontSize' },
+                { label: 'Font Weight', prop: 'fontWeight' },
+                { label: 'Text Align', prop: 'textAlign' },
+                { label: 'Width', prop: 'width' },
+                { label: 'Height', prop: 'height' },
+                { label: 'Cursor', prop: 'cursor' },
+              ].map(({ label, prop }) => (
+                <label key={prop} className="flex flex-col">
+                  {label}:
+                  <input
+                    type="text"
+                    value={selectedStyles[prop] || ''}
+                    onChange={(e) => actualizarEstilo(prop, e.target.value)}
+                    className="border rounded p-1 mt-1"
+                  />
+                </label>
+              ))}
+              <button
+                onClick={aplicarEstilosTailwind}
+                className="mt-2 p-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+              >
+                {tailwindMode ? 'Quitar TailwindCSS' : 'Usar TailwindCSS'}
+              </button>
+            </div>
+          ) : (
+            <p>No hay elemento seleccionado</p>
+          )}
         </div>
+      )}
 
-        <div style={{ flex: 1 }}>
-          <h3>Editor visual</h3>
-          <div
-            ref={editorRef}
-            contentEditable
-            onInput={handleVisualInput}
-            style={{
-              border: '1px solid #ccc',
-              padding: '10px',
-              minHeight: '400px',
-              background: '#fff',
-              overflowY: 'auto',
-              textAlign: 'left'
-            }}
-          />
-        </div>
+      <div className="flex gap-4">
+        {modoEditor === 'codigo' ? (
+          <div className="flex-1">
+            <h3>Editor de código</h3>
+            <MonacoEditor
+              height="400px"
+              defaultLanguage="html"
+              value={content}
+              onChange={(val) => setContent(val || '')}
+              options={{ minimap: { enabled: false }, fontSize: 14 }}
+            />
+          </div>
+        ) : (
+          <div className="flex-1">
+            <h3>Editor visual</h3>
+            <div
+              ref={editorRef}
+              contentEditable
+              onInput={handleVisualInput}
+              className="border p-4 min-h-[400px] bg-white overflow-y-auto"
+              spellCheck={false}
+            />
+          </div>
+        )}
       </div>
 
-      <div style={{ textAlign: 'center' }}>
-        <button onClick={guardar}>Guardar</button>
-        {mensaje && <p style={{ color: 'green' }}>{mensaje}</p>}
+      <div className="text-center">
+        <button
+          onClick={guardar}
+          className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition"
+        >
+          Guardar
+        </button>
+        {mensaje && <p className="text-green-600 mt-2">{mensaje}</p>}
       </div>
     </div>
   );
