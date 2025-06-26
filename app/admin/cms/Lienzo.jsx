@@ -12,7 +12,9 @@ const TAILWIND_MAP = {
   backgroundColor: ['bg-white', 'bg-gray-100', 'bg-blue-200', 'bg-yellow-100'],
   width: ['w-auto', 'w-full', 'w-1/2', 'w-1/3'],
   height: ['h-auto', 'h-full', 'h-64', 'h-96'],
-  cursor: ['cursor-default', 'cursor-pointer', 'cursor-not-allowed']
+  cursor: ['cursor-default', 'cursor-pointer', 'cursor-not-allowed'],
+  display: ['block', 'inline', 'inline-block', 'flex', 'grid', 'hidden'], // Tailwind: block, inline, ...
+  backgroundImage: [] // manejado aparte
 };
 
 export default function Editor({ file }) {
@@ -172,13 +174,19 @@ export default function Editor({ file }) {
     const nuevosSelectedStyles = { tag: el.tagName };
 
     Object.entries(TAILWIND_MAP).forEach(([prop, opciones]) => {
-      if (tieneTailwind) {
-        // Busca la clase Tailwind correspondiente para esta propiedad
+      if (tieneTailwind && prop !== 'backgroundImage') {
         const claseEncontrada = opciones.find(c => clases.includes(c)) || '';
         nuevosSelectedStyles[prop] = claseEncontrada;
       } else {
-        // Si no tiene Tailwind, usa estilo computado CSS
-        nuevosSelectedStyles[prop] = styles[prop] || '';
+        if (prop === 'backgroundImage') {
+          const bg = styles.backgroundImage;
+          const match = bg.match(/url\("?(.+?)"?\)/);
+          nuevosSelectedStyles[prop] = match ? match[1] : '';
+        } else if (prop === 'display') {
+          nuevosSelectedStyles[prop] = styles.display || '';
+        } else {
+          nuevosSelectedStyles[prop] = styles[prop] || '';
+        }
       }
     });
 
@@ -190,20 +198,34 @@ export default function Editor({ file }) {
     if (!selectedElement) return;
 
     if (tailwindMode) {
-      // Aplica clases de Tailwind
       let current = selectedElement.className.split(' ').filter(Boolean);
-      current = current.filter(c => !TAILWIND_MAP[prop].includes(c));
-      if (valor) current.push(valor);
+
+      if (prop === 'display') {
+        current = current.filter(c =>
+          !['block', 'inline', 'inline-block', 'flex', 'grid', 'hidden'].includes(c)
+        );
+        if (valor) current.push(valor);
+      } else if (prop === 'backgroundImage') {
+        selectedElement.style.backgroundImage = valor ? `url("${valor}")` : '';
+      } else {
+        current = current.filter(c => !TAILWIND_MAP[prop].includes(c));
+        if (valor) current.push(valor);
+      }
+
       selectedElement.className = current.join(' ');
     } else {
-      // Aplica estilos en línea
-      selectedElement.style[prop] = valor || '';
+      if (prop === 'backgroundImage') {
+        selectedElement.style.backgroundImage = valor ? `url("${valor}")` : '';
+      } else if (prop === 'display') {
+        selectedElement.style.display = valor || '';
+      } else {
+        selectedElement.style[prop] = valor || '';
+      }
     }
 
     setContent(editorRef.current.innerHTML);
     setSelectedStyles(prev => ({ ...prev, [prop]: valor }));
   };
-
 
   const aplicarEstilosTailwind = () => {
     if (!selectedElement) return;
@@ -282,7 +304,54 @@ export default function Editor({ file }) {
           />
         </div>
       )}
-
+      {modoEditor === 'visual' && selectedElement && (
+        <div className="border p-4 bg-gray-50 rounded">
+          <strong>Estilos del elemento seleccionado:</strong>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mt-2">
+            <span><strong>Etiqueta:</strong> {selectedStyles.tag}</span>
+            {Object.entries(TAILWIND_MAP).map(([prop, opciones]) => (
+              <label key={prop} className="flex flex-col">
+                {prop}:
+                {prop === 'backgroundImage' ? (
+                  <input
+                    type="text"
+                    placeholder='https://url-de-imagen.jpg'
+                    value={selectedStyles[prop] || ''}
+                    onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
+                    className="border rounded p-1 mt-1"
+                  />
+                ) : (
+                  tailwindMode ? (
+                    <select
+                      value={selectedStyles[prop] || ''}
+                      onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
+                      className="border rounded p-1 mt-1"
+                    >
+                      <option value="">Seleccionar</option>
+                      {opciones.map(opt => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      value={selectedStyles[prop] || ''}
+                      onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
+                      className="border rounded p-1 mt-1"
+                    />
+                  )
+                )}
+              </label>
+            ))}
+            <button
+              onClick={aplicarEstilosTailwind}
+              className="mt-2 p-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+            >
+              {tailwindMode ? 'Quitar TailwindCSS' : 'Usar TailwindCSS'}
+            </button>
+          </div>
+        </div>
+      )}
       <div className="flex gap-4">
         {modoEditor === 'codigo' ? (
           <div className="flex-1">
