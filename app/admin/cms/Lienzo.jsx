@@ -152,16 +152,24 @@ export default function Editor({ file }) {
     });
   };
 
-  const actualizarClaseTailwind = (prop, clase) => {
+  const actualizarClaseTailwind = (prop, valor) => {
     if (!selectedElement) return;
 
-    let current = selectedElement.className.split(' ').filter(Boolean);
-    current = current.filter(c => !TAILWIND_MAP[prop].includes(c));
-    if (clase) current.push(clase);
-    selectedElement.className = current.join(' ');
+    if (tailwindMode) {
+      // Aplica clases de Tailwind
+      let current = selectedElement.className.split(' ').filter(Boolean);
+      current = current.filter(c => !TAILWIND_MAP[prop].includes(c));
+      if (valor) current.push(valor);
+      selectedElement.className = current.join(' ');
+    } else {
+      // Aplica estilos en línea
+      selectedElement.style[prop] = valor || '';
+    }
+
     setContent(editorRef.current.innerHTML);
-    setSelectedStyles(prev => ({ ...prev, [prop]: clase }));
+    setSelectedStyles(prev => ({ ...prev, [prop]: valor }));
   };
+
 
   const aplicarEstilosTailwind = () => {
     if (!selectedElement) return;
