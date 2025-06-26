@@ -248,7 +248,7 @@ export default function Editor({ file }) {
         <div className="border p-4">
           <strong>Estilos del elemento seleccionado:</strong>
           {selectedStyles.tag ? (
-            <div className="flex flex-col gap-2 mt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mt-2">
               <span><strong>Etiqueta:</strong> {selectedStyles.tag}</span>
               {Object.entries(TAILWIND_MAP).map(([prop, opciones]) => (
                 <label key={prop} className="flex flex-col">
