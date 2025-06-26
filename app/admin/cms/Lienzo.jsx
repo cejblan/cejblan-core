@@ -251,46 +251,35 @@ export default function Editor({ file }) {
         </button>
       </div>
 
-      {modoEditor === 'visual' && (
-        <div className="border p-4">
-          <strong>Estilos del elemento seleccionado:</strong>
-          {selectedStyles.tag ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mt-2">
-              <span><strong>Etiqueta:</strong> {selectedStyles.tag}</span>
-              {Object.entries(TAILWIND_MAP).map(([prop, opciones]) => (
-                <label key={prop} className="flex flex-col">
-                  {prop}:
-                  {tailwindMode ? (
-                    <select
-                      value={selectedStyles[prop] || ''}
-                      onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
-                      className="border rounded p-1 mt-1"
-                    >
-                      <option value="">Seleccionar</option>
-                      {opciones.map(opt => (
-                        <option key={opt} value={opt}>{opt}</option>
-                      ))}
-                    </select>
-                  ) : (
-                    <input
-                      type="text"
-                      value={selectedStyles[prop] || ''}
-                      onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
-                      className="border rounded p-1 mt-1"
-                    />
-                  )}
-                </label>
-              ))}
-              <button
-                onClick={aplicarEstilosTailwind}
-                className="mt-2 p-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-              >
-                {tailwindMode ? 'Quitar TailwindCSS' : 'Usar TailwindCSS'}
-              </button>
-            </div>
-          ) : (
-            <p>No hay elemento seleccionado</p>
-          )}
+      {modoEditor === 'visual' && imagenSeleccionada && (
+        <div className="mt-4 p-4 bg-gray-100 border rounded">
+          <p className="mb-2 font-semibold">Subir imagen para: <code>{imagenSeleccionada.src}</code></p>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={async (e) => {
+              const file = e.target.files[0];
+              if (!file) return;
+
+              const formData = new FormData();
+              formData.append("image", file);
+
+              try {
+                const res = await fetch("/api/cms/upload-image", {
+                  method: "POST",
+                  body: formData,
+                });
+                const data = await res.json();
+                if (data.secure_url) {
+                  imagenSeleccionada.src = data.secure_url;
+                  setContent(editorRef.current.innerHTML);
+                  setImagenSeleccionada(null); // Oculta input después de cargar
+                }
+              } catch (err) {
+                console.error("Error al subir imagen:", err);
+              }
+            }}
+          />
         </div>
       )}
 
