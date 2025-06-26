@@ -1,7 +1,6 @@
-import { NextResponse } from "next/server";
-import { conexion } from "@/libs/mysql";
-import cloudinary from "@/libs/cloudinary";
-import { processImage } from "@/libs/processImage";
+import { put } from '@vercel/blob';
+import { NextResponse } from 'next/server';
+import { conexion } from '@/libs/mysql';
 
 export async function GET(req, res) {
   try {
@@ -28,14 +27,12 @@ export async function POST(request) {
     const data = await request.formData();
     const image = data.get("image");
 
-    if (!image) {
+    // Si NO hay imagen, se guarda sin campo `image`
+    if (!image || !(image instanceof Blob)) {
       const [result] = await conexion.query("INSERT INTO products SET ?", {
         name: data.get("name"),
         description: data.get("description"),
         price: data.get("price"),
-        /* Se comento codigo innecesario
-        iva: data.get("iva"),
-        */
         category: data.get("category"),
         quantity: data.get("quantity"),
       });
@@ -45,41 +42,24 @@ export async function POST(request) {
         name: data.get("name"),
         description: data.get("description"),
         price: data.get("price"),
-        /* Se comento codigo innecesario
-        iva: data.get("iva"),
-        */
         category: data.get("category"),
         quantity: data.get("quantity"),
       });
     }
-    const buffer = await processImage(image);
-    const res = await new Promise((resolve, reject) => {
-      cloudinary.uploader
-        .upload_stream(
-          {
-            resource_type: "image",
-          },
-          async (err, result) => {
-            if (err) {
-              console.log(err);
-              reject(err);
-            }
 
-            resolve(result);
-          }
-        )
-        .end(buffer);
+    // Subir imagen a Vercel Blob
+    const blob = await put(image.name, image, {
+      access: 'public',
     });
+
+    // Guardar producto con URL de imagen
     const [result] = await conexion.query("INSERT INTO products SET ?", {
       name: data.get("name"),
       description: data.get("description"),
       price: data.get("price"),
-      /* Se comento codigo innecesario
-      iva: data.get("iva"),
-      */
       category: data.get("category"),
       quantity: data.get("quantity"),
-      image: res.secure_url,
+      image: blob.url,
     });
 
     return NextResponse.json({
@@ -87,22 +67,15 @@ export async function POST(request) {
       name: data.get("name"),
       description: data.get("description"),
       price: data.get("price"),
-      /* Se comento codigo innecesario
-      iva: data.get("iva"),
-      */
       category: data.get("category"),
       quantity: data.get("quantity"),
-      image: res.secure_url,
+      image: blob.url,
     });
   } catch (error) {
     console.log(error);
     return NextResponse.json(
-      {
-        message: error.message,
-      },
-      {
-        status: 500,
-      }
+      { message: error.message },
+      { status: 500 }
     );
   }
 }
