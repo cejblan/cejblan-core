@@ -1,3 +1,4 @@
+/*
 import { NextResponse } from "next/server";
 import cloudinary from "@/libs/cloudinary";
 import { processImage } from "@/libs/processImage";
@@ -24,4 +25,23 @@ export async function POST(request) {
     console.error("Error al subir imagen:", err);
     return NextResponse.json({ error: 'Error interno' }, { status: 500 });
   }
+}
+*/
+
+import { put } from '@vercel/blob';
+import { NextResponse } from 'next/server';
+
+export async function POST(request) {
+  const formData = await request.formData();
+  const file = formData.get('image');
+
+  if (!(file instanceof Blob)) {
+    return NextResponse.json({ error: 'Archivo no válido' }, { status: 400 });
+  }
+
+  const blob = await put(file.name, file, {
+    access: 'public',
+  });
+
+  return NextResponse.json({ secure_url: blob.url });
 }
