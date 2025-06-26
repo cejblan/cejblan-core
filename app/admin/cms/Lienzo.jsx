@@ -168,9 +168,7 @@ export default function Editor({ file }) {
 
     if (!tailwindMode) {
       selectedElement.removeAttribute('style');
-      selectedElement.className = Object.entries(TAILWIND_MAP).map(([prop, opciones]) => {
-        return opciones[2];
-      }).join(' ');
+      // No aplicar clases por defecto
     } else {
       selectedElement.className = '';
     }
