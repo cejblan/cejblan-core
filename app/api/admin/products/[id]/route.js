@@ -1,7 +1,6 @@
-import { NextResponse } from "next/server";
-import { conexion } from "@/libs/mysql";
-import cloudinary from "@/libs/cloudinary";
-import { processImage } from "@/libs/processImage";
+import { NextResponse } from 'next/server';
+import { conexion } from '@/libs/mysql';
+import { put } from '@vercel/blob';
 
 export async function GET(req, { params }) {
   try {
@@ -36,7 +35,7 @@ export async function GET(req, { params }) {
 
 export async function DELETE(request, { params }) {
   try {
-    // Obtén el producto de la base de datos para verificar si tiene imagen
+    // Buscar la imagen del producto
     const [product] = await conexion.query(
       "SELECT image FROM products WHERE id = ?",
       [params.id]
@@ -48,17 +47,24 @@ export async function DELETE(request, { params }) {
         { status: 404 }
       );
     }
-    const imageUrl = product.image;
-    // Si el producto tiene una imagen, intenta eliminarla de Cloudinary
-    if (imageUrl) {
-      const publicId = imageUrl.split("/").pop().split(".")[0];
-      // Llama a Cloudinary para eliminar la imagen
-      await cloudinary.uploader.destroy(publicId);
+
+    const imageUrl = product[0].image;
+
+    // Eliminar imagen de Vercel Blob si existe
+    if (imageUrl && imageUrl.includes('vercel-storage.com')) {
+      const filePath = imageUrl.split('/').slice(3).join('/');
+      try {
+        await del(filePath); // borra la imagen del bucket
+      } catch (err) {
+        console.warn("No se pudo eliminar la imagen de Vercel Blob:", err.message);
+      }
     }
-    // Elimina el producto de la base de datos
-    const [result] = await conexion.query("DELETE FROM products WHERE id = ?", [
-      params.id,
-    ]);
+
+    // Eliminar el producto de la base de datos
+    const [result] = await conexion.query(
+      "DELETE FROM products WHERE id = ?",
+      [params.id]
+    );
 
     if (result.affectedRows === 0) {
       return NextResponse.json(
@@ -81,6 +87,7 @@ export async function PUT(request, { params }) {
   try {
     const data = await request.formData();
     const image = data.get("image");
+
     const updateData = {
       name: data.get("name"),
       price: data.get("price"),
@@ -89,53 +96,29 @@ export async function PUT(request, { params }) {
       quantity: data.get("quantity"),
     };
 
-    if (!data.get("name")) {
+    if (!updateData.name) {
       return NextResponse.json(
-        {
-          message: "Name is required",
-        },
-        {
-          status: 400,
-        }
+        { message: "Name is required" },
+        { status: 400 }
       );
     }
 
-    if (image) {
-      const buffer = await processImage(image);
-      const res = await new Promise((resolve, reject) => {
-        cloudinary.uploader
-          .upload_stream(
-            {
-              resource_type: "image",
-            },
-            async (err, result) => {
-              if (err) {
-                console.log(err);
-                reject(err);
-              }
-
-              resolve(result);
-            }
-          )
-          .end(buffer);
+    if (image && image instanceof Blob) {
+      const blob = await put(image.name, image, {
+        access: "public",
       });
-
-      updateData.image = res.secure_url;
+      updateData.image = blob.url;
     }
 
-    const [result] = await conexion.query("UPDATE products SET ? WHERE id = ?", [
-      updateData,
-      params.id,
-    ]);
+    const [result] = await conexion.query(
+      "UPDATE products SET ? WHERE id = ?",
+      [updateData, params.id]
+    );
 
     if (result.affectedRows === 0) {
       return NextResponse.json(
-        {
-          message: "Producto no encontrado",
-        },
-        {
-          status: 404,
-        }
+        { message: "Producto no encontrado" },
+        { status: 404 }
       );
     }
 
@@ -145,13 +128,10 @@ export async function PUT(request, { params }) {
     );
 
     return NextResponse.json(updatedProduct);
-
   } catch (error) {
     console.log(error);
     return NextResponse.json(
-      {
-        message: error.message,
-      },
+      { message: error.message },
       { status: 500 }
     );
   }
