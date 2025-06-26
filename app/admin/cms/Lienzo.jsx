@@ -37,7 +37,13 @@ export default function Editor({ file }) {
         const res = await fetch(`/api/cms/read?file=${file}`);
         if (!res.ok) throw new Error('No se pudo leer el archivo');
         const data = await res.json();
-        const htmlVisual = data.content.replace(/className=/g, 'class=');
+        const htmlVisual = data.content
+          .replace(/className=/g, 'class=')
+          .replace(/<Image([^>]*)\/?>/gi, '<img$1 />')
+          .replace(/<\/Image>/gi, '') // por si acaso hay mal cerradas
+          .replace(/<Link([^>]*)>/gi, '<a$1>')
+          .replace(/<\/Link>/gi, '</a>');
+
         setContent(htmlVisual);
       } catch (err) {
         console.error('Error al cargar archivo:', err);
@@ -49,9 +55,13 @@ export default function Editor({ file }) {
   const guardar = async () => {
     try {
       let htmlContent = content;
-      if (tailwindMode) {
-        htmlContent = htmlContent.replace(/class=/g, 'className=');
-      }
+
+      // convertir img → Image y a → Link
+      htmlContent = htmlContent
+        .replace(/class=/g, 'className=')
+        .replace(/<img([^>]*)\/?>/gi, '<Image$1 />')
+        .replace(/<a([^>]*)>/gi, '<Link$1>')
+        .replace(/<\/a>/gi, '</Link>');
 
       await fetch('/api/cms/save', {
         method: 'POST',
