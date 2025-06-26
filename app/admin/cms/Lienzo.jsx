@@ -119,6 +119,11 @@ export default function Editor({ file }) {
   }, [modoEditor]);
 
   const insertHTML = (html) => {
+    if (modoEditor === 'codigo') {
+      setContent((prev) => prev + '\n' + html);
+      return;
+    }
+
     const sel = window.getSelection();
     if (!sel || sel.rangeCount === 0) return;
     const range = sel.getRangeAt(0);
@@ -229,12 +234,12 @@ export default function Editor({ file }) {
 
   const aplicarEstilosTailwind = () => {
     if (!selectedElement) return;
-  
+
     // Calculamos el modo que vamos a activar
     const newMode = !tailwindMode;
     const estilos = window.getComputedStyle(selectedElement);
     const nuevosSelectedStyles = { tag: selectedElement.tagName };
-  
+
     if (newMode === false) {
       // Vamos a modo en línea → primero quitar clases
       selectedElement.className = '';
@@ -257,19 +262,24 @@ export default function Editor({ file }) {
         nuevosSelectedStyles[prop] = '';
       });
     }
-  
+
     // Actualizamos estado y contenido
     setTailwindMode(newMode);
     setSelectedStyles(nuevosSelectedStyles);
     setContent(editorRef.current.innerHTML);
-  };  
+  };
 
   useEffect(() => {
     const editor = editorRef.current;
     if (!editor) return;
-    editor.addEventListener('click', handleElementClick);
-    return () => editor.removeEventListener('click', handleElementClick);
-  }, []);
+
+    if (modoEditor === 'visual') {
+      editor.addEventListener('click', handleElementClick);
+    }
+    return () => {
+      editor.removeEventListener('click', handleElementClick);
+    };
+  }, [modoEditor]);
 
   useEffect(() => {
     if (modoEditor === 'visual' && editorRef.current) {
