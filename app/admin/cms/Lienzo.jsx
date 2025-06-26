@@ -1,6 +1,20 @@
 import { useEffect, useState, useRef } from 'react';
 import MonacoEditor from '@monaco-editor/react';
 
+const TAILWIND_MAP = {
+  margin: ['m-0', 'm-2', 'm-4', 'm-6', 'm-8'],
+  padding: ['p-0', 'p-2', 'p-4', 'p-6', 'p-8'],
+  border: ['border', 'border-2', 'border-4', 'border-none'],
+  fontSize: ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl'],
+  fontWeight: ['font-light', 'font-normal', 'font-bold', 'font-extrabold'],
+  textAlign: ['text-left', 'text-center', 'text-right', 'text-justify'],
+  color: ['text-black', 'text-white', 'text-red-500', 'text-green-500'],
+  backgroundColor: ['bg-white', 'bg-gray-100', 'bg-blue-200', 'bg-yellow-100'],
+  width: ['w-auto', 'w-full', 'w-1/2', 'w-1/3'],
+  height: ['h-auto', 'h-full', 'h-64', 'h-96'],
+  cursor: ['cursor-default', 'cursor-pointer', 'cursor-not-allowed']
+};
+
 export default function Editor({ file }) {
   const [content, setContent] = useState('');
   const [selectedStyles, setSelectedStyles] = useState({});
@@ -20,7 +34,8 @@ export default function Editor({ file }) {
         const res = await fetch(`/api/cms/read?file=${file}`);
         if (!res.ok) throw new Error('No se pudo leer el archivo');
         const data = await res.json();
-        setContent(data.content || '');
+        const jsxContent = data.content.replace(/class=/g, 'className=');
+        setContent(jsxContent || '');
       } catch (err) {
         console.error('Error al cargar archivo:', err);
       }
@@ -30,10 +45,11 @@ export default function Editor({ file }) {
 
   const guardar = async () => {
     try {
+      const htmlContent = content.replace(/className=/g, 'class=');
       await fetch('/api/cms/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ file, content })
+        body: JSON.stringify({ file, content: htmlContent })
       });
       setMensaje('Documento actualizado correctamente');
       setTimeout(() => setMensaje(''), 3000);
@@ -67,8 +83,7 @@ export default function Editor({ file }) {
   };
 
   useEffect(() => {
-    if (!editorRef.current) return;
-    if (modoEditor !== 'visual') return;
+    if (!editorRef.current || modoEditor !== 'visual') return;
     if (preventNextSync.current) {
       preventNextSync.current = false;
       return;
@@ -117,88 +132,57 @@ export default function Editor({ file }) {
     setSelectedElement(el);
     setSelectedStyles({
       tag: el.tagName,
-      display: styles.display,
-      margin: styles.margin,
-      padding: styles.padding,
-      border: styles.border,
-      color: styles.color,
-      backgroundColor: styles.backgroundColor,
-      fontSize: styles.fontSize,
-      fontWeight: styles.fontWeight,
-      textAlign: styles.textAlign,
-      width: styles.width,
-      height: styles.height,
-      cursor: styles.cursor,
+      ...Object.keys(TAILWIND_MAP).reduce((acc, key) => {
+        acc[key] = styles[key] || '';
+        return acc;
+      }, {})
     });
   };
 
-  const actualizarEstilo = (prop, valor) => {
+  const actualizarClaseTailwind = (prop, clase) => {
     if (!selectedElement) return;
-    selectedElement.style[prop] = valor;
+
+    let current = selectedElement.className.split(' ').filter(Boolean);
+    current = current.filter(c => !TAILWIND_MAP[prop].includes(c));
+    if (clase) current.push(clase);
+    selectedElement.className = current.join(' ');
     setContent(editorRef.current.innerHTML);
-    setSelectedStyles(prev => ({ ...prev, [prop]: valor }));
+    setSelectedStyles(prev => ({ ...prev, [prop]: clase }));
   };
 
   const aplicarEstilosTailwind = () => {
     if (!selectedElement) return;
 
     if (!tailwindMode) {
-      let clases = [];
-
-      if (selectedElement.style.margin) clases.push('m-4');
-      if (selectedElement.style.padding) clases.push('p-4');
-      if (selectedElement.style.border) clases.push('border');
-      if (selectedElement.style.color) clases.push('text-red-500');
-      if (selectedElement.style.backgroundColor) clases.push('bg-gray-100');
-
       selectedElement.removeAttribute('style');
-      selectedElement.className = clases.join(' ');
+      selectedElement.className = Object.entries(TAILWIND_MAP).map(([prop, opciones]) => {
+        return opciones[2];
+      }).join(' ');
     } else {
       selectedElement.className = '';
-      for (const prop in selectedStyles) {
-        if (prop !== 'tag') {
-          selectedElement.style[prop] = selectedStyles[prop];
-        }
-      }
     }
 
     setTailwindMode(!tailwindMode);
     setContent(editorRef.current.innerHTML);
   };
 
-  // Escucha clics y simula uno al cambiar de modo
   useEffect(() => {
     const editor = editorRef.current;
     if (!editor) return;
+    editor.addEventListener('click', handleElementClick);
+    return () => editor.removeEventListener('click', handleElementClick);
+  }, []);
 
-    const handleClick = (e) => {
-      const target = e.target.closest('*');
-      if (target && target !== editor) handleElementClick(e);
-    };
-
-    editor.addEventListener('click', handleClick);
-
-    if (modoEditor === 'visual') {
-      // Asegura que ya existe el contenido en el editor antes del clic simulado
-      setTimeout(() => {
-        const primerElemento = editor.querySelector('*');
-        if (primerElemento) {
-          const event = new MouseEvent('click', {
-            bubbles: true,
-            cancelable: true,
-            view: window,
-          });
-          primerElemento.dispatchEvent(event);
-        }
-      }, 50); // pequeño delay asegura orden de efectos
+  useEffect(() => {
+    if (modoEditor === 'visual' && editorRef.current) {
+      const primerElemento = editorRef.current.querySelector('*');
+      if (primerElemento) {
+        const event = new MouseEvent('click', { bubbles: true });
+        primerElemento.dispatchEvent(event);
+      }
     }
-
-    return () => {
-      editor.removeEventListener('click', handleClick);
-    };
   }, [modoEditor]);
 
-  // Clases comunes para botones más pequeños que el de guardar
   const btnSmall = "bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition";
 
   return (
@@ -207,42 +191,41 @@ export default function Editor({ file }) {
         <button className={btnSmall} onClick={() => insertHTML('<h1>Título H1</h1>')}>H1</button>
         <button className={btnSmall} onClick={() => insertHTML('<p>Párrafo nuevo</p>')}>Párrafo</button>
         <button className={btnSmall} onClick={() => insertHTML('<ul><li>Item 1</li><li>Item 2</li></ul>')}>Lista</button>
-        <button className={btnSmall} onClick={() => insertHTML('<img src="https://via.placeholder.com/150" />')}>Imagen</button>
+        <button className={btnSmall} onClick={() => insertHTML('<img src=\"https://via.placeholder.com/150\" />')}>Imagen</button>
         <button className={btnSmall} onClick={nuevoArchivo}>Nuevo archivo</button>
         <button className={btnSmall} onClick={() => setModoEditor(modoEditor === 'visual' ? 'codigo' : 'visual')}>
           {modoEditor === 'visual' ? 'Ver Código' : 'Ver Visual'}
         </button>
       </div>
 
-      {/* Solo mostramos configuraciones y tailwind si estamos en modo visual */}
       {modoEditor === 'visual' && (
         <div className="border p-4">
           <strong>Estilos del elemento seleccionado:</strong>
           {selectedStyles.tag ? (
             <div className="flex flex-col gap-2 mt-2">
               <span><strong>Etiqueta:</strong> {selectedStyles.tag}</span>
-              {[
-                { label: 'Display', prop: 'display' },
-                { label: 'Margin', prop: 'margin' },
-                { label: 'Padding', prop: 'padding' },
-                { label: 'Border', prop: 'border' },
-                { label: 'Color', prop: 'color' },
-                { label: 'Background Color', prop: 'backgroundColor' },
-                { label: 'Font Size', prop: 'fontSize' },
-                { label: 'Font Weight', prop: 'fontWeight' },
-                { label: 'Text Align', prop: 'textAlign' },
-                { label: 'Width', prop: 'width' },
-                { label: 'Height', prop: 'height' },
-                { label: 'Cursor', prop: 'cursor' },
-              ].map(({ label, prop }) => (
+              {Object.entries(TAILWIND_MAP).map(([prop, opciones]) => (
                 <label key={prop} className="flex flex-col">
-                  {label}:
-                  <input
-                    type="text"
-                    value={selectedStyles[prop] || ''}
-                    onChange={(e) => actualizarEstilo(prop, e.target.value)}
-                    className="border rounded p-1 mt-1"
-                  />
+                  {prop}:
+                  {tailwindMode ? (
+                    <select
+                      value={selectedStyles[prop] || ''}
+                      onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
+                      className="border rounded p-1 mt-1"
+                    >
+                      <option value="">Seleccionar</option>
+                      {opciones.map(opt => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      value={selectedStyles[prop] || ''}
+                      onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
+                      className="border rounded p-1 mt-1"
+                    />
+                  )}
                 </label>
               ))}
               <button
