@@ -229,17 +229,40 @@ export default function Editor({ file }) {
 
   const aplicarEstilosTailwind = () => {
     if (!selectedElement) return;
-
-    if (!tailwindMode) {
-      selectedElement.removeAttribute('style');
-      // No aplicar clases por defecto
-    } else {
+  
+    // Calculamos el modo que vamos a activar
+    const newMode = !tailwindMode;
+    const estilos = window.getComputedStyle(selectedElement);
+    const nuevosSelectedStyles = { tag: selectedElement.tagName };
+  
+    if (newMode === false) {
+      // Vamos a modo en línea → primero quitar clases
       selectedElement.className = '';
+      // Después volcamos estilos computados
+      Object.entries(TAILWIND_MAP).forEach(([prop, opciones]) => {
+        if (prop === 'backgroundImage') {
+          const match = estilos.backgroundImage.match(/url\("?(.+?)"?\)/);
+          nuevosSelectedStyles[prop] = match ? match[1] : '';
+        } else if (prop === 'display') {
+          nuevosSelectedStyles[prop] = estilos.display || '';
+        } else {
+          nuevosSelectedStyles[prop] = estilos[prop] || '';
+        }
+      });
+    } else {
+      // Vamos a modo Tailwind → quitar estilos en línea
+      selectedElement.removeAttribute('style');
+      // Limpiamos todos los valores para que selects/input se vacíen
+      Object.keys(TAILWIND_MAP).forEach(prop => {
+        nuevosSelectedStyles[prop] = '';
+      });
     }
-
-    setTailwindMode(!tailwindMode);
+  
+    // Actualizamos estado y contenido
+    setTailwindMode(newMode);
+    setSelectedStyles(nuevosSelectedStyles);
     setContent(editorRef.current.innerHTML);
-  };
+  };  
 
   useEffect(() => {
     const editor = editorRef.current;
@@ -259,51 +282,23 @@ export default function Editor({ file }) {
   }, [modoEditor]);
 
   const btnSmall = "bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition";
+  const btnSmall2 = "bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition";
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap gap-2">
         <button className={btnSmall} onClick={() => insertHTML('<h1>Título H1</h1>')}>H1</button>
         <button className={btnSmall} onClick={() => insertHTML('<p>Párrafo nuevo</p>')}>Párrafo</button>
+        <button className={btnSmall} onClick={() => insertHTML('<div>Contenido dentro de DIV</div>')}>Div</button>
+        <button className={btnSmall} onClick={() => insertHTML('<section>Contenido dentro de SECTION</section>')}>Section</button>
         <button className={btnSmall} onClick={() => insertHTML('<ul><li>Item 1</li><li>Item 2</li></ul>')}>Lista</button>
         <button className={btnSmall} onClick={() => insertHTML('<img src=\"https://img.ejemplo.com/150\" />')}>Imagen</button>
-        <button className={btnSmall} onClick={nuevoArchivo}>Nuevo archivo</button>
-        <button className={btnSmall} onClick={() => setModoEditor(modoEditor === 'visual' ? 'codigo' : 'visual')}>
+        <button className={btnSmall2} onClick={nuevoArchivo}>Nuevo archivo</button>
+        <button className={btnSmall2} onClick={() => setModoEditor(modoEditor === 'visual' ? 'codigo' : 'visual')}>
           {modoEditor === 'visual' ? 'Ver Código' : 'Ver Visual'}
         </button>
       </div>
 
-      {modoEditor === 'visual' && imagenSeleccionada && (
-        <div className="mt-4 p-4 bg-gray-100 border rounded">
-          <p className="mb-2 font-semibold">Subir imagen para: <code>{imagenSeleccionada.src}</code></p>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={async (e) => {
-              const file = e.target.files[0];
-              if (!file) return;
-
-              const formData = new FormData();
-              formData.append("image", file);
-
-              try {
-                const res = await fetch("/api/cms/upload-image", {
-                  method: "POST",
-                  body: formData,
-                });
-                const data = await res.json();
-                if (data.secure_url) {
-                  imagenSeleccionada.src = data.secure_url;
-                  setContent(editorRef.current.innerHTML);
-                  setImagenSeleccionada(null); // Oculta input después de cargar
-                }
-              } catch (err) {
-                console.error("Error al subir imagen:", err);
-              }
-            }}
-          />
-        </div>
-      )}
       {modoEditor === 'visual' && selectedElement && (
         <div className="border p-4 bg-gray-50 rounded">
           <strong>Estilos del elemento seleccionado:</strong>
@@ -352,6 +347,37 @@ export default function Editor({ file }) {
           </div>
         </div>
       )}
+      {modoEditor === 'visual' && imagenSeleccionada && (
+        <div className="mt-4 p-4 bg-gray-100 border rounded">
+          <p className="mb-2 font-semibold">Subir imagen para: <code>{imagenSeleccionada.src}</code></p>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={async (e) => {
+              const file = e.target.files[0];
+              if (!file) return;
+
+              const formData = new FormData();
+              formData.append("image", file);
+
+              try {
+                const res = await fetch("/api/cms/upload-image", {
+                  method: "POST",
+                  body: formData,
+                });
+                const data = await res.json();
+                if (data.secure_url) {
+                  imagenSeleccionada.src = data.secure_url;
+                  setContent(editorRef.current.innerHTML);
+                  setImagenSeleccionada(null); // Oculta input después de cargar
+                }
+              } catch (err) {
+                console.error("Error al subir imagen:", err);
+              }
+            }}
+          />
+        </div>
+      )}
       <div className="flex gap-4">
         {modoEditor === 'codigo' ? (
           <div className="flex-1">
@@ -376,39 +402,7 @@ export default function Editor({ file }) {
             />
           </div>
         )}
-        {modoEditor === 'visual' && imagenSeleccionada && (
-          <div className="mt-4 p-4 bg-gray-100 border rounded">
-            <p className="mb-2 font-semibold">Subir imagen para: <code>{imagenSeleccionada.src}</code></p>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={async (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-
-                const formData = new FormData();
-                formData.append("image", file);
-
-                try {
-                  const res = await fetch("/api/cms/upload-image", {
-                    method: "POST",
-                    body: formData,
-                  });
-                  const data = await res.json();
-                  if (data.secure_url) {
-                    imagenSeleccionada.src = data.secure_url;
-                    setContent(editorRef.current.innerHTML);
-                    setImagenSeleccionada(null); // ocultar input
-                  }
-                } catch (err) {
-                  console.error("Error al subir imagen:", err);
-                }
-              }}
-            />
-          </div>
-        )}
       </div>
-
       <div className="text-center">
         <button
           onClick={guardar}
