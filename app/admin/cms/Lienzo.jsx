@@ -140,29 +140,44 @@ export default function Editor({ file }) {
   const handleElementClick = (e) => {
     const el = e.target;
     if (!el || el === editorRef.current) return;
-  
+
     const styles = window.getComputedStyle(el);
-  
-    // Nuevo objeto para almacenar los valores de cada propiedad
+
+    // Obtener clases del elemento
+    const clases = el.className.split(' ').filter(Boolean);
+    let tieneTailwind = false;
+
+    // Detectar si alguna clase pertenece a Tailwind
+    outer:
+    for (const opciones of Object.values(TAILWIND_MAP)) {
+      for (const clase of clases) {
+        if (opciones.includes(clase)) {
+          tieneTailwind = true;
+          break outer;
+        }
+      }
+    }
+
+    // Actualizar estado de tailwindMode según detección
+    setTailwindMode(tieneTailwind);
+
+    // Preparar objeto con estilos o clases para precargar inputs
     const nuevosSelectedStyles = { tag: el.tagName };
-  
+
     Object.entries(TAILWIND_MAP).forEach(([prop, opciones]) => {
-      if (tailwindMode) {
-        // Buscar qué clase tiene el elemento para esa propiedad
-        const clases = el.className.split(' ').filter(Boolean);
-        // Buscar en las clases la que coincide con opciones de esta propiedad
+      if (tieneTailwind) {
+        // Busca la clase Tailwind correspondiente para esta propiedad
         const claseEncontrada = opciones.find(c => clases.includes(c)) || '';
         nuevosSelectedStyles[prop] = claseEncontrada;
       } else {
-        // Leer el estilo en línea o computado para esta propiedad
-        // En algunos casos la propiedad CSS puede tener otro nombre, si quieres mapeamos.
+        // Si no tiene Tailwind, usa estilo computado CSS
         nuevosSelectedStyles[prop] = styles[prop] || '';
       }
     });
-  
+
     setSelectedElement(el);
     setSelectedStyles(nuevosSelectedStyles);
-  };  
+  };
 
   const actualizarClaseTailwind = (prop, valor) => {
     if (!selectedElement) return;
