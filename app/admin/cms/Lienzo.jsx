@@ -34,8 +34,8 @@ export default function Editor({ file }) {
         const res = await fetch(`/api/cms/read?file=${file}`);
         if (!res.ok) throw new Error('No se pudo leer el archivo');
         const data = await res.json();
-        const jsxContent = data.content.replace(/class=/g, 'className=');
-        setContent(jsxContent || '');
+        const htmlVisual = data.content.replace(/className=/g, 'class=');
+        setContent(htmlVisual);
       } catch (err) {
         console.error('Error al cargar archivo:', err);
       }
@@ -45,12 +45,17 @@ export default function Editor({ file }) {
 
   const guardar = async () => {
     try {
-      const htmlContent = content.replace(/className=/g, 'class=');
+      let htmlContent = content;
+      if (tailwindMode) {
+        htmlContent = htmlContent.replace(/class=/g, 'className=');
+      }
+
       await fetch('/api/cms/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ file, content: htmlContent })
       });
+
       setMensaje('Documento actualizado correctamente');
       setTimeout(() => setMensaje(''), 3000);
     } catch (err) {
@@ -79,7 +84,9 @@ export default function Editor({ file }) {
   const handleVisualInput = () => {
     preventNextSync.current = true;
     const html = editorRef.current.innerHTML;
-    setContent(formatHTML(html));
+    setContent(
+      tailwindMode ? html.replace(/class=/g, 'className=') : html
+    );
   };
 
   useEffect(() => {
@@ -90,15 +97,21 @@ export default function Editor({ file }) {
     }
     clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
-      if (editorRef.current.innerHTML !== content) {
-        editorRef.current.innerHTML = content;
+      const safeContent = tailwindMode
+        ? content.replace(/className=/g, 'class=')
+        : content;
+
+      if (editorRef.current.innerHTML !== safeContent) {
+        editorRef.current.innerHTML = safeContent;
       }
     }, 100);
   }, [content, modoEditor]);
 
   useEffect(() => {
     if (modoEditor === 'visual' && editorRef.current) {
-      editorRef.current.innerHTML = content;
+      editorRef.current.innerHTML = tailwindMode
+        ? content.replace(/className=/g, 'class=')
+        : content;
     }
   }, [modoEditor]);
 
