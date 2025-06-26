@@ -140,17 +140,29 @@ export default function Editor({ file }) {
   const handleElementClick = (e) => {
     const el = e.target;
     if (!el || el === editorRef.current) return;
-
+  
     const styles = window.getComputedStyle(el);
-    setSelectedElement(el);
-    setSelectedStyles({
-      tag: el.tagName,
-      ...Object.keys(TAILWIND_MAP).reduce((acc, key) => {
-        acc[key] = styles[key] || '';
-        return acc;
-      }, {})
+  
+    // Nuevo objeto para almacenar los valores de cada propiedad
+    const nuevosSelectedStyles = { tag: el.tagName };
+  
+    Object.entries(TAILWIND_MAP).forEach(([prop, opciones]) => {
+      if (tailwindMode) {
+        // Buscar qué clase tiene el elemento para esa propiedad
+        const clases = el.className.split(' ').filter(Boolean);
+        // Buscar en las clases la que coincide con opciones de esta propiedad
+        const claseEncontrada = opciones.find(c => clases.includes(c)) || '';
+        nuevosSelectedStyles[prop] = claseEncontrada;
+      } else {
+        // Leer el estilo en línea o computado para esta propiedad
+        // En algunos casos la propiedad CSS puede tener otro nombre, si quieres mapeamos.
+        nuevosSelectedStyles[prop] = styles[prop] || '';
+      }
     });
-  };
+  
+    setSelectedElement(el);
+    setSelectedStyles(nuevosSelectedStyles);
+  };  
 
   const actualizarClaseTailwind = (prop, valor) => {
     if (!selectedElement) return;
