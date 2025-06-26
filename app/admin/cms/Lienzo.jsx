@@ -22,6 +22,7 @@ export default function Editor({ file }) {
   const [modoEditor, setModoEditor] = useState('visual');
   const [mensaje, setMensaje] = useState('');
   const [selectedElement, setSelectedElement] = useState(null);
+  const [imagenSeleccionada, setImagenSeleccionada] = useState(null);
 
   const editorRef = useRef(null);
   const timeoutRef = useRef(null);
@@ -141,6 +142,12 @@ export default function Editor({ file }) {
     const el = e.target;
     if (!el || el === editorRef.current) return;
 
+    if (el.tagName === 'IMG') {
+      setImagenSeleccionada(el);
+    } else {
+      setImagenSeleccionada(null);
+    }
+
     const styles = window.getComputedStyle(el);
 
     // Obtener clases del elemento
@@ -237,7 +244,7 @@ export default function Editor({ file }) {
         <button className={btnSmall} onClick={() => insertHTML('<h1>Título H1</h1>')}>H1</button>
         <button className={btnSmall} onClick={() => insertHTML('<p>Párrafo nuevo</p>')}>Párrafo</button>
         <button className={btnSmall} onClick={() => insertHTML('<ul><li>Item 1</li><li>Item 2</li></ul>')}>Lista</button>
-        <button className={btnSmall} onClick={() => insertHTML('<img src=\"https://via.placeholder.com/150\" />')}>Imagen</button>
+        <button className={btnSmall} onClick={() => insertHTML('<img src=\"https://img.ejemplo.com/150\" />')}>Imagen</button>
         <button className={btnSmall} onClick={nuevoArchivo}>Nuevo archivo</button>
         <button className={btnSmall} onClick={() => setModoEditor(modoEditor === 'visual' ? 'codigo' : 'visual')}>
           {modoEditor === 'visual' ? 'Ver Código' : 'Ver Visual'}
@@ -308,6 +315,37 @@ export default function Editor({ file }) {
               onInput={handleVisualInput}
               className="border p-4 min-h-[400px] bg-white overflow-y-auto"
               spellCheck={false}
+            />
+          </div>
+        )}
+        {modoEditor === 'visual' && imagenSeleccionada && (
+          <div className="mt-4 p-4 bg-gray-100 border rounded">
+            <p className="mb-2 font-semibold">Subir imagen para: <code>{imagenSeleccionada.src}</code></p>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const formData = new FormData();
+                formData.append("image", file);
+
+                try {
+                  const res = await fetch("/api/cms/upload-image", {
+                    method: "POST",
+                    body: formData,
+                  });
+                  const data = await res.json();
+                  if (data.secure_url) {
+                    imagenSeleccionada.src = data.secure_url;
+                    setContent(editorRef.current.innerHTML);
+                    setImagenSeleccionada(null); // ocultar input
+                  }
+                } catch (err) {
+                  console.error("Error al subir imagen:", err);
+                }
+              }}
             />
           </div>
         )}
