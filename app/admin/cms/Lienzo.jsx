@@ -63,6 +63,12 @@ const STYLE_TAB_ICONS = {
   Misceláneos: <FiSliders className="inline mr-1" />
 };
 
+const PALETA_COLORES = [
+  '#000000', '#ffffff', '#f87171', '#facc15',
+  '#34d399', '#60a5fa', '#c084fc', '#f472b6',
+  '#6b7280', '#d1d5db'
+];
+
 export default function Editor({ file }) {
   const [content, setContent] = useState('');
   const [selectedStyles, setSelectedStyles] = useState({});
@@ -468,10 +474,36 @@ export default function Editor({ file }) {
                     }
 
                     // Caso general (sin subgrupos)
-                    return (
-                      <label key={prop} className="flex flex-col text-sm">
-                        {prop}:
-                        {tailwindMode ? (
+                    if (!tailwindMode && (prop === 'color' || prop === 'backgroundColor')) {
+                      return (
+                        <label key={prop} className="flex flex-col text-sm">
+                          {prop}:
+                          <div className="flex flex-col gap-1 mt-1">
+                            <input
+                              type="text"
+                              value={selectedStyles[prop] || ''}
+                              onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
+                              className="border rounded p-1"
+                            />
+                            <div className="grid grid-cols-5 gap-1">
+                              {PALETA_COLORES.map((color) => (
+                                <button
+                                  key={color}
+                                  title={color}
+                                  onClick={() => actualizarClaseTailwind(prop, color)}
+                                  className="w-3 h-3 rounded border"
+                                  style={{ backgroundColor: color }}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        </label>
+                      );
+                    }
+                    if (tailwindMode && Array.isArray(opciones)) {
+                      return (
+                        <label key={prop} className="flex flex-col text-sm">
+                          {prop}:
                           <select
                             value={selectedStyles[prop] || ''}
                             onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
@@ -482,16 +514,9 @@ export default function Editor({ file }) {
                               <option key={opt} value={opt}>{opt}</option>
                             ))}
                           </select>
-                        ) : (
-                          <input
-                            type="text"
-                            value={selectedStyles[prop] || ''}
-                            onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
-                            className="border rounded p-1 mt-1"
-                          />
-                        )}
-                      </label>
-                    );
+                        </label>
+                      );
+                    }
                   })}
                 </div>
               </div>
