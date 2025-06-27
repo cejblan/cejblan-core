@@ -48,7 +48,7 @@ const STYLE_GROUPS = {
   Tipografía: ['fontSize', 'fontWeight', 'textAlign'],
   Colores: ['color', 'backgroundColor'],
   Dimensiones: ['width', 'height'],
-  Grid: ['display', 'gridTemplateColumns', 'gridTemplateRows', 'gap', 'colStart', 'colSpan', 'colEnd'],  
+  Grid: ['display', 'gridTemplateColumns', 'gridTemplateRows', 'gap', 'colStart', 'colSpan', 'colEnd'],
   Borde: ['border', 'borderColor', 'borderRadius', 'borderStyle'],
   Misceláneos: ['cursor', 'backgroundImage']
 };
@@ -240,7 +240,7 @@ export default function Editor({ file }) {
     let tieneTailwind = false;
 
     // Regex genérica para detectar prefijos Tailwind
-    const TAILWIND_REGEX = /^(m|p|w|h|text|bg|border|rounded|grid|gap|justify|items|place|flex|leading|tracking|font|z|top|left|right|bottom|inset|col|row|cursor|overflow|shadow|opacity|scale|translate|rotate|skew|transform|transition|duration|ease|delay|animate|select|appearance|outline|ring|visible|invisible|sr|hidden|block|inline|flex|grid|table|contents|list|float|clear|object|box|align|justify|order|space|divide|whitespace|break|bg|from|via|to|underline|line|decoration|shadow|fill|stroke|blur|brightness|contrast|drop|grayscale|hue|invert|saturate|sepia|filter|backdrop|backdrop-blur|backdrop-brightness|backdrop-contrast|backdrop-grayscale|backdrop-hue|backdrop-invert|backdrop-opacity|backdrop-saturate|backdrop-sepia|mix-blend)/;
+    const TAILWIND_REGEX = /^(m|p|w|h|text|bg|border|rounded|grid|gap|col-start|col-span|col-end|cursor|flex|inline|block|hidden|justify|items|place|font|z|top|left|right|bottom|inset|row|overflow|shadow|opacity|scale|translate|rotate|skew|transform|transition|duration|ease|delay|animate|select|appearance|outline|ring|visible|invisible|sr|list|float|clear|object|box|align|order|space|divide|whitespace|break|from|via|to|underline|decoration|fill|stroke|blur|brightness|contrast|grayscale|hue|invert|saturate|sepia|filter|backdrop|mix-blend|bg-blend)-/;
 
     // Detección corregida: distinguir arrays y objetos en TAILWIND_MAP
     tieneTailwind = clases.some(clase =>
@@ -426,7 +426,17 @@ export default function Editor({ file }) {
                     // Ocultar ciertas propiedades en modo estilo en línea
                     if (
                       !tailwindMode &&
-                      ['gridTemplateColumns', 'gridTemplateRows', 'borderColor', 'borderRadius', 'borderStyle'].includes(prop)
+                      [
+                        'gridTemplateColumns',
+                        'gridTemplateRows',
+                        'gap',
+                        'colStart',
+                        'colSpan',
+                        'colEnd',
+                        'borderColor',
+                        'borderRadius',
+                        'borderStyle'
+                      ].includes(prop)
                     ) {
                       return null;
                     }
