@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import MonacoEditor from '@monaco-editor/react';
+import { FiLayout, FiType, FiDroplet, FiBox, FiGrid, FiSquare, FiSliders } from 'react-icons/fi';
 
 const TAILWIND_MAP = {
   margin: ['m-0', 'm-2', 'm-4', 'm-6', 'm-8'],
@@ -22,6 +23,26 @@ const TAILWIND_MAP = {
   backgroundImage: []
 };
 
+const STYLE_GROUPS = {
+  Espaciado: ['margin', 'padding'],
+  Tipografía: ['fontSize', 'fontWeight', 'textAlign'],
+  Colores: ['color', 'backgroundColor'],
+  Dimensiones: ['width', 'height'],
+  Grid: ['display', 'gridTemplateColumns', 'gridTemplateRows'],
+  Borde: ['border', 'borderColor', 'borderRadius', 'borderStyle'],
+  Misceláneos: ['cursor', 'backgroundImage']
+};
+
+const STYLE_TAB_ICONS = {
+  Espaciado: <FiLayout className="inline mr-1" />,
+  Tipografía: <FiType className="inline mr-1" />,
+  Colores: <FiDroplet className="inline mr-1" />,
+  Dimensiones: <FiBox className="inline mr-1" />,
+  Grid: <FiGrid className="inline mr-1" />,
+  Borde: <FiSquare className="inline mr-1" />,
+  Misceláneos: <FiSliders className="inline mr-1" />
+};
+
 export default function Editor({ file }) {
   const [content, setContent] = useState('');
   const [selectedStyles, setSelectedStyles] = useState({});
@@ -30,6 +51,7 @@ export default function Editor({ file }) {
   const [mensaje, setMensaje] = useState('');
   const [selectedElement, setSelectedElement] = useState(null);
   const [imagenSeleccionada, setImagenSeleccionada] = useState(null);
+  const [tabActivo, setTabActivo] = useState('Espaciado');
 
   const editorRef = useRef(null);
   const monacoRef = useRef(null);
@@ -197,16 +219,13 @@ export default function Editor({ file }) {
     const clases = el.className.split(' ').filter(Boolean);
     let tieneTailwind = false;
 
-    // Detectar si alguna clase pertenece a Tailwind
-    outer:
-    for (const opciones of Object.values(TAILWIND_MAP)) {
-      for (const clase of clases) {
-        if (opciones.includes(clase)) {
-          tieneTailwind = true;
-          break outer;
-        }
-      }
-    }
+    // Regex genérica para detectar prefijos Tailwind
+    const TAILWIND_REGEX = /^(m|p|w|h|text|bg|border|rounded|grid|gap|justify|items|place|flex|leading|tracking|font|z|top|left|right|bottom|inset|col|row|cursor|overflow|shadow|opacity|scale|translate|rotate|skew|transform|transition|duration|ease|delay|animate|select|appearance|outline|ring|visible|invisible|sr|hidden|block|inline|flex|grid|table|contents|list|float|clear|object|box|align|justify|order|space|divide|whitespace|break|bg|from|via|to|underline|line|decoration|shadow|fill|stroke|blur|brightness|contrast|drop|grayscale|hue|invert|saturate|sepia|filter|backdrop|backdrop-blur|backdrop-brightness|backdrop-contrast|backdrop-grayscale|backdrop-hue|backdrop-invert|backdrop-opacity|backdrop-saturate|backdrop-sepia|mix-blend|bg-blend)-/;
+
+    tieneTailwind = clases.some(clase =>
+      Object.values(TAILWIND_MAP).some(opciones => opciones.includes(clase)) ||
+      TAILWIND_REGEX.test(clase)
+    );
 
     // Actualizar estado de tailwindMode según detección
     setTailwindMode(tieneTailwind);
@@ -351,48 +370,74 @@ export default function Editor({ file }) {
           <strong>Estilos del elemento seleccionado:</strong>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mt-2">
             <span><strong>Etiqueta:</strong> {selectedStyles.tag}</span>
-            {Object.entries(TAILWIND_MAP).map(([prop, opciones]) => {
-              if (!tailwindMode && ['gridTemplateColumns', 'gridTemplateRows', 'borderColor', 'borderRadius', 'borderStyle'].includes(prop)) {
-                return null;
-              }
-              return (
-                <label key={prop} className="flex flex-col">
-                  {prop}:
-                  {prop === 'backgroundImage' ? (
-                    <input
-                      type="text"
-                      placeholder='https://url-de-imagen.jpg'
-                      value={selectedStyles[prop] || ''}
-                      onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
-                      className="border rounded p-1 mt-1"
-                    />
-                  ) : (
-                    tailwindMode ? (
-                      <select
-                        value={selectedStyles[prop] || ''}
-                        onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
-                        className="border rounded p-1 mt-1"
-                      >
-                        <option value="">Seleccionar</option>
-                        {opciones.map(opt => (
-                          <option key={opt} value={opt}>{opt}</option>
-                        ))}
-                      </select>
-                    ) : (
-                      <input
-                        type="text"
-                        value={selectedStyles[prop] || ''}
-                        onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
-                        className="border rounded p-1 mt-1"
-                      />
-                    )
-                  )}
-                </label>
-              );
-            })}
+            <div className="mb-4 md:col-start-2 col-span-3">
+              <div className="flex flex-wrap gap-2 border-b pb-2 mb-2">
+                {Object.keys(STYLE_GROUPS).map((grupo) => (
+                  <button
+                    key={grupo}
+                    onClick={() => setTabActivo(grupo)}
+                    className={`px-3 py-1 rounded-t text-sm flex items-center gap-1 ${tabActivo === grupo
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-200 hover:bg-gray-300'
+                      }`}
+                  >
+                    {STYLE_TAB_ICONS[grupo]}
+                    {grupo}
+                  </button>
+                ))}
+
+              </div>
+              <div className="p-3 border rounded bg-white">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                  {STYLE_GROUPS[tabActivo].map((prop) => {
+                    const opciones = TAILWIND_MAP[prop];
+                    if (!opciones) return null;
+                    if (!tailwindMode && ['gridTemplateColumns', 'gridTemplateRows', 'borderColor', 'borderRadius', 'borderStyle'].includes(prop)) {
+                      return null;
+                    }
+                    return (
+                      <label key={prop} className="flex flex-col text-sm">
+                        {prop}:
+                        {prop === 'backgroundImage' ? (
+                          <input
+                            type="text"
+                            placeholder="https://url.jpg"
+                            value={selectedStyles[prop] || ''}
+                            onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
+                            className="border rounded p-1 mt-1"
+                          />
+                        ) : tailwindMode ? (
+                          <select
+                            value={selectedStyles[prop] || ''}
+                            onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
+                            className="border rounded p-1 mt-1"
+                          >
+                            <option value="">Seleccionar</option>
+                            {opciones.map((opt) => (
+                              <option key={opt} value={opt}>
+                                {opt}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <input
+                            type="text"
+                            value={selectedStyles[prop] || ''}
+                            onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
+                            className="border rounded p-1 mt-1"
+                          />
+                        )}
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-center mt-4">
             <button
               onClick={aplicarEstilosTailwind}
-              className="mt-2 p-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
             >
               {tailwindMode ? 'Quitar TailwindCSS' : 'Usar TailwindCSS'}
             </button>
