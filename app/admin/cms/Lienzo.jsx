@@ -500,6 +500,22 @@ export default function Editor({ file }) {
                         </label>
                       );
                     }
+
+                    // Renderizar input simple para estilos en línea (no Tailwind)
+                    if (!tailwindMode && !['color', 'backgroundColor'].includes(prop)) {
+                      return (
+                        <label key={prop} className="flex flex-col text-sm">
+                          {prop}:
+                          <input
+                            type="text"
+                            value={selectedStyles[prop] || ''}
+                            onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
+                            className="border rounded p-1 mt-1"
+                          />
+                        </label>
+                      );
+                    }
+
                     if (tailwindMode && Array.isArray(opciones)) {
                       return (
                         <label key={prop} className="flex flex-col text-sm">
