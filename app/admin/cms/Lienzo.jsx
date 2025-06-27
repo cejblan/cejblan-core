@@ -5,6 +5,9 @@ const TAILWIND_MAP = {
   margin: ['m-0', 'm-2', 'm-4', 'm-6', 'm-8'],
   padding: ['p-0', 'p-2', 'p-4', 'p-6', 'p-8'],
   border: ['border', 'border-2', 'border-4', 'border-none'],
+  borderColor: ['border-black', 'border-white', 'border-red-500', 'border-green-500'],
+  borderRadius: ['rounded-none', 'rounded-sm', 'rounded', 'rounded-md', 'rounded-lg', 'rounded-full'],
+  borderStyle: ['border-solid', 'border-dashed', 'border-dotted', 'border-double'],
   fontSize: ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl'],
   fontWeight: ['font-light', 'font-normal', 'font-bold', 'font-extrabold'],
   textAlign: ['text-left', 'text-center', 'text-right', 'text-justify'],
@@ -13,8 +16,10 @@ const TAILWIND_MAP = {
   width: ['w-auto', 'w-full', 'w-1/2', 'w-1/3'],
   height: ['h-auto', 'h-full', 'h-64', 'h-96'],
   cursor: ['cursor-default', 'cursor-pointer', 'cursor-not-allowed'],
-  display: ['block', 'inline', 'inline-block', 'flex', 'grid', 'hidden'], // Tailwind: block, inline, ...
-  backgroundImage: [] // manejado aparte
+  display: ['block', 'inline', 'inline-block', 'flex', 'grid', 'hidden'],
+  gridTemplateColumns: ['grid-cols-1', 'grid-cols-2', 'grid-cols-3', 'grid-cols-4', 'grid-cols-6', 'grid-cols-12'],
+  gridTemplateRows: ['grid-rows-1', 'grid-rows-2', 'grid-rows-3', 'grid-rows-4', 'grid-rows-6', 'grid-rows-12'],
+  backgroundImage: []
 };
 
 export default function Editor({ file }) {
@@ -27,6 +32,7 @@ export default function Editor({ file }) {
   const [imagenSeleccionada, setImagenSeleccionada] = useState(null);
 
   const editorRef = useRef(null);
+  const monacoRef = useRef(null);
   const timeoutRef = useRef(null);
   const preventNextSync = useRef(false);
 
@@ -130,10 +136,30 @@ export default function Editor({ file }) {
 
   const insertHTML = (html) => {
     if (modoEditor === 'codigo') {
-      setContent((prev) => prev + '\n' + html);
+      const editor = monacoRef.current;
+      if (editor) {
+        const position = editor.getPosition();
+        const range = new window.monaco.Range(
+          position.lineNumber,
+          position.column,
+          position.lineNumber,
+          position.column
+        );
+        const id = { major: 1, minor: 1 };
+        const op = {
+          identifier: id,
+          range,
+          text: html,
+          forceMoveMarkers: true,
+        };
+        editor.executeEdits("insert-html", [op]);
+        const updatedContent = editor.getValue();
+        setContent(updatedContent);
+      }
       return;
     }
 
+    // Editor visual
     const sel = window.getSelection();
     if (!sel || sel.rangeCount === 0) return;
     const range = sel.getRangeAt(0);
@@ -325,40 +351,45 @@ export default function Editor({ file }) {
           <strong>Estilos del elemento seleccionado:</strong>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mt-2">
             <span><strong>Etiqueta:</strong> {selectedStyles.tag}</span>
-            {Object.entries(TAILWIND_MAP).map(([prop, opciones]) => (
-              <label key={prop} className="flex flex-col">
-                {prop}:
-                {prop === 'backgroundImage' ? (
-                  <input
-                    type="text"
-                    placeholder='https://url-de-imagen.jpg'
-                    value={selectedStyles[prop] || ''}
-                    onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
-                    className="border rounded p-1 mt-1"
-                  />
-                ) : (
-                  tailwindMode ? (
-                    <select
-                      value={selectedStyles[prop] || ''}
-                      onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
-                      className="border rounded p-1 mt-1"
-                    >
-                      <option value="">Seleccionar</option>
-                      {opciones.map(opt => (
-                        <option key={opt} value={opt}>{opt}</option>
-                      ))}
-                    </select>
-                  ) : (
+            {Object.entries(TAILWIND_MAP).map(([prop, opciones]) => {
+              if (!tailwindMode && ['gridTemplateColumns', 'gridTemplateRows', 'borderColor', 'borderRadius', 'borderStyle'].includes(prop)) {
+                return null;
+              }
+              return (
+                <label key={prop} className="flex flex-col">
+                  {prop}:
+                  {prop === 'backgroundImage' ? (
                     <input
                       type="text"
+                      placeholder='https://url-de-imagen.jpg'
                       value={selectedStyles[prop] || ''}
                       onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
                       className="border rounded p-1 mt-1"
                     />
-                  )
-                )}
-              </label>
-            ))}
+                  ) : (
+                    tailwindMode ? (
+                      <select
+                        value={selectedStyles[prop] || ''}
+                        onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
+                        className="border rounded p-1 mt-1"
+                      >
+                        <option value="">Seleccionar</option>
+                        {opciones.map(opt => (
+                          <option key={opt} value={opt}>{opt}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        type="text"
+                        value={selectedStyles[prop] || ''}
+                        onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
+                        className="border rounded p-1 mt-1"
+                      />
+                    )
+                  )}
+                </label>
+              );
+            })}
             <button
               onClick={aplicarEstilosTailwind}
               className="mt-2 p-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
@@ -409,6 +440,9 @@ export default function Editor({ file }) {
               value={content}
               onChange={(val) => setContent(val || '')}
               options={{ minimap: { enabled: false }, fontSize: 14 }}
+              onMount={(editor) => {
+                monacoRef.current = editor;
+              }}
             />
           </div>
         ) : (
