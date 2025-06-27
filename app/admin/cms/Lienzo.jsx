@@ -309,6 +309,7 @@ export default function Editor({ file }) {
       <div className="flex flex-wrap gap-2">
         <button className={btnSmall} onClick={() => insertHTML('<h1>Título H1</h1>')}>H1</button>
         <button className={btnSmall} onClick={() => insertHTML('<p>Párrafo nuevo</p>')}>Párrafo</button>
+        <button className={btnSmall} onClick={() => insertHTML('<a href="https://ejemplo.com">Texto del enlace</a>')}>Enlace</button>
         <button className={btnSmall} onClick={() => insertHTML('<div>Contenido dentro de DIV</div>')}>Div</button>
         <button className={btnSmall} onClick={() => insertHTML('<section>Contenido dentro de SECTION</section>')}>Section</button>
         <button className={btnSmall} onClick={() => insertHTML('<ul><li>Item 1</li><li>Item 2</li></ul>')}>Lista</button>
