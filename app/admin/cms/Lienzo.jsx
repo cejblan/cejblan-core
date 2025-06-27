@@ -3,24 +3,48 @@ import MonacoEditor from '@monaco-editor/react';
 import { FiLayout, FiType, FiDroplet, FiBox, FiGrid, FiSquare, FiSliders } from 'react-icons/fi';
 
 const TAILWIND_MAP = {
-  margin: ['m-0', 'm-2', 'm-4', 'm-6', 'm-8'],
-  padding: ['p-0', 'p-2', 'p-4', 'p-6', 'p-8'],
-  border: ['border', 'border-2', 'border-4', 'border-none'],
-  borderColor: ['border-black', 'border-white', 'border-red-500', 'border-green-500'],
-  borderRadius: ['rounded-none', 'rounded-sm', 'rounded', 'rounded-md', 'rounded-lg', 'rounded-full'],
+  padding: {
+    p: ['p-0', 'p-2', 'p-4', 'p-6', 'p-8'],
+    px: ['px-0', 'px-2', 'px-4', 'px-6', 'px-8'],
+    py: ['py-0', 'py-2', 'py-4', 'py-6', 'py-8'],
+    pt: ['pt-0', 'pt-2', 'pt-4', 'pt-6', 'pt-8'],
+    pb: ['pb-0', 'pb-2', 'pb-4', 'pb-6', 'pb-8'],
+    pl: ['pl-0', 'pl-2', 'pl-4', 'pl-6', 'pl-8'],
+    pr: ['pr-0', 'pr-2', 'pr-4', 'pr-6', 'pr-8']
+  },
+  margin: {
+    m: ['m-0', 'm-2', 'm-4', 'm-6', 'm-8'],
+    mx: ['mx-0', 'mx-2', 'mx-4', 'mx-6', 'mx-8'],
+    my: ['my-0', 'my-2', 'my-4', 'my-6', 'my-8'],
+    mt: ['mt-0', 'mt-2', 'mt-4', 'mt-6', 'mt-8'],
+    mb: ['mb-0', 'mb-2', 'mb-4', 'mb-6', 'mb-8'],
+    ml: ['ml-0', 'ml-2', 'ml-4', 'ml-6', 'ml-8'],
+    mr: ['mr-0', 'mr-2', 'mr-4', 'mr-6', 'mr-8']
+  },
+  border: ['border', 'border-2', 'border-4', 'border-8', 'border-none'],
+  borderColor: ['border-black', 'border-white', 'border-gray-500', 'border-red-500', 'border-green-500', 'border-blue-500'],
+  borderRadius: [
+    'rounded-none',
+    'rounded-sm',
+    'rounded',
+    'rounded-md',
+    'rounded-lg',
+    'rounded-xl',
+    'rounded-full'
+  ],
   borderStyle: ['border-solid', 'border-dashed', 'border-dotted', 'border-double'],
-  fontSize: ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl'],
-  fontWeight: ['font-light', 'font-normal', 'font-bold', 'font-extrabold'],
+  fontSize: ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl', 'text-2xl'],
+  fontWeight: ['font-thin', 'font-light', 'font-normal', 'font-medium', 'font-bold', 'font-extrabold'],
   textAlign: ['text-left', 'text-center', 'text-right', 'text-justify'],
-  color: ['text-black', 'text-white', 'text-red-500', 'text-green-500'],
-  backgroundColor: ['bg-white', 'bg-gray-100', 'bg-blue-200', 'bg-yellow-100'],
-  width: ['w-auto', 'w-full', 'w-1/2', 'w-1/3'],
-  height: ['h-auto', 'h-full', 'h-64', 'h-96'],
-  cursor: ['cursor-default', 'cursor-pointer', 'cursor-not-allowed'],
+  color: ['text-black', 'text-white', 'text-gray-700', 'text-red-500', 'text-green-500', 'text-blue-500'],
+  backgroundColor: ['bg-white', 'bg-gray-100', 'bg-gray-200', 'bg-blue-200', 'bg-yellow-100', 'bg-red-100'],
+  width: ['w-auto', 'w-full', 'w-1/2', 'w-1/3', 'w-1/4', 'w-1/5'],
+  height: ['h-auto', 'h-full', 'h-32', 'h-64', 'h-96'],
+  cursor: ['cursor-default', 'cursor-pointer', 'cursor-not-allowed', 'cursor-move'],
   display: ['block', 'inline', 'inline-block', 'flex', 'grid', 'hidden'],
-  gridTemplateColumns: ['grid-cols-1', 'grid-cols-2', 'grid-cols-3', 'grid-cols-4', 'grid-cols-6', 'grid-cols-12'],
-  gridTemplateRows: ['grid-rows-1', 'grid-rows-2', 'grid-rows-3', 'grid-rows-4', 'grid-rows-6', 'grid-rows-12'],
-  backgroundImage: []
+  gridTemplateColumns: ['grid-cols-1', 'grid-cols-2', 'grid-cols-3', 'grid-cols-4', 'grid-cols-5', 'grid-cols-6', 'grid-cols-12'],
+  gridTemplateRows: ['grid-rows-1', 'grid-rows-2', 'grid-rows-3', 'grid-rows-4', 'grid-rows-5', 'grid-rows-6', 'grid-rows-12'],
+  backgroundImage: ['bg-none', 'bg-gradient-to-r', 'bg-gradient-to-l', 'bg-gradient-to-t', 'bg-gradient-to-b']
 };
 
 const STYLE_GROUPS = {
@@ -220,24 +244,38 @@ export default function Editor({ file }) {
     let tieneTailwind = false;
 
     // Regex genérica para detectar prefijos Tailwind
-    const TAILWIND_REGEX = /^(m|p|w|h|text|bg|border|rounded|grid|gap|justify|items|place|flex|leading|tracking|font|z|top|left|right|bottom|inset|col|row|cursor|overflow|shadow|opacity|scale|translate|rotate|skew|transform|transition|duration|ease|delay|animate|select|appearance|outline|ring|visible|invisible|sr|hidden|block|inline|flex|grid|table|contents|list|float|clear|object|box|align|justify|order|space|divide|whitespace|break|bg|from|via|to|underline|line|decoration|shadow|fill|stroke|blur|brightness|contrast|drop|grayscale|hue|invert|saturate|sepia|filter|backdrop|backdrop-blur|backdrop-brightness|backdrop-contrast|backdrop-grayscale|backdrop-hue|backdrop-invert|backdrop-opacity|backdrop-saturate|backdrop-sepia|mix-blend|bg-blend)-/;
+    const TAILWIND_REGEX = /^(m|p|w|h|text|bg|border|rounded|grid|gap|justify|items|place|flex|leading|tracking|font|z|top|left|right|bottom|inset|col|row|cursor|overflow|shadow|opacity|scale|translate|rotate|skew|transform|transition|duration|ease|delay|animate|select|appearance|outline|ring|visible|invisible|sr|hidden|block|inline|flex|grid|table|contents|list|float|clear|object|box|align|justify|order|space|divide|whitespace|break|bg|from|via|to|underline|line|decoration|shadow|fill|stroke|blur|brightness|contrast|drop|grayscale|hue|invert|saturate|sepia|filter|backdrop|backdrop-blur|backdrop-brightness|backdrop-contrast|backdrop-grayscale|backdrop-hue|backdrop-invert|backdrop-opacity|backdrop-saturate|backdrop-sepia|mix-blend)/;
 
+    // Detección corregida: distinguir arrays y objetos en TAILWIND_MAP
     tieneTailwind = clases.some(clase =>
-      Object.values(TAILWIND_MAP).some(opciones => opciones.includes(clase)) ||
-      TAILWIND_REGEX.test(clase)
+      TAILWIND_REGEX.test(clase) ||
+      Object.values(TAILWIND_MAP).some(opciones =>
+        Array.isArray(opciones)
+          ? opciones.includes(clase)
+          : Object.values(opciones).flat().includes(clase)
+      )
     );
 
-    // Actualizar estado de tailwindMode según detección
     setTailwindMode(tieneTailwind);
 
-    // Preparar objeto con estilos o clases para precargar inputs
+    // Preparar objeto con estilos o clases para inputs
     const nuevosSelectedStyles = { tag: el.tagName };
 
     Object.entries(TAILWIND_MAP).forEach(([prop, opciones]) => {
       if (tieneTailwind && prop !== 'backgroundImage') {
-        const claseEncontrada = opciones.find(c => clases.includes(c)) || '';
-        nuevosSelectedStyles[prop] = claseEncontrada;
+        if (Array.isArray(opciones)) {
+          // Propiedad simple (array)
+          const claseActiva = clases.find(c => opciones.includes(c)) || '';
+          nuevosSelectedStyles[prop] = claseActiva;
+        } else {
+          // Propiedad con subgrupos
+          Object.entries(opciones).forEach(([subgrupo, clasesDisponibles]) => {
+            const claseActiva = clases.find(c => clasesDisponibles.includes(c)) || '';
+            nuevosSelectedStyles[`${prop}-${subgrupo}`] = claseActiva;
+          });
+        }
       } else {
+        // Estilos en línea (no modo Tailwind o backgroundImage)
         if (prop === 'backgroundImage') {
           const bg = styles.backgroundImage;
           const match = bg.match(/url\("?(.+?)"?\)/);
@@ -268,7 +306,10 @@ export default function Editor({ file }) {
       } else if (prop === 'backgroundImage') {
         selectedElement.style.backgroundImage = valor ? `url("${valor}")` : '';
       } else {
-        current = current.filter(c => !TAILWIND_MAP[prop].includes(c));
+        const [propBase, subgrupo] = prop.split('-');
+        const clasesSubgrupo = Array.isArray(TAILWIND_MAP[propBase]) ? [] : (TAILWIND_MAP[propBase]?.[subgrupo] || []);
+
+        current = current.filter(c => !clasesSubgrupo.includes(c));
         if (valor) current.push(valor);
       }
 
@@ -290,15 +331,12 @@ export default function Editor({ file }) {
   const aplicarEstilosTailwind = () => {
     if (!selectedElement) return;
 
-    // Calculamos el modo que vamos a activar
     const newMode = !tailwindMode;
     const estilos = window.getComputedStyle(selectedElement);
     const nuevosSelectedStyles = { tag: selectedElement.tagName };
 
     if (newMode === false) {
-      // Vamos a modo en línea → primero quitar clases
       selectedElement.className = '';
-      // Después volcamos estilos computados
       Object.entries(TAILWIND_MAP).forEach(([prop, opciones]) => {
         if (prop === 'backgroundImage') {
           const match = estilos.backgroundImage.match(/url\("?(.+?)"?\)/);
@@ -310,15 +348,12 @@ export default function Editor({ file }) {
         }
       });
     } else {
-      // Vamos a modo Tailwind → quitar estilos en línea
       selectedElement.removeAttribute('style');
-      // Limpiamos todos los valores para que selects/input se vacíen
       Object.keys(TAILWIND_MAP).forEach(prop => {
         nuevosSelectedStyles[prop] = '';
       });
     }
 
-    // Actualizamos estado y contenido
     setTailwindMode(newMode);
     setSelectedStyles(nuevosSelectedStyles);
     setContent(editorRef.current.innerHTML);
@@ -377,15 +412,14 @@ export default function Editor({ file }) {
                     key={grupo}
                     onClick={() => setTabActivo(grupo)}
                     className={`px-3 py-1 rounded-t text-sm flex items-center gap-1 ${tabActivo === grupo
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-200 hover:bg-gray-300'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-200 hover:bg-gray-300'
                       }`}
                   >
                     {STYLE_TAB_ICONS[grupo]}
                     {grupo}
                   </button>
                 ))}
-
               </div>
               <div className="p-3 border rounded bg-white">
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
@@ -395,10 +429,11 @@ export default function Editor({ file }) {
                     if (!tailwindMode && ['gridTemplateColumns', 'gridTemplateRows', 'borderColor', 'borderRadius', 'borderStyle'].includes(prop)) {
                       return null;
                     }
-                    return (
-                      <label key={prop} className="flex flex-col text-sm">
-                        {prop}:
-                        {prop === 'backgroundImage' ? (
+
+                    if (prop === 'backgroundImage') {
+                      return (
+                        <label key={prop} className="flex flex-col text-sm">
+                          {prop}:
                           <input
                             type="text"
                             placeholder="https://url.jpg"
@@ -406,7 +441,32 @@ export default function Editor({ file }) {
                             onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
                             className="border rounded p-1 mt-1"
                           />
-                        ) : tailwindMode ? (
+                        </label>
+                      );
+                    }
+
+                    if (tailwindMode && !Array.isArray(opciones)) {
+                      return Object.entries(opciones).map(([subgrupo, subOpciones]) => (
+                        <label key={`${prop}-${subgrupo}`} className="flex flex-col text-sm">
+                          {subgrupo}:
+                          <select
+                            value={selectedStyles[`${prop}-${subgrupo}`] || ''}
+                            onChange={(e) => actualizarClaseTailwind(`${prop}-${subgrupo}`, e.target.value)}
+                            className="border rounded p-1 mt-1"
+                          >
+                            <option value="">Seleccionar</option>
+                            {subOpciones.map((opt) => (
+                              <option key={opt} value={opt}>{opt}</option>
+                            ))}
+                          </select>
+                        </label>
+                      ));
+                    }
+
+                    return (
+                      <label key={prop} className="flex flex-col text-sm">
+                        {prop}:
+                        {tailwindMode ? (
                           <select
                             value={selectedStyles[prop] || ''}
                             onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
