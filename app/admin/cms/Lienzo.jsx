@@ -426,43 +426,42 @@ export default function Editor({ file }) {
                   {STYLE_GROUPS[tabActivo].map((prop) => {
                     const opciones = TAILWIND_MAP[prop];
                     if (!opciones) return null;
-                    if (!tailwindMode && ['gridTemplateColumns', 'gridTemplateRows', 'borderColor', 'borderRadius', 'borderStyle'].includes(prop)) {
+
+                    // Ocultar ciertas propiedades en modo estilo en línea
+                    if (
+                      !tailwindMode &&
+                      ['gridTemplateColumns', 'gridTemplateRows', 'borderColor', 'borderRadius', 'borderStyle'].includes(prop)
+                    ) {
                       return null;
                     }
 
-                    if (prop === 'backgroundImage') {
+                    // Si tiene subgrupos (es un objeto)
+                    if (tailwindMode && typeof opciones === 'object' && !Array.isArray(opciones)) {
                       return (
-                        <label key={prop} className="flex flex-col text-sm">
-                          {prop}:
-                          <input
-                            type="text"
-                            placeholder="https://url.jpg"
-                            value={selectedStyles[prop] || ''}
-                            onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
-                            className="border rounded p-1 mt-1"
-                          />
-                        </label>
+                        <div key={prop} className="col-span-full border rounded p-2 bg-gray-50">
+                          <p className="font-semibold mb-2">{prop}</p>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                            {Object.entries(opciones).map(([subgrupo, subOpciones]) => (
+                              <label key={`${prop}-${subgrupo}`} className="flex flex-col text-sm">
+                                {subgrupo}:
+                                <select
+                                  value={selectedStyles[`${prop}-${subgrupo}`] || ''}
+                                  onChange={(e) => actualizarClaseTailwind(`${prop}-${subgrupo}`, e.target.value)}
+                                  className="border rounded p-1 mt-1"
+                                >
+                                  <option value="">Seleccionar</option>
+                                  {subOpciones.map((opt) => (
+                                    <option key={opt} value={opt}>{opt}</option>
+                                  ))}
+                                </select>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
                       );
                     }
 
-                    if (tailwindMode && !Array.isArray(opciones)) {
-                      return Object.entries(opciones).map(([subgrupo, subOpciones]) => (
-                        <label key={`${prop}-${subgrupo}`} className="flex flex-col text-sm">
-                          {subgrupo}:
-                          <select
-                            value={selectedStyles[`${prop}-${subgrupo}`] || ''}
-                            onChange={(e) => actualizarClaseTailwind(`${prop}-${subgrupo}`, e.target.value)}
-                            className="border rounded p-1 mt-1"
-                          >
-                            <option value="">Seleccionar</option>
-                            {subOpciones.map((opt) => (
-                              <option key={opt} value={opt}>{opt}</option>
-                            ))}
-                          </select>
-                        </label>
-                      ));
-                    }
-
+                    // Caso general (sin subgrupos)
                     return (
                       <label key={prop} className="flex flex-col text-sm">
                         {prop}:
@@ -474,9 +473,7 @@ export default function Editor({ file }) {
                           >
                             <option value="">Seleccionar</option>
                             {opciones.map((opt) => (
-                              <option key={opt} value={opt}>
-                                {opt}
-                              </option>
+                              <option key={opt} value={opt}>{opt}</option>
                             ))}
                           </select>
                         ) : (
