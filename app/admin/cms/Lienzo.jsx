@@ -40,7 +40,10 @@ const TAILWIND_MAP = {
   colEnd: ['col-end-1', 'col-end-2', 'col-end-3', 'col-end-4', 'col-end-5', 'col-end-6'],
   gridTemplateColumns: ['grid-cols-1', 'grid-cols-2', 'grid-cols-3', 'grid-cols-4', 'grid-cols-5', 'grid-cols-6', 'grid-cols-12'],
   gridTemplateRows: ['grid-rows-1', 'grid-rows-2', 'grid-rows-3', 'grid-rows-4', 'grid-rows-5', 'grid-rows-6', 'grid-rows-12'],
-  backgroundImage: ['bg-none', 'bg-gradient-to-r', 'bg-gradient-to-l', 'bg-gradient-to-t', 'bg-gradient-to-b']
+  backgroundImage: ['bg-none', 'bg-gradient-to-r', 'bg-gradient-to-l', 'bg-gradient-to-t', 'bg-gradient-to-b'],
+  backgroundPosition: ['bg-center', 'bg-left', 'bg-right', 'bg-top', 'bg-bottom', 'bg-left-top', 'bg-right-bottom'],
+  backgroundRepeat: ['bg-repeat', 'bg-no-repeat', 'bg-repeat-x', 'bg-repeat-y'],
+  backgroundSize: ['bg-auto', 'bg-cover', 'bg-contain'],
 };
 
 const STYLE_GROUPS = {
@@ -50,7 +53,13 @@ const STYLE_GROUPS = {
   Dimensiones: ['width', 'height'],
   Grid: ['display', 'gridTemplateColumns', 'gridTemplateRows', 'gap', 'colStart', 'colSpan', 'colEnd'],
   Borde: ['border', 'borderColor', 'borderRadius', 'borderStyle'],
-  Misceláneos: ['cursor', 'backgroundImage']
+  Misceláneos: [
+    'cursor',
+    'backgroundImage',
+    'backgroundPosition',
+    'backgroundRepeat',
+    'backgroundSize'
+  ]
 };
 
 const STYLE_TAB_ICONS = {
@@ -284,6 +293,22 @@ export default function Editor({ file }) {
           nuevosSelectedStyles[prop] = match ? match[1] : '';
         } else if (prop === 'display') {
           nuevosSelectedStyles[prop] = styles.display || '';
+        } else if (prop === 'backgroundPosition') {
+          nuevosSelectedStyles[prop] = styles.backgroundPosition || '';
+        }
+        else if (prop === 'backgroundRepeat') {
+          nuevosSelectedStyles[prop] = styles.backgroundRepeat || '';
+        }
+        else if (prop === 'backgroundSize') {
+          nuevosSelectedStyles[prop] = styles.backgroundSize || '';
+        } else if (prop === 'backgroundPosition') {
+          nuevosSelectedStyles[prop] = styles.backgroundPosition || '';
+        } else if (prop === 'backgroundRepeat') {
+          nuevosSelectedStyles[prop] = styles.backgroundRepeat || '';
+        } else if (prop === 'backgroundSize') {
+          nuevosSelectedStyles[prop] = styles.backgroundSize || '';
+        } else if (prop === 'display') {
+          nuevosSelectedStyles[prop] = styles.display || '';
         } else {
           nuevosSelectedStyles[prop] = styles[prop] || '';
         }
@@ -441,7 +466,10 @@ export default function Editor({ file }) {
                         'colEnd',
                         'borderColor',
                         'borderRadius',
-                        'borderStyle'
+                        'borderStyle',
+                        'backgroundRepeat',
+                        'backgroundSize',
+                        'backgroundPosition'
                       ].includes(prop)
                     ) {
                       return null;
@@ -497,6 +525,95 @@ export default function Editor({ file }) {
                               ))}
                             </div>
                           </div>
+                        </label>
+                      );
+                    }
+
+                    if (!tailwindMode && prop === 'backgroundImage') {
+                      return (
+                        <label key={prop} className="flex flex-col text-sm">
+                          {prop}:
+                          <input
+                            type="text"
+                            list="bg-image-options"
+                            value={selectedStyles[prop] || ''}
+                            onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
+                            className="border rounded p-1 mt-1"
+                          />
+                          <datalist id="bg-image-options">
+                            <option value='url("https://ejemplo.com/imagen1.jpg")' />
+                            <option value='url("https://cdn.sitio.com/bg2.png")' />
+                            <option value='url("/imagenes/fondo.png")' />
+                            <option value='none' />
+                          </datalist>
+                        </label>
+                      );
+                    }
+
+                    if (!tailwindMode && prop === 'backgroundPosition') {
+                      return (
+                        <label key={prop} className="flex flex-col text-sm">
+                          {prop}:
+                          <input
+                            type="text"
+                            list="bg-position-options"
+                            value={selectedStyles[prop] || ''}
+                            onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
+                            className="border rounded p-1 mt-1"
+                          />
+                          <datalist id="bg-position-options">
+                            <option value="center" />
+                            <option value="top" />
+                            <option value="bottom" />
+                            <option value="left" />
+                            <option value="right" />
+                            <option value="top left" />
+                            <option value="bottom right" />
+                          </datalist>
+                        </label>
+                      );
+                    }
+
+                    if (!tailwindMode && prop === 'backgroundPosition') {
+                      return (
+                        <label key={prop} className="flex flex-col text-sm">
+                          {prop}:
+                          <input
+                            type="text"
+                            list="bg-position-options"
+                            value={selectedStyles[prop] || ''}
+                            onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
+                            className="border rounded p-1 mt-1"
+                          />
+                          <datalist id="bg-position-options">
+                            <option value="center" />
+                            <option value="top" />
+                            <option value="bottom" />
+                            <option value="left" />
+                            <option value="right" />
+                            <option value="top left" />
+                            <option value="bottom right" />
+                          </datalist>
+                        </label>
+                      );
+                    }
+
+                    if (!tailwindMode && prop === 'backgroundSize') {
+                      return (
+                        <label key={prop} className="flex flex-col text-sm">
+                          {prop}:
+                          <input
+                            type="text"
+                            list="bg-size-options"
+                            value={selectedStyles[prop] || ''}
+                            onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
+                            className="border rounded p-1 mt-1"
+                          />
+                          <datalist id="bg-size-options">
+                            <option value="auto" />
+                            <option value="cover" />
+                            <option value="contain" />
+                          </datalist>
                         </label>
                       );
                     }
