@@ -23,15 +23,7 @@ const TAILWIND_MAP = {
   },
   border: ['border', 'border-2', 'border-4', 'border-8', 'border-none'],
   borderColor: ['border-black', 'border-white', 'border-gray-500', 'border-red-500', 'border-green-500', 'border-blue-500'],
-  borderRadius: [
-    'rounded-none',
-    'rounded-sm',
-    'rounded',
-    'rounded-md',
-    'rounded-lg',
-    'rounded-xl',
-    'rounded-full'
-  ],
+  borderRadius: ['rounded-none', 'rounded-sm', 'rounded', 'rounded-md', 'rounded-lg', 'rounded-xl', 'rounded-full'],
   borderStyle: ['border-solid', 'border-dashed', 'border-dotted', 'border-double'],
   fontSize: ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl', 'text-2xl'],
   fontWeight: ['font-thin', 'font-light', 'font-normal', 'font-medium', 'font-bold', 'font-extrabold'],
@@ -42,6 +34,10 @@ const TAILWIND_MAP = {
   height: ['h-auto', 'h-full', 'h-32', 'h-64', 'h-96'],
   cursor: ['cursor-default', 'cursor-pointer', 'cursor-not-allowed', 'cursor-move'],
   display: ['block', 'inline', 'inline-block', 'flex', 'grid', 'hidden'],
+  gap: ['gap-0', 'gap-1', 'gap-2', 'gap-4', 'gap-6', 'gap-8'],
+  colStart: ['col-start-1', 'col-start-2', 'col-start-3', 'col-start-4', 'col-start-5', 'col-start-6'],
+  colSpan: ['col-span-1', 'col-span-2', 'col-span-3', 'col-span-4', 'col-span-5', 'col-span-6', 'col-span-full'],
+  colEnd: ['col-end-1', 'col-end-2', 'col-end-3', 'col-end-4', 'col-end-5', 'col-end-6'],
   gridTemplateColumns: ['grid-cols-1', 'grid-cols-2', 'grid-cols-3', 'grid-cols-4', 'grid-cols-5', 'grid-cols-6', 'grid-cols-12'],
   gridTemplateRows: ['grid-rows-1', 'grid-rows-2', 'grid-rows-3', 'grid-rows-4', 'grid-rows-5', 'grid-rows-6', 'grid-rows-12'],
   backgroundImage: ['bg-none', 'bg-gradient-to-r', 'bg-gradient-to-l', 'bg-gradient-to-t', 'bg-gradient-to-b']
@@ -52,7 +48,7 @@ const STYLE_GROUPS = {
   Tipografía: ['fontSize', 'fontWeight', 'textAlign'],
   Colores: ['color', 'backgroundColor'],
   Dimensiones: ['width', 'height'],
-  Grid: ['display', 'gridTemplateColumns', 'gridTemplateRows'],
+  Grid: ['display', 'gridTemplateColumns', 'gridTemplateRows', 'gap', 'colStart', 'colSpan', 'colEnd'],  
   Borde: ['border', 'borderColor', 'borderRadius', 'borderStyle'],
   Misceláneos: ['cursor', 'backgroundImage']
 };
