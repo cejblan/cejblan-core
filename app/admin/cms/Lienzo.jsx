@@ -50,7 +50,7 @@ const TAILWIND_MAP = {
   top: ['top-0', 'top-2', 'top-4', 'top-8', 'top-16', 'top-auto'],
   left: ['left-0', 'left-2', 'left-4', 'left-8', 'left-16', 'left-auto'],
   right: ['right-0', 'right-2', 'right-4', 'right-8', 'right-16', 'right-auto'],
-  bottom: ['bottom-0', 'bottom-2', 'bottom-4', 'bottom-8', 'bottom-16', 'bottom-auto'],  
+  bottom: ['bottom-0', 'bottom-2', 'bottom-4', 'bottom-8', 'bottom-16', 'bottom-auto'],
   overflow: ['overflow-visible', 'overflow-hidden', 'overflow-scroll', 'overflow-auto'],
   objectFit: ['object-fill', 'object-contain', 'object-cover', 'object-none', 'object-scale-down'],
 };
@@ -98,6 +98,8 @@ export default function Editor({ file }) {
   const [selectedElement, setSelectedElement] = useState(null);
   const [imagenSeleccionada, setImagenSeleccionada] = useState(null);
   const [tabActivo, setTabActivo] = useState('Espaciado');
+  const [historial, setHistorial] = useState([]);
+  const [indiceHistorial, setIndiceHistorial] = useState(-1);
 
   const editorRef = useRef(null);
   const monacoRef = useRef(null);
@@ -171,6 +173,8 @@ export default function Editor({ file }) {
   const handleVisualInput = () => {
     preventNextSync.current = true;
     const html = editorRef.current.innerHTML;
+    registrarCambio(editorRef.current.innerHTML);
+
     setContent(
       tailwindMode ? html.replace(/class=/g, 'className=') : html
     );
@@ -396,6 +400,30 @@ export default function Editor({ file }) {
     setSelectedStyles(nuevosSelectedStyles);
     setContent(editorRef.current.innerHTML);
   };
+
+  const registrarCambio = (nuevoContenido) => {
+    const nuevoHistorial = historial.slice(0, indiceHistorial + 1);
+    nuevoHistorial.push(nuevoContenido);
+    setHistorial(nuevoHistorial);
+    setIndiceHistorial(nuevoHistorial.length - 1);
+  };
+
+  const deshacer = () => {
+    if (indiceHistorial > 0) {
+      const nuevoIndice = indiceHistorial - 1;
+      setIndiceHistorial(nuevoIndice);
+      setContent(historial[nuevoIndice]);
+    }
+  };
+
+  const rehacer = () => {
+    if (indiceHistorial < historial.length - 1) {
+      const nuevoIndice = indiceHistorial + 1;
+      setIndiceHistorial(nuevoIndice);
+      setContent(historial[nuevoIndice]);
+    }
+  };
+
 
   useEffect(() => {
     const editor = editorRef.current;
@@ -715,7 +743,12 @@ export default function Editor({ file }) {
               height="400px"
               defaultLanguage="html"
               value={content}
-              onChange={(val) => setContent(val || '')}
+              onChange={(val) => {
+                if (val !== null) {
+                  registrarCambio(val);
+                  setContent(val);
+                }
+              }}
               options={{ minimap: { enabled: false }, fontSize: 14 }}
               onMount={(editor) => {
                 monacoRef.current = editor;
@@ -736,6 +769,9 @@ export default function Editor({ file }) {
         )}
       </div>
       <div className="text-center">
+        <button onClick={deshacer} disabled={indiceHistorial <= 0}>Deshacer</button>
+        <button onClick={rehacer} disabled={indiceHistorial >= historial.length - 1}>Rehacer</button>
+
         <button
           onClick={guardar}
           className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition"
