@@ -449,6 +449,7 @@ export default function Editor({ file }) {
 
   const btnSmall = "bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition";
   const btnSmall2 = "bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition";
+  const btnSmall3 = "bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition";
 
   return (
     <div className="flex flex-col gap-4">
@@ -460,10 +461,14 @@ export default function Editor({ file }) {
         <button className={btnSmall} onClick={() => insertHTML('<section>Contenido dentro de SECTION</section>')}>Section</button>
         <button className={btnSmall} onClick={() => insertHTML('<ul><li>Item 1</li><li>Item 2</li></ul>')}>Lista</button>
         <button className={btnSmall} onClick={() => insertHTML('<img src=\"https://img.ejemplo.com/150\" />')}>Imagen</button>
-        <button className={btnSmall2} onClick={nuevoArchivo}>Nuevo archivo</button>
+      </div>
+      <div className="flex flex-wrap gap-2">
         <button className={btnSmall2} onClick={() => setModoEditor(modoEditor === 'visual' ? 'codigo' : 'visual')}>
           {modoEditor === 'visual' ? 'Ver Código' : 'Ver Visual'}
         </button>
+        <button className={btnSmall3} onClick={deshacer} disabled={indiceHistorial <= 0}>Deshacer</button>
+        <button className={btnSmall3} onClick={rehacer} disabled={indiceHistorial >= historial.length - 1}>Rehacer</button>
+
       </div>
 
       {modoEditor === 'visual' && selectedElement && (
@@ -769,9 +774,6 @@ export default function Editor({ file }) {
         )}
       </div>
       <div className="text-center">
-        <button onClick={deshacer} disabled={indiceHistorial <= 0}>Deshacer</button>
-        <button onClick={rehacer} disabled={indiceHistorial >= historial.length - 1}>Rehacer</button>
-
         <button
           onClick={guardar}
           className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition"
