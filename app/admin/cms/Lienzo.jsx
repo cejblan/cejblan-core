@@ -114,8 +114,11 @@ export default function Editor({ file }) {
         if (!res.ok) throw new Error('No se pudo leer el archivo');
         const data = await res.json();
         const htmlVisual = data.content
+          .replace(/<FaRegWindowMinimize\s*className="([^"]+)"\s*\/>/g, '<i data-icon="FaRegWindowMinimize" class="$1"></i>')
+          .replace(/<FaRegWindowMaximize\s*className="([^"]+)"\s*\/>/g, '<i data-icon="FaRegWindowMaximize" class="$1"></i>')
+          .replace(/<FaRegWindowClose\s*className="([^"]+)"\s*\/>/g, '<i data-icon="FaRegWindowClose" class="$1"></i>')
           .replace(/className=/g, 'class=')
-          .replace(/<Image([^>]*)\/?>/gi, '<img$1 />')
+          .replace(/<Image([^>]*)\/?>/gi, '<img$1>')
           .replace(/<\/Image>/gi, '') // por si acaso hay mal cerradas
           .replace(/<Link([^>]*)>/gi, '<a$1>')
           .replace(/<\/Link>/gi, '</a>');
@@ -135,9 +138,12 @@ export default function Editor({ file }) {
       // convertir img → Image y a → Link
       htmlContent = htmlContent
         .replace(/class=/g, 'className=')
-        .replace(/<img([^>]*)\/?>/gi, '<Image$1 />')
+        .replace(/<img([^>]*)\/?>/gi, '<Image$1>')
         .replace(/<a([^>]*)>/gi, '<Link$1>')
-        .replace(/<\/a>/gi, '</Link>');
+        .replace(/<\/a>/gi, '</Link>')
+        .replace(/<i\s+data-icon="FaRegWindowMinimize"[^>]*class="([^"]+)"[^>]*><\/i>/g, '<FaRegWindowMinimize className="$1" />')
+        .replace(/<i\s+data-icon="FaRegWindowMaximize"[^>]*class="([^"]+)"[^>]*><\/i>/g, '<FaRegWindowMaximize className="$1" />')
+        .replace(/<i\s+data-icon="FaRegWindowClose"[^>]*class="([^"]+)"[^>]*><\/i>/g, '<FaRegWindowClose className="$1" />');
 
       await fetch('/api/cms/save', {
         method: 'POST',
@@ -746,7 +752,7 @@ export default function Editor({ file }) {
             <h3>Editor de código</h3>
             <MonacoEditor
               height="400px"
-              defaultLanguage="html"
+              defaultLanguage="javascript"
               value={content}
               onChange={(val) => {
                 if (val !== null) {
