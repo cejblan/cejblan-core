@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import MonacoEditor from '@monaco-editor/react';
 import { FiLayout, FiType, FiDroplet, FiBox, FiGrid, FiSquare, FiSliders } from 'react-icons/fi';
+import { TbScanPosition } from "react-icons/tb";
 
 const TAILWIND_MAP = {
   padding: {
@@ -44,6 +45,14 @@ const TAILWIND_MAP = {
   backgroundPosition: ['bg-center', 'bg-left', 'bg-right', 'bg-top', 'bg-bottom', 'bg-left-top', 'bg-right-bottom'],
   backgroundRepeat: ['bg-repeat', 'bg-no-repeat', 'bg-repeat-x', 'bg-repeat-y'],
   backgroundSize: ['bg-auto', 'bg-cover', 'bg-contain'],
+  position: ['static', 'relative', 'absolute', 'fixed', 'sticky'],
+  zIndex: ['z-auto', 'z-0', 'z-10', 'z-20', 'z-30', 'z-40', 'z-50'],
+  top: ['top-0', 'top-2', 'top-4', 'top-8', 'top-16', 'top-auto'],
+  left: ['left-0', 'left-2', 'left-4', 'left-8', 'left-16', 'left-auto'],
+  right: ['right-0', 'right-2', 'right-4', 'right-8', 'right-16', 'right-auto'],
+  bottom: ['bottom-0', 'bottom-2', 'bottom-4', 'bottom-8', 'bottom-16', 'bottom-auto'],  
+  overflow: ['overflow-visible', 'overflow-hidden', 'overflow-scroll', 'overflow-auto'],
+  objectFit: ['object-fill', 'object-contain', 'object-cover', 'object-none', 'object-scale-down'],
 };
 
 const STYLE_GROUPS = {
@@ -59,7 +68,8 @@ const STYLE_GROUPS = {
     'backgroundPosition',
     'backgroundRepeat',
     'backgroundSize'
-  ]
+  ],
+  Posicionamiento: ['position', 'zIndex', 'top', 'left', 'right', 'bottom', 'overflow', 'objectFit'],
 };
 
 const STYLE_TAB_ICONS = {
@@ -69,7 +79,8 @@ const STYLE_TAB_ICONS = {
   Dimensiones: <FiBox className="inline mr-1" />,
   Grid: <FiGrid className="inline mr-1" />,
   Borde: <FiSquare className="inline mr-1" />,
-  Misceláneos: <FiSliders className="inline mr-1" />
+  Misceláneos: <FiSliders className="inline mr-1" />,
+  Posicionamiento: <TbScanPosition className="inline mr-1" />,
 };
 
 const PALETA_COLORES = [
