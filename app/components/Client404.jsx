@@ -7,6 +7,12 @@ import Gato404 from "public/Gato404.webp";
 
 export default function Client404() {
   const router = useRouter();
+
+  const handleActions = (e) => {
+    const action = e.currentTarget.dataset.action;
+    if (action === "go-back") router.back();
+  };
+
   return (
     <section className="font-bold text-center max-[420px]:px-4 pb-8 px-8 grid grid-cols-1 justify-center items-center">
       <div className="rounded-xl shadow-5xl">
@@ -22,7 +28,8 @@ export default function Client404() {
             <h1 className="max-[420px]:text-4xl text-5xl">404 - Página no encontrada</h1>
             <p className="max-[420px]:text-2xl text-3xl mb-3">Lo sentimos, no podemos encontrar lo que buscas.</p>
             <button
-              onClick={() => router.back()}
+              data-action="go-back"
+              onClick={handleActions}
               className="bg-[#64FFDA] max-[420px]:text-xl text-2xl text-[#0A192F] hover:text-blue-600 py-1 px-2 rounded-xl shadow-6xl underline">
               Regresar a la página anterior
             </button>
@@ -32,6 +39,6 @@ export default function Client404() {
           </div>
         </div>
       </div>
-    </section >
+    </section>
   );
 }
