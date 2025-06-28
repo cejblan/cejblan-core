@@ -25,7 +25,7 @@ export default function RootLayout({ children }) {
       <body className=/*{*/"text-center select-none "/* + inter.className}*/>
         <Providers>
           <Navbar />
-          <section id="Cejblan" className="Destacado2 bg-gradient-to-b bg-[#0A192F]">
+          <section className="Destacado2 bg-gradient-to-b bg-[#0A192F]">
             {children}
           </section>
           <PaypalButton />

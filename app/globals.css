@@ -42,17 +42,17 @@ ol li {
 
 /* Fin Navbar */
 /* Inicio */
-#Cejblan.Destacado1 {
+.Destacado1 {
   background-image: url(/fondo.jpg);
   background-size: cover;
 }
 
-#Cejblan.Destacado2 {
+.Destacado2 {
   background-image: url(/cejblan02.webp);
   background-size: cover;
 }
 
-#Cejblan.Destacado3 {
+.Destacado3 {
   background-image: url(/cejblan03.webp);
   background-size: cover;
 }
