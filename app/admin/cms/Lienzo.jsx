@@ -58,7 +58,7 @@ const TAILWIND_MAP = {
 const STYLE_GROUPS = {
   Espaciado: ['margin', 'padding'],
   Tipografía: ['fontSize', 'fontWeight', 'textAlign'],
-  Colores: ['color', 'backgroundColor'],
+  Colores: ['color', 'backgroundColor', 'paletaSitio'],
   Dimensiones: ['width', 'height'],
   Grid: ['display', 'gridTemplateColumns', 'gridTemplateRows', 'gap', 'colStart', 'colSpan', 'colEnd'],
   Borde: ['border', 'borderColor', 'borderRadius', 'borderStyle'],
@@ -100,6 +100,8 @@ export default function Editor({ file }) {
   const [tabActivo, setTabActivo] = useState('Espaciado');
   const [historial, setHistorial] = useState([]);
   const [indiceHistorial, setIndiceHistorial] = useState(-1);
+  const [mostrandoEditorPaleta, setMostrandoEditorPaleta] = useState(false);
+  const [paletaUsuario, setPaletaUsuario] = useState([]);
 
   const editorRef = useRef(null);
   const monacoRef = useRef(null);
@@ -130,6 +132,40 @@ export default function Editor({ file }) {
     };
     cargar();
   }, [file]);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch(`/api/admin/settings`);
+        const data = await response.json();
+
+        const setting = data.find(item => item.name === "paleta_colores");
+        let paleta = [];
+
+        if (Array.isArray(setting?.value)) {
+          paleta = setting.value;
+        } else if (typeof setting?.value === 'string') {
+          try {
+            const parsed = JSON.parse(setting.value);
+            if (Array.isArray(parsed)) {
+              paleta = parsed;
+            } else {
+              paleta = setting.value.split(',').map(c => c.trim());
+            }
+          } catch (e) {
+            paleta = setting.value.split(',').map(c => c.trim());
+          }
+        }
+
+        console.log(paleta);
+        setPaletaUsuario(paleta);
+      } catch (error) {
+        console.error("Error al cargar ajustes:", error);
+      }
+    };
+
+    fetchSettings();
+  }, []);
 
   const guardar = async () => {
     try {
@@ -504,6 +540,31 @@ export default function Editor({ file }) {
                     const opciones = TAILWIND_MAP[prop];
                     if (!opciones) return null;
 
+                    if (prop === 'paletaSitio') {
+                      return (
+                        <div key={prop} className="flex flex-col text-sm col-span-full">
+                          <p className="font-semibold mb-2">Paleta de Colores del Sitio</p>
+                          <div className="flex flex-wrap gap-2 mb-2">
+                            {paletaUsuario.map((color) => (
+                              <button
+                                key={color}
+                                title={color}
+                                onClick={() => actualizarClaseTailwind(tabActivo === 'Colores' && STYLE_GROUPS.Colores.includes('backgroundColor') ? 'backgroundColor' : 'color', color)}
+                                className="w-6 h-6 rounded border"
+                                style={{ backgroundColor: color }}
+                              />
+                            ))}
+                            <input
+                              type="color"
+                              onChange={(e) => actualizarClaseTailwind(tabActivo === 'Colores' && STYLE_GROUPS.Colores.includes('backgroundColor') ? 'backgroundColor' : 'color', e.target.value)}
+                              className="w-6 h-6 p-0 border rounded cursor-pointer"
+                              title="Elegir color"
+                            />
+                          </div>
+                        </div>
+                      );
+                    }
+
                     // Ocultar ciertas propiedades en modo estilo en línea
                     if (
                       !tailwindMode &&
@@ -563,21 +624,43 @@ export default function Editor({ file }) {
                               onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
                               className="border rounded p-1"
                             />
-                            <div className="grid grid-cols-5 gap-1">
-                              {PALETA_COLORES.map((color) => (
-                                <button
-                                  key={color}
-                                  title={color}
-                                  onClick={() => actualizarClaseTailwind(prop, color)}
-                                  className="w-3 h-3 rounded border"
-                                  style={{ backgroundColor: color }}
-                                />
-                              ))}
+
+                            {/* Paleta del sitio */}
+                            <div>
+                              <p className="text-xs font-semibold mt-1 mb-1">Paleta</p>
+                              <div className="grid grid-cols-6 gap-1">
+                                {paletaUsuario.map((color, idx) => (
+                                  <button
+                                    key={idx}
+                                    title={color}
+                                    onClick={() => actualizarClaseTailwind(prop, color)}
+                                    className="m-auto w-3 h-3 rounded border"
+                                    style={{ backgroundColor: color }}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Paleta por defecto */}
+                            <div>
+                              <p className="text-xs font-semibold mt-2 mb-1">Colores por defecto</p>
+                              <div className="grid grid-cols-5 gap-1">
+                                {PALETA_COLORES.map((color) => (
+                                  <button
+                                    key={color}
+                                    title={color}
+                                    onClick={() => actualizarClaseTailwind(prop, color)}
+                                    className="m-auto w-3 h-3 rounded border"
+                                    style={{ backgroundColor: color }}
+                                  />
+                                ))}
+                              </div>
                             </div>
                           </div>
                         </label>
                       );
                     }
+
 
                     if (!tailwindMode && prop === 'backgroundImage') {
                       return (
@@ -713,6 +796,51 @@ export default function Editor({ file }) {
               {tailwindMode ? 'Quitar TailwindCSS' : 'Usar TailwindCSS'}
             </button>
           </div>
+        </div>
+      )}
+      {modoEditor === 'visual' && (
+        <div className="p-4 bg-gray-100 border rounded">
+          <button
+            onClick={() => setMostrandoEditorPaleta(!mostrandoEditorPaleta)}
+            className="mb-2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            {mostrandoEditorPaleta ? 'Ocultar paleta del sitio' : 'Editar paleta del sitio'}
+          </button>
+
+          {mostrandoEditorPaleta && (
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+              {[0, 1, 2, 3, 4, 5].map((i) => (
+                <input
+                  key={i}
+                  type="color"
+                  value={paletaUsuario[i] || "#ffffff"}
+                  onChange={(e) => {
+                    const nueva = [...paletaUsuario];
+                    nueva[i] = e.target.value;
+                    setPaletaUsuario(nueva);
+                  }}
+                  className="w-full h-10 border rounded"
+                />
+              ))}
+              <button
+                onClick={async () => {
+                  await fetch("/api/cms/settings", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      name: "paleta_colores",
+                      value: paletaUsuario,
+                      description: "Paleta de colores del sitio web elegida por el usuario"
+                    })
+                  });
+                  setMostrandoEditorPaleta(false);
+                }}
+                className="col-span-3 sm:col-span-6 mt-2 bg-green-600 text-white py-1 rounded hover:bg-green-700"
+              >
+                Guardar Paleta
+              </button>
+            </div>
+          )}
         </div>
       )}
       {modoEditor === 'visual' && imagenSeleccionada && (
