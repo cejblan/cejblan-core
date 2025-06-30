@@ -10,7 +10,7 @@ import { MdCategory, MdDeliveryDining, MdBorderColor } from "react-icons/md";
 import { PiBlueprintFill, PiCoinsFill, PiCurrencyDollarSimpleFill } from "react-icons/pi";
 import { RiPaintBrushFill } from "react-icons/ri";
 import { TiThMenu } from "react-icons/ti";
-import { VscTriangleLeft } from "react-icons/vsc";
+import { VscTriangleLeft, VscSettings } from "react-icons/vsc";
 import Image from "next/image";
 import Loading from "../../components/Loading";
 import Link from "next/link";
@@ -34,7 +34,8 @@ const MAIN_ITEMS = [
   { href: "/admin/deliveryNote", label: "Notas", icon: PiBlueprintFill },
   { href: "/admin/coins", label: "Monedas", icon: PiCoinsFill },
   { href: "/admin/telegram", label: "Telegram", icon: FaTelegram },
-  { href: "/admin/settings", label: "Configuración", icon: RiPaintBrushFill },
+  { href: "/admin/cms", label: "CMS", icon: RiPaintBrushFill },
+  { href: "/admin/settings", label: "Configuración", icon: VscSettings },
 ];
 
 export default function NavbarAdmin({ children }) {
