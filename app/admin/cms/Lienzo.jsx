@@ -824,13 +824,12 @@ export default function Editor({ file }) {
               ))}
               <button
                 onClick={async () => {
-                  await fetch("/api/cms/settings", {
-                    method: "POST",
+                  await fetch("/api/admin/settings", {
+                    method: "PUT",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                       name: "paleta_colores",
-                      value: paletaUsuario,
-                      description: "Paleta de colores del sitio web elegida por el usuario"
+                      value: JSON.stringify(paletaUsuario), // convertir arreglo a string si es necesario
                     })
                   });
                   setMostrandoEditorPaleta(false);
@@ -839,6 +838,7 @@ export default function Editor({ file }) {
               >
                 Guardar Paleta
               </button>
+
             </div>
           )}
         </div>
