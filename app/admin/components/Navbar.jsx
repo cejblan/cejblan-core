@@ -11,6 +11,7 @@ import { PiBlueprintFill, PiCoinsFill, PiCurrencyDollarSimpleFill } from "react-
 import { RiPaintBrushFill } from "react-icons/ri";
 import { TiThMenu } from "react-icons/ti";
 import { VscTriangleLeft, VscSettings } from "react-icons/vsc";
+import { GrGallery } from "react-icons/gr";
 import Image from "next/image";
 import Loading from "../../components/Loading";
 import Link from "next/link";
@@ -34,6 +35,7 @@ const MAIN_ITEMS = [
   { href: "/admin/deliveryNote", label: "Notas", icon: PiBlueprintFill },
   { href: "/admin/coins", label: "Monedas", icon: PiCoinsFill },
   { href: "/admin/telegram", label: "Telegram", icon: FaTelegram },
+  { href: "/admin/gallery", label: "Galeria", icon: GrGallery },
   { href: "/admin/cms", label: "CMS", icon: RiPaintBrushFill },
   { href: "/admin/settings", label: "Configurar", icon: VscSettings },
 ];
