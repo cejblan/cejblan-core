@@ -102,6 +102,7 @@ export default function Editor({ file }) {
   const [indiceHistorial, setIndiceHistorial] = useState(-1);
   const [mostrandoEditorPaleta, setMostrandoEditorPaleta] = useState(false);
   const [paletaUsuario, setPaletaUsuario] = useState([]);
+  const [logoURL, setLogoURL] = useState(null);
 
   const editorRef = useRef(null);
   const monacoRef = useRef(null);
@@ -141,6 +142,9 @@ export default function Editor({ file }) {
 
         const setting = data.find(item => item.name === "paleta_colores");
         let paleta = [];
+
+        const logoSetting = data.find(item => item.name === "logo_sitio");
+        if (logoSetting?.value) setLogoURL(logoSetting.value);
 
         if (Array.isArray(setting?.value)) {
           paleta = setting.value;
@@ -797,6 +801,59 @@ export default function Editor({ file }) {
           </div>
         </div>
       )}
+      {modoEditor === 'visual' && (
+  <div className="p-4 bg-gray-100 border rounded">
+    <p className="mb-2 font-semibold">Logo del sitio:</p>
+
+    <label className="inline-block cursor-pointer">
+      <div className="w-32 h-32 bg-white border border-dashed rounded flex items-center justify-center overflow-hidden hover:shadow transition">
+        <img
+          src={logoURL || "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/ImageNotSupported.webp"}
+          alt="Logo del sitio"
+          className="object-contain w-full h-full"
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/ImageNotSupported.webp"; // ruta local para imagen rota
+          }}
+        />
+      </div>
+      <input
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={async (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+
+          const formData = new FormData();
+          formData.append("image", file);
+
+          try {
+            const res = await fetch("/api/cms/upload-image", {
+              method: "POST",
+              body: formData,
+            });
+            const data = await res.json();
+            if (data.secure_url) {
+              setLogoURL(data.secure_url);
+              await fetch("/api/admin/settings", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  name: "logo_sitio",
+                  value: data.secure_url,
+                })
+              });
+            }
+          } catch (err) {
+            console.error("Error al subir logo:", err);
+          }
+        }}
+      />
+    </label>
+  </div>
+)}
+
       {modoEditor === 'visual' && (
         <div className="p-4 bg-gray-100 border rounded">
           <button
