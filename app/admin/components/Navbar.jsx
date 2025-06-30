@@ -35,7 +35,7 @@ const MAIN_ITEMS = [
   { href: "/admin/coins", label: "Monedas", icon: PiCoinsFill },
   { href: "/admin/telegram", label: "Telegram", icon: FaTelegram },
   { href: "/admin/cms", label: "CMS", icon: RiPaintBrushFill },
-  { href: "/admin/settings", label: "Configuración", icon: VscSettings },
+  { href: "/admin/settings", label: "Configurar", icon: VscSettings },
 ];
 
 export default function NavbarAdmin({ children }) {
@@ -52,7 +52,7 @@ export default function NavbarAdmin({ children }) {
   return (
     <>
       <nav className="text-white text-base w-full fixed z-20">
-        <div className="bg-slate-800 w-full flex items-center px-1">
+        <div className="bg-slate-800 w-full flex items-center pl-1">
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="hover:bg-slate-700 hover:text-blue-300 p-1 flex items-center"
@@ -64,9 +64,9 @@ export default function NavbarAdmin({ children }) {
             <h1 className="font-bold max-[420px]:hidden">CejblanCMS</h1>
           </Link>
           <div onClick={() => setIsOpenTwo(!isOpenTwo)} className="p-1 relative">
-            <FaPlus className={`hover:fill-slate-500 w-3 h-3 ${isOpenTwo ? "rotate-45" : ""}`} />
+            <FaPlus className={`hover:fill-blue-300 w-3 h-3 ${isOpenTwo ? "rotate-45" : ""}`} />
             {isOpenTwo && (
-              <div className="menu bg-slate-700 rounded-xl absolute top-0 left-5 text-sm">
+              <div className="menu bg-slate-700 rounded-xl absolute top-6 left-[-3rem] text-sm">
                 {NEW_ITEMS.map(({ href, label, icon: Icon }) => (
                   <Link
                     key={href}
@@ -81,7 +81,7 @@ export default function NavbarAdmin({ children }) {
             )}
           </div>
 
-          <div className="hover:text-blue-300 py-1 ml-auto flex justify-end items-center relative" onClick={() => setIsOpenThree(!isOpenThree)}>
+          <div className="hover:bg-slate-700 hover:text-blue-300 p-1 ml-auto flex justify-end items-center relative" onClick={() => setIsOpenThree(!isOpenThree)}>
             <h2 className="text-xs mr-1">{session?.user.name}</h2>
             <Image
               src={session?.user.image}
@@ -104,19 +104,19 @@ export default function NavbarAdmin({ children }) {
 
       <div className="pt-5 flex transition-all duration-300">
         <div
-          className={`bg-slate-800 text-white text-left h-screen max-[420px]:min-w-16 text-sm transition-all duration-300 overflow-y-auto ${
-            isOpen ? 'w-48 min-w-[12rem]' : 'w-0 min-w-0'
+          className={`bg-slate-800 text-white text-left text-sm transition-all duration-300 overflow-y-auto ${
+            isOpen ? 'w-fit min-w-[7.8rem]' : 'w-0 min-w-0'
           }`}
         >
           {MAIN_ITEMS.map(({ href, label, icon: Icon, match }) => (
             <Link
               key={href}
               href={href}
-              className={`${isActive(href, match) ? "bg-slate-700" : ""} hover:bg-slate-600 hover:text-blue-300 py-1 pl-1 border-b border-slate-600 flex items-center`}
+              className={`${isActive(href, match) ? "bg-slate-700" : ""} hover:bg-slate-600 hover:text-blue-300 py-1 pl-1 border-t border-slate-600 flex items-center`}
             >
               <Icon className="mr-1 w-2 h-2" />
               <h3>{label}</h3>
-              {isActive(href, match) && <VscTriangleLeft className="text-slate-200 ml-auto w-3 h-3 relative left-1" />}
+              {isActive(href, match) && <VscTriangleLeft className="text-slate-200 ml-auto w-3 h-3 relative right-[-9px]" />}
             </Link>
           ))}
         </div>
