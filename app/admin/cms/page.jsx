@@ -52,8 +52,8 @@ export default function CMS() {
   }
 
   return (
-    <div className="p-4 space-y-4">
-      <div className="flex flex-wrap items-center gap-4">
+    <div>
+      <div className="flex flex-wrap items-center gap-4 mb-2">
         <select
           value={archivoSeleccionado}
           onChange={(e) => setArchivoSeleccionado(e.target.value)}
@@ -65,7 +65,6 @@ export default function CMS() {
             </option>
           ))}
         </select>
-
         <button
           onClick={nuevoArchivo}
           className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition text-sm"
@@ -73,7 +72,6 @@ export default function CMS() {
           Nuevo archivo
         </button>
       </div>
-
       {archivoSeleccionado && <Editor file={archivoSeleccionado} />}
     </div>
   );

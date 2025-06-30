@@ -102,7 +102,7 @@ export default function Settings() {
     )
 
   return (
-    <div className="max-w-xl mx-auto p-4 grid gap-6">
+    <div className="max-w-xl mx-auto grid gap-6">
       <h1 className="text-2xl font-bold">Configuración general</h1>
       <div className="border rounded p-4 bg-gray-50 space-y-4">
         <div className="flex gap-2 items-center">
