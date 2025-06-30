@@ -157,7 +157,6 @@ export default function Editor({ file }) {
           }
         }
 
-        console.log(paleta);
         setPaletaUsuario(paleta);
       } catch (error) {
         console.error("Error al cargar ajustes:", error);
