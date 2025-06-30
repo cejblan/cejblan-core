@@ -63,7 +63,7 @@ export default function NavbarAdmin({ children }) {
             <FaHome className="mr-1 w-3 h-3" />
             <h1 className="font-bold max-[420px]:hidden">CejblanCMS</h1>
           </Link>
-          <div onClick={() => setIsOpenTwo(!isOpenTwo)} className="relative">
+          <div onClick={() => setIsOpenTwo(!isOpenTwo)} className="p-1 relative">
             <FaPlus className={`hover:fill-slate-500 w-3 h-3 ${isOpenTwo ? "rotate-45" : ""}`} />
             {isOpenTwo && (
               <div className="menu bg-slate-700 rounded-xl absolute top-0 left-5 text-sm">
