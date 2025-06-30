@@ -61,7 +61,10 @@ export default function NavbarAdmin({ children }) {
       <nav className="text-white text-base w-full fixed z-20">
         <div className="bg-slate-800 w-full flex items-center pl-1">
           <button
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={() => {
+              setIsOpen((prev) => !prev);
+              if (isOpenTwo) setIsOpenTwo(false); // cerrar menú de "news" si está abierto
+            }}
             className="hover:bg-slate-700 hover:text-blue-300 p-1 flex items-center"
           >
             <TiThMenu />
@@ -111,9 +114,8 @@ export default function NavbarAdmin({ children }) {
 
       <div className="pt-5 flex transition-all duration-300">
         <div
-          className={`bg-slate-800 text-white text-left text-sm transition-all duration-300 overflow-y-auto ${
-            isOpen ? 'w-fit min-w-[7.8rem]' : 'w-0 min-w-0'
-          }`}
+          className={`bg-slate-800 text-white text-left text-sm transition-all duration-300 overflow-y-auto ${isOpen ? 'w-fit min-w-[7.8rem]' : 'w-0 min-w-0'
+            }`}
         >
           {MAIN_ITEMS.map(({ href, label, icon: Icon, match }) => (
             <Link
