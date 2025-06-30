@@ -61,12 +61,12 @@ export default function NavbarAdmin({ children }) {
           </button>
           <Link href="/" className="hover:bg-slate-700 hover:text-blue-300 p-1 flex items-center">
             <FaHome className="mr-1 w-3 h-3" />
-            <h1 className="font-bold">CejblanCMS</h1>
+            <h1 className="font-bold max-[420px]:hidden">CejblanCMS</h1>
           </Link>
           <div onClick={() => setIsOpenTwo(!isOpenTwo)} className="relative">
             <FaPlus className={`hover:fill-slate-500 w-3 h-3 ${isOpenTwo ? "rotate-45" : ""}`} />
             {isOpenTwo && (
-              <div className="menu bg-slate-700 rounded-xl absolute top-0 left-5">
+              <div className="menu bg-slate-700 rounded-xl absolute top-0 left-5 text-sm">
                 {NEW_ITEMS.map(({ href, label, icon: Icon }) => (
                   <Link
                     key={href}
@@ -104,7 +104,7 @@ export default function NavbarAdmin({ children }) {
 
       <div className="pt-5 flex transition-all duration-300">
         <div
-          className={`bg-slate-800 text-white text-left h-screen grid grid-cols-1 auto-rows-min transition-all duration-300 overflow-hidden ${
+          className={`bg-slate-800 text-white text-left h-screen max-[420px]:min-w-16 text-sm transition-all duration-300 overflow-y-auto ${
             isOpen ? 'w-48 min-w-[12rem]' : 'w-0 min-w-0'
           }`}
         >
