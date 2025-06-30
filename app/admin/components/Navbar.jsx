@@ -81,7 +81,7 @@ export default function NavbarAdmin({ children }) {
             )}
           </div>
 
-          <div className="hover:bg-slate-700 hover:text-blue-300 p-1 ml-auto flex justify-end items-center relative" onClick={() => setIsOpenThree(!isOpenThree)}>
+          <div className="hover:bg-slate-700 hover:text-blue-300 p-1 border-l border-slate-600 ml-auto flex justify-end items-center relative" onClick={() => setIsOpenThree(!isOpenThree)}>
             <h2 className="text-xs mr-1">{session?.user.name}</h2>
             <Image
               src={session?.user.image}
@@ -116,7 +116,7 @@ export default function NavbarAdmin({ children }) {
             >
               <Icon className="mr-1 w-2 h-2" />
               <h3>{label}</h3>
-              {isActive(href, match) && <VscTriangleLeft className="text-slate-200 ml-auto w-3 h-3 relative right-[-9px]" />}
+              {isActive(href, match) && <VscTriangleLeft className="text-slate-200 ml-auto w-3 h-3" />}
             </Link>
           ))}
         </div>
