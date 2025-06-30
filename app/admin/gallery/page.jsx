@@ -69,20 +69,35 @@ export default function Gallery() {
               ) : (
                 <span className="text-xs text-gray-600">{img.pathname}</span>
               )}
+              {/* Botón eliminar */}
               <button
                 onClick={async () => {
                   if (!confirm("¿Eliminar esta imagen?")) return;
                   await fetch(`/api/cms/images?pathname=${encodeURIComponent(img.pathname)}`, {
                     method: "DELETE",
                   });
-                  setPagina(1); // refrescar galería
+                  setPagina(1);
                 }}
                 className="absolute top-1 right-1 bg-red-600 text-white rounded px-2 py-0.5 text-xs hover:bg-red-700"
               >
                 Eliminar
               </button>
+              {/* Botón copiar */}
+              <button
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(img.url);
+                    alert("URL copiada al portapapeles");
+                  } catch (err) {
+                    alert("Error al copiar URL");
+                  }
+                }}
+                className="absolute bottom-1 right-1 bg-blue-600 text-white rounded px-2 py-0.5 text-xs hover:bg-blue-700"
+              >
+                Copiar URL
+              </button>
             </div>
-          )
+          );
         })}
       </div>
       <div className="mt-6 flex justify-center gap-2">
