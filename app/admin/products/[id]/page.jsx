@@ -56,33 +56,13 @@ export default async function ProductPage({ params }) {
           </div>
         </div>
         <div className="max-[420px]:text-center text-left mx-auto">
-          <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Imagenes:</h2>
-          <div className="grid grid-cols-2 gap-2">
+          <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Imagen:</h2>
             <Image
               src={product.image || ImageNotSupported}
-              className="rounded-md drop-shadow-6xl m-auto h-fit"
+              className="rounded-md drop-shadow-6xl m-auto"
               alt={product.name}
-              width={100} height={100}
+              width={200} height={200}
             />
-            <Image
-              src={product.image || ImageNotSupported}
-              className="rounded-md drop-shadow-6xl m-auto h-fit"
-              alt={product.name}
-              width={100} height={100}
-            />
-            <Image
-              src={product.image || ImageNotSupported}
-              className="rounded-md drop-shadow-6xl m-auto h-fit"
-              alt={product.name}
-              width={100} height={100}
-            />
-            <Image
-              src={product.image || ImageNotSupported}
-              className="rounded-md drop-shadow-6xl m-auto h-fit"
-              alt={product.name}
-              width={100} height={100}
-            />
-          </div>
         </div>
       </div>
       <Buttons productId={product.id} />
