@@ -1,5 +1,3 @@
-// Navbar con menú hamburguesa animado y que desplaza el contenido al abrir/cerrar
-
 "use client"
 
 import { usePathname } from "next/navigation";
@@ -53,22 +51,27 @@ export default function NavbarAdmin({ children }) {
   return (
     <>
       <nav className="text-white text-base w-full fixed z-20">
-        <div className="bg-slate-800 w-full flex items-center px-2">
-          <button onClick={() => setIsOpen(!isOpen)} className="hover:fill-slate-500 w-4 h-4">
+        <div className="bg-slate-800 w-full flex items-center px-1">
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="hover:bg-slate-700 hover:text-blue-300 p-1 flex items-center"
+          >
             <TiThMenu />
           </button>
-
-          <Link href="/" className="hover:bg-slate-700 hover:text-blue-300 p-1 flex items-center ml-2">
+          <Link href="/" className="hover:bg-slate-700 hover:text-blue-300 p-1 flex items-center">
             <FaHome className="mr-1 w-3 h-3" />
-            <h1 className="font-bold hidden">CejblanCMS</h1>
+            <h1 className="font-bold">CejblanCMS</h1>
           </Link>
-
-          <div onClick={() => setIsOpenTwo(!isOpenTwo)} className="ml-4 relative">
+          <div onClick={() => setIsOpenTwo(!isOpenTwo)} className="relative">
             <FaPlus className={`hover:fill-slate-500 w-3 h-3 ${isOpenTwo ? "rotate-45" : ""}`} />
             {isOpenTwo && (
               <div className="menu bg-slate-700 rounded-xl absolute top-0 left-5">
                 {NEW_ITEMS.map(({ href, label, icon: Icon }) => (
-                  <Link key={href} href={href} className={`${isActive(href) ? "bg-slate-700" : ""} hover:bg-slate-600 hover:text-blue-300 p-1 flex items-center`}>
+                  <Link
+                    key={href}
+                    href={href}
+                    className={`${isActive(href) ? "bg-slate-700" : ""} hover:bg-slate-600 hover:text-blue-300 p-1 flex items-center`}
+                  >
                     <Icon className="mr-1 w-2 h-2" />
                     <h2 className="w-max">{label}</h2>
                   </Link>
@@ -77,11 +80,20 @@ export default function NavbarAdmin({ children }) {
             )}
           </div>
 
-          <div className="hover:text-blue-300 p-1 ml-auto flex justify-end items-center relative" onClick={() => setIsOpenThree(!isOpenThree)}>
+          <div className="hover:text-blue-300 py-1 ml-auto flex justify-end items-center relative" onClick={() => setIsOpenThree(!isOpenThree)}>
             <h2 className="text-xs mr-1">{session?.user.name}</h2>
-            <Image src={session?.user.image} alt="Imagen de Usuario" className="w-3 h-3 rounded-full cursor-pointer" width={100} height={100} />
+            <Image
+              src={session?.user.image}
+              alt="Imagen de Usuario"
+              className="w-3 h-3 rounded-full cursor-pointer"
+              width={100}
+              height={100}
+            />
             {isOpenThree && (
-              <button onClick={() => signOut({ callbackUrl: "/" })} className="bg-slate-700 hover:bg-slate-600 py-1 px-2 rounded-b-xl w-max absolute top-5 right-0 flex items-center">
+              <button
+                onClick={() => signOut({ callbackUrl: "/" })}
+                className="bg-slate-700 hover:bg-slate-600 py-1 px-2 rounded-b-xl w-max absolute top-5 right-0 flex items-center"
+              >
                 Cerrar Sesión <FaSignOutAlt className="ml-1" />
               </button>
             )}
@@ -95,7 +107,7 @@ export default function NavbarAdmin({ children }) {
             isOpen ? 'w-48 min-w-[12rem]' : 'w-0 min-w-0'
           }`}
         >
-          {isOpen && MAIN_ITEMS.map(({ href, label, icon: Icon, match }) => (
+          {MAIN_ITEMS.map(({ href, label, icon: Icon, match }) => (
             <Link
               key={href}
               href={href}
