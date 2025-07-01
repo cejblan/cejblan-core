@@ -58,7 +58,7 @@ export default function TelegramPanel() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row h-[90vh] relative top-[-2rem]">
+    <div className="flex flex-col md:flex-row h-[90vh] relative top-[-1rem]">
       {/* Lista de chats */}
       <aside className="md:w-1/3 w-full border-r border-slate-300 overflow-y-auto">
         <div className="p-2 font-bold text-lg border-b">Chats</div>
