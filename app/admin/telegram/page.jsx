@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState, useEffect, useRef } from "react";
 
@@ -8,6 +8,8 @@ export default function TelegramPanel() {
   const [messageInput, setMessageInput] = useState("");
   const [status, setStatus] = useState(null);
   const [messages, setMessages] = useState([]);
+  const [showChatList, setShowChatList] = useState(false); // 👈 nuevo estado
+
   const messageEndRef = useRef(null);
 
   useEffect(() => {
@@ -59,21 +61,35 @@ export default function TelegramPanel() {
 
   return (
     <div className="flex flex-col md:flex-row h-[90vh] relative top-[-1rem]">
+
+      {/* Botón móvil para mostrar lista de chats */}
+      <button
+        className="md:hidden bg-blue-500 text-white px-4 py-2"
+        onClick={() => setShowChatList(!showChatList)}
+      >
+        📋 {showChatList ? 'Ocultar chats' : 'Mostrar chats'}
+      </button>
+
       {/* Lista de chats */}
-      <aside className="md:w-1/3 w-full border-r border-slate-300 overflow-y-auto">
-        <div className="p-2 font-bold text-lg border-b">Chats</div>
-        {chats.map(chat => (
-          <div
-            key={chat.chatId}
-            onClick={() => setSelectedChat(chat)}
-            className={`p-2 hover:bg-white cursor-pointer border-b ${
-              selectedChat?.chatId === chat.chatId ? 'bg-slate-100' : ''
-            }`}
-          >
-            {chat.name || `Usuario ${chat.chatId}`}
-          </div>
-        ))}
-      </aside>
+      {(showChatList || window.innerWidth >= 768) && (
+        <aside className={`md:w-1/3 w-full border-r border-slate-300 overflow-y-auto ${!showChatList ? 'hidden md:block' : ''}`}>
+          <div className="p-2 font-bold text-lg border-b">Chats</div>
+          {chats.map(chat => (
+            <div
+              key={chat.chatId}
+              onClick={() => {
+                setSelectedChat(chat);
+                setShowChatList(false); // 👈 ocultar lista en móvil
+              }}
+              className={`p-2 hover:bg-white cursor-pointer border-b ${
+                selectedChat?.chatId === chat.chatId ? 'bg-slate-100' : ''
+              }`}
+            >
+              {chat.name || `Usuario ${chat.chatId}`}
+            </div>
+          ))}
+        </aside>
+      )}
 
       {/* Panel de mensajes */}
       <section className="flex-1 flex flex-col">
@@ -103,7 +119,6 @@ export default function TelegramPanel() {
           )}
         </div>
 
-        {/* Input de mensaje */}
         <div className="border-t p-2 flex gap-1">
           <input
             type="text"
