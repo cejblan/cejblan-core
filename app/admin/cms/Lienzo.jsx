@@ -492,7 +492,7 @@ export default function Editor({ file }) {
     }
   }, [modoEditor]);
 
-  const btnSmall = "bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition";
+  const btnSmall = "bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-500 transition";
   const btnSmall2 = "bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 transition";
   const btnSmall3 = "bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 transition";
 
@@ -794,7 +794,7 @@ export default function Editor({ file }) {
           <div className="flex justify-center mt-4">
             <button
               onClick={aplicarEstilosTailwind}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500 transition"
             >
               {tailwindMode ? 'Quitar TailwindCSS' : 'Usar TailwindCSS'}
             </button>
@@ -858,7 +858,7 @@ export default function Editor({ file }) {
         <div className="p-4 bg-gray-100 border rounded">
           <button
             onClick={() => setMostrandoEditorPaleta(!mostrandoEditorPaleta)}
-            className="mb-2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="mb-2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-500"
           >
             {mostrandoEditorPaleta ? 'Ocultar paleta del sitio' : 'Editar paleta del sitio'}
           </button>

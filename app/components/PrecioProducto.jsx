@@ -11,7 +11,7 @@ export default function PrecioProducto({ precio, format }) {
   return (
     <>{
       format === 1 ?
-        <h4 className="text-3xl text-purple-700 font-bold my-2">
+        <h4 className="text-3xl text-slate-700 font-bold my-2">
           ${precioBase.toFixed(2)}
           {conversionActiva && tasa && (
             <>

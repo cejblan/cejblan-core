@@ -106,7 +106,7 @@ export default function Coins() {
             onChange={(e) => setNuevaTasa({ ...nuevaTasa, valor: e.target.value })} />
           <button
             type="submit"
-            className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+            className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-500"
           >
             Registrar
           </button>

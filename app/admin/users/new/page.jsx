@@ -182,7 +182,7 @@ export default function UserForm() {
                   width={300} height={300}
                 />
                 <label htmlFor="image" className="text-xs absolute max-[420px]:top-1/3 top-2/3 left-0 w-full">
-                  <span className="bg-blue-700 hover:bg-blue-500 text-white py-1 px-3 rounded-xl shadow-6xl mx-auto w-fit cursor-pointer block">Subir</span>
+                  <span className="bg-blue-500 hover:bg-blue-500 text-white py-1 px-3 rounded-xl shadow-6xl mx-auto w-fit cursor-pointer block">Subir</span>
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -196,7 +196,7 @@ export default function UserForm() {
             </div>
           </div>
         </div>
-        <button className="text-white bg-blue-700 hover:bg-blue-900 font-bold py-1 px-2 rounded-xl shadow-6xl mx-auto w-fit">
+        <button className="text-white bg-blue-500 hover:bg-blue-600 font-bold py-1 px-2 rounded-xl shadow-6xl mx-auto w-fit">
           {params.id ? "Actualizar Usuario" : "Crear Usuario"}
         </button>
       </form>

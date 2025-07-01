@@ -59,7 +59,7 @@ export default function CategoriesPage() {
                   <td className="py-1 border-t border-slate-900">
                     <Link
                       href={`/admin/categories/${categories.id}`}
-                      className="text-white bg-blue-700 hover:bg-blue-900 font-bold px-2 rounded-xl shadow-6xl m-auto w-fit block"
+                      className="text-white bg-blue-500 hover:bg-blue-600 font-bold px-2 rounded-xl shadow-6xl m-auto w-fit block"
                     >
                       Ver
                     </Link>

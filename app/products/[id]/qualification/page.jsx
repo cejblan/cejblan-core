@@ -45,7 +45,7 @@ export default async function Qualification({ params }) {
     <div className="py-6">
       <Titulos texto="Califica tu apreciación del producto:" />
       <div className="bg-white p-4 rounded-xl mx-auto w-fit">
-        <div className="bg-blue-700 text-2xl text-white font-bold py-1 px-2 rounded-xl mx-auto w-fit">
+        <div className="bg-blue-500 text-2xl text-white font-bold py-1 px-2 rounded-xl mx-auto w-fit">
           {product.name}
         </div>
         <Buttons params={params} users={product.users} />

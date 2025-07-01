@@ -62,12 +62,12 @@ export default function Buttons({ params, users }) {
   return (
     <>
       <div className="pt-2 flex justify-center items-center">
-        <BsFillBookmarkStarFill className="text-pink-700 h-7 w-7" />
+        <BsFillBookmarkStarFill className="text-[#64ffda] h-7 w-7" />
         {value.map((state, index) => (
           <button
             key={index}
             onClick={() => handleButtonChange(index)}
-            className="text-5xl text-purple-700"
+            className="text-5xl text-slate-700"
           >
             {state ? <HiStar /> : <HiOutlineStar />}
           </button>
@@ -91,7 +91,7 @@ export default function Buttons({ params, users }) {
             className="bg-slate-200 text-slate-800 max-[420px]:text-center py-1 px-2 rounded-md w-full"
           />
         </div>
-        <button className="bg-gradient-to-b from-blue-700 via-purple-700 to-pink-700 text-white font-bold py-1 px-2 rounded-xl">
+        <button className="bg-gradient-to-b from-blue-500 via-slate-700 to-[#64ffda] text-white font-bold py-1 px-2 rounded-xl">
           Enviar
         </button>
       </form>

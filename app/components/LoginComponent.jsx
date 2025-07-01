@@ -57,7 +57,7 @@ export default function LoginComponent() {
           className="bg-slate-100 text-2xl text-center border border-slate-400 py-1 px-2 mb-2 w-full rounded-xl"
           required />
         <div className="flex">
-          <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded-xl shadow-6xl w-fit">
+          <button className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-1 px-2 rounded-xl shadow-6xl w-fit">
             Ingresar
           </button>
           <div className="flex justify-end items-center w-full">

@@ -39,7 +39,7 @@ export default function ProductCard({ product }) {
           <div className="py-2 px-1">
             <div className="flex">
               <h1 className="flex-1 leading-6 min-h-7">{product.name}</h1>
-              <h2 className="text-lg text-purple-700 font-bold mt-3">
+              <h2 className="text-lg text-slate-700 font-bold mt-3">
                 ${product.price}
               </h2>
             </div>
@@ -55,7 +55,7 @@ export default function ProductCard({ product }) {
             ref={form}
           >
             <button
-              className="text-pink-700 text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center"
+              className="text-[#64ffda] text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center"
             >
               <IoIosHeart />
             </button>
@@ -67,7 +67,7 @@ export default function ProductCard({ product }) {
             ref={form}
           >
             <button
-              className="text-pink-700 text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center"
+              className="text-[#64ffda] text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center"
             >
               <IoIosHeartEmpty />
             </button>
@@ -83,7 +83,7 @@ export default function ProductCard({ product }) {
           <div className="py-2 px-1">
             <div className="flex">
               <h1 className="flex-1 leading-6 min-h-7">{product.name}</h1>
-              <h2 className="text-lg text-purple-700 font-bold mt-3">
+              <h2 className="text-lg text-slate-700 font-bold mt-3">
                 ${product.price}
               </h2>
             </div>
@@ -99,7 +99,7 @@ export default function ProductCard({ product }) {
             ref={form}
           >
             <button
-              className="text-pink-700 text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center"
+              className="text-[#64ffda] text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center"
             >
               <IoIosHeart />
             </button>
@@ -111,7 +111,7 @@ export default function ProductCard({ product }) {
             ref={form}
           >
             <button
-              className="text-pink-700 text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center"
+              className="text-[#64ffda] text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center"
             >
               <IoIosHeartEmpty />
             </button>

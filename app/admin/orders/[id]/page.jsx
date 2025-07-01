@@ -154,7 +154,7 @@ export default function OrderForm() {
                 name="status"
                 value={order.status}
                 onChange={handleChange}
-                className="bg-white text-blue-700 py-1 px-2 rounded-md"
+                className="bg-white text-blue-500 py-1 px-2 rounded-md"
                 required
               >
                 <option value="COMPLETADO">COMPLETADO</option>
@@ -178,7 +178,7 @@ export default function OrderForm() {
             </div>
             <div className="mb-1">
               <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Imagen:</h2>
-              <Link href={order.image || "/"} className="bg-white text-blue-700 hover:text-blue-900 underline py-1 px-2 rounded-md block">Imagen</Link>
+              <Link href={order.image || "/"} className="bg-white text-blue-500 hover:text-blue-600 underline py-1 px-2 rounded-md block">Imagen</Link>
             </div>
           </div>
           <div className="max-[420px]:text-center text-left max-[420px]:pt-4 max-[420px]:mx-auto col-start-5 col-end-9">
@@ -218,7 +218,7 @@ export default function OrderForm() {
         </div>
         <div className="flex gap-x-2 justify-center">
           <button
-            className="text-white bg-blue-700 hover:bg-blue-900 font-bold py-1 px-2 rounded-xl shadow-6xl"
+            className="text-white bg-blue-500 hover:bg-blue-600 font-bold py-1 px-2 rounded-xl shadow-6xl"
           >
             Actualizar
           </button>

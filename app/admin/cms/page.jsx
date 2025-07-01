@@ -43,7 +43,7 @@ export default function CMS() {
         <p className="mb-4 text-gray-700">No hay archivos disponibles.</p>
         <button
           onClick={nuevoArchivo}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-500 transition"
         >
           Crear nuevo archivo
         </button>

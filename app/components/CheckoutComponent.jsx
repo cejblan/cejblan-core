@@ -281,7 +281,7 @@ export default function CheckoutComponent() {
                       width={200} height={200}
                     />
                     <label className="text-xs absolute max-[420px]:top-1/3 top-2/3 left-0 w-full">
-                      <span className="bg-blue-700 hover:bg-blue-500 text-white py-1 px-3 rounded-xl shadow-6xl mx-auto w-fit cursor-pointer block">Subir</span>
+                      <span className="bg-blue-500 hover:bg-blue-500 text-white py-1 px-3 rounded-xl shadow-6xl mx-auto w-fit cursor-pointer block">Subir</span>
                       <input
                         ref={fileInputRef}
                         type="file"
@@ -359,7 +359,7 @@ export default function CheckoutComponent() {
             </>
           )}
         </div>
-        <button className="bg-blue-600 hover:bg-blue-900 text-xl font-bold text-white py-1 px-2 rounded-xl shadow-6xl mb-2 mx-auto w-fit col-start-1 col-end-9 block">
+        <button className="bg-blue-600 hover:bg-blue-600 text-xl font-bold text-white py-1 px-2 rounded-xl shadow-6xl mb-2 mx-auto w-fit col-start-1 col-end-9 block">
           Enviar Pedido
         </button>
       </div>

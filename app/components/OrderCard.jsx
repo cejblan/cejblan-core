@@ -28,7 +28,7 @@ export default function OrderCard({ order }) {
         <div className="ml-1">
           <p>{order.productsIds}</p>
           <p>{order.productsQuantity}</p>
-          <h2 className="text-lg text-purple-700 font-bold">
+          <h2 className="text-lg text-slate-700 font-bold">
             <PrecioProducto precio={order.totalPrice} format={0} />
           </h2>
         </div>
@@ -47,7 +47,7 @@ export default function OrderCard({ order }) {
           {order.image &&
             <Link
               href={order.image}
-              className="text-blue-700 hover:text-blue-900 underline"
+              className="text-blue-500 hover:text-blue-600 underline"
               target="_blank">
               Foto
             </Link>
@@ -64,7 +64,7 @@ export default function OrderCard({ order }) {
         <p>Fecha:</p>
         <p>{date}</p>
         <p>Estado:</p>
-        <p className="text-lg text-blue-700 font-bold">{order.status}</p>
+        <p className="text-lg text-blue-500 font-bold">{order.status}</p>
       </div>
     </div>
   );

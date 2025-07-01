@@ -120,7 +120,7 @@ export default function Buttons(product) {
           <RiAddFill />
         </span>
         <button
-          className="text-white bg-blue-700 hover:bg-blue-900 font-bold py-1 px-2 rounded-xl shadow-6xl flex justify-center items-start"
+          className="text-white bg-blue-500 hover:bg-blue-600 font-bold py-1 px-2 rounded-xl shadow-6xl flex justify-center items-start"
         >
           <p className="max-[420px]:text-sm md:text-lg flex justify-center items-center">
             Agregar<FaCartShopping className="ml-1" />
@@ -134,7 +134,7 @@ export default function Buttons(product) {
           ref={form}
         >
           <button
-            className="text-white bg-pink-700 hover:bg-pink-900 max-[420px]:text-lg text-3xl font-bold p-1 rounded-xl shadow-6xl"
+            className="text-white bg-[#64ffda] hover:bg-[#6ed8bf] max-[420px]:text-lg text-3xl font-bold p-1 rounded-xl shadow-6xl"
           >
             <IoIosHeart />
           </button>
@@ -146,7 +146,7 @@ export default function Buttons(product) {
           ref={form}
         >
           <button
-            className="text-white bg-pink-700 hover:bg-pink-900 max-[420px]:text-lg text-3xl font-bold p-1 rounded-xl shadow-6xl"
+            className="text-white bg-[#64ffda] hover:bg-[#6ed8bf] max-[420px]:text-lg text-3xl font-bold p-1 rounded-xl shadow-6xl"
           >
             <IoIosHeartEmpty />
           </button>

@@ -67,7 +67,7 @@ export default function OrdersPageAdmin() {
             <div className="text-center mt-2 grid grid-cols-2 justify-center items-center">
               <h3>
                 <span className="font-semibold">Estado: </span>
-                <span className="text-blue-700 text-xlmax-[420px]:text-sm font-bold tracking-tighter">{order.status}</span>
+                <span className="text-blue-500 text-xlmax-[420px]:text-sm font-bold tracking-tighter">{order.status}</span>
               </h3>
               <h3 className="font-semibold">
                 <span>Fecha: </span>

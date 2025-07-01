@@ -15,7 +15,7 @@ export default function QR(product) {
   return (
     product.quantity === "0" ?
       <>
-        <button className="bg-blue-700 hover:bg-blue-500 text-white absolute right-1 top-1 p-1 rounded-xl z-20">
+        <button className="bg-blue-500 hover:bg-blue-500 text-white absolute right-1 top-1 p-1 rounded-xl z-20">
           <BsQrCode />
         </button><div>
           <div className={`m-auto justify-center flex ${isOpen ? "" : "hidden"}`}>
@@ -29,7 +29,7 @@ export default function QR(product) {
       </>
       :
       <>
-        <button className="bg-blue-700 hover:bg-blue-500 text-white absolute right-1 top-1 p-1 rounded-xl z-20" onClick={handleClick}>
+        <button className="bg-blue-500 hover:bg-blue-500 text-white absolute right-1 top-1 p-1 rounded-xl z-20" onClick={handleClick}>
           <BsQrCode />
         </button>
         <Link href={`/products/${product.id}`}>

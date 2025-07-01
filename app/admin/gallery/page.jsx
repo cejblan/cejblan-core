@@ -99,7 +99,7 @@ export default function Gallery() {
                     alert("Error al copiar URL");
                   }
                 }}
-                className="absolute bottom-1 right-1 bg-blue-600 text-white rounded px-2 py-0.5 text-xs hover:bg-blue-700"
+                className="absolute bottom-1 right-1 bg-blue-600 text-white rounded px-2 py-0.5 text-xs hover:bg-blue-500"
               >
                 Copiar URL
               </button>

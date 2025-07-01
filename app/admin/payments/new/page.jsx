@@ -149,7 +149,7 @@ export default function PayForm() {
             </div>
           </div>
         </div>
-        <button className="text-white bg-blue-700 hover:bg-blue-900 font-bold py-1 px-2 rounded-xl shadow-6xl mx-auto w-fit">
+        <button className="text-white bg-blue-500 hover:bg-blue-600 font-bold py-1 px-2 rounded-xl shadow-6xl mx-auto w-fit">
           {params.id ? "Actualizar forma de pago" : "Crear forma de pago"}
         </button>
       </form>

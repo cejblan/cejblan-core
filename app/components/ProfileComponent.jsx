@@ -174,7 +174,7 @@ export default function ProfileComponent() {
                     <span className="text-blue-500 font-bold">Telegram</span>
                     <FaTelegram className="text-blue-500 h-4 w-4" />
                   </span>
-                  <Link href="https://t.me/CejblanBot" className="text-xl text-blue-700 hover:text-blue-900 underline" target="_blank">@CejblanBot</Link>
+                  <Link href="https://t.me/CejblanBot" className="text-xl text-blue-500 hover:text-blue-600 underline" target="_blank">@CejblanBot</Link>
                 </div>
                 {
                   code ?
@@ -193,7 +193,7 @@ export default function ProfileComponent() {
                     </div>
                     :
                     <button
-                      className="bg-blue-700 hover:bg-blue-500 text-white py-1 px-2 rounded-xl shadow-6xl mx-auto h-fit w-fit block"
+                      className="bg-blue-500 hover:bg-blue-500 text-white py-1 px-2 rounded-xl shadow-6xl mx-auto h-fit w-fit block"
                       onClick={codeVerified}
                     >
                       Generar
@@ -208,7 +208,7 @@ export default function ProfileComponent() {
                 <table className="max-[420px]:text-base text-xl text-gray-800 table-auto border-collapse max-[420px]:w-full">
                   <tbody>
                     <tr className="border-b-2 border-gray-300">
-                      <td className="text-purple-600 pl-4 pr-2">
+                      <td className="text-slate-600 pl-4 pr-2">
                         <RiUserFill />
                       </td>
                       <td className="py-1 pl-2 pr-4">
@@ -216,7 +216,7 @@ export default function ProfileComponent() {
                       </td>
                     </tr>
                     <tr className="border-b-2 border-gray-300">
-                      <td className="text-purple-600 pl-4 pr-2">
+                      <td className="text-slate-600 pl-4 pr-2">
                         <TfiEmail />
                       </td>
                       <td className="py-1 pl-2 pr-4">
@@ -224,7 +224,7 @@ export default function ProfileComponent() {
                       </td>
                     </tr>
                     <tr className="border-b-2 border-gray-300">
-                      <td className="text-purple-600 pl-4 pr-2">
+                      <td className="text-slate-600 pl-4 pr-2">
                         <FaMobileAlt />
                       </td>
                       <td className="py-1 pl-2 pr-4">
@@ -239,7 +239,7 @@ export default function ProfileComponent() {
                       </td>
                     </tr>
                     <tr className="border-b-2 border-gray-300">
-                      <td className="text-purple-600 pl-4 pr-2">
+                      <td className="text-slate-600 pl-4 pr-2">
                         <FaMobileAlt />
                       </td>
                       <td className="py-1 pl-2 pr-4">
@@ -254,7 +254,7 @@ export default function ProfileComponent() {
                       </td>
                     </tr>
                     <tr className="border-b-2 border-gray-300">
-                      <td className="text-purple-600 pl-4 pr-2">
+                      <td className="text-slate-600 pl-4 pr-2">
                         <FaLocationDot />
                       </td>
                       <td className="py-1 pl-2 pr-4">
@@ -264,7 +264,7 @@ export default function ProfileComponent() {
                       </td>
                     </tr>
                     <tr className="border-b-2 border-gray-300">
-                      <td className="text-purple-600 pl-4 pr-2">
+                      <td className="text-slate-600 pl-4 pr-2">
                         <FaMapLocationDot />
                       </td>
                       <td className="py-1 pl-2 pr-4">
@@ -279,7 +279,7 @@ export default function ProfileComponent() {
                   </tbody>
                 </table>
                 <button
-                  className="bg-pink-700 hover:bg-pink-900 text-white font-bold py-1 px-2 rounded-xl shadow-6xl mt-2 mx-auto block"
+                  className="bg-[#64ffda] hover:bg-[#6ed8bf] text-white font-bold py-1 px-2 rounded-xl shadow-6xl mt-2 mx-auto block"
                   onClick={editData}>
                   Editar Perfil
                 </button>
@@ -289,7 +289,7 @@ export default function ProfileComponent() {
                 <table className="max-[420px]:text-base text-lg text-gray-800 table-auto border-collapse max-[420px]:w-full">
                   <tbody>
                     <tr className="border-b-2 border-gray-300">
-                      <td className="text-purple-600 pl-4 pr-2">
+                      <td className="text-slate-600 pl-4 pr-2">
                         <RiUserFill />
                       </td>
                       <td className="py-1 pl-2 pr-4">
@@ -299,7 +299,7 @@ export default function ProfileComponent() {
                       </td>
                     </tr>
                     <tr className="border-b-2 border-gray-300">
-                      <td className="text-purple-600 pl-4 pr-2">
+                      <td className="text-slate-600 pl-4 pr-2">
                         <TfiEmail />
                       </td>
                       <td className="py-1 pl-2 pr-4">
@@ -309,7 +309,7 @@ export default function ProfileComponent() {
                       </td>
                     </tr>
                     <tr className="border-b-2 border-gray-300">
-                      <td className="text-purple-600 pl-4 pr-2  h-8">
+                      <td className="text-slate-600 pl-4 pr-2  h-8">
                         <FaMobileAlt />
                       </td>
                       <td className="py-1 pl-2 pr-4 flex">
@@ -342,7 +342,7 @@ export default function ProfileComponent() {
                       </td>
                     </tr>
                     <tr className="border-b-2 border-gray-300">
-                      <td className="text-purple-600 pl-4 pr-2">
+                      <td className="text-slate-600 pl-4 pr-2">
                         <FaMobileAlt />
                       </td>
                       <td className="py-1 pl-2 pr-4 flex">
@@ -373,7 +373,7 @@ export default function ProfileComponent() {
                       </td>
                     </tr>
                     <tr className="border-b-2 border-gray-300">
-                      <td className="text-purple-600 pl-4 pr-2">
+                      <td className="text-slate-600 pl-4 pr-2">
                         <FaLocationDot />
                       </td>
                       <td className="py-1 pl-2 pr-4">
@@ -389,7 +389,7 @@ export default function ProfileComponent() {
                       </td>
                     </tr>
                     <tr className="border-b-2 border-gray-300">
-                      <td className="text-purple-600 pl-4 pr-2">
+                      <td className="text-slate-600 pl-4 pr-2">
                         <FaMapLocationDot />
                       </td>
                       <td className="py-1 pl-2 pr-4">
@@ -420,7 +420,7 @@ export default function ProfileComponent() {
                   <p className="text-center m-auto">Cargando ubicación...</p>
                 )}
                 <button
-                  className="bg-pink-700 hover:bg-pink-900 text-white font-bold py-1 px-2 rounded-xl shadow-6xl mt-2 mx-auto block"
+                  className="bg-[#64ffda] hover:bg-[#6ed8bf] text-white font-bold py-1 px-2 rounded-xl shadow-6xl mt-2 mx-auto block"
                   onClick={dataSubmit}>
                   Guardar Datos
                 </button>

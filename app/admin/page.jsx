@@ -10,7 +10,7 @@ export default function AdminPage() {
       </div>
       <div className="mb-4 max-[420px]:text-xs">
         <div className="bg-white text-red p-2 rounded-xl shadow-6xl">
-          <h1 className="bg-blue-700 text-white text-lg font-bold py-1 max-[420px]:px-1 px-2 rounded-xl m-auto w-fit">Área de Mantenimiento</h1>
+          <h1 className="bg-blue-500 text-white text-lg font-bold py-1 max-[420px]:px-1 px-2 rounded-xl m-auto w-fit">Área de Mantenimiento</h1>
           <div className="bg-white py-1 flex gap-1 justify-center items-center">
             <TruncateCart />
             <TruncateWishlist />
