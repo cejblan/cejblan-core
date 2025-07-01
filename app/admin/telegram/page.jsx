@@ -78,14 +78,14 @@ export default function TelegramPanel() {
   };
 
   return (
-    <div className="flex h-screen">
-      <aside className="w-1/3 border-r border-gray-300 overflow-y-auto">
-        <div className="p-4 font-bold text-lg border-b">Chats</div>
+    <div className="flex h-[90vh] relative top-[-2rem]">
+      <aside className="w-1/3 border-r border-slate-300 overflow-y-auto">
+        <div className="p-2 font-bold text-lg border-b">Chats</div>
         {chats.map(chat => (
           <div
             key={chat.chatId}
             onClick={() => setSelectedChat(chat)}
-            className={`p-4 hover:bg-gray-100 cursor-pointer border-b ${selectedChat?.chatId === chat.chatId ? 'bg-gray-100' : ''}`}
+            className={`p-2 hover:bg-white cursor-pointer border-b ${selectedChat?.chatId === chat.chatId ? 'bg-slate-100' : ''}`}
           >
             {chat.name || `Usuario ${chat.chatId}`}
           </div>
@@ -93,17 +93,17 @@ export default function TelegramPanel() {
       </aside>
 
       <section className="flex-1 flex flex-col">
-        <div className="p-4 border-b font-bold">
+        <div className="p-2 border-b border-spacing-1 border-slate-300 font-bold">
           {selectedChat ? (selectedChat.name || selectedChat.chatId) : 'Selecciona un chat'}
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-2">
+        <div className="h-[72vh] overflow-y-scroll p-2 space-y-1">
           {selectedChat ? (
             <>
               {messages.map((msg, i) => (
                 <div
                   key={i}
-                  className={`p-2 rounded max-w-sm ${msg.from_bot ? 'bg-blue-100 text-right ml-auto' : 'bg-gray-100 text-left'}`}
+                  className={`p-1 rounded max-w-sm ${msg.from_bot ? 'bg-blue-200 text-right ml-auto' : 'bg-white text-left'}`}
                 >
                   {msg.text}
                 </div>
@@ -111,19 +111,19 @@ export default function TelegramPanel() {
               <div ref={messageEndRef} /> {/* ← Para scroll al fondo */}
             </>
           ) : (
-            <p className="text-gray-500">Selecciona un chat para comenzar</p>
+            <p className="text-slate-500">Selecciona un chat para comenzar</p>
           )}
         </div>
 
-        <div className="border-t p-4 flex gap-2">
+        <div className="border-t p-2 flex gap-1">
           <input
             type="text"
             value={messageInput}
             onChange={e => setMessageInput(e.target.value)}
             placeholder="Escribe un mensaje..."
-            className="flex-1 border p-2 rounded"
+            className="flex-1 border p-1 rounded"
           />
-          <button onClick={handleSend} className="bg-blue-500 text-white px-4 py-2 rounded">
+          <button onClick={handleSend} className="bg-blue-500 text-white px-2 py-1 rounded">
             Enviar
           </button>
         </div>
