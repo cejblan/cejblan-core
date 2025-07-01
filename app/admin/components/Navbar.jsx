@@ -131,7 +131,7 @@ export default function NavbarAdmin({ children }) {
             </Link>
           ))}
         </div>
-        <section className="bg-slate-200 p-4 w-full min-h-[calc(100vh-2.5rem)] overflow-y-auto relative transition-all duration-300">
+        <section className="bg-slate-200 p-2 w-full min-h-[calc(100vh-2.5rem)] overflow-y-auto relative transition-all duration-300">
           {children}
         </section>
       </div>
