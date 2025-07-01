@@ -50,12 +50,12 @@ export default function TelegramPanel() {
   }, [selectedChat]);
 
   // 4️⃣ Scroll automático al final cada vez que cambian los mensajes
-  useEffect(() => {
+/*  useEffect(() => {
     if (messageEndRef.current) {
       messageEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
-
+*/
   const handleSend = async () => {
     if (!messageInput.trim() || !selectedChat) return;
 

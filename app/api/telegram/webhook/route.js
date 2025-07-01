@@ -64,8 +64,8 @@ export async function POST(request) {
       } else {
         responseMessage =
           Object.keys(responses).find((key) => messageText.includes(key))
-            ? responses[Object.keys(responses).find((key) => messageText.includes(key))]()
-            : defaultResponse();
+            /*?*/ responses[Object.keys(responses).find((key) => messageText.includes(key))]();
+            //: defaultResponse();
       }
     } catch (error) {
       console.error("Error al procesar el mensaje:", error);
