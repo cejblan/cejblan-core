@@ -17,7 +17,7 @@ export async function POST(request) {
     // 1️⃣ Guardar mensaje recibido
     try {
       await conexion.query(
-        "INSERT INTO telegram_messages (chat_id, text, from_bot, created_at) VALUES (?, ?, ?, NOW())",
+        "INSERT INTO telegram_messages (chat_id, text, from_bot) VALUES (?, ?, ?)",
         [chatId, messageText, 0]
       );
     } catch (err) {
@@ -103,7 +103,7 @@ export async function POST(request) {
 
       // 4️⃣ Guardar mensaje enviado
       await conexion.query(
-        "INSERT INTO telegram_messages (chat_id, text, from_bot, created_at) VALUES (?, ?, ?, NOW())",
+        "INSERT INTO telegram_messages (chat_id, text, from_bot) VALUES (?, ?, ?)",
         [chatId, responseMessage, 1]
       );
 
