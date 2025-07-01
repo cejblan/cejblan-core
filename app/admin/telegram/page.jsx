@@ -71,7 +71,7 @@ export default function TelegramPanel() {
         {chats.map(chat => (
           <div
             key={chat.chatId}
-            onClick={() => setSelectedChat(chat)}
+            onClick={() => setSelectedChat(chat.chatId)}
             className={
               `p-4 hover:bg-gray-100 cursor-pointer border-b ${selectedChat?.chatId === chat.chatId ? 'bg-gray-100' : ''
               }`
