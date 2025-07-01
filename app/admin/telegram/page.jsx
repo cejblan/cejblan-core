@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import { useState, useEffect, useRef } from "react";
 
@@ -8,7 +8,7 @@ export default function TelegramPanel() {
   const [messageInput, setMessageInput] = useState("");
   const [status, setStatus] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [showChatList, setShowChatList] = useState(false); // 👈 nuevo estado
+  const [showChatList, setShowChatList] = useState(true);
 
   const messageEndRef = useRef(null);
 
@@ -59,32 +59,39 @@ export default function TelegramPanel() {
     }
   };
 
+  const handleSelectChat = (chat) => {
+    setSelectedChat(chat);
+    fetchMessages(chat.chatId);
+    // Oculta lista en pantallas móviles
+    if (window.innerWidth < 768) {
+      setShowChatList(false);
+    }
+  };
+
   return (
     <div className="flex flex-col md:flex-row h-[90vh] relative top-[-1rem]">
-
-      {/* Solo mostrar el botón en pantallas móviles */}
-      {typeof window !== "undefined" && window.innerWidth < 768 && (
+      
+      {/* Botón mostrar/ocultar chats en móvil */}
+      <div className="md:hidden flex justify-center p-2 border-b">
         <button
-          className="bg-blue-500 text-white px-4 py-2"
           onClick={() => setShowChatList(!showChatList)}
+          className="bg-blue-500 text-white px-4 py-2 rounded"
         >
-          📋 {showChatList ? 'Ocultar chats' : 'Mostrar chats'}
+          {showChatList ? "Ocultar chats" : "Mostrar chats"}
         </button>
-      )}
+      </div>
 
       {/* Lista de chats */}
-      {(showChatList || window.innerWidth >= 768) && (
-        <aside className={`md:w-1/3 w-full border-r border-slate-300 overflow-y-auto ${!showChatList ? 'hidden md:block' : ''}`}>
+      {showChatList && (
+        <aside className="md:w-1/3 w-full border-r border-slate-300 overflow-y-auto">
           <div className="p-2 font-bold text-lg border-b">Chats</div>
           {chats.map(chat => (
             <div
               key={chat.chatId}
-              onClick={() => {
-                setSelectedChat(chat);
-                setShowChatList(false); // 👈 ocultar lista en móvil
-              }}
-              className={`p-2 hover:bg-white cursor-pointer border-b ${selectedChat?.chatId === chat.chatId ? 'bg-slate-100' : ''
-                }`}
+              onClick={() => handleSelectChat(chat)}
+              className={`p-2 hover:bg-white cursor-pointer border-b ${
+                selectedChat?.chatId === chat.chatId ? 'bg-slate-100' : ''
+              }`}
             >
               {chat.name || `Usuario ${chat.chatId}`}
             </div>
@@ -104,10 +111,11 @@ export default function TelegramPanel() {
               {messages.map((msg, i) => (
                 <div
                   key={i}
-                  className={`p-1 rounded max-w-sm break-words ${msg.from_bot
+                  className={`p-1 rounded max-w-sm break-words ${
+                    msg.from_bot
                       ? 'bg-blue-200 text-right ml-auto'
                       : 'bg-white text-left'
-                    }`}
+                  }`}
                 >
                   {msg.text}
                 </div>
@@ -119,17 +127,18 @@ export default function TelegramPanel() {
           )}
         </div>
 
-        <div className="border-t p-2 flex gap-1">
+        {/* Input de mensaje */}
+        <div className="border-t px-2 py-2 flex gap-1 items-center">
           <input
             type="text"
             value={messageInput}
             onChange={e => setMessageInput(e.target.value)}
             placeholder="Escribe un mensaje..."
-            className="flex-1 border p-1 rounded"
+            className="flex-1 border p-2 rounded"
           />
           <button
             onClick={handleSend}
-            className="bg-blue-500 text-white px-2 py-1 rounded"
+            className="bg-blue-500 text-white px-4 py-2 rounded"
           >
             Enviar
           </button>
