@@ -104,7 +104,7 @@ export default function TelegramPanel() {
         </div>
 
         {/* Input de mensaje */}
-        <div className="border-t p-2 flex gap-1">
+        <div className="border-t md:p-2 p-1 flex gap-1">
           <input
             type="text"
             value={messageInput}
