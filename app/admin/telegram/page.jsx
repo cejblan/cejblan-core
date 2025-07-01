@@ -87,7 +87,7 @@ export default function TelegramPanel() {
               {messages.map((msg, i) => (
                 <div
                   key={i}
-                  className={`p-1 rounded max-w-sm break-words ${
+                  className={`p-1 rounded max-w-fit break-words ${
                     msg.from_bot
                       ? 'bg-blue-200 text-right ml-auto'
                       : 'bg-white text-left'
