@@ -23,44 +23,51 @@ export default function Gallery() {
   }, [pagina]);
 
   return (
-    <div className="p-6">
+    <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Galería Multimedia</h1>
-      <div className="flex justify-between items-center mb-4">
-        <input
-          type="file"
-          accept="image/*"
-          onChange={async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
 
-            const formData = new FormData();
-            formData.append("image", file);
+      {/* Botón de carga al estilo Telegram */}
+      <div className="mb-4">
+        <label className="inline-flex items-center gap-2 cursor-pointer bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium shadow transition-colors duration-200">
+          Subir imagen
+          <input
+            type="file"
+            accept="image/*"
+            onChange={async (e) => {
+              const file = e.target.files[0];
+              if (!file) return;
 
-            const res = await fetch("/api/cms/images", {
-              method: "POST",
-              body: formData,
-            });
+              const formData = new FormData();
+              formData.append("image", file);
 
-            const data = await res.json();
-            if (data.secure_url) {
-              setPagina(1);
-            }
-          }}
-          className="block text-sm file:bg-blue-600 file:text-white file:px-4 file:py-1 file:rounded file:cursor-pointer"
-        />
+              const res = await fetch("/api/cms/images", {
+                method: "POST",
+                body: formData,
+              });
+
+              const data = await res.json();
+              if (data.secure_url) {
+                setPagina(1);
+              }
+            }}
+            className="hidden"
+          />
+        </label>
       </div>
-      <div className="grid grid-cols-6 gap-4">
+
+      {/* Galería */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
         {imagenes.map((img, i) => {
           const esImagen = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(img.pathname);
           return (
-            <div key={i} className="relative w-30 h-30 border rounded-2xl overflow-hidden bg-gray-100">
+            <div key={i} className="relative w-full aspect-square border rounded-2xl overflow-hidden bg-gray-100">
               {esImagen ? (
                 <Image
                   src={img.url}
                   alt={img.pathname}
                   className="object-cover w-full h-full"
-                  width={100}
-                  height={100}
+                  width={200}
+                  height={200}
                   onError={(e) => {
                     e.target.onerror = null;
                     e.target.src = "/icono-roto.png";
@@ -69,7 +76,7 @@ export default function Gallery() {
               ) : (
                 <span className="text-xs text-gray-600">{img.pathname}</span>
               )}
-              {/* Botón eliminar */}
+              {/* Eliminar */}
               <button
                 onClick={async () => {
                   if (!confirm("¿Eliminar esta imagen?")) return;
@@ -82,7 +89,7 @@ export default function Gallery() {
               >
                 Eliminar
               </button>
-              {/* Botón copiar */}
+              {/* Copiar */}
               <button
                 onClick={async () => {
                   try {
@@ -100,6 +107,7 @@ export default function Gallery() {
           );
         })}
       </div>
+      {/* Paginación */}
       <div className="mt-6 flex justify-center gap-2">
         <button
           onClick={() => setPagina((p) => Math.max(1, p - 1))}
@@ -108,7 +116,7 @@ export default function Gallery() {
         >
           Anterior
         </button>
-        <span className="px-3 py-1">{pagina} / {totalPaginas}</span>
+        <span className="px-2 py-1">{pagina}/{totalPaginas}</span>
         <button
           onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))}
           className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"
