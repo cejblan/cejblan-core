@@ -4,6 +4,7 @@ import { conexion } from "@/libs/mysql";
 export async function POST(req) {
   try {
     const { chat_id, text } = await req.json();
+    console.log(chat_id)
 
     if (!chat_id || !text) {
       return NextResponse.json(
@@ -12,7 +13,7 @@ export async function POST(req) {
       );
     }
 
-    const botToken = process.env.TELEGRAM_BOT_TOKEN;
+    const botToken = process.env.BOT_TOKEN;
     const telegramResponse = await fetch(
       `https://api.telegram.org/bot${botToken}/sendMessage`,
       {
@@ -24,6 +25,7 @@ export async function POST(req) {
     const data = await telegramResponse.json();
 
     if (!data.ok) {
+      console.error("Respuesta de Telegram:", data);
       throw new Error(data.description || "No se pudo enviar el mensaje a Telegram");
     }
 
