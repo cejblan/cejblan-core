@@ -76,26 +76,39 @@ export default async function ProductPage({ params }) {
   return (
     <>
       <Titulos texto="Datos del Producto" />
-      <div className="flex justify-center items-center pb-8 max-[420px]:px-2 px-16 m-auto">
+      <div className="flex justify-center items-center pb-8 max-[420px]:px-2 px-16 m-auto min-h-screen">
         <div className="bg-white bg-opacity-95 rounded-xl shadow-6xl max-[420px]:block flex w-full h-full justify-center">
-          <div className="p-3 w-full h-full">
-            <h3 className="text-4xl font-bold min-h-10">{product.name}</h3>
-            <PrecioProducto precio={product.price} format={1} />
-            <p className="text-slate-800 max-[420px]:text-base text-lg font-bold min-h-14">{product.description}</p>
-            <p className="text-pink-700 text-xl text-left font-bold pl-1 mt-2">Categoría:
-              <span className="text-purple-700 ml-1">{product.category}</span>
-            </p>
-            <p className="text-pink-700 text-xl text-left font-bold flex items-center pl-1">Calificación:
-              <span className="text-purple-700 ml-1 flex justify-center items-center">
-                {renderStars(average)}  {/* Mostrar estrellas dinámicamente */}
-                <span className="ml-1 text-slate-600 text-base">({totalRatings} Cliente{totalRatings === 1 ? '' : 's'})</span>
-              </span>
-            </p>
-            <Buttons product={product} />
+          <div className="p-3 w-full flex flex-col justify-between min-h-[500px]"> {/* Cambiado aquí */}
+            <div> {/* Contenido superior */}
+              <h3 className="text-4xl font-bold min-h-10">{product.name}</h3>
+              <PrecioProducto precio={product.price} format={1} />
+              <p className="text-slate-800 max-[420px]:text-base text-lg font-bold min-h-14">{product.description}</p>
+            </div>
+
+            <div className="mt-6"> {/* Botones abajo */}
+              <p className="text-[#64ffda] text-xl text-left font-bold pl-1 mt-2">Categoría:
+                <span className="text-slate-700 ml-1">{product.category}</span>
+              </p>
+              <p className="text-[#64ffda] text-xl text-left font-bold flex items-center pl-1">Calificación:
+                <span className="text-slate-700 ml-1 flex justify-center items-center">
+                  {renderStars(average)}
+                  <span className="ml-1 text-slate-600 text-base">({totalRatings} Cliente{totalRatings === 1 ? '' : 's'})</span>
+                </span>
+              </p>
+              <Buttons product={product} />
+            </div>
           </div>
-          <Image src={product.image} className="w-full h-full object-cover max-[420px]:rounded-b-xl md:rounded-bl-none md:rounded-r-xl shadow-6xl" alt={product.name} width={300} height={300} />
+
+          <Image
+            src={product.image}
+            className="w-full h-full object-cover max-[420px]:rounded-b-xl md:rounded-bl-none md:rounded-r-xl shadow-6xl"
+            alt={product.name}
+            width={300}
+            height={300}
+          />
         </div>
       </div>
+
     </>
   );
 }
