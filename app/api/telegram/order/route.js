@@ -1,25 +1,31 @@
 import { NextResponse } from "next/server";
 import fetch from "node-fetch";
+import { conexion } from "@/libs/mysql"; // Asegúrate de que esté bien configurado
 
 export async function POST(request) {
   const data = await request.json();
   const moment = require("moment");
-  const date = moment(data.dataOrder.date).subtract(4, "hours").format("DD/MM/YYYY")
+  // Formatear la fecha con ajuste de zona horaria
+  const date = moment(data.dataOrder.date).subtract(4, "hours").format("DD/MM/YYYY");
+  // Verificar que los datos necesarios estén presentes
   if (!data.dataOrder.chatId || !data.dataOrder.productsIds || !data.dataOrder.productsQuantity) {
     return NextResponse.json({
       status: "error",
       message: "Datos incompletos para procesar la solicitud.",
     });
   }
+  // Construir enlaces a los productos
   const products = data.dataOrder.productsIds
-  .split(",") // Convertir la cadena en un array
-  .map((id) => `   ✅ <a href="https://www.cejblan-cms.vercel.app/products/${id}">${id}</a>`)
-  .join("\n");
+    .split(",") // Convertir la cadena en un array
+    .map((id) => `   ✅ <a href="https://www.cejblan-cms.vercel.app/products/${id}">${id}</a>`)
+    .join("\n");
+  // Construir cantidades
   const quantity = data.dataOrder.productsQuantity
-  .split(",") // Convertir la cadena en un array
-  .map((id) => `   ✅ ${id}`)
-  .join("\n");
+    .split(",") // Convertir la cadena en un array
+    .map((id) => `   ✅ ${id}`)
+    .join("\n");
   const chatId = data.dataOrder.chatId;
+  // Armar el mensaje
   const message = `<b>Tu pedido es el: #${data.dataOrder.id}</b>
   
 Detalles del pedido:
@@ -71,8 +77,21 @@ ${quantity}
       message: "No se pudo enviar el mensaje a Telegram.",
     });
   }
+  // Guardar el mensaje enviado en la base de datos (tabla telegram_messages)
+  try {
+    await conexion.execute(
+      `INSERT INTO telegram_messages (chat_id, text, from_bot) VALUES (?, ?, ?)`,
+      [chatId, message, 1] // from_bot = 1 porque fue enviado por el bot
+    );
+  } catch (error) {
+    console.error("Error al guardar el mensaje en telegram_messages:", error);
+    return NextResponse.json({
+      status: "error",
+      message: "Mensaje enviado, pero no se pudo guardar en la base de datos.",
+    });
+  }
   return NextResponse.json({
     status: "success",
-    message: "Mensaje enviado a Telegram correctamente.",
+    message: "Mensaje enviado a Telegram y guardado correctamente.",
   });
 }
