@@ -37,7 +37,7 @@ export default function SearchProduct({ onSelectProduct }) {
   };
 
   return (
-    <div className="max-[420px]:text-sm text-base text-slate-800 text-left mr-1 max-[420px]:w-2/3 w-full max-[420px]:absolute relative max-[420px]:top-10 max-[420px]:right-0">
+    <div className="max-[420px]:text-sm text-base text-slate-800 text-left relative max-[420px]:right-0">
       <input
         type="text"
         value={query}
