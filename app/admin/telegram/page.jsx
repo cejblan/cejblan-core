@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function TelegramPanel() {
   const [chats, setChats] = useState([]);
@@ -9,7 +9,9 @@ export default function TelegramPanel() {
   const [status, setStatus] = useState(null);
   const [messages, setMessages] = useState([]);
 
-  // 1) Carga lista de chats
+  const messageEndRef = useRef(null);
+
+  // 1️⃣ Cargar lista de chats una vez
   useEffect(() => {
     async function fetchChats() {
       const res = await fetch("/api/telegram/get-users-with-chatid");
@@ -19,46 +21,57 @@ export default function TelegramPanel() {
     fetchChats();
   }, []);
 
-  // 2) Al cambiar chat, obtenemos historial
-  useEffect(() => {
-    async function fetchMessages() {
-      if (!selectedChat) return;
+  // 2️⃣ Función para cargar mensajes del chat seleccionado
+  async function fetchMessages(chatId) {
+    if (!chatId) return;
 
-      try {
-        const res = await fetch(`/api/telegram/getMessages?chatId=${selectedChat.chatId}`);
-        const data = await res.json();
-
-        if (!Array.isArray(data)) {
-          console.error("Respuesta inesperada del backend:", data);
-          setMessages([]); // prevenir errores
-          return;
-        }
-
+    try {
+      const res = await fetch(`/api/telegram/getMessages?chatId=${chatId}`);
+      const data = await res.json();
+      if (Array.isArray(data)) {
         setMessages(data);
-      } catch (error) {
-        console.error("Error al obtener mensajes:", error);
-        setMessages([]); // prevenir errores
       }
+    } catch (error) {
+      console.error("Error al obtener mensajes:", error);
     }
+  }
 
-    fetchMessages();
+  // 3️⃣ Efecto: actualizar mensajes cada 3s si hay un chat seleccionado
+  useEffect(() => {
+    if (!selectedChat) return;
+
+    fetchMessages(selectedChat.chatId); // carga inicial
+
+    const interval = setInterval(() => {
+      fetchMessages(selectedChat.chatId);
+    }, 3000);
+
+    return () => clearInterval(interval); // limpieza
   }, [selectedChat]);
+
+  // 4️⃣ Scroll automático al final cada vez que cambian los mensajes
+  useEffect(() => {
+    if (messageEndRef.current) {
+      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
 
   const handleSend = async () => {
     if (!messageInput.trim() || !selectedChat) return;
+
     try {
       const res = await fetch("/api/telegram/sendMessage", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chat_id: selectedChat.chatId, text: messageInput })
+        body: JSON.stringify({ chat_id: selectedChat.chatId, text: messageInput }),
       });
+
       const result = await res.json();
       setStatus(result.message);
       setMessageInput("");
-      // Recargar historial sin recargar toda la página:
-      const msgs = await fetch(`/api/telegram/getMessages?chatId=${selectedChat.chatId}`)
-        .then(r => r.json());
-      setMessages(msgs);
+
+      // Carga inmediata luego de enviar
+      fetchMessages(selectedChat.chatId);
     } catch (error) {
       console.error("Error al enviar mensaje:", error);
     }
@@ -72,15 +85,13 @@ export default function TelegramPanel() {
           <div
             key={chat.chatId}
             onClick={() => setSelectedChat(chat)}
-            className={
-              `p-4 hover:bg-gray-100 cursor-pointer border-b ${selectedChat?.chatId === chat.chatId ? 'bg-gray-100' : ''
-              }`
-            }
+            className={`p-4 hover:bg-gray-100 cursor-pointer border-b ${selectedChat?.chatId === chat.chatId ? 'bg-gray-100' : ''}`}
           >
             {chat.name || `Usuario ${chat.chatId}`}
           </div>
         ))}
       </aside>
+
       <section className="flex-1 flex flex-col">
         <div className="p-4 border-b font-bold">
           {selectedChat ? (selectedChat.name || selectedChat.chatId) : 'Selecciona un chat'}
@@ -88,17 +99,17 @@ export default function TelegramPanel() {
 
         <div className="flex-1 overflow-y-auto p-4 space-y-2">
           {selectedChat ? (
-            messages.map((msg, i) => (
-              <div
-                key={i}
-                className={
-                  `p-2 rounded max-w-sm ${msg.from_bot ? 'bg-blue-100 text-right ml-auto' : 'bg-gray-100 text-left'
-                  }`
-                }
-              >
-                {msg.text}
-              </div>
-            ))
+            <>
+              {messages.map((msg, i) => (
+                <div
+                  key={i}
+                  className={`p-2 rounded max-w-sm ${msg.from_bot ? 'bg-blue-100 text-right ml-auto' : 'bg-gray-100 text-left'}`}
+                >
+                  {msg.text}
+                </div>
+              ))}
+              <div ref={messageEndRef} /> {/* ← Para scroll al fondo */}
+            </>
           ) : (
             <p className="text-gray-500">Selecciona un chat para comenzar</p>
           )}
