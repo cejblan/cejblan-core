@@ -492,9 +492,9 @@ export default function Editor({ file }) {
     }
   }, [modoEditor]);
 
-  const btnSmall = "bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition";
-  const btnSmall2 = "bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition";
-  const btnSmall3 = "bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition";
+  const btnSmall = "bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition";
+  const btnSmall2 = "bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 transition";
+  const btnSmall3 = "bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 transition";
 
   return (
     <div className="flex flex-col gap-4">
