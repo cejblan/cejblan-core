@@ -62,13 +62,15 @@ export default function TelegramPanel() {
   return (
     <div className="flex flex-col md:flex-row h-[90vh] relative top-[-1rem]">
 
-      {/* Botón móvil para mostrar lista de chats */}
-      <button
-        className="md:hidden bg-blue-500 text-white px-4 py-2"
-        onClick={() => setShowChatList(!showChatList)}
-      >
-        📋 {showChatList ? 'Ocultar chats' : 'Mostrar chats'}
-      </button>
+      {/* Solo mostrar el botón en pantallas móviles */}
+      {typeof window !== "undefined" && window.innerWidth < 768 && (
+        <button
+          className="bg-blue-500 text-white px-4 py-2"
+          onClick={() => setShowChatList(!showChatList)}
+        >
+          📋 {showChatList ? 'Ocultar chats' : 'Mostrar chats'}
+        </button>
+      )}
 
       {/* Lista de chats */}
       {(showChatList || window.innerWidth >= 768) && (
@@ -81,9 +83,8 @@ export default function TelegramPanel() {
                 setSelectedChat(chat);
                 setShowChatList(false); // 👈 ocultar lista en móvil
               }}
-              className={`p-2 hover:bg-white cursor-pointer border-b ${
-                selectedChat?.chatId === chat.chatId ? 'bg-slate-100' : ''
-              }`}
+              className={`p-2 hover:bg-white cursor-pointer border-b ${selectedChat?.chatId === chat.chatId ? 'bg-slate-100' : ''
+                }`}
             >
               {chat.name || `Usuario ${chat.chatId}`}
             </div>
@@ -103,11 +104,10 @@ export default function TelegramPanel() {
               {messages.map((msg, i) => (
                 <div
                   key={i}
-                  className={`p-1 rounded max-w-sm break-words ${
-                    msg.from_bot
+                  className={`p-1 rounded max-w-sm break-words ${msg.from_bot
                       ? 'bg-blue-200 text-right ml-auto'
                       : 'bg-white text-left'
-                  }`}
+                    }`}
                 >
                   {msg.text}
                 </div>
