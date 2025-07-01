@@ -110,7 +110,7 @@ export default function TelegramPanel() {
             value={messageInput}
             onChange={e => setMessageInput(e.target.value)}
             placeholder="Escribe un mensaje..."
-            className="flex-1 border p-1 rounded"
+            className="md:flex-1 w-full border p-1 rounded"
           />
           <button
             onClick={handleSend}
