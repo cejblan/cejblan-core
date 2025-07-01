@@ -4,7 +4,6 @@ import { conexion } from "@/libs/mysql";
 export async function POST(req) {
   try {
     const { chat_id, text } = await req.json();
-    console.log(chat_id)
 
     if (!chat_id || !text) {
       return NextResponse.json(
