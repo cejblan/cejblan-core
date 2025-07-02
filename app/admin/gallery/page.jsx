@@ -114,7 +114,7 @@ export default function Gallery() {
                 });
                 setPagina(1);
               }}
-              className="absolute top-1 right-1 bg-red-600 text-white rounded px-1 py-0.5 text-xs hover:bg-red-700"
+              className="absolute top-1 right-1 bg-red-600 text-white rounded px-1 py-0.5 text-xs hover:bg-red-700 z-10"
             >
               Eliminar
             </button>
@@ -122,7 +122,7 @@ export default function Gallery() {
             {/* Botón recortar */}
             <button
               onClick={() => setImagenSeleccionada(img)}
-              className="absolute bottom-5 right-1 bg-green-600 text-white rounded px-1 py-0.5 text-xs hover:bg-green-500"
+              className="absolute bottom-5 right-1 bg-green-600 text-white rounded px-1 py-0.5 text-xs hover:bg-green-500 z-10"
             >
               Recortar
             </button>
@@ -137,7 +137,7 @@ export default function Gallery() {
                   alert("Error al copiar URL");
                 }
               }}
-              className="absolute bottom-1 right-1 bg-blue-600 text-white rounded px-1 py-0.5 text-xs hover:bg-blue-500"
+              className="absolute bottom-1 right-1 bg-blue-600 text-white rounded px-1 py-0.5 text-xs hover:bg-blue-500 z-10"
             >
               Copiar URL
             </button>
@@ -181,20 +181,20 @@ export default function Gallery() {
 
               {aspect === 'libre' && (
                 <div
-                  className="absolute border-2 border-green-500 bg-white bg-opacity-20"
+                  className="absolute border-2 border-white z-20"
                   style={{
                     top: cropBox.top,
                     left: cropBox.left,
                     width: cropBox.width,
                     height: cropBox.height,
+                    boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.5)',
                   }}
                 >
-                  {/* Bordes de control */}
                   {['top', 'bottom', 'left', 'right'].map((lado) => (
                     <div
                       key={lado}
                       onMouseDown={() => iniciarResize(lado)}
-                      className={`absolute bg-green-600 z-10 cursor-${lado === 'left' || lado === 'right' ? 'ew' : 'ns'}-resize`}
+                      className={`absolute bg-white z-30 cursor-${lado === 'left' || lado === 'right' ? 'ew' : 'ns'}-resize`}
                       style={
                         lado === 'top'
                           ? { top: -4, left: 0, width: '100%', height: 8 }
@@ -208,11 +208,24 @@ export default function Gallery() {
                   ))}
                 </div>
               )}
+
+              {aspect === '1:1' && (
+                <div
+                  className="absolute border-2 border-white z-20"
+                  style={{
+                    top: 'calc(50% - 100px)',
+                    left: 'calc(50% - 100px)',
+                    width: 200,
+                    height: 200,
+                    boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.5)',
+                  }}
+                />
+              )}
             </div>
 
             <div className="mt-4 flex justify-end gap-2">
               <button
-                onClick={() => alert('Recorte manual capturado (aún no implementado el corte final).')}
+                onClick={() => alert('Recorte capturado (no implementado).')}
                 className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded"
               >
                 Aplicar recorte
