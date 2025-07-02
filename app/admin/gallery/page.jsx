@@ -122,6 +122,52 @@ export default function Gallery() {
     const data = await res.json(); if (data.secure_url) setPagina(1);
   };
 
+  const aplicarRecorte = async () => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = imagenSeleccionada.url;
+
+    img.onload = async () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = cropBox.width;
+      canvas.height = cropBox.height;
+      const ctx = canvas.getContext('2d');
+
+      ctx.drawImage(
+        img,
+        cropBox.left,
+        cropBox.top,
+        cropBox.width,
+        cropBox.height,
+        0,
+        0,
+        cropBox.width,
+        cropBox.height
+      );
+
+      canvas.toBlob(async (blob) => {
+        if (!blob) return alert('No se pudo generar el recorte');
+
+        const formData = new FormData();
+        formData.append('file', new File([blob], 'recorte.png', { type: 'image/png' }));
+
+        const res = await fetch('/api/cms/images/crop', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const data = await res.json();
+        if (data.url) {
+          alert('Imagen recortada subida con éxito');
+          setPagina(1); // para recargar galería
+          setImagenSeleccionada(null);
+        } else {
+          alert('Error al subir imagen recortada');
+        }
+      }, 'image/png');
+    };
+  };
+
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Galería Multimedia</h1>
@@ -132,25 +178,21 @@ export default function Gallery() {
         </label>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        {imagenes.map((img,i)=>(
-          <div key={i} className="relative w-full aspect-square border rounded-2xl overflow-hidden bg-gray-100">
+        {imagenes.map((img, i) => (
+          <div key={i} className="relative w-full aspect-square border rounded-2xl overflow-hidden bg-slate-100">
             <Image src={img.url} alt={img.pathname} className="object-cover w-full h-full" width={200} height={200} />
-            <button onClick={async()=>{if(!confirm("¿Eliminar esta imagen?"))return;await fetch(`/api/cms/images?pathname=${encodeURIComponent(img.pathname)}`,{method:"DELETE"});setPagina(1);}} className="absolute top-1 right-1 z-10 bg-red-600 text-white rounded px-1 py-0.5 text-xs hover:bg-red-700">Eliminar</button>
-            <button onClick={()=>setImagenSeleccionada(img)} className="absolute bottom-5 right-1 z-10 bg-green-600 text-white rounded px-1 py-0.5 text-xs hover:bg-green-500">Recortar</button>
-            <button onClick={async()=>{try{await navigator.clipboard.writeText(img.url);alert("URL copiada");}catch{alert("Error");}}} className="absolute bottom-1 right-1 z-10 bg-blue-600 text-white rounded px-1 py-0.5 text-xs hover:bg-blue-500">Copiar URL</button>
+            <button onClick={async () => { if (!confirm("¿Eliminar esta imagen?")) return; await fetch(`/api/cms/images?pathname=${encodeURIComponent(img.pathname)}`, { method: "DELETE" }); setPagina(1); }} className="absolute top-1 right-1 z-10 bg-red-600 text-white rounded px-1 py-0.5 text-xs hover:bg-red-700">Eliminar</button>
+            <button onClick={() => setImagenSeleccionada(img)} className="absolute bottom-5 right-1 z-10 bg-green-600 text-white rounded px-1 py-0.5 text-xs hover:bg-green-500">Recortar</button>
+            <button onClick={async () => { try { await navigator.clipboard.writeText(img.url); alert("URL copiada"); } catch { alert("Error"); } }} className="absolute bottom-1 right-1 z-10 bg-blue-600 text-white rounded px-1 py-0.5 text-xs hover:bg-blue-500">Copiar URL</button>
           </div>
         ))}
       </div>
-      {imagenSeleccionada&&(
+      {imagenSeleccionada && (
         <div className="fixed inset-0 bg-black bg-opacity-80 z-50 flex justify-center items-center">
-          <div className="relative bg-white rounded-xl p-4 max-w-3xl w-full m-4 max-h-[90vh] overflow-auto z-20" onMouseMove={moverBorde}>
-            <button onClick={()=>setImagenSeleccionada(null)} className="absolute top-2 right-2 z-30 text-gray-600 hover:text-black text-xl">✕</button>
+          <div className="relative bg-white rounded-xl p-2 max-w-3xl w-full m-4 max-h-[90vh] overflow-auto z-20" onMouseMove={moverBorde}>
+            <button onClick={() => setImagenSeleccionada(null)} className="absolute top-2 right-2 z-30 text-slate-600 hover:text-black text-xl">✕</button>
             <h2 className="text-lg font-bold mb-2 z-30">Recorte manual</h2>
-            <div className="mb-4 flex gap-2 z-30">
-              <button onClick={()=>setAspect('1:1')} className={`px-3 py-1 rounded ${aspect==='1:1'?'bg-gray-800 text-white':'bg-gray-200 text-black'}`}>1:1</button>
-              <button onClick={()=>setAspect('libre')} className={`px-3 py-1 rounded ${aspect==='libre'?'bg-gray-800 text-white':'bg-gray-200 text-black'}`}>Libre</button>
-            </div>
-            <div className="relative flex justify-center items-center" style={{height:'60vh'}}>
+            <div className="relative flex justify-center items-center" style={{ height: '60vh !import' }}>
               <div ref={imgContainerRef} className="relative max-h-full w-auto">
                 <img src={imagenSeleccionada.url} alt="Recorte" className="max-h-full object-contain" />
                 <div
@@ -161,29 +203,34 @@ export default function Gallery() {
                   }}
                   style={{ top: cropBox.top, left: cropBox.left, width: cropBox.width, height: cropBox.height, border: '2px solid white', boxShadow: '0 0 0 9999px rgba(0,0,0,0.5)', pointerEvents: 'auto', zIndex: 25 }}
                 />
-                {aspect==='libre'&&['top','bottom','left','right'].map(lado=>(
-                  <div key={lado} onMouseDown={()=>iniciarResize(lado)} className={`absolute bg-white cursor-${lado==='left'||lado==='right'?'ew':'ns'}-resize`} style={{
+                {aspect === 'libre' && ['top', 'bottom', 'left', 'right'].map(lado => (
+                  <div key={lado} onMouseDown={() => iniciarResize(lado)} className={`absolute bg-white cursor-${lado === 'left' || lado === 'right' ? 'ew' : 'ns'}-resize`} style={{
                     pointerEvents: 'auto',
                     zIndex: 30,
-                    ...(lado==='top'?{top:cropBox.top-4,left:cropBox.left,width:cropBox.width,height:8}:
-                      lado==='bottom'?{top:cropBox.top+cropBox.height-4,left:cropBox.left,width:cropBox.width,height:8}:
-                      lado==='left'?{left:cropBox.left-4,top:cropBox.top,width:8,height:cropBox.height}:
-                      {left:cropBox.left+cropBox.width-4,top:cropBox.top,width:8,height:cropBox.height})
+                    ...(lado === 'top' ? { top: cropBox.top - 4, left: cropBox.left, width: cropBox.width, height: 8 } :
+                      lado === 'bottom' ? { top: cropBox.top + cropBox.height - 4, left: cropBox.left, width: cropBox.width, height: 8 } :
+                        lado === 'left' ? { left: cropBox.left - 4, top: cropBox.top, width: 8, height: cropBox.height } :
+                          { left: cropBox.left + cropBox.width - 4, top: cropBox.top, width: 8, height: cropBox.height })
                   }} />
                 ))}
               </div>
             </div>
-            <div className="mt-4 flex justify-end gap-2 z-30">
-              <button onClick={()=>alert('Recorte generado')} className="bg-gray-800 hover:bg-gray-900 text-white px-2 py-1 rounded">Aplicar recorte</button>
-              <button onClick={()=>setImagenSeleccionada(null)} className="bg-gray-300 hover:bg-gray-400 text-black px-2 py-1 rounded">Cancelar</button>
-            </div>
+            <div className="mt-2 flex z-30">
+              <div className="flex gap-2">
+                <button onClick={() => setAspect('1:1')} className={`px-3 py-1 rounded ${aspect === '1:1' ? 'bg-slate-800 text-white' : 'bg-slate-200 text-black'}`}>1:1</button>
+                <button onClick={() => setAspect('libre')} className={`px-3 py-1 rounded ${aspect === 'libre' ? 'bg-slate-800 text-white' : 'bg-slate-200 text-black'}`}>Libre</button>
+              </div>
+              <div className="flex gap-2 justify-end w-full">
+                <button onClick={aplicarRecorte} className="bg-slate-800 hover:bg-slate-900 text-white px-2 py-1 rounded">Aplicar recorte</button>
+                <button onClick={() => setImagenSeleccionada(null)} className="bg-slate-300 hover:bg-slate-400 text-black px-2 py-1 rounded">Cancelar</button>
+              </div></div>
           </div>
         </div>
       )}
-      <div className="mt-6 flex justify-center gap-2">
-        <button onClick={()=>setPagina(p=>Math.max(1,p-1))} className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300" disabled={pagina===1}>Anterior</button>
+      <div className="mt-4 flex justify-center gap-2">
+        <button onClick={() => setPagina(p => Math.max(1, p - 1))} className="px-3 py-1 rounded bg-slate-300 hover:bg-slate-400" disabled={pagina === 1}>Anterior</button>
         <span className="px-2 py-1">{pagina}/{totalPaginas}</span>
-        <button onClick={()=>setPagina(p=>Math.min(totalPaginas,p+1))} className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300" disabled={pagina===totalPaginas}>Siguiente</button>
+        <button onClick={() => setPagina(p => Math.min(totalPaginas, p + 1))} className="px-3 py-1 rounded bg-slate-300 hover:bg-slate-400" disabled={pagina === totalPaginas}>Siguiente</button>
       </div>
     </div>
   );
