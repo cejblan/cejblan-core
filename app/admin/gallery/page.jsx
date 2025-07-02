@@ -195,23 +195,23 @@ export default function Gallery() {
             <div className="relative flex justify-center items-center" style={{ height: '60vh !import' }}>
               <div ref={imgContainerRef} className="relative max-h-full w-auto">
                 <img src={imagenSeleccionada.url} alt="Recorte" className="max-h-full object-contain" />
-                <div
-                  className="absolute cursor-move"
-                  onMouseDown={(e) => {
-                    isDragging.current = true;
-                    dragStart.current = { x: e.clientX, y: e.clientY };
-                  }}
-                  style={{ top: cropBox.top, left: cropBox.left, width: cropBox.width, height: cropBox.height, border: '2px solid white', boxShadow: '0 0 0 9999px rgba(0,0,0,0.5)', pointerEvents: 'auto', zIndex: 25 }}
-                />
+                {/* Fondo oscuro sobre la imagen */}
+                <div className="absolute top-0 left-0 right-0 bottom-0 pointer-events-none z-10">
+                  <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: cropBox.top, backgroundColor: 'rgba(0,0,0,0.5)' }} />
+                  <div style={{ position: 'absolute', top: cropBox.top + cropBox.height, left: 0, width: '100%', height: `calc(100% - ${cropBox.top + cropBox.height}px)`, backgroundColor: 'rgba(0,0,0,0.5)' }} />
+                  <div style={{ position: 'absolute', top: cropBox.top, left: 0, width: cropBox.left, height: cropBox.height, backgroundColor: 'rgba(0,0,0,0.5)' }} />
+                  <div style={{ position: 'absolute', top: cropBox.top, left: cropBox.left + cropBox.width, width: `calc(100% - ${cropBox.left + cropBox.width}px)`, height: cropBox.height, backgroundColor: 'rgba(0,0,0,0.5)' }} />
+                </div>
+                {/* Área de recorte */}
+                <div className="absolute border border-white z-20 cursor-move" style={{ ...cropBox }} onMouseDown={() => { isDragging.current = true; }} />
+                {/* Bordes para redimensionar */}
                 {aspect === 'libre' && ['top', 'bottom', 'left', 'right'].map(lado => (
-                  <div key={lado} onMouseDown={() => iniciarResize(lado)} className={`absolute bg-white cursor-${lado === 'left' || lado === 'right' ? 'ew' : 'ns'}-resize`} style={{
-                    pointerEvents: 'auto',
-                    zIndex: 30,
-                    ...(lado === 'top' ? { top: cropBox.top - 4, left: cropBox.left, width: cropBox.width, height: 8 } :
+                  <div key={lado} onMouseDown={() => iniciarResize(lado)} className={`absolute bg-black cursor-${lado === 'left' || lado === 'right' ? 'ew' : 'ns'}-resize z-30`} style={
+                    lado === 'top' ? { top: cropBox.top - 4, left: cropBox.left, width: cropBox.width, height: 8 } :
                       lado === 'bottom' ? { top: cropBox.top + cropBox.height - 4, left: cropBox.left, width: cropBox.width, height: 8 } :
                         lado === 'left' ? { left: cropBox.left - 4, top: cropBox.top, width: 8, height: cropBox.height } :
-                          { left: cropBox.left + cropBox.width - 4, top: cropBox.top, width: 8, height: cropBox.height })
-                  }} />
+                          { left: cropBox.left + cropBox.width - 4, top: cropBox.top, width: 8, height: cropBox.height }
+                  } />
                 ))}
               </div>
             </div>
@@ -223,10 +223,12 @@ export default function Gallery() {
               <div className="flex gap-2 justify-end w-full">
                 <button onClick={aplicarRecorte} className="bg-slate-800 hover:bg-slate-900 text-white px-2 py-1 rounded">Aplicar recorte</button>
                 <button onClick={() => setImagenSeleccionada(null)} className="bg-slate-300 hover:bg-slate-400 text-black px-2 py-1 rounded">Cancelar</button>
-              </div></div>
+              </div>
+            </div>
           </div>
         </div>
       )}
+      {/* Paginación */}
       <div className="mt-4 flex justify-center gap-2">
         <button onClick={() => setPagina(p => Math.max(1, p - 1))} className="px-3 py-1 rounded bg-slate-300 hover:bg-slate-400" disabled={pagina === 1}>Anterior</button>
         <span className="px-2 py-1">{pagina}/{totalPaginas}</span>
