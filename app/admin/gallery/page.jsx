@@ -1,7 +1,7 @@
-// Parte superior: hooks y cropper
 'use client';
+
 import { useEffect, useState, useCallback, useRef } from 'react';
-import Image from 'next/image';
+import NextImage from 'next/image';
 
 export default function Gallery() {
   const [imagenes, setImagenes] = useState([]);
@@ -39,18 +39,19 @@ export default function Gallery() {
   }, [imagenSeleccionada, aspect]);
 
   useEffect(() => {
-    const cargarImagenes = async () => {
-      try {
-        const res = await fetch(`/api/cms/images?page=${pagina}&limit=${porPagina}`);
-        const data = await res.json();
-        setImagenes(data.imagenes || []);
-        setTotalPaginas(data.totalPaginas || 1);
-      } catch (err) {
-        console.error('Error al cargar imágenes:', err);
-      }
-    };
     cargarImagenes();
   }, [pagina]);
+
+  const cargarImagenes = async () => {
+    try {
+      const res = await fetch(`/api/cms/images?page=${pagina}&limit=${porPagina}`);
+      const data = await res.json();
+      setImagenes(data.imagenes || []);
+      setTotalPaginas(data.totalPaginas || 1);
+    } catch (err) {
+      console.error('Error al cargar imágenes:', err);
+    }
+  };
 
   const iniciarResize = (lado) => {
     isResizing.current = lado;
@@ -123,33 +124,62 @@ export default function Gallery() {
   }, []);
 
   const handleUpload = async (e) => {
-    const file = e.target.files[0]; if (!file) return;
-    const formData = new FormData(); formData.append("image", file);
-    const res = await fetch("/api/cms/images", { method: "POST", body: formData });
-    const data = await res.json(); if (data.secure_url) setPagina(1);
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const res = await fetch("/api/cms/images", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+    if (data.secure_url) {
+      setPagina(1); // opcional, si quieres volver a la primera
+      await cargarImagenes(); // ✅ recarga la galería sin recargar toda la página
+    }
   };
 
   const aplicarRecorte = async () => {
-    const img = new Image();
+    const img = new window.Image();
     img.crossOrigin = 'anonymous';
     img.src = imagenSeleccionada.url;
 
     img.onload = async () => {
+      // Medidas reales de la imagen
+      const naturalWidth = img.naturalWidth;
+      const naturalHeight = img.naturalHeight;
+
+      // Tamaño mostrado en pantalla
+      const domImg = imgContainerRef.current.querySelector('img');
+      const domRect = domImg.getBoundingClientRect();
+
+      const scaleX = naturalWidth / domRect.width;
+      const scaleY = naturalHeight / domRect.height;
+
+      // Coordenadas del recorte en la imagen real
+      const realLeft = cropBox.left * scaleX;
+      const realTop = cropBox.top * scaleY;
+      const realWidth = cropBox.width * scaleX;
+      const realHeight = cropBox.height * scaleY;
+
       const canvas = document.createElement('canvas');
-      canvas.width = cropBox.width;
-      canvas.height = cropBox.height;
+      canvas.width = realWidth;
+      canvas.height = realHeight;
       const ctx = canvas.getContext('2d');
 
       ctx.drawImage(
         img,
-        cropBox.left,
-        cropBox.top,
-        cropBox.width,
-        cropBox.height,
+        realLeft,
+        realTop,
+        realWidth,
+        realHeight,
         0,
         0,
-        cropBox.width,
-        cropBox.height
+        realWidth,
+        realHeight
       );
 
       canvas.toBlob(async (blob) => {
@@ -166,8 +196,9 @@ export default function Gallery() {
         const data = await res.json();
         if (data.url) {
           alert('Imagen recortada subida con éxito');
-          setPagina(1); // para recargar galería
           setImagenSeleccionada(null);
+          setPagina(1); // opcional si quieres volver a la primera
+          await cargarImagenes();
         } else {
           alert('Error al subir imagen recortada');
         }
@@ -187,8 +218,17 @@ export default function Gallery() {
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
         {imagenes.map((img, i) => (
           <div key={i} className="relative w-full aspect-square border rounded-2xl overflow-hidden bg-slate-100">
-            <Image src={img.url} alt={img.pathname} className="object-cover w-full h-full" width={200} height={200} />
-            <button onClick={async () => { if (!confirm("¿Eliminar esta imagen?")) return; await fetch(`/api/cms/images?pathname=${encodeURIComponent(img.pathname)}`, { method: "DELETE" }); setPagina(1); }} className="absolute top-1 right-1 z-10 bg-red-600 text-white rounded px-1 py-0.5 text-xs hover:bg-red-700">Eliminar</button>
+            <NextImage src={img.url} alt={img.pathname} className="object-cover w-full h-full" width={200} height={200} />
+            <button
+              onClick={async () => {
+                if (!confirm("¿Eliminar esta imagen?")) return;
+                await fetch(`/api/cms/images?pathname=${encodeURIComponent(img.pathname)}`, { method: "DELETE" });
+                await cargarImagenes();
+              }}
+              className="absolute top-1 right-1 z-10 bg-red-600 text-white rounded px-1 py-0.5 text-xs hover:bg-red-700"
+            >
+              Eliminar
+            </button>
             <button onClick={() => setImagenSeleccionada(img)} className="absolute bottom-5 right-1 z-10 bg-green-600 text-white rounded px-1 py-0.5 text-xs hover:bg-green-500">Recortar</button>
             <button onClick={async () => { try { await navigator.clipboard.writeText(img.url); alert("URL copiada"); } catch { alert("Error"); } }} className="absolute bottom-1 right-1 z-10 bg-blue-600 text-white rounded px-1 py-0.5 text-xs hover:bg-blue-500">Copiar URL</button>
           </div>
