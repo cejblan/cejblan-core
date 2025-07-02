@@ -8,7 +8,7 @@ export default function Gallery() {
   const [pagina, setPagina] = useState(1);
   const [totalPaginas, setTotalPaginas] = useState(1);
   const [imagenSeleccionada, setImagenSeleccionada] = useState(null);
-  const [cropBox, setCropBox] = useState({ top: 0, left: 0, width: 0, height: 0 });
+  const [cropBox, setCropBox] = useState({ top: 50, left: 50, width: 200, height: 200 });
   const imgContainerRef = useRef(null);
   const isResizing = useRef(null);
   const [aspect, setAspect] = useState('libre');
@@ -26,11 +26,15 @@ export default function Gallery() {
         const width = rect.width;
         const height = rect.height;
         const size = Math.min(width, height);
-        setCropBox({ top: top + (height - size) / 2, left: left + (width - size) / 2, width: size, height: size });
+        if (aspect === '1:1') {
+          setCropBox({ top: top + (height - size) / 2, left: left + (width - size) / 2, width: size, height: size });
+        } else {
+          setCropBox({ top, left, width, height });
+        }
       };
       updateBox();
     }
-  }, [imagenSeleccionada]);
+  }, [imagenSeleccionada, aspect]);
 
   useEffect(() => {
     const cargarImagenes = async () => {
@@ -132,14 +136,16 @@ export default function Gallery() {
             <div className="relative flex justify-center items-center" style={{height:'60vh'}}>
               <div ref={imgContainerRef} className="relative max-h-full w-auto">
                 <img src={imagenSeleccionada.url} alt="Recorte" className="max-h-full object-contain" />
-                <div className="absolute top-0 left-0" style={{width:cropBox.width, height:cropBox.height, top:cropBox.top, left:cropBox.left, border:'2px solid white', boxShadow:'0 0 0 9999px rgba(0,0,0,0.5)', pointerEvents:'none', zIndex:25}} />
+                <div className="absolute" style={{ top: cropBox.top, left: cropBox.left, width: cropBox.width, height: cropBox.height, border: '2px solid white', boxShadow: '0 0 0 9999px rgba(0,0,0,0.5)', pointerEvents: 'none', zIndex: 25 }} />
                 {aspect==='libre'&&['top','bottom','left','right'].map(lado=>(
-                  <div key={lado} onMouseDown={()=>iniciarResize(lado)} className={`absolute bg-white cursor-${lado==='left'||lado==='right'?'ew':'ns'}-resize`} style={
-                    lado==='top'?{top:cropBox.top-4,left:cropBox.left,width:cropBox.width,height:8}:
-                    lado==='bottom'?{top:cropBox.top+cropBox.height-4,left:cropBox.left,width:cropBox.width,height:8}:
-                    lado==='left'?{left:cropBox.left-4,top:cropBox.top,width:8,height:cropBox.height}:
-                    {left:cropBox.left+cropBox.width-4,top:cropBox.top,width:8,height:cropBox.height}
-                  } />
+                  <div key={lado} onMouseDown={()=>iniciarResize(lado)} className={`absolute bg-white cursor-${lado==='left'||lado==='right'?'ew':'ns'}-resize`} style={{
+                    pointerEvents: 'auto',
+                    zIndex: 30,
+                    ...(lado==='top'?{top:cropBox.top-4,left:cropBox.left,width:cropBox.width,height:8}:
+                      lado==='bottom'?{top:cropBox.top+cropBox.height-4,left:cropBox.left,width:cropBox.width,height:8}:
+                      lado==='left'?{left:cropBox.left-4,top:cropBox.top,width:8,height:cropBox.height}:
+                      {left:cropBox.left+cropBox.width-4,top:cropBox.top,width:8,height:cropBox.height})
+                  }} />
                 ))}
               </div>
             </div>
