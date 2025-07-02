@@ -11,6 +11,8 @@ export default function Gallery() {
   const [cropBox, setCropBox] = useState({ top: 50, left: 50, width: 200, height: 200 });
   const imgContainerRef = useRef(null);
   const isResizing = useRef(null);
+  const isDragging = useRef(false);
+  const dragStart = useRef({ x: 0, y: 0 });
   const [aspect, setAspect] = useState('libre');
   const porPagina = 36;
 
@@ -29,7 +31,7 @@ export default function Gallery() {
         if (aspect === '1:1') {
           setCropBox({ top: top + (height - size) / 2, left: left + (width - size) / 2, width: size, height: size });
         } else {
-          setCropBox({ top, left, width, height });
+          setCropBox({ top, left, width: Math.max(100, width * 0.6), height: Math.max(100, height * 0.6) });
         }
       };
       updateBox();
@@ -55,45 +57,60 @@ export default function Gallery() {
   };
 
   const moverBorde = useCallback((e) => {
-    if (!isResizing.current || !imgContainerRef.current) return;
+    if (!imgContainerRef.current) return;
     const deltaX = e.movementX;
     const deltaY = e.movementY;
     const container = imgContainerRef.current.querySelector('img')?.getBoundingClientRect();
     if (!container) return;
 
-    setCropBox(box => {
-      const newBox = { ...box };
-      if (isResizing.current === 'top') {
-        const newTop = box.top + deltaY;
-        const newHeight = box.height - deltaY;
-        if (newTop >= 0 && newHeight >= 20) {
-          newBox.top = newTop;
-          newBox.height = newHeight;
+    if (isResizing.current) {
+      setCropBox(box => {
+        const newBox = { ...box };
+        if (isResizing.current === 'top') {
+          const newTop = box.top + deltaY;
+          const newHeight = box.height - deltaY;
+          if (newTop >= 0 && newHeight >= 20) {
+            newBox.top = newTop;
+            newBox.height = newHeight;
+          }
+        } else if (isResizing.current === 'bottom') {
+          const newHeight = box.height + deltaY;
+          if (box.top + newHeight <= container.height) {
+            newBox.height = newHeight;
+          }
+        } else if (isResizing.current === 'left') {
+          const newLeft = box.left + deltaX;
+          const newWidth = box.width - deltaX;
+          if (newLeft >= 0 && newWidth >= 20) {
+            newBox.left = newLeft;
+            newBox.width = newWidth;
+          }
+        } else if (isResizing.current === 'right') {
+          const newWidth = box.width + deltaX;
+          if (box.left + newWidth <= container.width) {
+            newBox.width = newWidth;
+          }
         }
-      } else if (isResizing.current === 'bottom') {
-        const newHeight = box.height + deltaY;
-        if (box.top + newHeight <= container.height) {
-          newBox.height = newHeight;
-        }
-      } else if (isResizing.current === 'left') {
+        return newBox;
+      });
+    } else if (isDragging.current) {
+      setCropBox(box => {
         const newLeft = box.left + deltaX;
-        const newWidth = box.width - deltaX;
-        if (newLeft >= 0 && newWidth >= 20) {
-          newBox.left = newLeft;
-          newBox.width = newWidth;
-        }
-      } else if (isResizing.current === 'right') {
-        const newWidth = box.width + deltaX;
-        if (box.left + newWidth <= container.width) {
-          newBox.width = newWidth;
-        }
-      }
-      return newBox;
-    });
+        const newTop = box.top + deltaY;
+        return {
+          ...box,
+          left: Math.max(0, Math.min(newLeft, container.width - box.width)),
+          top: Math.max(0, Math.min(newTop, container.height - box.height))
+        };
+      });
+    }
   }, []);
 
   useEffect(() => {
-    const onMouseUp = () => (isResizing.current = null);
+    const onMouseUp = () => {
+      isResizing.current = null;
+      isDragging.current = false;
+    };
     window.addEventListener('mouseup', onMouseUp);
     return () => window.removeEventListener('mouseup', onMouseUp);
   }, []);
@@ -126,7 +143,7 @@ export default function Gallery() {
       </div>
       {imagenSeleccionada&&(
         <div className="fixed inset-0 bg-black bg-opacity-80 z-50 flex justify-center items-center">
-          <div className="relative bg-white rounded-xl p-4 max-w-3xl w-full m-4 max-h-[90vh] overflow-auto z-20" onMouseMove={aspect==='libre'?moverBorde:null}>
+          <div className="relative bg-white rounded-xl p-4 max-w-3xl w-full m-4 max-h-[90vh] overflow-auto z-20" onMouseMove={moverBorde}>
             <button onClick={()=>setImagenSeleccionada(null)} className="absolute top-2 right-2 z-30 text-gray-600 hover:text-black text-xl">✕</button>
             <h2 className="text-lg font-bold mb-2 z-30">Recorte manual</h2>
             <div className="mb-4 flex gap-2 z-30">
@@ -136,7 +153,14 @@ export default function Gallery() {
             <div className="relative flex justify-center items-center" style={{height:'60vh'}}>
               <div ref={imgContainerRef} className="relative max-h-full w-auto">
                 <img src={imagenSeleccionada.url} alt="Recorte" className="max-h-full object-contain" />
-                <div className="absolute" style={{ top: cropBox.top, left: cropBox.left, width: cropBox.width, height: cropBox.height, border: '2px solid white', boxShadow: '0 0 0 9999px rgba(0,0,0,0.5)', pointerEvents: 'none', zIndex: 25 }} />
+                <div
+                  className="absolute cursor-move"
+                  onMouseDown={(e) => {
+                    isDragging.current = true;
+                    dragStart.current = { x: e.clientX, y: e.clientY };
+                  }}
+                  style={{ top: cropBox.top, left: cropBox.left, width: cropBox.width, height: cropBox.height, border: '2px solid white', boxShadow: '0 0 0 9999px rgba(0,0,0,0.5)', pointerEvents: 'auto', zIndex: 25 }}
+                />
                 {aspect==='libre'&&['top','bottom','left','right'].map(lado=>(
                   <div key={lado} onMouseDown={()=>iniciarResize(lado)} className={`absolute bg-white cursor-${lado==='left'||lado==='right'?'ew':'ns'}-resize`} style={{
                     pointerEvents: 'auto',
