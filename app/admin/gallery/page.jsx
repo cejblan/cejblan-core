@@ -1,19 +1,17 @@
+// Parte superior: hooks y cropper
 'use client';
-
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import Image from 'next/image';
-import Cropper from 'react-easy-crop';
-import { getCroppedImg } from '@/app/components/crop'; // verás la función abajo
 
 export default function Gallery() {
   const [imagenes, setImagenes] = useState([]);
   const [pagina, setPagina] = useState(1);
   const [totalPaginas, setTotalPaginas] = useState(1);
   const [imagenSeleccionada, setImagenSeleccionada] = useState(null);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [aspect, setAspect] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [cropBox, setCropBox] = useState({ top: 50, left: 50, width: 200, height: 200 });
+  const cropRef = useRef(null);
+  const isResizing = useRef(null);
+  const [aspect, setAspect] = useState('libre');
   const porPagina = 36;
 
   useEffect(() => {
@@ -30,21 +28,58 @@ export default function Gallery() {
     cargarImagenes();
   }, [pagina]);
 
-  const onCropComplete = useCallback((_, croppedAreaPixels) => {
-    setCroppedAreaPixels(croppedAreaPixels);
+  const iniciarResize = (lado) => {
+    isResizing.current = lado;
+  };
+
+  const moverBorde = useCallback((e) => {
+    if (!isResizing.current || !cropRef.current) return;
+    const box = { ...cropBox };
+    const deltaX = e.movementX;
+    const deltaY = e.movementY;
+
+    switch (isResizing.current) {
+      case 'top':
+        box.top += deltaY;
+        box.height -= deltaY;
+        break;
+      case 'bottom':
+        box.height += deltaY;
+        break;
+      case 'left':
+        box.left += deltaX;
+        box.width -= deltaX;
+        break;
+      case 'right':
+        box.width += deltaX;
+        break;
+    }
+    setCropBox(box);
+  }, [cropBox]);
+
+  useEffect(() => {
+    const onMouseUp = () => (isResizing.current = null);
+    window.addEventListener('mouseup', onMouseUp);
+    return () => window.removeEventListener('mouseup', onMouseUp);
   }, []);
 
-  const handleRecortar = useCallback(async () => {
-    try {
-      const croppedBlob = await getCroppedImg(imagenSeleccionada.url, croppedAreaPixels);
-      // Aquí puedes hacer upload del blob, mostrar preview o reemplazar la imagen
-      alert('Recorte hecho y disponible para subir/procesar.');
-      console.log(croppedBlob);
-      setImagenSeleccionada(null);
-    } catch (err) {
-      console.error(err);
+  const handleUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const res = await fetch("/api/cms/images", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+    if (data.secure_url) {
+      setPagina(1);
     }
-  }, [croppedAreaPixels, imagenSeleccionada]);
+  };
 
   return (
     <div className="p-4">
@@ -54,126 +89,133 @@ export default function Gallery() {
       <div className="mb-4">
         <label className="inline-flex items-center gap-2 cursor-pointer bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium shadow transition-colors duration-200">
           Subir imagen
-          <input
-            type="file"
-            accept="image/*"
-            onChange={async (e) => {
-              const file = e.target.files[0];
-              if (!file) return;
-
-              const formData = new FormData();
-              formData.append("image", file);
-
-              const res = await fetch("/api/cms/images", {
-                method: "POST",
-                body: formData,
-              });
-
-              const data = await res.json();
-              if (data.secure_url) {
-                setPagina(1);
-              }
-            }}
-            className="hidden"
-          />
+          <input type="file" accept="image/*" onChange={handleUpload} className="hidden" />
         </label>
       </div>
 
       {/* Galería */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        {imagenes.map((img, i) => {
-          const esImagen = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(img.pathname);
-          return (
-            <div key={i} className="relative w-full aspect-square border rounded-2xl overflow-hidden bg-gray-100">
-              {esImagen ? (
-                <Image
-                  src={img.url}
-                  alt={img.pathname}
-                  className="object-cover w-full h-full"
-                  width={200}
-                  height={200}
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = "/icono-roto.png";
-                  }}
-                />
-              ) : (
-                <span className="text-xs text-gray-600">{img.pathname}</span>
-              )}
+        {imagenes.map((img, i) => (
+          <div key={i} className="relative w-full aspect-square border rounded-2xl overflow-hidden bg-gray-100">
+            <Image
+              src={img.url}
+              alt={img.pathname}
+              className="object-cover w-full h-full"
+              width={200}
+              height={200}
+            />
 
-              {/* Botón eliminar */}
-              <button
-                onClick={async () => {
-                  if (!confirm("¿Eliminar esta imagen?")) return;
-                  await fetch(`/api/cms/images?pathname=${encodeURIComponent(img.pathname)}`, {
-                    method: "DELETE",
-                  });
-                  setPagina(1);
-                }}
-                className="absolute top-1 right-1 bg-red-600 text-white rounded px-1 py-0.5 text-xs hover:bg-red-700"
-              >
-                Eliminar
-              </button>
+            {/* Botón eliminar */}
+            <button
+              onClick={async () => {
+                if (!confirm("¿Eliminar esta imagen?")) return;
+                await fetch(`/api/cms/images?pathname=${encodeURIComponent(img.pathname)}`, {
+                  method: "DELETE",
+                });
+                setPagina(1);
+              }}
+              className="absolute top-1 right-1 bg-red-600 text-white rounded px-1 py-0.5 text-xs hover:bg-red-700"
+            >
+              Eliminar
+            </button>
 
-              {/* Botón recortar */}
-              <button
-                onClick={() => setImagenSeleccionada(img)}
-                className="absolute bottom-5 right-1 bg-green-600 text-white rounded px-1 py-0.5 text-xs hover:bg-green-500"
-              >
-                Recortar
-              </button>
+            {/* Botón recortar */}
+            <button
+              onClick={() => setImagenSeleccionada(img)}
+              className="absolute bottom-5 right-1 bg-green-600 text-white rounded px-1 py-0.5 text-xs hover:bg-green-500"
+            >
+              Recortar
+            </button>
 
-              {/* Botón copiar URL */}
-              <button
-                onClick={async () => {
-                  try {
-                    await navigator.clipboard.writeText(img.url);
-                    alert("URL copiada al portapapeles");
-                  } catch (err) {
-                    alert("Error al copiar URL");
-                  }
-                }}
-                className="absolute bottom-1 right-1 bg-blue-600 text-white rounded px-1 py-0.5 text-xs hover:bg-blue-500"
-              >
-                Copiar URL
-              </button>
-            </div>
-          );
-        })}
+            {/* Botón copiar URL */}
+            <button
+              onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText(img.url);
+                  alert("URL copiada al portapapeles");
+                } catch (err) {
+                  alert("Error al copiar URL");
+                }
+              }}
+              className="absolute bottom-1 right-1 bg-blue-600 text-white rounded px-1 py-0.5 text-xs hover:bg-blue-500"
+            >
+              Copiar URL
+            </button>
+          </div>
+        ))}
       </div>
-      {/* Modal de recorte */}
+
+      {/* Modal personalizado */}
       {imagenSeleccionada && (
-        <div className="p-2 fixed inset-0 bg-black bg-opacity-80 z-50 flex justify-center items-center">
-          <div className="bg-white rounded-xl p-4 max-w-3xl w-full relative m-4 max-h-[90vh] overflow-auto">
-            {/* Botón cerrar */}
+        <div className="fixed inset-0 bg-black bg-opacity-80 z-50 flex justify-center items-center">
+          <div
+            className="relative bg-white rounded-xl p-4 max-w-3xl w-full m-4 max-h-[90vh] overflow-auto"
+            onMouseMove={moverBorde}
+            ref={cropRef}
+          >
             <button
               onClick={() => setImagenSeleccionada(null)}
               className="absolute top-2 right-2 text-gray-600 hover:text-black text-xl"
-            >
-              ✕
-            </button>
+            >✕</button>
 
-            <h2 className="text-lg font-bold mb-2">Recortar imagen</h2>
+            <h2 className="text-lg font-bold mb-2">Recorte manual</h2>
 
-            {/* Imagen en grande sin fondo negro extra */}
-            <div className="flex justify-center items-center">
-              <img
-                src={imagenSeleccionada.url}
-                alt="Imagen a recortar"
-                className="max-h-[60vh] object-contain rounded"
-              />
+            {/* Selector de aspecto */}
+            <div className="mb-4 flex gap-2">
+              <button
+                onClick={() => setAspect('1:1')}
+                className={`px-3 py-1 rounded ${aspect === '1:1' ? 'bg-green-600 text-white' : 'bg-gray-200 text-black'}`}
+              >1:1</button>
+              <button
+                onClick={() => setAspect('libre')}
+                className={`px-3 py-1 rounded ${aspect === 'libre' ? 'bg-green-600 text-white' : 'bg-gray-200 text-black'}`}
+              >Libre</button>
             </div>
 
-            {/* Opciones de recorte */}
+            <div className="relative w-full h-[60vh] bg-gray-100">
+              <img
+                src={imagenSeleccionada.url}
+                alt="Recorte"
+                className="absolute w-full h-full object-contain"
+              />
+
+              {aspect === 'libre' && (
+                <div
+                  className="absolute border-2 border-green-500 bg-white bg-opacity-20"
+                  style={{
+                    top: cropBox.top,
+                    left: cropBox.left,
+                    width: cropBox.width,
+                    height: cropBox.height,
+                  }}
+                >
+                  {/* Bordes de control */}
+                  {['top', 'bottom', 'left', 'right'].map((lado) => (
+                    <div
+                      key={lado}
+                      onMouseDown={() => iniciarResize(lado)}
+                      className={`absolute bg-green-600 z-10 cursor-${lado === 'left' || lado === 'right' ? 'ew' : 'ns'}-resize`}
+                      style={
+                        lado === 'top'
+                          ? { top: -4, left: 0, width: '100%', height: 8 }
+                          : lado === 'bottom'
+                          ? { bottom: -4, left: 0, width: '100%', height: 8 }
+                          : lado === 'left'
+                          ? { left: -4, top: 0, height: '100%', width: 8 }
+                          : { right: -4, top: 0, height: '100%', width: 8 }
+                      }
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+
             <div className="mt-4 flex justify-end gap-2">
               <button
-                onClick={() => {
-                  alert("Aquí iría el recorte 1:1 (por implementar)");
-                  setImagenSeleccionada(null);
-                }}
+                onClick={() => alert('Recorte manual capturado (aún no implementado el corte final).')}
                 className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded"
               >
-                Recorte 1:1
+                Aplicar recorte
               </button>
               <button
                 onClick={() => setImagenSeleccionada(null)}
@@ -185,52 +227,7 @@ export default function Gallery() {
           </div>
         </div>
       )}
-      {imagenSeleccionada && (
-        <div className="fixed inset-0 bg-black bg-opacity-80 z-50 flex justify-center items-center">
-          <div className="bg-white rounded-xl p-4 max-w-3xl w-full relative m-4 max-h-[90vh] overflow-auto">
-            <button onClick={() => setImagenSeleccionada(null)} className="absolute top-2 right-2 text-gray-600 hover:text-black text-xl">✕</button>
-            <h2 className="text-lg font-bold mb-2">Recortar imagen (libre / 1:1)</h2>
 
-            {/* Selector de modo */}
-            <div className="mb-4 flex gap-2">
-              <button onClick={() => setAspect(1)} className={`px-3 py-1 rounded ${aspect === 1 ? 'bg-green-600 text-white' : 'bg-gray-200 text-black'}`}>1:1</button>
-              <button onClick={() => setAspect(undefined)} className={`px-3 py-1 rounded ${aspect === undefined ? 'bg-green-600 text-white' : 'bg-gray-200 text-black'}`}>Libre</button>
-            </div>
-
-            {/* Cropper visual */}
-            <div className="relative w-full h-[60vh] bg-gray-100">
-              <Cropper
-                image={imagenSeleccionada.url}
-                crop={crop}
-                zoom={zoom}
-                aspect={aspect}
-                onCropChange={setCrop}
-                onZoomChange={setZoom}
-                onCropComplete={onCropComplete}
-              />
-            </div>
-
-            {/* Slider zoom */}
-            <div className="mt-4 px-2">
-              <input
-                type="range"
-                min={1}
-                max={3}
-                step={0.1}
-                value={zoom}
-                onChange={(e) => setZoom(Number(e.target.value))}
-                className="w-full"
-              />
-            </div>
-
-            {/* Botones de acción */}
-            <div className="mt-4 flex justify-end gap-2">
-              <button onClick={() => setImagenSeleccionada(null)} className="bg-gray-300 hover:bg-gray-400 text-black px-3 py-1 rounded">Cancelar</button>
-              <button onClick={handleRecortar} className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded">Aplicar recorte</button>
-            </div>
-          </div>
-        </div>
-      )}
       {/* Paginación */}
       <div className="mt-6 flex justify-center gap-2">
         <button
