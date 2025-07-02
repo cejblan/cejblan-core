@@ -60,7 +60,14 @@ export default function Gallery() {
     if (!imgContainerRef.current) return;
     const deltaX = e.movementX;
     const deltaY = e.movementY;
-    const container = imgContainerRef.current.querySelector('img')?.getBoundingClientRect();
+    const imgEl = imgContainerRef.current.querySelector('img');
+    const container = imgEl?.getBoundingClientRect();
+    const parent = imgContainerRef.current.getBoundingClientRect();
+    if (!container || !parent) return;
+
+    const containerWidth = container.width;
+    const containerHeight = container.height;
+
     if (!container) return;
 
     if (isResizing.current) {
@@ -75,7 +82,7 @@ export default function Gallery() {
           }
         } else if (isResizing.current === 'bottom') {
           const newHeight = box.height + deltaY;
-          if (box.top + newHeight <= container.height) {
+          if (box.top + newHeight <= containerHeight && newHeight >= 20) {
             newBox.height = newHeight;
           }
         } else if (isResizing.current === 'left') {
@@ -87,7 +94,7 @@ export default function Gallery() {
           }
         } else if (isResizing.current === 'right') {
           const newWidth = box.width + deltaX;
-          if (box.left + newWidth <= container.width) {
+          if (box.left + newWidth <= containerWidth && newWidth >= 20) {
             newBox.width = newWidth;
           }
         }
