@@ -81,7 +81,7 @@ export default function Gallery() {
         } else if (isResizing.current === 'left') {
           const newLeft = box.left + deltaX;
           const newWidth = box.width - deltaX;
-          if (newLeft >= 0 && newWidth >= 20) {
+          if (newLeft >= 0 && newLeft + newWidth <= container.width && newWidth >= 20) {
             newBox.left = newLeft;
             newBox.width = newWidth;
           }
@@ -187,6 +187,7 @@ export default function Gallery() {
           </div>
         ))}
       </div>
+      {/* Modal de recorte */}
       {imagenSeleccionada && (
         <div className="fixed inset-0 bg-black bg-opacity-80 z-50 flex justify-center items-center">
           <div className="relative bg-white rounded-xl p-2 max-w-3xl w-full m-4 max-h-[90vh] overflow-auto z-20" onMouseMove={moverBorde}>
