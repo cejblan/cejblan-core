@@ -1,3 +1,5 @@
+"use client"
+
 import { useEffect, useState, useRef } from 'react';
 import MonacoEditor from '@monaco-editor/react';
 import { FiLayout, FiType, FiDroplet, FiBox, FiGrid, FiSquare, FiSliders } from 'react-icons/fi';
