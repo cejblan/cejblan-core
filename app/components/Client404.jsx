@@ -14,6 +14,7 @@ export default function Client404() {
   };
 
   return (
+    // ===START_RETURN===
     <section className="font-bold text-center max-[420px]:px-4 pb-8 px-8 grid grid-cols-1 justify-center items-center">
       <div className="rounded-xl shadow-5xl">
         <div className="bg-gradient-to-b from-[#0A192F] to-[#64FFDA] p-0.5 rounded-t-xl w-full flex justify-end">
@@ -40,5 +41,6 @@ export default function Client404() {
         </div>
       </div>
     </section>
+    // ===END_RETURN===
   );
 }
