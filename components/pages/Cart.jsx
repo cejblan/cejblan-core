@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import CartCard from "@app/components/CartCard";
+import CartCard from "@/components/editable/CartCard";
 
 export const forceDynamic = "force-dynamic";
 

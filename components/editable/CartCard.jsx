@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { LoadProductsCart } from "../app/components/LoadProductsCart";
+import { LoadProductsCart } from "@/components/LoadProductsCart";
 import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
-import { CalculateTotalPrice, GroupedProducts } from "../app/components/GroupedProducts";
-import PrecioProducto from "@/app/components/PrecioProducto";
+import { CalculateTotalPrice, GroupedProducts } from "@/components/GroupedProducts";
+import PrecioProducto from "@/components/editable/PrecioProducto";
 
 export default function CartCard({ onProductCountChange }) {
   const { data: session } = useSession(); // Obtener la sesión actual del usuario
@@ -66,7 +66,8 @@ export default function CartCard({ onProductCountChange }) {
   };
 
   return (
-    <>
+    // ===START_RETURN===
+    <div>
       {groupedProducts.map((product) => {
         let priceIVA;
         let subtotal;
@@ -86,6 +87,14 @@ export default function CartCard({ onProductCountChange }) {
           subtotal = (product.subtotal - parseFloat(priceIVA)).toFixed(2);
         }
         */
+
+        {
+          /* Se comento codigo innecesario
+            <td className="border-r border-b border-slate-900">{priceIVA !== "E" ? `${priceIVA}$` : priceIVA}</td>
+            <td className="border-r border-b border-slate-900">{subtotal}$</td>
+          */
+        }
+
         return (
           <tr key={product.id}>
             <td className="border-r border-b border-slate-900 text-blue-500 hover:text-blue-600 underline">
@@ -95,15 +104,10 @@ export default function CartCard({ onProductCountChange }) {
             <td className="border-r border-b border-slate-900">
               <PrecioProducto precio={product.price} format={0} />
             </td>
-            {/* Se comento codigo innecesario
-            <td className="border-r border-b border-slate-900">{priceIVA !== "E" ? `${priceIVA}$` : priceIVA}</td>
-            <td className="border-r border-b border-slate-900">{subtotal}$</td>
-            */}
             <td className="border-r border-b border-slate-900">
               <PrecioProducto precio={(product.quantity * product.price).toFixed(2)} format={0} />
             </td>
             <td className="py-1 border-b border-slate-900">
-              {/* Botón para eliminar un producto específico */}
               <button
                 onClick={() => deleteProduct(product.id)}
                 className="bg-red-600 hover:bg-red-500 text-white py-1 max-[420px]:px-1 px-2 rounded-md"
@@ -117,15 +121,12 @@ export default function CartCard({ onProductCountChange }) {
       <tr>
         <td></td>
         <td></td>
-        {/* Se comento codigo innecesario
-        <td></td>
-        <td></td>
-        */}
         <th className="bg-slate-300 border-x border-slate-900">Total</th>
         <th className="bg-slate-300 border-r max-[420px]:text-sm text-xl border-slate-900">
           <PrecioProducto precio={totalPrice} format={0} />
         </th>
       </tr>
-    </>
+    </div>
+    // ===END_RETURN===
   );
 }

@@ -1,5 +1,5 @@
 import Link from "next/link"
-import DoNotShowAdmin from "../admin/components/DoNotShowAdmin"
+import DoNotShowAdmin from "@/app/admin/components/DoNotShowAdmin"
 
 export default function Footer() {
   return (

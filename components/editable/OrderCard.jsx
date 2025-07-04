@@ -1,5 +1,5 @@
 import Link from "next/link";
-import PrecioProducto from "@/app/components/PrecioProducto";
+import PrecioProducto from "@/components/editable/PrecioProducto";
 
 export default function OrderCard({ order }) {
   const moment = require("moment");

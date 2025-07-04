@@ -13,7 +13,7 @@ import { TiThMenu } from "react-icons/ti";
 import { VscTriangleLeft, VscSettings } from "react-icons/vsc";
 import { GrGallery } from "react-icons/gr";
 import Image from "next/image";
-import Loading from "../../components/Loading";
+import Loading from "@/components/editable/Loading";
 import Link from "next/link";
 
 const NEW_ITEMS = [

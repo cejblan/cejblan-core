@@ -1,6 +1,6 @@
 "use client"
 
-import Slider from "react-slick";
+import ReactSlider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Image from "next/image";
@@ -92,7 +92,7 @@ export default function Slider() {
   return (
     // ===START_RETURN===
     <div className="slider text-center p-4">
-      <Slider {...settings}>
+      <ReactSlider {...settings}>
         {
           post.map((post, index) => {
             return (
@@ -108,7 +108,7 @@ export default function Slider() {
             )
           })
         }
-      </Slider>
+      </ReactSlider>
     </div>
     // ===END_RETURN===
   )

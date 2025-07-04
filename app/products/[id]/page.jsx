@@ -3,7 +3,7 @@ import { conexion } from "@/libs/mysql";
 import { HiOutlineStar, HiStar } from "react-icons/hi2";
 import Image from "next/image";
 import Titulos from "@/components/editable/Titulos";
-import PrecioProducto from "@/app/components/PrecioProducto";
+import PrecioProducto from "@/components/editable/PrecioProducto";
 
 async function loadProduct(productId) {
   const [productData] = await conexion.query(

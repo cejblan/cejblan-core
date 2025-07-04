@@ -6,9 +6,9 @@ import { useSession } from "next-auth/react";
 import { FaCartShopping } from "react-icons/fa6";
 import { IoIosHeart, IoIosHeartEmpty } from "react-icons/io";
 import { RiSubtractFill, RiAddFill } from "react-icons/ri";
-import { CheckWish } from "@/app/components/CheckWish";
-import { HandleWish1 } from "@/app/components/WishButton1";
-import { HandleWish2 } from "@/app/components/WishButton2";
+import { CheckWish } from "@/components/CheckWish";
+import { HandleWish1 } from "@/components/WishButton1";
+import { HandleWish2 } from "@/components/WishButton2";
 
 export default function Buttons(product) {
   const { data: session } = useSession(); // Obtener la sesión actual del usuario

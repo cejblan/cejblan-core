@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Titulos from "@/components/editable/Titulos";
-import ProductCard from "@/app/components/ProductCard";
+import ProductCard from "@/components/editable/ProductCard";
 import { LoadProducts } from "@/app/admin/components/LoadProducts";
 
 export default function ProductsComponent() {

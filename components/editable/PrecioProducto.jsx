@@ -30,5 +30,6 @@ export default function PrecioProducto({ precio, format }) {
       ) : (
         "$" + precioBase.toFixed(2)
       )
+    // ===END_RETURN===
   );
 }

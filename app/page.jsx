@@ -1,5 +1,7 @@
 import React from "react"
 import Home from "@/components/pages/Home";
+import WhatsappButton from "@/components/editable/WhatsappButton"
+import PaypalButton from "@/components/editable/PaypalButton"
 
 export const metadata = {
   title: "Inicio - Cejblan",
@@ -13,7 +15,11 @@ export const metadata = {
 
 export default function Cejblan() {
   return (
-    <Home />
+    <>
+      <Home />
+      <PaypalButton />
+      <WhatsappButton />
+    </>
   )
 }
 

@@ -1,4 +1,4 @@
-import CartComponent from "@app/pages/Cart";
+import CartComponent from "@/components/pages/Cart";
 import Titulos from "@/components/editable/Titulos";
 
 export const metadata = {

@@ -14,7 +14,7 @@ import { IoLogoOctocat, IoPersonSharp } from "react-icons/io5";
 import { MdAdminPanelSettings } from "react-icons/md";
 import { FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
 import Loading from "./Loading";
-import DoNotShowAdmin from "../admin/components/DoNotShowAdmin";
+import DoNotShowAdmin from "@/app/admin/components/DoNotShowAdmin";
 import { MdBorderColor } from "react-icons/md";
 import SearchBar from "./SearchBar";
 

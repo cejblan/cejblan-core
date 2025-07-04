@@ -5,10 +5,10 @@ import { Button } from "@/app/admin/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/app/admin/components/ui/dialog";
 import { Input } from "@/app/admin/components/ui/input";
 import { X } from "lucide-react";
-import SearchProduct from "../components/SearchProduct";
-import { LoadPayments } from "../components/LoadPayments";
+import SearchProduct from "@/app/admin/components/SearchProduct";
+import { LoadPayments } from "@/app/admin/components/LoadPayments";
 import Titulos from "@/components/editable/Titulos";
-import PrecioProducto from "@/app/components/PrecioProducto";
+import PrecioProducto from "@/components/editable/PrecioProducto";
 
 export default function DeliveryNote() {
   const [payments, setPayments] = useState([]);

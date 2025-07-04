@@ -1,4 +1,4 @@
-import Login from "../components/Login";
+import Login from "@/components/pages/Login";
 
 export const metadata = {
   title: "Login - Cejblan",

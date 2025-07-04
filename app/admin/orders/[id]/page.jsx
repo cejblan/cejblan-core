@@ -5,7 +5,7 @@ import Link from "next/link";
 import { FaArrowLeft } from "react-icons/fa";
 import { PiCurrencyDollarSimpleFill } from "react-icons/pi";
 import dynamic from "next/dynamic";
-const Maps = dynamic(() => import("@/app/components/Maps"), { ssr: false });
+const Maps = dynamic(() => import("@/components/Maps"), { ssr: false });
 
 export default function OrderForm() {
   const [order, setOrder] = useState({

@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useState } from "react";
-import ProductCard from "@/app/components/ProductCard";
+import ProductCard from "@/components/editable/ProductCard";
 
 export default function Wishlist() {
   const { data: session } = useSession();
