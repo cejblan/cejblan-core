@@ -202,7 +202,7 @@ export default function Editor({ file }) {
         // Después, convertir class= a className= en general
         .replace(/class=/g, "className=")
         // Y demás transformaciones
-        .replace(/<img([^>]*)>/gi, "<Image$1 />")
+        .replace(/<img([^>]*)>/gi, "<Image$1>")
         .replace(/<a([^>]*)>/gi, "<Link$1>")
         .replace(/<\/a>/gi, "</Link>");
 
