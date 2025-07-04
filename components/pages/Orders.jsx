@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useState, useCallback, useEffect } from "react";
-import OrderCard from "../components/OrderCard";
+import OrderCard from "../app/components/OrderCard";
 
 export default function OrdersComponent() {
   const { data: session } = useSession();

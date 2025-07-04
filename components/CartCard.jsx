@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { LoadProductsCart } from "./LoadProductsCart";
+import { LoadProductsCart } from "../app/components/LoadProductsCart";
 import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
-import { CalculateTotalPrice, GroupedProducts } from "./GroupedProducts";
+import { CalculateTotalPrice, GroupedProducts } from "../app/components/GroupedProducts";
 import PrecioProducto from "@/app/components/PrecioProducto";
 
 export default function CartCard({ onProductCountChange }) {

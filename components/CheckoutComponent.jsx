@@ -10,7 +10,7 @@ import { CalculateTotalPrice, GroupedProducts } from "../components/GroupedProdu
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Loading from "../components/Loading";
-import ProductCardAdmin from "../admin/components/ProductCardAdmin";
+import ProductCardAdmin from "../app/admin/components/ProductCardAdmin";
 import ImageNotSupported from "@/public/ImageNotSupported.webp";
 // Carga el componente Maps dinámicamente y desactiva SSR
 const Maps = dynamic(() => import("../components/Maps"), { ssr: false });

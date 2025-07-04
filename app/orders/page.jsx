@@ -1,5 +1,5 @@
 
-import OrdersComponent from "../components/OrdersComponent";
+import Orders from "@/components/pages/Orders";
 import Titulos from "@/components/Titulos";
 
 export const metadata = {
@@ -16,7 +16,7 @@ export default function OrdersPage() {
   return (
     <>
       <Titulos texto="Tus Pedidos" />
-      <OrdersComponent />
+      <Orders />
     </>
   );
 }

@@ -1,4 +1,4 @@
-import ProfileComponent from "../components/ProfileComponent";
+import ProfileComponent from "@app/pages/Profile";
 
 export const metadata = {
   title: "Perfil - Cejblan",

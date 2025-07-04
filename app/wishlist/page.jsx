@@ -1,5 +1,5 @@
 import Titulos from "@/components/Titulos";
-import WishlistComponent from "../components/WishlistComponent";
+import WishlistComponent from "@app/pages/WishlistComponent";
 
 export const metadata = {
   title: "Favoritos - Cejblan",

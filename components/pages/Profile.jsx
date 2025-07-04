@@ -7,18 +7,18 @@ import { RiUserFill } from "react-icons/ri";
 import { TfiEmail } from "react-icons/tfi";
 import { FaMobileAlt, FaTelegram } from "react-icons/fa";
 import { FaLocationDot, FaMapLocationDot, FaArrowRightArrowLeft } from "react-icons/fa6";
-import Loading from "./Loading";
+import Loading from "../app/components/Loading";
 import Link from "next/link";
-import Countdown from "./Countdown";
-import Geolocation from "./Geolocation";
+import Countdown from "../app/components/Countdown";
+import Geolocation from "../app/components/Geolocation";
 import dynamic from "next/dynamic";
 // Cargar Maps dinámicamente con un componente de carga y desactiva SSR
-const Maps = dynamic(() => import("./Maps"), {
+const Maps = dynamic(() => import("../app/components/Maps"), {
   loading: () => <Loading zIndex={40} />,
   ssr: false, // Solo si necesitas que se cargue solo en el lado del cliente
 });
 
-export default function ProfileComponent() {
+export default function Profile() {
   const { data: session, status } = useSession();
   const [edit, setEdit] = useState(false); // Estado para modo edición
   const [code, setCode] = useState(false);

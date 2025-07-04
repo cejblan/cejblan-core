@@ -1,4 +1,4 @@
-import Client404 from './components/Client404';
+import Error404 from '@app/components/Error404';
 
 export const metadata = {
   title: "Error 404 - Cejblan",
@@ -14,5 +14,5 @@ export const metadata = {
 };
 
 export default function NotFound() {
-  return <Client404 />;
+  return <Error404 />;
 }

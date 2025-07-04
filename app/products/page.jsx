@@ -1,4 +1,4 @@
-import ProductsComponent from "../components/ProductsComponent";
+import Products from "@/components/pages/Products";
 
 export const metadata = {
   title: "Productos - Cejblan",
@@ -13,6 +13,6 @@ export const metadata = {
 export default function ProductsPage() {
 
   return (
-    <ProductsComponent />
+    <Products />
   );
 }

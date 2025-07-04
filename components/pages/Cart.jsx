@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import CartCard from "../components/CartCard";
+import CartCard from "@app/components/CartCard";
 
 export const forceDynamic = "force-dynamic";
 
-export default function CartComponent() {
+export default function Cart() {
   const [hasProducts, setHasProducts] = useState(false); // Estado para saber si hay productos
 
   // Función que se le pasará a CartCard para actualizar el estado

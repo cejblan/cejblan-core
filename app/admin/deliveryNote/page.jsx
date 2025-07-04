@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/app/admin/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/app/admin/components/ui/dialog";
+import { Input } from "@/app/admin/components/ui/input";
 import { X } from "lucide-react";
 import SearchProduct from "../components/SearchProduct";
 import { LoadPayments } from "../components/LoadPayments";

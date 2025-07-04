@@ -1,29 +1,33 @@
-'use client';
+"use client";
 
-import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Titulos from "@/components/Titulos";
 import ProductCard from "@/app/components/ProductCard";
+import { LoadProducts } from "../../app/admin/components/LoadProducts";
 
-export default function WishlistComponent() {
-  const { data: session } = useSession();
-  const products = session?.user?.wishlist ?? [];
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const itemsPerPage = 9;
+export default function ProductsComponent() {
+  const [products, setProducts] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1); // Estado para la página actual
+  const itemsPerPage = 9; // Número de productos por página
+  // Cálculo de los índices para la página actual
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentProducts = products.slice(startIndex, endIndex);
-
+  // Controladores de navegación
   const handlePrevPage = () => {
-    if (currentPage > 1) setCurrentPage(prev => prev - 1);
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+  };
+  const handleNextPage = () => {
+    if (endIndex < products.length) setCurrentPage((prev) => prev + 1);
   };
 
-  const handleNextPage = () => {
-    if (endIndex < products.length) setCurrentPage(prev => prev + 1);
-  };
+  useEffect(() => {
+    LoadProducts(setProducts);
+  }, []);
 
   return (
     <>
+      <Titulos texto="Lista de Productos" />
       <div className="grid max-[420px]:grid-cols-1 grid-cols-3 gap-2 justify-center items-start pb-4 px-3">
         {currentProducts.length > 0 ? (
           currentProducts.map((product) => (
@@ -55,5 +59,5 @@ export default function WishlistComponent() {
         Página {currentPage} de {Math.ceil(products.length / itemsPerPage)}
       </p>
     </>
-  );
+  )
 }
