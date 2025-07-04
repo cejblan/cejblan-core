@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Titulos from "@/components/Titulos";
 import ProductCard from "@/app/components/ProductCard";
-import { LoadProducts } from "../../app/admin/components/LoadProducts";
+import { LoadProducts } from "@/app/admin/components/LoadProducts";
 
 export default function ProductsComponent() {
   const [products, setProducts] = useState([]);
