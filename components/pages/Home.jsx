@@ -5,6 +5,7 @@ import { FaTelegram } from "react-icons/fa";
 
 export default function Home() {
   return (
+    // ===START_RETURN===
     <section className="Destacado1 text-white max-[420px]:text-center text-end py-8 max-[420px]:py-4 max-[420px]:px-2 px-12 max-[420px]:block grid content-start justify-end">
       <div className="bg-slate-700 rounded-3xl pt-1 pb-2 px-4">
         <h1 className="max-[420px]:text-5xl text-8xl font-bold">El futuro de la web está en tus manos</h1>
@@ -23,5 +24,6 @@ export default function Home() {
         </Link>
       </div>
     </section>
+    // ===END_RETURN===
   )
 }

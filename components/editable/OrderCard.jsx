@@ -6,6 +6,7 @@ export default function OrderCard({ order }) {
   const date = moment(order.date).subtract(4, "hours").format("DD/MM/YYYY")
 
   return (
+    // ===START_RETURN===
     <div className="bg-slate-200 text-slate-900 max-[420px]:text-sm text-base text-left font-bold leading-5 max-[420px]:block grid grid-cols-12 justify-center items-center gap-2 p-1 shadow-6xl rounded-xl z-10">
       <div className="col-start-1 col-end-5 max-[420px]:pl-0 pl-1 border-r max-[420px]:border-slate-200 border-slate-400 flex">
         <div>
@@ -67,5 +68,6 @@ export default function OrderCard({ order }) {
         <p className="text-lg text-blue-500 font-bold">{order.status}</p>
       </div>
     </div>
+    // ===END_RETURN===
   );
 }

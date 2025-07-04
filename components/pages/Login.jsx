@@ -21,6 +21,7 @@ export default function Login() {
   }
   
   return (
+    // ===START_RETURN===
     <div className="py-8">
       <div className="bg-white shadow-md rounded-xl pt-4 pb-3 px-4 mx-auto grid grid-cols-1 w-fit">
         <Link href="https://cejblan-cms.vercel.app/" className="mb-2">
@@ -37,49 +38,6 @@ export default function Login() {
             width={100}
             height={100} />
         </Link>
-        {/*
-        <label
-          htmlFor="userName"
-        >
-          Nombre de Usuario o correo:
-        </label>
-        <input
-          type="text"
-          className="bg-slate-100 text-2xl text-center border border-slate-400 py-1 px-2 mb-2 w-full rounded-xl"
-          required />
-        <label
-          htmlFor="password"
-        >
-          Contraseña:
-        </label>
-        <input
-          type="password"
-          className="bg-slate-100 text-2xl text-center border border-slate-400 py-1 px-2 mb-2 w-full rounded-xl"
-          required />
-        <div className="flex">
-          <button className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-1 px-2 rounded-xl shadow-6xl w-fit">
-            Ingresar
-          </button>
-          <div className="flex justify-end items-center w-full">
-            <input
-              name="rememberMe"
-              type="checkbox"
-              className="block mr-1" />
-            <label
-              htmlFor="rememberMe"
-              className="block"
-            >
-              Recuerdame
-            </label>
-          </div>
-        </div>
-        <Link
-          href="/"
-          className="text-slate-600 mt-2"
-        >
-          ¿Olvidaste la Contraseña?
-        </Link>
-        */}
         <p className="leading-tight mb-2">Por favor, inicia sesión con tu<br />cuenta de Google para continuar.</p>
         <button
           onClick={() => signIn("google", { callbackUrl: "/" })}
@@ -103,5 +61,6 @@ export default function Login() {
         </Link>
       </div>
     </div >
+    // ===END_RETURN===
   )
 }

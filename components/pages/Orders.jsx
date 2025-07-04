@@ -48,7 +48,8 @@ export default function OrdersComponent() {
   }, [session, loadBuys]);
 
   return (
-    <>
+    // ===START_RETURN===
+    <div>
       <div className="max-[420px]:p-2 p-4">
         <div className="bg-white p-2 rounded-xl grid grid-cols-1 gap-2">
           {currentOrders.length > 0 ? (
@@ -83,6 +84,7 @@ export default function OrdersComponent() {
       <p className="text-center text-white font-bold drop-shadow-6xl py-1">
         Página {currentPage} de {Math.ceil(orders.length / itemsPerPage)}
       </p>
-    </>
+    </div>
+    // ===END_RETURN===
   )
 }

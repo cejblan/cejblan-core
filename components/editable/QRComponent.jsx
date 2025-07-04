@@ -11,6 +11,7 @@ export default function QRComponent() {
   };
 
   return (
+    // ===START_RETURN===
     <section className="text-center p-8">
       <QRCode value={texto} className="mb-2 mx-auto" />
       <div className="px-8 mb-1">
@@ -28,5 +29,6 @@ export default function QRComponent() {
         />
       </div>
     </section>
+    // ===END_RETURN===
   )
 }

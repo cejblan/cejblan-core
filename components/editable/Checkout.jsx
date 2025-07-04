@@ -192,6 +192,7 @@ export default function Checkout() {
   }
 
   return (
+    // ===START_RETURN===
     <form onSubmit={handleSubmit}>
       <Titulos texto="Datos del Pedido" />
       <div className="max-[420px]:block grid grid-cols-8 gap-2 justify-center py-2 max-[420px]:px-2 px-4">
@@ -364,6 +365,6 @@ export default function Checkout() {
         </button>
       </div>
     </form >
+    // ===END_RETURN===
   )
 }
-

@@ -26,7 +26,8 @@ export default function ProductsComponent() {
   }, []);
 
   return (
-    <>
+    // ===START_RETURN===
+    <div>
       <Titulos texto="Lista de Productos" />
       <div className="grid max-[420px]:grid-cols-1 grid-cols-3 gap-2 justify-center items-start pb-4 px-3">
         {currentProducts.length > 0 ? (
@@ -58,6 +59,7 @@ export default function ProductsComponent() {
       <p className="text-white text-center font-bold mt-1 mx-auto w-fit">
         Página {currentPage} de {Math.ceil(products.length / itemsPerPage)}
       </p>
-    </>
+    </div>
+    // ===END_RETURN===
   )
 }

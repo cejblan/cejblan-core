@@ -155,6 +155,7 @@ export default function Profile() {
   }
 
   return (
+    // ===START_RETURN===
     <div className="py-6">
       <div className="bg-white text-start tracking-tighter py-2 rounded-xl mx-auto max-[420px]:w-full w-fit">
         <Image src={session?.user.image}
@@ -428,5 +429,6 @@ export default function Profile() {
         }
       </div>
     </div>
+    // ===END_RETURN===
   )
 }

@@ -3,6 +3,7 @@ import DoNotShowAdmin from "../admin/components/DoNotShowAdmin"
 
 export default function Footer() {
   return (
+    // ===START_RETURN===
     <DoNotShowAdmin>
       <footer id="footer" className="bg-gradient-to-b from-[#64FFDA] to-[#0A192F] text-[#F8F8F8] relative shadow-8xl p-1 w-full z-30" role="contentinfo">
         <p className="text-md">Cejblan Shop - © Copyright 2024 - Desarrollado por
@@ -10,5 +11,6 @@ export default function Footer() {
         </p>
       </footer>
     </DoNotShowAdmin>
+    // ===END_RETURN===
   )
 }

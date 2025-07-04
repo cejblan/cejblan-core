@@ -90,6 +90,7 @@ export default function Slider() {
   }
 
   return (
+    // ===START_RETURN===
     <div className="slider text-center p-4">
       <Slider {...settings}>
         {
@@ -109,5 +110,6 @@ export default function Slider() {
         }
       </Slider>
     </div>
+    // ===END_RETURN===
   )
 }

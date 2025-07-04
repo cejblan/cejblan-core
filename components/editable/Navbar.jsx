@@ -62,6 +62,7 @@ export default function Navbar() {
   };
 
   return (
+    // ===START_RETURN===
     <DoNotShowAdmin>
       <nav id="navCejblan" className="bg-gradient-to-b from-[#0A192F] to-[#64FFDA] text-[#F8F8F8] text-xl font-bold justify-center items-center grid max-[420px]:grid-cols-6 grid-cols-12 gap-1 py-1 px-2 shadow-8xl h-9 w-full z-30 fixed">
         {session?.user ?
@@ -176,5 +177,6 @@ export default function Navbar() {
       </nav>
       <div className="h-9" />
     </DoNotShowAdmin>
+    // ===END_RETURN===
   )
 }

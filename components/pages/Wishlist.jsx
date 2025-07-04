@@ -23,7 +23,8 @@ export default function Wishlist() {
   };
 
   return (
-    <>
+    // ===START_RETURN===
+    <div>
       <div className="grid max-[420px]:grid-cols-1 grid-cols-3 gap-2 justify-center items-start pb-4 px-3">
         {currentProducts.length > 0 ? (
           currentProducts.map((product) => (
@@ -54,6 +55,7 @@ export default function Wishlist() {
       <p className="text-white text-center font-bold mt-1 mx-auto w-fit">
         Página {currentPage} de {Math.ceil(products.length / itemsPerPage)}
       </p>
-    </>
+    </div>
+    // ===END_RETURN===
   );
 }

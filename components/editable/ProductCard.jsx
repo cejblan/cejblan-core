@@ -30,6 +30,7 @@ export default function ProductCard({ product }) {
   }, [product, session]);
 
   return (
+    // ===START_RETURN===
     product.quantity === "0" ?
       <div
         className="bg-white opacity-60 hover:bg-slate-100 text-start text-black text-xl font-bold relative grid grid-cols-3 justify-center items-center shadow-6xl rounded-2xl py-1 pl-1 pr-2 z-10"

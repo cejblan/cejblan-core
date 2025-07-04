@@ -15,7 +15,8 @@ export default function Cart() {
   };
 
   return (
-    <>
+    // ===START_RETURN===
+    <div>
       <div className="max-[420px]:px-1 px-4">
         <table className="table-auto bg-white text-slate-900 max-[420px]:text-xs text-lg tracking-tight rounded-xl shadow-6xl w-full">
           <thead>
@@ -45,6 +46,7 @@ export default function Cart() {
           </Link>
         )
       }
-    </>
+    </div>
+    // ===END_RETURN===
   )
 }
