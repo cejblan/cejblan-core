@@ -2,8 +2,6 @@ import "./globals.css"
 import React from "react";
 import Navbar from "@/components/editable/Navbar";
 import Footer from "@/components/editable/Footer";
-import WhatsappButton from "@/components/editable/WhatsappButton"
-import PaypalButton from "@/components/editable/PaypalButton"
 import { Providers } from "@/app/Providers"
 //import { Inter } from "next/font/google"
 //const inter = Inter({ subsets: ["latin"] })
@@ -28,8 +26,6 @@ export default function RootLayout({ children }) {
           <section className="Destacado2 bg-gradient-to-b bg-[#0A192F]">
             {children}
           </section>
-          <PaypalButton />
-          <WhatsappButton />
           <Footer />
         </Providers>
       </body>
