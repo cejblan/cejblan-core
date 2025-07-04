@@ -2,7 +2,7 @@ import Buttons from "./Buttons";
 import { conexion } from "@/libs/mysql";
 import { HiOutlineStar, HiStar } from "react-icons/hi2";
 import Image from "next/image";
-import Titulos from "@/components/Titulos";
+import Titulos from "@/components/editable/Titulos";
 import PrecioProducto from "@/app/components/PrecioProducto";
 
 async function loadProduct(productId) {

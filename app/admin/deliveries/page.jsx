@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Titulos from "@/components/Titulos";
+import Titulos from "@/components/editable/Titulos";
 import { LoadDeliveries } from "../components/LoadDeliveries";
 
 export default function DeliveriesPage() {

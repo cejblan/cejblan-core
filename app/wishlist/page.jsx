@@ -1,4 +1,4 @@
-import Titulos from "@/components/Titulos";
+import Titulos from "@/components/editable/Titulos";
 import WishlistComponent from "@app/pages/WishlistComponent";
 
 export const metadata = {

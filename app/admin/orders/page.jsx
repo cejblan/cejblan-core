@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Titulos from "@/components/Titulos";
+import Titulos from "@/components/editable/Titulos";
 import { LoadOrders } from "../components/LoadOrders";
 
 export default function OrdersPageAdmin() {

@@ -1,5 +1,5 @@
 import { conexion } from "@/libs/mysql";
-import Titulos from "@/components/Titulos";
+import Titulos from "@/components/editable/Titulos";
 import Buttons from "./Buttons";
 
 async function loadProduct(productId) {

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Titulos from "@/components/Titulos";
+import Titulos from "@/components/editable/Titulos";
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState([]);

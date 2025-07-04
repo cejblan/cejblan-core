@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Titulos from "@/components/Titulos";
+import Titulos from "@/components/editable/Titulos";
 import ProductCard from "@/app/components/ProductCard";
 import { LoadProducts } from "@/app/admin/components/LoadProducts";
 

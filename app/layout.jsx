@@ -1,10 +1,10 @@
 import "./globals.css"
 import React from "react";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-import WhatsappButton from "@/components/WhatsappButton"
-import PaypalButton from "@/components/PaypalButton"
-import { Providers } from "./Providers"
+import Navbar from "@/components/editable/Navbar";
+import Footer from "@/components/editable/Footer";
+import WhatsappButton from "@/components/editable/WhatsappButton"
+import PaypalButton from "@/components/editable/PaypalButton"
+import { Providers } from "@/app/Providers"
 //import { Inter } from "next/font/google"
 //const inter = Inter({ subsets: ["latin"] })
 

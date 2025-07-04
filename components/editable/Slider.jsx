@@ -45,7 +45,7 @@ const post = [
   }
 ]
 
-export default function SliderHome() {
+export default function Slider() {
 
   const settings = {
     dots: true,

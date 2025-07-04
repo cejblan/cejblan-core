@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Titulos from "@/components/Titulos";
+import Titulos from "@/components/editable/Titulos";
 import { LoadUsers } from "../components/LoadUsers";
 
 export default function UsersPage() {

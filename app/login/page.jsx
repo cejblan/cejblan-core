@@ -1,4 +1,4 @@
-import LoginComponent from "../components/LoginComponent";
+import Login from "../components/Login";
 
 export const metadata = {
   title: "Login - Cejblan",
@@ -13,6 +13,6 @@ export const metadata = {
 export default function LoginPage() {
 
   return (
-    <LoginComponent />
+    <Login />
   );
 };

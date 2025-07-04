@@ -1,6 +1,6 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
-import Titulos from "@/components/Titulos";
+import Titulos from "@/components/editable/Titulos";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { LoadProductsCart } from "../components/LoadProductsCart";
@@ -9,7 +9,7 @@ import { LoadProfileData } from "../components/LoadProfileData";
 import { CalculateTotalPrice, GroupedProducts } from "../components/GroupedProducts";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import Loading from "../components/Loading";
+import Loading from "./editable/Loading";
 import ProductCardAdmin from "../app/admin/components/ProductCardAdmin";
 import ImageNotSupported from "@/public/ImageNotSupported.webp";
 // Carga el componente Maps dinámicamente y desactiva SSR

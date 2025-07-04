@@ -1,6 +1,6 @@
 
 import Orders from "@/components/pages/Orders";
-import Titulos from "@/components/Titulos";
+import Titulos from "@/components/editable/Titulos";
 
 export const metadata = {
   title: "Pedidos - Cejblan",

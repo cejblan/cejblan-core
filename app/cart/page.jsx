@@ -1,5 +1,5 @@
 import CartComponent from "@app/pages/Cart";
-import Titulos from "@/components/Titulos";
+import Titulos from "@/components/editable/Titulos";
 
 export const metadata = {
   title: "Pedidos - Cejblan",

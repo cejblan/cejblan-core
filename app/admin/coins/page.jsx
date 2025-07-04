@@ -2,7 +2,7 @@
 import { useEffect, useState, useRef } from 'react';
 import moment from 'moment';
 import { useRouter } from 'next/navigation';
-import Titulos from "@/components/Titulos";
+import Titulos from "@/components/editable/Titulos";
 
 export default function Coins() {
   const [coins, setCoins] = useState([]);

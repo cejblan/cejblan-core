@@ -7,7 +7,7 @@ import { Input } from "@/app/admin/components/ui/input";
 import { X } from "lucide-react";
 import SearchProduct from "../components/SearchProduct";
 import { LoadPayments } from "../components/LoadPayments";
-import Titulos from "@/components/Titulos";
+import Titulos from "@/components/editable/Titulos";
 import PrecioProducto from "@/app/components/PrecioProducto";
 
 export default function DeliveryNote() {
