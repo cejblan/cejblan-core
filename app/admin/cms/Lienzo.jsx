@@ -116,23 +116,42 @@ export default function Editor({ file }) {
       try {
         if (!file) return;
         const res = await fetch(`/api/cms/read?file=${file}`);
-        if (!res.ok) throw new Error('No se pudo leer el archivo');
+        if (!res.ok) throw new Error("No se pudo leer el archivo");
         const data = await res.json();
-        const htmlVisual = data.content
-          .replace(/<FaRegWindowMinimize\s*className="([^"]+)"\s*\/>/g, '<i data-icon="FaRegWindowMinimize" class="$1"></i>')
-          .replace(/<FaRegWindowMaximize\s*className="([^"]+)"\s*\/>/g, '<i data-icon="FaRegWindowMaximize" class="$1"></i>')
-          .replace(/<FaRegWindowClose\s*className="([^"]+)"\s*\/>/g, '<i data-icon="FaRegWindowClose" class="$1"></i>')
-          .replace(/className=/g, 'class=')
-          .replace(/<Image([^>]*)\/?>/gi, '<img$1>')
-          .replace(/<\/Image>/gi, '') // por si acaso hay mal cerradas
-          .replace(/<Link([^>]*)>/gi, '<a$1>')
-          .replace(/<\/Link>/gi, '</a>');
 
-        setContent(htmlVisual);
+        let raw = data.content;
+
+        // Extraer bloque entre los marcadores
+        const inicio = raw.indexOf("// ===START_RETURN===");
+        const fin = raw.indexOf("// ===END_RETURN===");
+
+        if (inicio !== -1 && fin !== -1 && fin > inicio) {
+          const fragmentoReturn = raw
+            .substring(inicio, fin)
+            .replace(/\/\/ ===START_RETURN===/, "")
+            .trim();
+
+          // Transformar JSX a HTML editable
+          const htmlVisual = fragmentoReturn
+            .replace(/<FaRegWindowMinimize\s*className="([^"]+)"\s*\/>/g, '<i data-icon="FaRegWindowMinimize" class="$1"></i>')
+            .replace(/<FaRegWindowMaximize\s*className="([^"]+)"\s*\/>/g, '<i data-icon="FaRegWindowMaximize" class="$1"></i>')
+            .replace(/<FaRegWindowClose\s*className="([^"]+)"\s*\/>/g, '<i data-icon="FaRegWindowClose" class="$1"></i>')
+            .replace(/className=/g, 'class=')
+            .replace(/<Image([^>]*)\/?>/gi, '<img$1>')
+            .replace(/<\/Image>/gi, '')
+            .replace(/<Link([^>]*)>/gi, '<a$1>')
+            .replace(/<\/Link>/gi, '</a>');
+
+          setContent(htmlVisual);
+        } else {
+          console.warn("No se encontró bloque // ===START_RETURN=== o // ===END_RETURN===");
+          setContent(""); // Por seguridad
+        }
       } catch (err) {
-        console.error('Error al cargar archivo:', err);
+        console.error("Error al cargar archivo:", err);
       }
     };
+
     cargar();
   }, [file]);
 
@@ -174,26 +193,44 @@ export default function Editor({ file }) {
 
   const guardar = async () => {
     try {
-      let htmlContent = content;
-
       // convertir img → Image y a → Link
-      htmlContent = htmlContent
-        .replace(/class=/g, 'className=')
-        .replace(/<img([^>]*)\/?>/gi, '<Image$1>')
-        .replace(/<a([^>]*)>/gi, '<Link$1>')
-        .replace(/<\/a>/gi, '</Link>')
+      const htmlToJSX = content
+        // Primero los íconos, que usan class="..."
         .replace(/<i\s+data-icon="FaRegWindowMinimize"[^>]*class="([^"]+)"[^>]*><\/i>/g, '<FaRegWindowMinimize className="$1" />')
         .replace(/<i\s+data-icon="FaRegWindowMaximize"[^>]*class="([^"]+)"[^>]*><\/i>/g, '<FaRegWindowMaximize className="$1" />')
-        .replace(/<i\s+data-icon="FaRegWindowClose"[^>]*class="([^"]+)"[^>]*><\/i>/g, '<FaRegWindowClose className="$1" />');
+        .replace(/<i\s+data-icon="FaRegWindowClose"[^>]*class="([^"]+)"[^>]*><\/i>/g, '<FaRegWindowClose className="$1" />')
+        // Después, convertir class= a className= en general
+        .replace(/class=/g, "className=")
+        // Y demás transformaciones
+        .replace(/<img([^>]*)>/gi, "<Image$1 />")
+        .replace(/<a([^>]*)>/gi, "<Link$1>")
+        .replace(/<\/a>/gi, "</Link>");
 
-      await fetch('/api/cms/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ file, content: htmlContent })
-      });
+      const res = await fetch(`/api/cms/read?file=${file}`);
+      const data = await res.json();
+      let codigoCompleto = data.content;
 
-      setMensaje('Documento actualizado correctamente');
-      setTimeout(() => setMensaje(''), 3000);
+      const inicio = codigoCompleto.indexOf("// ===START_RETURN===");
+      const fin = codigoCompleto.indexOf("// ===END_RETURN===");
+
+      if (inicio !== -1 && fin !== -1 && fin > inicio) {
+        const antes = codigoCompleto.substring(0, inicio);
+        const finMarcador = fin + "// ===END_RETURN===".length;
+        const despues = codigoCompleto.substring(finMarcador);
+
+        const nuevoContenido = `${antes}// ===START_RETURN===\n${htmlToJSX}\n// ===END_RETURN===${despues}`;
+
+        // Guardar en backend
+        await fetch("/api/cms/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ file, content: nuevoContenido }),
+        });
+
+        setMensaje("Cambios guardados correctamente");
+      } else {
+        console.error("No se encontraron los marcadores de bloque en el archivo original");
+      }
     } catch (err) {
       console.error('Error al guardar:', err);
     }
@@ -277,6 +314,26 @@ export default function Editor({ file }) {
       }
       return;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // Editor visual
     const sel = window.getSelection();
@@ -497,6 +554,20 @@ export default function Editor({ file }) {
   const btnSmall = "bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-500 transition";
   const btnSmall2 = "bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 transition";
   const btnSmall3 = "bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 transition";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   return (
     <div className="flex flex-col gap-4">
@@ -736,6 +807,19 @@ export default function Editor({ file }) {
                       );
                     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
                     if (!tailwindMode && prop === 'backgroundSize') {
                       return (
                         <label key={prop} className="flex flex-col text-sm">
@@ -804,57 +888,57 @@ export default function Editor({ file }) {
         </div>
       )}
       {modoEditor === 'visual' && (
-  <div className="p-4 bg-gray-100 border rounded">
-    <p className="mb-2 font-semibold">Logo del sitio:</p>
+        <div className="p-4 bg-gray-100 border rounded">
+          <p className="mb-2 font-semibold">Logo del sitio:</p>
 
-    <label className="inline-block cursor-pointer">
-      <div className="w-32 h-32 bg-white border border-dashed rounded flex items-center justify-center overflow-hidden hover:shadow transition">
-        <img
-          src={logoURL || "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/ImageNotSupported.webp"}
-          alt="Logo del sitio"
-          className="object-contain w-full h-full"
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src = "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/ImageNotSupported.webp"; // ruta local para imagen rota
-          }}
-        />
-      </div>
-      <input
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={async (e) => {
-          const file = e.target.files[0];
-          if (!file) return;
+          <label className="inline-block cursor-pointer">
+            <div className="w-32 h-32 bg-white border border-dashed rounded flex items-center justify-center overflow-hidden hover:shadow transition">
+              <img
+                src={logoURL || "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/ImageNotSupported.webp"}
+                alt="Logo del sitio"
+                className="object-contain w-full h-full"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/ImageNotSupported.webp"; // ruta local para imagen rota
+                }}
+              />
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
 
-          const formData = new FormData();
-          formData.append("image", file);
+                const formData = new FormData();
+                formData.append("image", file);
 
-          try {
-            const res = await fetch("/api/cms/upload-image", {
-              method: "POST",
-              body: formData,
-            });
-            const data = await res.json();
-            if (data.secure_url) {
-              setLogoURL(data.secure_url);
-              await fetch("/api/admin/settings", {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  name: "logo_sitio",
-                  value: data.secure_url,
-                })
-              });
-            }
-          } catch (err) {
-            console.error("Error al subir logo:", err);
-          }
-        }}
-      />
-    </label>
-  </div>
-)}
+                try {
+                  const res = await fetch("/api/cms/upload-image", {
+                    method: "POST",
+                    body: formData,
+                  });
+                  const data = await res.json();
+                  if (data.secure_url) {
+                    setLogoURL(data.secure_url);
+                    await fetch("/api/admin/settings", {
+                      method: "PUT",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        name: "logo_sitio",
+                        value: data.secure_url,
+                      })
+                    });
+                  }
+                } catch (err) {
+                  console.error("Error al subir logo:", err);
+                }
+              }}
+            />
+          </label>
+        </div>
+      )}
 
       {modoEditor === 'visual' && (
         <div className="p-4 bg-gray-100 border rounded">
