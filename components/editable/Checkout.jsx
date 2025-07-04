@@ -3,19 +3,19 @@ import { useRef, useState, useEffect } from "react";
 import Titulos from "@/components/editable/Titulos";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { LoadProductsCart } from "../components/LoadProductsCart";
-import { LoadCheckoutData } from "../components/LoadCheckoutData";
-import { LoadProfileData } from "../components/LoadProfileData";
-import { CalculateTotalPrice, GroupedProducts } from "../components/GroupedProducts";
+import { LoadProductsCart } from "../LoadProductsCart";
+import { LoadCheckoutData } from "../LoadCheckoutData";
+import { LoadProfileData } from "../LoadProfileData";
+import { CalculateTotalPrice, GroupedProducts } from "../GroupedProducts";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import Loading from "./editable/Loading";
-import ProductCardAdmin from "../app/admin/components/ProductCardAdmin";
+import Loading from "./Loading";
+import ProductCardAdmin from "../../app/admin/components/ProductCardAdmin";
 import ImageNotSupported from "@/public/ImageNotSupported.webp";
 // Carga el componente Maps dinámicamente y desactiva SSR
-const Maps = dynamic(() => import("../components/Maps"), { ssr: false });
+const Maps = dynamic(() => import("../Maps"), { ssr: false });
 
-export default function CheckoutComponent() {
+export default function Checkout() {
 
   const { data: session } = useSession(); // Obtener la sesión actual del usuario
   const [products, setProducts] = useState([]);

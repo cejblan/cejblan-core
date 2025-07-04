@@ -1,4 +1,4 @@
-import CheckoutComponent from "../../components/CheckoutComponent";
+import CheckoutComponent from "@/components/editable/Checkout";
 
 export const metadata = {
   title: "Verificar Pedido - Cejblan",

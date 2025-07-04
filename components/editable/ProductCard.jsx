@@ -3,12 +3,12 @@
 import { useRef, useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import QR from "./QR";
+import QR from "../QR";
 import { IoIosHeart, IoIosHeartEmpty } from "react-icons/io";
-import { CheckWish } from "./CheckWish";
-import { HandleWish1 } from "./WishButton1";
-import { HandleWish2 } from "./WishButton2";
-import EliminarCaracteres from "./EliminarCaracteres";
+import { CheckWish } from "../CheckWish";
+import { HandleWish1 } from "../WishButton1";
+import { HandleWish2 } from "../WishButton2";
+import EliminarCaracteres from "../EliminarCaracteres";
 
 export default function ProductCard({ product }) {
   const { data: session } = useSession();
