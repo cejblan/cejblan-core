@@ -26,9 +26,9 @@ export default function ModoEditor({
       {modoEditor === 'visual' && selectedElement && (
         <div className="border p-4 bg-gray-50 rounded">
           <strong>Estilos del elemento seleccionado:</strong>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-2 mt-2">
             <span><strong>Etiqueta:</strong> {selectedStyles.tag}</span>
-            <div className="mb-4 md:col-start-2 col-span-3">
+            <div className="mb-4 md:col-start-2 col-span-6">
               <div className="flex flex-wrap gap-2 border-b pb-2 mb-2">
                 {Object.keys(STYLE_GROUPS).map((grupo) => (
                   <button
@@ -45,7 +45,7 @@ export default function ModoEditor({
                 ))}
               </div>
               <div className="p-3 border rounded bg-white">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
                   {STYLE_GROUPS[tabActivo].map((prop) => {
                     const opciones = TAILWIND_MAP[prop];
                     if (!opciones) return null;
@@ -107,7 +107,7 @@ export default function ModoEditor({
                       return (
                         <div key={prop} className="col-span-full border rounded p-2 bg-gray-50">
                           <p className="font-semibold mb-2">{prop}</p>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-7 gap-2">
                             {Object.entries(opciones).map(([subgrupo, subOpciones]) => (
                               <label key={`${prop}-${subgrupo}`} className="flex flex-col text-sm">
                                 {subgrupo}:
