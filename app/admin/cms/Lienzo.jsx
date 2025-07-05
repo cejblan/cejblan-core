@@ -315,26 +315,6 @@ export default function Editor({ file }) {
       return;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // Editor visual
     const sel = window.getSelection();
     if (!sel || sel.rangeCount === 0) return;
@@ -528,7 +508,6 @@ export default function Editor({ file }) {
     }
   };
 
-
   useEffect(() => {
     const editor = editorRef.current;
     if (!editor) return;
@@ -554,20 +533,6 @@ export default function Editor({ file }) {
   const btnSmall = "bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-500 transition";
   const btnSmall2 = "bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 transition";
   const btnSmall3 = "bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 transition";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   return (
     <div className="flex flex-col gap-4">
@@ -615,7 +580,6 @@ export default function Editor({ file }) {
                   {STYLE_GROUPS[tabActivo].map((prop) => {
                     const opciones = TAILWIND_MAP[prop];
                     if (!opciones) return null;
-
                     if (prop === 'paletaSitio') {
                       return (
                         <div key={prop} className="flex flex-col text-sm col-span-full">
@@ -625,14 +589,24 @@ export default function Editor({ file }) {
                               <button
                                 key={color}
                                 title={color}
-                                onClick={() => actualizarClaseTailwind(tabActivo === 'Colores' && STYLE_GROUPS.Colores.includes('backgroundColor') ? 'backgroundColor' : 'color', color)}
+                                onClick={() =>
+                                  actualizarClaseTailwind(
+                                    STYLE_GROUPS.Colores.includes('backgroundColor') ? 'backgroundColor' : 'color',
+                                    color
+                                  )
+                                }
                                 className="w-6 h-6 rounded border"
                                 style={{ backgroundColor: color }}
                               />
                             ))}
                             <input
                               type="color"
-                              onChange={(e) => actualizarClaseTailwind(tabActivo === 'Colores' && STYLE_GROUPS.Colores.includes('backgroundColor') ? 'backgroundColor' : 'color', e.target.value)}
+                              onChange={(e) =>
+                                actualizarClaseTailwind(
+                                  STYLE_GROUPS.Colores.includes('backgroundColor') ? 'backgroundColor' : 'color',
+                                  e.target.value
+                                )
+                              }
                               className="w-6 h-6 p-0 border rounded cursor-pointer"
                               title="Elegir color"
                             />
@@ -641,7 +615,6 @@ export default function Editor({ file }) {
                       );
                     }
 
-                    // Ocultar ciertas propiedades en modo estilo en línea
                     if (
                       !tailwindMode &&
                       [
@@ -662,7 +635,6 @@ export default function Editor({ file }) {
                       return null;
                     }
 
-                    // Si tiene subgrupos (es un objeto)
                     if (tailwindMode && typeof opciones === 'object' && !Array.isArray(opciones)) {
                       return (
                         <div key={prop} className="col-span-full border rounded p-2 bg-gray-50">
@@ -688,7 +660,6 @@ export default function Editor({ file }) {
                       );
                     }
 
-                    // Caso general (sin subgrupos)
                     if (!tailwindMode && (prop === 'color' || prop === 'backgroundColor')) {
                       return (
                         <label key={prop} className="flex flex-col text-sm">
@@ -700,8 +671,6 @@ export default function Editor({ file }) {
                               onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
                               className="border rounded p-1"
                             />
-
-                            {/* Paleta del sitio */}
                             <div>
                               <p className="text-xs font-semibold mt-1 mb-1">Paleta</p>
                               <div className="grid grid-cols-6 gap-1">
@@ -716,8 +685,6 @@ export default function Editor({ file }) {
                                 ))}
                               </div>
                             </div>
-
-                            {/* Paleta por defecto */}
                             <div>
                               <p className="text-xs font-semibold mt-2 mb-1">Colores por defecto</p>
                               <div className="grid grid-cols-5 gap-1">
@@ -736,7 +703,6 @@ export default function Editor({ file }) {
                         </label>
                       );
                     }
-
 
                     if (!tailwindMode && prop === 'backgroundImage') {
                       return (
@@ -783,43 +749,6 @@ export default function Editor({ file }) {
                       );
                     }
 
-                    if (!tailwindMode && prop === 'backgroundPosition') {
-                      return (
-                        <label key={prop} className="flex flex-col text-sm">
-                          {prop}:
-                          <input
-                            type="text"
-                            list="bg-position-options"
-                            value={selectedStyles[prop] || ''}
-                            onChange={(e) => actualizarClaseTailwind(prop, e.target.value)}
-                            className="border rounded p-1 mt-1"
-                          />
-                          <datalist id="bg-position-options">
-                            <option value="center" />
-                            <option value="top" />
-                            <option value="bottom" />
-                            <option value="left" />
-                            <option value="right" />
-                            <option value="top left" />
-                            <option value="bottom right" />
-                          </datalist>
-                        </label>
-                      );
-                    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                     if (!tailwindMode && prop === 'backgroundSize') {
                       return (
                         <label key={prop} className="flex flex-col text-sm">
@@ -840,7 +769,6 @@ export default function Editor({ file }) {
                       );
                     }
 
-                    // Renderizar input simple para estilos en línea (no Tailwind)
                     if (!tailwindMode && !['color', 'backgroundColor'].includes(prop)) {
                       return (
                         <label key={prop} className="flex flex-col text-sm">
@@ -872,6 +800,8 @@ export default function Editor({ file }) {
                         </label>
                       );
                     }
+
+                    return null;
                   })}
                 </div>
               </div>
@@ -887,6 +817,8 @@ export default function Editor({ file }) {
           </div>
         </div>
       )}
+
+
       {modoEditor === 'visual' && (
         <div className="p-4 bg-gray-100 border rounded">
           <p className="mb-2 font-semibold">Logo del sitio:</p>
