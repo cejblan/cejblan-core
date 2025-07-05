@@ -107,6 +107,10 @@ export default function Editor({ file }) {
   const [paletaUsuario, setPaletaUsuario] = useState([]);
   const [logoURL, setLogoURL] = useState(null);
 
+  const [mostrandoModalGuardar, setMostrandoModalGuardar] = useState(false);
+  const [nombreCommit, setNombreCommit] = useState('');
+  const [descripcionCommit, setDescripcionCommit] = useState('');  
+
   const editorRef = useRef(null);
   const monacoRef = useRef(null);
   const timeoutRef = useRef(null);
@@ -614,11 +618,57 @@ export default function Editor({ file }) {
       </div>
       <div className="text-center">
         <button
-          onClick={guardar}
+          onClick={() => setMostrandoModalGuardar(true)}
           className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition"
         >
           Guardar
         </button>
+        {mostrandoModalGuardar && (
+          <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="relative bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+              {/* X cerrar */}
+              <button
+                onClick={() => setMostrandoModalGuardar(false)}
+                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+              >
+                ×
+              </button>
+
+              {/* input para nombre de commit */}
+              <input
+                type="text"
+                value={nombreCommit}
+                onChange={e => setNombreCommit(e.target.value)}
+                placeholder="Nombre del commit"
+                className="block w-full border border-gray-300 rounded px-3 py-2 mb-4"
+              />
+
+              {/* textarea para descripción */}
+              <textarea
+                value={descripcionCommit}
+                onChange={e => setDescripcionCommit(e.target.value)}
+                placeholder="Descripción detallada del commit"
+                rows={4}
+                className="block w-full border border-gray-300 rounded px-3 py-2 mb-2 resize-none"
+              />
+
+              {/* label pequeña de prefijo CMS */}
+              <p className="text-xs text-gray-500 mb-4">
+                Los cambios se guardarán con el prefijo <strong>(CMS)</strong>
+              </p>
+
+              {/* botón interno “Enviar” */}
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setMostrandoModalGuardar(false)}  // solo cierra por ahora
+                  className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+                >
+                  Enviar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         {mensaje && <p className="text-green-600 mt-2">{mensaje}</p>}
       </div>
     </div>
