@@ -7,17 +7,39 @@ export default function CMS() {
   const [archivos, setArchivos] = useState([]);
   const [archivoSeleccionado, setArchivoSeleccionado] = useState("");
   const [mostrarHistorial, setMostrarHistorial] = useState(false);
+  const [contenidoArchivo, setContenidoArchivo] = useState('');
 
+  // Cargar lista de archivos desde GitHub (solo una vez al montar)
   useEffect(() => {
-    fetch("/api/cms/list")
-      .then((res) => res.json())
-      .then((data) => {
+    fetch('/api/github/list')
+      .then(res => res.json())
+      .then(data => {
         if (data.files?.length) {
           setArchivos(data.files);
           setArchivoSeleccionado(data.files[0]);
         }
       });
   }, []);
+
+  // Cargar contenido cuando cambie archivo seleccionado
+  useEffect(() => {
+    if (!archivoSeleccionado) return;
+
+    const obtenerContenido = async () => {
+      const res = await fetch('/api/github/read', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: archivoSeleccionado }),
+      });
+
+      const data = await res.json();
+      if (data.content) {
+        setContenidoArchivo(data.content);  // Guardamos para pasar al editor
+      }
+    };
+
+    obtenerContenido();
+  }, [archivoSeleccionado]);
 
   const nuevoArchivo = async () => {
     const nombre = prompt("Nombre del nuevo archivo (ej: nuevo.html):");
@@ -94,7 +116,7 @@ export default function CMS() {
         </button>
       </div>
 
-      {archivoSeleccionado && <Editor file={archivoSeleccionado} />}
+      {archivoSeleccionado && (<Editor file={archivoSeleccionado} contenido={contenidoArchivo} />)}
 
       {mostrarHistorial && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">

@@ -92,7 +92,7 @@ const PALETA_COLORES = [
   '#6b7280', '#d1d5db'
 ];
 
-export default function Editor({ file }) {
+export default function Editor({ file, contenido }) {
   const [content, setContent] = useState('');
   const [selectedStyles, setSelectedStyles] = useState({});
   const [tailwindMode, setTailwindMode] = useState(false);
@@ -119,13 +119,7 @@ export default function Editor({ file }) {
   useEffect(() => {
     const cargar = async () => {
       try {
-        if (!file) return;
-        const res = await fetch(`/api/cms/read?file=${file}`);
-        if (!res.ok) throw new Error("No se pudo leer el archivo");
-        const data = await res.json();
-
-        let raw = data.content;
-
+        let raw = contenido;
         // Extraer bloque entre los marcadores
         const inicio = raw.indexOf("// ===START_RETURN===");
         const fin = raw.indexOf("// ===END_RETURN===");
@@ -158,7 +152,7 @@ export default function Editor({ file }) {
     };
 
     cargar();
-  }, [file]);
+  }, [contenido]);
 
   useEffect(() => {
     const fetchSettings = async () => {
