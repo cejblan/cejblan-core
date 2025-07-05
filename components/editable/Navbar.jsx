@@ -67,10 +67,10 @@ export default function Navbar() {
       <nav id="navCejblan" className="bg-gradient-to-b from-[#0A192F] to-[#64FFDA] text-[#F8F8F8] text-xl font-bold justify-center items-center grid max-[420px]:grid-cols-6 grid-cols-12 gap-1 py-1 px-2 shadow-8xl h-9 w-full z-30 fixed">
         {session?.user ?
           <>
-            <div className={`burger max-[420px]:m-auto col-start-1 col-end-1 justify-center items-center ${isOpen ? "open" : ""}`} onClick={handleClick}>
+            <div className="burger max-[420px]:m-auto col-start-1 col-end-1 justify-center items-center" onClick={handleClick}>
               <TiThMenu className={`w-4 h-4 hover:fill-slate-800 ${isOpen ? "hidden" : ""}`} cursor="pointer" />
               <TiTimes className={`w-4 h-4 hover:fill-slate-800 ${isOpen ? "" : "hidden"}`} cursor="pointer" />
-              <div className="menu bg-slate-500 text-2xl grid grid-cols-1 gap-1 gap-white absolute left-5 top-5 p-1 rounded-xl z-20">
+              <div className={`menu bg-slate-500 text-2xl grid grid-cols-1 gap-1 gap-white absolute left-5 top-5 p-1 rounded-xl z-20 ${isOpen ? "" : "hidden"}`}>
                 <Link href="/" className="hover:text-[#64FFDA]">
                   <p className={`${urlClass("/")} rounded-xl px-2 flex justify-center items-center`}>
                     Inicio

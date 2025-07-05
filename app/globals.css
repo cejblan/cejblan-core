@@ -27,35 +27,6 @@ ol li {
 }
 
 /* Fin Globales */
-/* Navbar */
-#navCejblan .burger {
-  .menu {
-      display: none;
-  }
-}
-
-#navCejblan .burger.open {
-  .menu {
-      display: grid;
-  }
-}
-
-/* Fin Navbar */
-/* Inicio */
-.Destacado1 {
-  background-image: url(/fondo.jpg);
-  background-size: cover;
-}
-
-.Destacado2 {
-  background-image: url(/cejblan02.webp);
-  background-size: cover;
-}
-
-.Destacado3 {
-  background-image: url(/cejblan03.webp);
-  background-size: cover;
-}
 
 /* Cart */
 input[type="number"].add::-webkit-inner-spin-button, 
@@ -71,53 +42,6 @@ margin: 0;
 
 
 
-
-
-
-
-
-
-
-
-
-
-/* Whatsapp Button */
-#whatsappButton {
-  bottom: 0.6rem;
-  right: 0.6rem;
-  filter: drop-shadow(0 0 3px black);
-}
-
-#whatsappButton:hover {
-  background: white;
-
-  svg {
-    color: #22c55e;
-  }
-}
-
-/* Fin Whatsapp Button */
-/* Paypal Button */
-#paypalButton {
-  background: #eeeeee;
-  bottom: 5.1rem;
-  right: 0.6rem;
-  filter: drop-shadow(0 0 3px black);
-
-  svg {
-    color: #0070ba;
-  }
-}
-
-#paypalButton:hover {
-  background: #0070ba;
-
-  svg {
-    color: #eeeeee;
-  }
-}
-
-/* Fin Paypal Button */
 /* Slider */
 .slick-prev:before,
 .slick-next:before {
