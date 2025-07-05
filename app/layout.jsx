@@ -23,7 +23,7 @@ export default function RootLayout({ children }) {
       <body className=/*{*/"text-center select-none "/* + inter.className}*/>
         <Providers>
           <Navbar />
-          <section className=" bg-gradient-to-b bg-[#0A192F]">
+          <section className="bg-[url('https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/fondo01.jpg')] bg-cover bg-center">
             {children}
           </section>
           <Footer />
