@@ -109,7 +109,7 @@ export default function Editor({ file, contenido }) {
 
   const [mostrandoModalGuardar, setMostrandoModalGuardar] = useState(false);
   const [nombreCommit, setNombreCommit] = useState('');
-  const [descripcionCommit, setDescripcionCommit] = useState('');  
+  const [descripcionCommit, setDescripcionCommit] = useState('');
 
   const editorRef = useRef(null);
   const monacoRef = useRef(null);
@@ -132,14 +132,15 @@ export default function Editor({ file, contenido }) {
 
           // Transformar JSX a HTML editable
           const htmlVisual = fragmentoReturn
-            .replace(/<FaRegWindowMinimize\s*className="([^"]+)"\s*\/>/g, '<i data-icon="FaRegWindowMinimize" class="$1"></i>')
-            .replace(/<FaRegWindowMaximize\s*className="([^"]+)"\s*\/>/g, '<i data-icon="FaRegWindowMaximize" class="$1"></i>')
-            .replace(/<FaRegWindowClose\s*className="([^"]+)"\s*\/>/g, '<i data-icon="FaRegWindowClose" class="$1"></i>')
+            .replace(/onClick=\{([^\}]+)\}/g, 'data-onclick="$1"')
+            .replace(/<FaRegWindowMinimize(\s[^>]*)?\/>/g, '<i data-icon="FaRegWindowMinimize"$1></i>')
+            .replace(/<FaRegWindowMaximize(\s[^>]*)?\/>/g, '<i data-icon="FaRegWindowMaximize"$1></i>')
+            .replace(/<FaRegWindowClose(\s[^>]*)?\/>/g, '<i data-icon="FaRegWindowClose"$1></i>')
             .replace(/className=/g, 'class=')
-            .replace(/<Image([^>]*)\/?>/gi, '<img$1>')
-            .replace(/<\/Image>/gi, '')
-            .replace(/<Link([^>]*)>/gi, '<a$1>')
-            .replace(/<\/Link>/gi, '</a>');
+            .replace(/<Image([^>]*)\/?>/g, '<img$1>')
+            .replace(/<\/Image>/g, '')
+            .replace(/<Link([^>]*)>/g, '<a$1>')
+            .replace(/<\/Link>/g, '</a>');
 
           setContent(htmlVisual);
         } else {
@@ -242,20 +243,16 @@ export default function Editor({ file, contenido }) {
     try {
       // convertir img → Image y a → Link
       const htmlToJSX = content
-        // Primero los íconos, que usan class="..."
-        .replace(/<i\s+data-icon="FaRegWindowMinimize"[^>]*class="([^"]+)"[^>]*><\/i>/g, '<FaRegWindowMinimize className="$1" />')
-        .replace(/<i\s+data-icon="FaRegWindowMaximize"[^>]*class="([^"]+)"[^>]*><\/i>/g, '<FaRegWindowMaximize className="$1" />')
-        .replace(/<i\s+data-icon="FaRegWindowClose"[^>]*class="([^"]+)"[^>]*><\/i>/g, '<FaRegWindowClose className="$1" />')
-        // Después, convertir class= a className= en general
-        .replace(/class=/g, "className=")
-        // Y demás transformaciones
-        .replace(/<img([^>]*)>/gi, "<Image$1>")
-        .replace(/<a([^>]*)>/gi, "<Link$1>")
-        .replace(/<\/a>/gi, "</Link>");
+        .replace(/data-onclick="([^"]+)"/g, 'onClick={() => $1}')
+        .replace(/<i[^>]*data-icon=["']FaRegWindowMinimize["']([^>]*)><\/i>/g, '<FaRegWindowMinimize$1 />')
+        .replace(/<i[^>]*data-icon=["']FaRegWindowMaximize["']([^>]*)><\/i>/g, '<FaRegWindowMaximize$1 />')
+        .replace(/<i[^>]*data-icon=["']FaRegWindowClose["']([^>]*)><\/i>/g, '<FaRegWindowClose$1 />')
+        .replace(/class=/g, 'className=')
+        .replace(/<img([^>]*)\s*>/gi, '<Image$1 />')
+        .replace(/<a([^>]*)>/g, "<Link$1>")
+        .replace(/<\/a>/g, "</Link>");
 
-      const res = await fetch(`/api/cms/read?file=${file}`);
-      const data = await res.json();
-      let codigoCompleto = data.content;
+      let codigoCompleto = contenido;
 
       const inicio = codigoCompleto.indexOf("// ===START_RETURN===");
       const fin = codigoCompleto.indexOf("// ===END_RETURN===");
@@ -268,10 +265,15 @@ export default function Editor({ file, contenido }) {
         const nuevoContenido = `${antes}// ===START_RETURN===\n${htmlToJSX}\n// ===END_RETURN===${despues}`;
 
         // Guardar en backend
-        await fetch("/api/cms/save", {
+        await fetch("/api/github/save", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ file, content: nuevoContenido }),
+          body: JSON.stringify({
+            path: file,
+            content: nuevoContenido,
+            commitMessage: nombreCommit,
+            description: descripcionCommit,
+          }),
         });
 
         setMensaje("Cambios guardados correctamente");
@@ -280,24 +282,6 @@ export default function Editor({ file, contenido }) {
       }
     } catch (err) {
       console.error('Error al guardar:', err);
-    }
-  };
-
-  const nuevoArchivo = async () => {
-    const nombre = prompt('Nombre del nuevo archivo (ej: nuevo.html):');
-    if (!nombre || !nombre.trim()) return;
-
-    try {
-      await fetch('/api/cms/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ file: nombre.trim(), content: '' })
-      });
-      setMensaje(`Archivo "${nombre}" creado`);
-      setTimeout(() => setMensaje(''), 3000);
-      window.location.href = `?file=${nombre}`;
-    } catch (err) {
-      console.error('Error al crear archivo:', err);
     }
   };
 
@@ -654,7 +638,12 @@ export default function Editor({ file, contenido }) {
               {/* botón interno “Enviar” */}
               <div className="flex justify-end">
                 <button
-                  onClick={() => setMostrandoModalGuardar(false)}  // solo cierra por ahora
+                  onClick={async () => {
+                    await guardar();  // llama a tu función actual
+                    setMostrandoModalGuardar(false);
+                    setNombreCommit('');
+                    setDescripcionCommit('');
+                  }}
                   className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
                 >
                   Enviar
