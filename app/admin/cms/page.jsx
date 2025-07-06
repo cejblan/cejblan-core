@@ -82,57 +82,59 @@ export default function CMS() {
 
   return (
     <div>
-      <div className="flex flex-wrap items-center gap-2 mb-2">
-        <select
-          value={archivoSeleccionado}
-          onChange={(e) => setArchivoSeleccionado(e.target.value)}
-          className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="">Elegir...</option>
-          {archivos.map((file) => (
-            <option key={file} value={file}>
-              {file.split('/').pop().replace(/\.[^/.]+$/, '')}
-            </option>
-          ))}
-        </select>
+      <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-4 sm:mb-2 w-full">
+        <div className="flex-grow">
+          <select
+            value={archivoSeleccionado}
+            onChange={(e) => setArchivoSeleccionado(e.target.value)}
+            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Elegir...</option>
+            {archivos.map((file) => (
+              <option key={file} value={file}>
+                {file.split('/').pop().replace(/\.[^/.]+$/, '')}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <button
           disabled={!archivoSeleccionado}
           onClick={async () => {
             await cargarHistorial();
             setMostrandoHistorial(true);
           }}
-          className={`px-3 py-2 rounded ${archivoSeleccionado
+          className={`w-full sm:w-auto px-3 py-2 rounded ${archivoSeleccionado
             ? "bg-slate-600 text-white hover:bg-slate-700 font-bold cursor-pointer"
             : "bg-slate-600 text-slate-700 font-bold cursor-not-allowed"
             }`}
         >
           Historial
         </button>
-        <div className='absolute right-0'>
-          <button
-            disabled={!archivoSeleccionado}
-            className={`px-3 py-2 rounded mr-2 ${archivoSeleccionado
-              ? "bg-red-600 text-white hover:bg-red-700 font-bold cursor-pointer"
-              : "bg-red-600 text-red-700 font-bold cursor-not-allowed"
-              }`}
-            onClick={() => setMostrarConfirmacionMerge(true)}
+
+        <button
+          disabled={!archivoSeleccionado}
+          className={`w-full sm:w-auto px-3 py-2 rounded ${archivoSeleccionado
+            ? "bg-red-600 text-white hover:bg-red-700 font-bold cursor-pointer"
+            : "bg-red-600 text-red-700 font-bold cursor-not-allowed"
+            }`}
+          onClick={() => setMostrarConfirmacionMerge(true)}
+        >
+          Publicar en producción
+        </button>
+
+        {archivoSeleccionado.includes('components/pages/') && (
+          <a
+            href={`${process.env.NEXT_PUBLIC_SITE_URL}/${archivoSeleccionado
+              .replace('components/pages/', '')
+              .replace(/\.[^/.]+$/, '')}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full sm:w-auto bg-green-600 text-white font-bold px-3 py-2 rounded hover:bg-green-700 text-center"
           >
-            Publicar en producción
-          </button>
-          {archivoSeleccionado.includes('components/pages/') && (
-            <a
-              href={`${process.env.NEXT_PUBLIC_SITE_URL}/${archivoSeleccionado
-                .replace('components/pages/', '')
-                .replace(/\.[^/.]+$/, '')
-                }`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-green-600 text-white font-bold px-3 py-2 rounded mr-2 hover:bg-green-700"
-            >
-              Ver publicada
-            </a>
-          )}
-        </div>
+            Ver publicada
+          </a>
+        )}
       </div>
       {archivoSeleccionado && (<Editor file={archivoSeleccionado} contenido={contenidoArchivo} />)}
       {mostrandoHistorial && (

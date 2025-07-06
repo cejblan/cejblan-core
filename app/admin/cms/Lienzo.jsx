@@ -522,21 +522,24 @@ export default function Editor({ file, contenido }) {
 
   const btnSmall = "bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-500 transition h-fit";
   const btnSmall2 = "bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 transition";
-  const btnSmall3 = "bg-red-600 text-white px-2 py-1 rounded mx-1 hover:bg-red-700 transition";
+  const btnSmall3 = "bg-red-600 text-white px-2 py-1 rounded mr-1 hover:bg-red-700 transition";
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className='grid grid-cols-5 gap-2'>
-        <div className='col-start-1 col-span-4 gap-2 flex flex-col'>
+    <div className="flex flex-col gap-2 px-2 sm:px-0">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
+        <div className="md:col-span-4 gap-2 flex flex-col">
           <div className="flex flex-wrap gap-2">
+            {/* Botones rápidos */}
             <button className={btnSmall} onClick={() => insertHTML('<h1>Título H1</h1>')}>H1</button>
             <button className={btnSmall} onClick={() => insertHTML('<p>Párrafo nuevo</p>')}>Párrafo</button>
             <button className={btnSmall} onClick={() => insertHTML('<a href="https://ejemplo.com">Texto del enlace</a>')}>Enlace</button>
             <button className={btnSmall} onClick={() => insertHTML('<div>Contenido dentro de DIV</div>')}>Div</button>
             <button className={btnSmall} onClick={() => insertHTML('<section>Contenido dentro de SECTION</section>')}>Section</button>
             <button className={btnSmall} onClick={() => insertHTML('<ul><li>Item 1</li><li>Item 2</li></ul>')}>Lista</button>
-            <button className={btnSmall} onClick={() => insertHTML('<img src=\"https://img.ejemplo.com/150\" />')}>Imagen</button>
+            <button className={btnSmall} onClick={() => insertHTML('<img src="https://img.ejemplo.com/150" />')}>Imagen</button>
           </div>
+
+          {/* Paleta de colores */}
           {modoEditor === 'visual' && (
             <div className="p-2 bg-gray-100 border rounded-xl flex flex-col items-center h-full">
               <button
@@ -568,8 +571,8 @@ export default function Editor({ file, contenido }) {
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
                           name: "paleta_colores",
-                          value: JSON.stringify(paletaUsuario), // convertir arreglo a string si es necesario
-                        })
+                          value: JSON.stringify(paletaUsuario),
+                        }),
                       });
                       setMostrandoEditorPaleta(false);
                     }}
@@ -577,24 +580,25 @@ export default function Editor({ file, contenido }) {
                   >
                     Guardar Paleta
                   </button>
-
                 </div>
               )}
             </div>
           )}
         </div>
+
+        {/* Logo */}
         {modoEditor === 'visual' && (
-          <div className="p-2 bg-gray-100 border rounded-xl">
+          <div className="md:col-span-1 p-2 bg-gray-100 border rounded-xl">
             <p className="mb-1 font-semibold">Logo del sitio:</p>
-            <label className="inline-block cursor-pointer">
-              <div className="w-30 h-30 bg-white border border-dashed rounded flex items-center justify-center overflow-hidden hover:shadow transition">
+            <label className="inline-block cursor-pointer w-full">
+              <div className="w-full aspect-square bg-white border border-dashed rounded flex items-center justify-center overflow-hidden hover:shadow transition">
                 <img
                   src={logoURL || "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/ImageNotSupported.webp"}
                   alt="Logo del sitio"
                   className="object-contain w-full h-full"
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/ImageNotSupported.webp"; // ruta local para imagen rota
+                    e.target.src = "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/ImageNotSupported.webp";
                   }}
                 />
               </div>
@@ -605,10 +609,8 @@ export default function Editor({ file, contenido }) {
                 onChange={async (e) => {
                   const file = e.target.files[0];
                   if (!file) return;
-
                   const formData = new FormData();
                   formData.append("image", file);
-
                   try {
                     const res = await fetch("/api/cms/upload-image", {
                       method: "POST",
@@ -623,7 +625,7 @@ export default function Editor({ file, contenido }) {
                         body: JSON.stringify({
                           name: "logo_sitio",
                           value: data.secure_url,
-                        })
+                        }),
                       });
                     }
                   } catch (err) {
@@ -635,16 +637,19 @@ export default function Editor({ file, contenido }) {
           </div>
         )}
       </div>
-      <div className="flex flex-wrap gap-2 relative">
+
+      {/* Controles de modo/deshacer */}
+      <div className="flex flex-wrap gap-2 items-center justify-between">
         <button className={btnSmall2} onClick={() => setModoEditor(modoEditor === 'visual' ? 'codigo' : 'visual')}>
           {modoEditor === 'visual' ? 'Ver Código' : 'Ver Visual'}
         </button>
-        <div className='absolute right-0'>
+        <div className="flex gap-2">
           <button className={btnSmall3} onClick={deshacer} disabled={indiceHistorial <= 0}>Deshacer</button>
           <button className={btnSmall3} onClick={rehacer} disabled={indiceHistorial >= historial.length - 1}>Rehacer</button>
         </div>
       </div>
 
+      {/* Editor visual/código */}
       <ModoEditor
         modoEditor={modoEditor}
         selectedElement={selectedElement}
@@ -665,9 +670,10 @@ export default function Editor({ file, contenido }) {
         setContent={setContent}
       />
 
-      <div className="flex gap-4">
+      {/* Código o visual */}
+      <div className="flex-1">
         {modoEditor === 'codigo' ? (
-          <div className="flex-1">
+          <>
             <h3>Editor de código</h3>
             <MonacoEditor
               height="400px"
@@ -684,20 +690,22 @@ export default function Editor({ file, contenido }) {
                 monacoRef.current = editor;
               }}
             />
-          </div>
+          </>
         ) : (
-          <div className="flex-1">
+          <>
             <h3>Editor visual</h3>
             <div
               ref={editorRef}
               contentEditable
               onInput={handleVisualInput}
-              className="border p-4 min-h-[400px] bg-white overflow-y-auto"
+              className="border p-4 min-h-[300px] max-h-[70vh] bg-white overflow-y-auto"
               spellCheck={false}
             />
-          </div>
+          </>
         )}
       </div>
+
+      {/* Guardar cambios */}
       <div className="text-center">
         {mensaje && <p className="text-green-600 my-2">{mensaje}</p>}
         <button
@@ -707,17 +715,14 @@ export default function Editor({ file, contenido }) {
           Guardar
         </button>
         {mostrandoModalGuardar && (
-          <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center px-2">
             <div className="relative bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-              {/* X cerrar */}
               <button
                 onClick={() => setMostrandoModalGuardar(false)}
                 className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
               >
                 ×
               </button>
-
-              {/* input para nombre de commit */}
               <input
                 type="text"
                 value={nombreCommit}
@@ -725,8 +730,6 @@ export default function Editor({ file, contenido }) {
                 placeholder="Nombre del commit"
                 className="block w-full border border-gray-300 rounded px-3 py-2 mb-4"
               />
-
-              {/* textarea para descripción */}
               <textarea
                 value={descripcionCommit}
                 onChange={e => setDescripcionCommit(e.target.value)}
@@ -734,17 +737,13 @@ export default function Editor({ file, contenido }) {
                 rows={4}
                 className="block w-full border border-gray-300 rounded px-3 py-2 mb-2 resize-none"
               />
-
-              {/* label pequeña de prefijo CMS */}
               <p className="text-xs text-gray-500 mb-4">
                 Los cambios se guardarán con el prefijo <strong>(CMS)</strong>
               </p>
-
-              {/* botón interno “Enviar” */}
               <div className="flex justify-end">
                 <button
                   onClick={async () => {
-                    await guardar();  // llama a tu función actual
+                    await guardar();
                     setMostrandoModalGuardar(false);
                     setNombreCommit('');
                     setDescripcionCommit('');
