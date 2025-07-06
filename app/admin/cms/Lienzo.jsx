@@ -582,7 +582,7 @@ export default function Editor({ file, contenido }) {
                   setContent(val);
                 }
               }}
-              options={{ minimap: { enabled: false }, fontSize: 14 }}
+              options={{ minimap: { enabled: false }, fontSize: 14, wordWrap: 'on', wrappingIndent: 'same' }}
               onMount={(editor) => {
                 monacoRef.current = editor;
               }}
