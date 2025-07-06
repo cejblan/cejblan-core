@@ -60,10 +60,10 @@ export default function Coins() {
   return (
     <>
       <Titulos texto="Tasas de Cambio" />
-      <div className="flex gap-2 content-center items-center">
+      <div className="mb-2 flex flex-col content-center items-center">
         {Array.isArray(coins) && coins.length > 0 ? (
           coins.map((coin) => (
-            <div key={coin.id} className="mb-4 mx-auto block">
+            <div key={coin.id} className="mb-1 mx-auto block">
               <div className="flex gap-2 items-center">
                 <p className="text-2xl font-bold">{coin.moneda}:</p>
                 <label
