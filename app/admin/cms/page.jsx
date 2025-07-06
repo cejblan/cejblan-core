@@ -10,6 +10,9 @@ export default function CMS() {
   const [historialCommits, setHistorialCommits] = useState([]);
   const [mostrandoHistorial, setMostrandoHistorial] = useState(false);
   const [commitSeleccionado, setCommitSeleccionado] = useState('');
+  const [mostrarConfirmacionMerge, setMostrarConfirmacionMerge] = useState(false);
+  const [errorMerge, setErrorMerge] = useState('');
+  const [mostrandoErrorMerge, setMostrandoErrorMerge] = useState(false);
 
   // Cargar lista de archivos desde GitHub (solo una vez al montar)
   useEffect(() => {
@@ -88,7 +91,7 @@ export default function CMS() {
           <option value="">Elegir</option>
           {archivos.map((file) => (
             <option key={file} value={file}>
-              {file}
+              {file.split('/').pop()}
             </option>
           ))}
         </select>
@@ -98,10 +101,36 @@ export default function CMS() {
             await cargarHistorial();
             setMostrandoHistorial(true);
           }}
-          className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition text-sm"
+          className={`px-3 py-2 rounded ${archivoSeleccionado
+            ? "bg-slate-600 text-white hover:bg-slate-700 font-bold cursor-pointer"
+            : "bg-slate-600 text-slate-700 font-bold cursor-not-allowed"
+            }`}
         >
           Historial
         </button>
+        <button
+          disabled={!archivoSeleccionado}
+          className={`px-3 py-2 rounded ${archivoSeleccionado
+            ? "bg-red-600 text-white hover:bg-red-700 font-bold cursor-pointer"
+            : "bg-red-600 text-red-700 font-bold cursor-not-allowed"
+            }`}
+          onClick={() => setMostrarConfirmacionMerge(true)}
+        >
+          Publicar en producción
+        </button>
+        {archivoSeleccionado.includes('components/pages/') && (
+          <a
+            href={`${process.env.NEXT_PUBLIC_SITE_URL}/${archivoSeleccionado
+              .replace('components/pages/', '')
+              .replace(/\.[^/.]+$/, '')
+              }`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          >
+            Ver publicada
+          </a>
+        )}
       </div>
       {archivoSeleccionado && (<Editor file={archivoSeleccionado} contenido={contenidoArchivo} />)}
       {mostrandoHistorial && (
@@ -134,6 +163,71 @@ export default function CMS() {
                 className="text-sm text-gray-600 hover:text-gray-800"
               >
                 Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {mostrarConfirmacionMerge && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+          <div className="bg-white border-4 border-red-700 rounded-xl p-6 w-full max-w-lg shadow-2xl">
+            <h2 className="text-2xl font-bold text-red-700 mb-4">
+              ⚠️ ¡Advertencia crítica!
+            </h2>
+            <p className="text-gray-800 mb-4">
+              Esta acción enviará los cambios de <strong className="text-blue-600">develop</strong> a <strong className="text-black">main</strong> y no se puede deshacer.
+            </p>
+            <p className="text-lg font-semibold text-red-600 mb-6">
+              ¿Estás absolutamente seguro de que deseas continuar?
+            </p>
+            <div className="flex justify-end gap-4">
+              <button
+                className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                onClick={() => setMostrarConfirmacionMerge(false)}
+              >
+                Cancelar
+              </button>
+              <button
+                className="bg-red-700 text-white px-4 py-2 rounded hover:bg-red-800"
+                onClick={async () => {
+                  try {
+                    const res = await fetch('/api/github/merge', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ from: 'develop', to: 'main' }),
+                    });
+
+                    if (!res.ok) {
+                      const error = await res.text();
+                      throw new Error(error);
+                    }
+
+                    setMostrarConfirmacionMerge(false);
+                    alert("🚀 ¡Publicado en producción con éxito!");
+                  } catch (error) {
+                    setMostrarConfirmacionMerge(false);
+                    setErrorMerge("❌ El merge ha fallado.\n\nLa rama `main` parece haber sido modificada directamente.\nEsto rompe el protocolo de despliegue.\n\n🛑 ¡DETÉN TODO Y CONTACTA AL ADMINISTRADOR YA MISMO!");
+                    setMostrandoErrorMerge(true);
+                  }
+                }}
+              >
+                Sí, publicar ahora
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {mostrandoErrorMerge && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+          <div className="bg-white border-4 border-red-800 p-6 rounded-lg w-full max-w-md shadow-2xl">
+            <h2 className="text-xl font-bold text-red-800 mb-4">🛑 Error Grave</h2>
+            <p className="text-sm text-gray-700 whitespace-pre-line mb-6">{errorMerge}</p>
+            <div className="text-right">
+              <button
+                className="bg-red-700 text-white px-4 py-2 rounded hover:bg-red-800"
+                onClick={() => setMostrandoErrorMerge(false)}
+              >
+                Entendido
               </button>
             </div>
           </div>
