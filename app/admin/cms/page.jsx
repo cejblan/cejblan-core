@@ -88,10 +88,10 @@ export default function CMS() {
           onChange={(e) => setArchivoSeleccionado(e.target.value)}
           className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <option value="">Elegir</option>
+          <option value="">Elegir...</option>
           {archivos.map((file) => (
             <option key={file} value={file}>
-              {file.split('/').pop()}
+              {file.split('/').pop().replace(/\.[^/.]+$/, '')}
             </option>
           ))}
         </select>
