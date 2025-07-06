@@ -243,12 +243,19 @@ export default function Editor({ file, contenido }) {
     try {
       // convertir img → Image y a → Link
       const htmlToJSX = content
-        .replace(/data-onclick="([^"]+)"/g, 'onClick={() => $1}')
-        .replace(/<i[^>]*data-icon=["']FaRegWindowMinimize["']([^>]*)><\/i>/g, '<FaRegWindowMinimize$1 />')
-        .replace(/<i[^>]*data-icon=["']FaRegWindowMaximize["']([^>]*)><\/i>/g, '<FaRegWindowMaximize$1 />')
-        .replace(/<i[^>]*data-icon=["']FaRegWindowClose["']([^>]*)><\/i>/g, '<FaRegWindowClose$1 />')
+        .replace(/data-onclick="([^"]+)"/g, (match, fn) => {
+          const trimmed = fn.trim();
+          if (trimmed.startsWith('() =>') || trimmed.startsWith('function')) {
+            return `onClick={${trimmed}}`;
+          } else {
+            return `onClick={() => ${trimmed}}`;
+          }
+        })
+        .replace(/<i[^>]*data-icon=["']FaRegWindowMinimize["']([^>]*)><\/i>/g, '<FaRegWindowMinimize$1/>')
+        .replace(/<i[^>]*data-icon=["']FaRegWindowMaximize["']([^>]*)><\/i>/g, '<FaRegWindowMaximize$1/>')
+        .replace(/<i[^>]*data-icon=["']FaRegWindowClose["']([^>]*)><\/i>/g, '<FaRegWindowClose$1/>')
         .replace(/class=/g, 'className=')
-        .replace(/<img([^>]*)\s*>/gi, '<Image$1 />')
+        .replace(/<img([^>]*)\s*>/gi, '<Image$1>')
         .replace(/<a([^>]*)>/g, "<Link$1>")
         .replace(/<\/a>/g, "</Link>");
 
@@ -595,9 +602,10 @@ export default function Editor({ file, contenido }) {
         )}
       </div>
       <div className="text-center">
+        {mensaje && <p className="text-green-600 my-2">{mensaje}</p>}
         <button
           onClick={() => setMostrandoModalGuardar(true)}
-          className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition"
+          className="bg-green-600 text-white py-2 px-4 mb-2 rounded hover:bg-green-700 transition"
         >
           Guardar
         </button>
@@ -652,7 +660,6 @@ export default function Editor({ file, contenido }) {
             </div>
           </div>
         )}
-        {mensaje && <p className="text-green-600 mt-2">{mensaje}</p>}
       </div>
     </div>
   );
