@@ -41,25 +41,6 @@ export default function CMS() {
     obtenerContenido();
   }, [archivoSeleccionado]);
 
-  const nuevoArchivo = async () => {
-    const nombre = prompt("Nombre del nuevo archivo (ej: nuevo.html):");
-    if (!nombre || !nombre.trim()) return;
-
-    try {
-      await fetch("/api/cms/save", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ file: nombre.trim(), content: "" }),
-      });
-
-      setArchivos((prev) => [nombre.trim(), ...prev]);
-      setArchivoSeleccionado(nombre.trim());
-      window.history.replaceState(null, "", `?file=${nombre.trim()}`);
-    } catch (err) {
-      console.error("Error al crear archivo:", err);
-    }
-  };
-
   const commitsMock = [
     "commit 1 - 2024-07-01",
     "commit 2 - 2024-06-30",
@@ -75,13 +56,7 @@ export default function CMS() {
   if (!archivos.length) {
     return (
       <div className="text-center mt-10">
-        <p className="mb-4 text-gray-700">No hay archivos disponibles.</p>
-        <button
-          onClick={nuevoArchivo}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-500 transition"
-        >
-          Crear nuevo archivo
-        </button>
+        <p className="mb-4 text-gray-700">No hay archivos disponibles</p>
       </div>
     );
   }
@@ -100,14 +75,6 @@ export default function CMS() {
             </option>
           ))}
         </select>
-
-        <button
-          onClick={nuevoArchivo}
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition text-sm"
-        >
-          Nuevo archivo
-        </button>
-
         <button
           onClick={() => setMostrarHistorial(true)}
           className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition text-sm"
