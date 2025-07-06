@@ -108,29 +108,31 @@ export default function CMS() {
         >
           Historial
         </button>
-        <button
-          disabled={!archivoSeleccionado}
-          className={`px-3 py-2 rounded ${archivoSeleccionado
-            ? "bg-red-600 text-white hover:bg-red-700 font-bold cursor-pointer"
-            : "bg-red-600 text-red-700 font-bold cursor-not-allowed"
-            }`}
-          onClick={() => setMostrarConfirmacionMerge(true)}
-        >
-          Publicar en producción
-        </button>
-        {archivoSeleccionado.includes('components/pages/') && (
-          <a
-            href={`${process.env.NEXT_PUBLIC_SITE_URL}/${archivoSeleccionado
-              .replace('components/pages/', '')
-              .replace(/\.[^/.]+$/, '')
+        <div className='absolute right-0'>
+          <button
+            disabled={!archivoSeleccionado}
+            className={`px-3 py-2 rounded mr-2 ${archivoSeleccionado
+              ? "bg-red-600 text-white hover:bg-red-700 font-bold cursor-pointer"
+              : "bg-red-600 text-red-700 font-bold cursor-not-allowed"
               }`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+            onClick={() => setMostrarConfirmacionMerge(true)}
           >
-            Ver publicada
-          </a>
-        )}
+            Publicar en producción
+          </button>
+          {archivoSeleccionado.includes('components/pages/') && (
+            <a
+              href={`${process.env.NEXT_PUBLIC_SITE_URL}/${archivoSeleccionado
+                .replace('components/pages/', '')
+                .replace(/\.[^/.]+$/, '')
+                }`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-green-600 text-white font-bold px-3 py-2 rounded mr-2 hover:bg-green-700"
+            >
+              Ver publicada
+            </a>
+          )}
+        </div>
       </div>
       {archivoSeleccionado && (<Editor file={archivoSeleccionado} contenido={contenidoArchivo} />)}
       {mostrandoHistorial && (

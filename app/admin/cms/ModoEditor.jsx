@@ -12,10 +12,6 @@ export default function ModoEditor({
   actualizarClaseTailwind,
   PALETA_COLORES,
   aplicarEstilosTailwind,
-  logoURL,
-  setLogoURL,
-  mostrandoEditorPaleta,
-  setMostrandoEditorPaleta,
   imagenSeleccionada,
   setImagenSeleccionada,
   editorRef,
@@ -23,6 +19,37 @@ export default function ModoEditor({
 }) {
   return (
     <>
+      {modoEditor === 'visual' && imagenSeleccionada && (
+        <div className="mt-4 p-4 bg-gray-100 border rounded">
+          <p className="mb-2 font-semibold">Subir imagen para: <code>{imagenSeleccionada.src}</code></p>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={async (e) => {
+              const file = e.target.files[0];
+              if (!file) return;
+
+              const formData = new FormData();
+              formData.append("image", file);
+
+              try {
+                const res = await fetch("/api/cms/upload-image", {
+                  method: "POST",
+                  body: formData,
+                });
+                const data = await res.json();
+                if (data.secure_url) {
+                  imagenSeleccionada.src = data.secure_url;
+                  setContent(editorRef.current.innerHTML);
+                  setImagenSeleccionada(null); // Oculta input después de cargar
+                }
+              } catch (err) {
+                console.error("Error al subir imagen:", err);
+              }
+            }}
+          />
+        </div>
+      )}
       {modoEditor === 'visual' && selectedElement && (
         <div className="border p-4 bg-gray-50 rounded">
           <strong>Estilos del elemento seleccionado:</strong>
@@ -283,136 +310,6 @@ export default function ModoEditor({
               {tailwindMode ? 'Quitar TailwindCSS' : 'Usar TailwindCSS'}
             </button>
           </div>
-        </div>
-      )}
-
-      {modoEditor === 'visual' && (
-        <div className="p-4 bg-gray-100 border rounded">
-          <p className="mb-2 font-semibold">Logo del sitio:</p>
-
-          <label className="inline-block cursor-pointer">
-            <div className="w-32 h-32 bg-white border border-dashed rounded flex items-center justify-center overflow-hidden hover:shadow transition">
-              <img
-                src={logoURL || "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/ImageNotSupported.webp"}
-                alt="Logo del sitio"
-                className="object-contain w-full h-full"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/ImageNotSupported.webp"; // ruta local para imagen rota
-                }}
-              />
-            </div>
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={async (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-
-                const formData = new FormData();
-                formData.append("image", file);
-
-                try {
-                  const res = await fetch("/api/cms/upload-image", {
-                    method: "POST",
-                    body: formData,
-                  });
-                  const data = await res.json();
-                  if (data.secure_url) {
-                    setLogoURL(data.secure_url);
-                    await fetch("/api/admin/settings", {
-                      method: "PUT",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({
-                        name: "logo_sitio",
-                        value: data.secure_url,
-                      })
-                    });
-                  }
-                } catch (err) {
-                  console.error("Error al subir logo:", err);
-                }
-              }}
-            />
-          </label>
-        </div>
-      )}
-
-      {modoEditor === 'visual' && (
-        <div className="p-4 bg-gray-100 border rounded">
-          <button
-            onClick={() => setMostrandoEditorPaleta(!mostrandoEditorPaleta)}
-            className="mb-2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-500"
-          >
-            {mostrandoEditorPaleta ? 'Ocultar paleta del sitio' : 'Editar paleta del sitio'}
-          </button>
-
-          {mostrandoEditorPaleta && (
-            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-              {[0, 1, 2, 3, 4, 5].map((i) => (
-                <input
-                  key={i}
-                  type="color"
-                  value={paletaUsuario[i] || "#ffffff"}
-                  onChange={(e) => {
-                    const nueva = [...paletaUsuario];
-                    nueva[i] = e.target.value;
-                    setPaletaUsuario(nueva);
-                  }}
-                  className="w-full h-10 border rounded"
-                />
-              ))}
-              <button
-                onClick={async () => {
-                  await fetch("/api/admin/settings", {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                      name: "paleta_colores",
-                      value: JSON.stringify(paletaUsuario), // convertir arreglo a string si es necesario
-                    })
-                  });
-                  setMostrandoEditorPaleta(false);
-                }}
-                className="col-span-3 sm:col-span-6 mt-2 bg-green-600 text-white py-1 rounded hover:bg-green-700"
-              >
-                Guardar Paleta
-              </button>
-
-            </div>
-          )}
-        </div>
-      )}
-      {modoEditor === 'visual' && imagenSeleccionada && (
-        <div className="mt-4 p-4 bg-gray-100 border rounded">
-          <p className="mb-2 font-semibold">Subir imagen para: <code>{imagenSeleccionada.src}</code></p>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={async (e) => {
-              const file = e.target.files[0];
-              if (!file) return;
-
-              const formData = new FormData();
-              formData.append("image", file);
-
-              try {
-                const res = await fetch("/api/cms/upload-image", {
-                  method: "POST",
-                  body: formData,
-                });
-                const data = await res.json();
-                if (data.secure_url) {
-                  imagenSeleccionada.src = data.secure_url;
-                  setContent(editorRef.current.innerHTML);
-                  setImagenSeleccionada(null); // Oculta input después de cargar
-                }
-              } catch (err) {
-                console.error("Error al subir imagen:", err);
-              }
-            }}
-          />
         </div>
       )}
     </>

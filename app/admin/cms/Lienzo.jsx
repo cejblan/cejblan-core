@@ -520,28 +520,129 @@ export default function Editor({ file, contenido }) {
     }
   };
 
-  const btnSmall = "bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-500 transition";
+  const btnSmall = "bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-500 transition h-fit";
   const btnSmall2 = "bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 transition";
-  const btnSmall3 = "bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 transition";
+  const btnSmall3 = "bg-red-600 text-white px-2 py-1 rounded mx-1 hover:bg-red-700 transition";
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap gap-2">
-        <button className={btnSmall} onClick={() => insertHTML('<h1>Título H1</h1>')}>H1</button>
-        <button className={btnSmall} onClick={() => insertHTML('<p>Párrafo nuevo</p>')}>Párrafo</button>
-        <button className={btnSmall} onClick={() => insertHTML('<a href="https://ejemplo.com">Texto del enlace</a>')}>Enlace</button>
-        <button className={btnSmall} onClick={() => insertHTML('<div>Contenido dentro de DIV</div>')}>Div</button>
-        <button className={btnSmall} onClick={() => insertHTML('<section>Contenido dentro de SECTION</section>')}>Section</button>
-        <button className={btnSmall} onClick={() => insertHTML('<ul><li>Item 1</li><li>Item 2</li></ul>')}>Lista</button>
-        <button className={btnSmall} onClick={() => insertHTML('<img src=\"https://img.ejemplo.com/150\" />')}>Imagen</button>
+    <div className="flex flex-col gap-2">
+      <div className='grid grid-cols-5 gap-2'>
+        <div className='col-start-1 col-span-4 gap-2 flex flex-col'>
+          <div className="flex flex-wrap gap-2">
+            <button className={btnSmall} onClick={() => insertHTML('<h1>Título H1</h1>')}>H1</button>
+            <button className={btnSmall} onClick={() => insertHTML('<p>Párrafo nuevo</p>')}>Párrafo</button>
+            <button className={btnSmall} onClick={() => insertHTML('<a href="https://ejemplo.com">Texto del enlace</a>')}>Enlace</button>
+            <button className={btnSmall} onClick={() => insertHTML('<div>Contenido dentro de DIV</div>')}>Div</button>
+            <button className={btnSmall} onClick={() => insertHTML('<section>Contenido dentro de SECTION</section>')}>Section</button>
+            <button className={btnSmall} onClick={() => insertHTML('<ul><li>Item 1</li><li>Item 2</li></ul>')}>Lista</button>
+            <button className={btnSmall} onClick={() => insertHTML('<img src=\"https://img.ejemplo.com/150\" />')}>Imagen</button>
+          </div>
+          {modoEditor === 'visual' && (
+            <div className="p-2 bg-gray-100 border rounded-xl flex flex-col items-center h-full">
+              <button
+                onClick={() => setMostrandoEditorPaleta(!mostrandoEditorPaleta)}
+                className="m-auto px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-500"
+              >
+                {mostrandoEditorPaleta ? 'Ocultar paleta del sitio' : 'Editar paleta del sitio'}
+              </button>
+
+              {mostrandoEditorPaleta && (
+                <div className="mt-1 grid grid-cols-3 sm:grid-cols-6 gap-1 w-full">
+                  {[0, 1, 2, 3, 4, 5].map((i) => (
+                    <input
+                      key={i}
+                      type="color"
+                      value={paletaUsuario[i] || "#ffffff"}
+                      onChange={(e) => {
+                        const nueva = [...paletaUsuario];
+                        nueva[i] = e.target.value;
+                        setPaletaUsuario(nueva);
+                      }}
+                      className="w-full h-6 border rounded"
+                    />
+                  ))}
+                  <button
+                    onClick={async () => {
+                      await fetch("/api/admin/settings", {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          name: "paleta_colores",
+                          value: JSON.stringify(paletaUsuario), // convertir arreglo a string si es necesario
+                        })
+                      });
+                      setMostrandoEditorPaleta(false);
+                    }}
+                    className="col-span-3 sm:col-span-6 mt-2 bg-green-600 text-white py-1 rounded hover:bg-green-700"
+                  >
+                    Guardar Paleta
+                  </button>
+
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+        {modoEditor === 'visual' && (
+          <div className="p-2 bg-gray-100 border rounded-xl">
+            <p className="mb-1 font-semibold">Logo del sitio:</p>
+            <label className="inline-block cursor-pointer">
+              <div className="w-30 h-30 bg-white border border-dashed rounded flex items-center justify-center overflow-hidden hover:shadow transition">
+                <img
+                  src={logoURL || "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/ImageNotSupported.webp"}
+                  alt="Logo del sitio"
+                  className="object-contain w-full h-full"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/ImageNotSupported.webp"; // ruta local para imagen rota
+                  }}
+                />
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={async (e) => {
+                  const file = e.target.files[0];
+                  if (!file) return;
+
+                  const formData = new FormData();
+                  formData.append("image", file);
+
+                  try {
+                    const res = await fetch("/api/cms/upload-image", {
+                      method: "POST",
+                      body: formData,
+                    });
+                    const data = await res.json();
+                    if (data.secure_url) {
+                      setLogoURL(data.secure_url);
+                      await fetch("/api/admin/settings", {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          name: "logo_sitio",
+                          value: data.secure_url,
+                        })
+                      });
+                    }
+                  } catch (err) {
+                    console.error("Error al subir logo:", err);
+                  }
+                }}
+              />
+            </label>
+          </div>
+        )}
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 relative">
         <button className={btnSmall2} onClick={() => setModoEditor(modoEditor === 'visual' ? 'codigo' : 'visual')}>
           {modoEditor === 'visual' ? 'Ver Código' : 'Ver Visual'}
         </button>
-        <button className={btnSmall3} onClick={deshacer} disabled={indiceHistorial <= 0}>Deshacer</button>
-        <button className={btnSmall3} onClick={rehacer} disabled={indiceHistorial >= historial.length - 1}>Rehacer</button>
-
+        <div className='absolute right-0'>
+          <button className={btnSmall3} onClick={deshacer} disabled={indiceHistorial <= 0}>Deshacer</button>
+          <button className={btnSmall3} onClick={rehacer} disabled={indiceHistorial >= historial.length - 1}>Rehacer</button>
+        </div>
       </div>
 
       <ModoEditor
@@ -558,10 +659,6 @@ export default function Editor({ file, contenido }) {
         actualizarClaseTailwind={actualizarClaseTailwind}
         PALETA_COLORES={PALETA_COLORES}
         aplicarEstilosTailwind={aplicarEstilosTailwind}
-        logoURL={logoURL}
-        setLogoURL={setLogoURL}
-        mostrandoEditorPaleta={mostrandoEditorPaleta}
-        setMostrandoEditorPaleta={setMostrandoEditorPaleta}
         imagenSeleccionada={imagenSeleccionada}
         setImagenSeleccionada={setImagenSeleccionada}
         editorRef={editorRef}
