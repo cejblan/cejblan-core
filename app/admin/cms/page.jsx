@@ -18,7 +18,6 @@ export default function CMS() {
       .then(data => {
         if (data.files?.length) {
           setArchivos(data.files);
-          setArchivoSeleccionado(data.files[0]);
         }
       });
   }, []);
@@ -113,7 +112,7 @@ export default function CMS() {
               <select
                 value={commitSeleccionado}
                 onChange={(e) => setCommitSeleccionado(e.target.value)}
-                className="w-full border border-gray-300 rounded p-2 mb-4"
+                className="w-full border border-gray-300 rounded p-2"
               >
                 <option value="">Elegir commit</option>
                 {historialCommits.map(commit => (
