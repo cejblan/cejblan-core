@@ -127,7 +127,8 @@ export default function CMS() {
           <a
             href={`${process.env.NEXT_PUBLIC_SITE_URL}/${archivoSeleccionado
               .replace('components/pages/', '')
-              .replace(/\.[^/.]+$/, '')}`}
+              .replace(/\.[^/.]+$/, '')
+              .toLowerCase()}`}
             target="_blank"
             rel="noopener noreferrer"
             className="w-full sm:w-auto bg-green-600 text-white font-bold px-3 py-2 rounded hover:bg-green-700 text-center"
@@ -135,6 +136,7 @@ export default function CMS() {
             Ver publicada
           </a>
         )}
+
       </div>
       {archivoSeleccionado && (<Editor file={archivoSeleccionado} contenido={contenidoArchivo} />)}
       {mostrandoHistorial && (
