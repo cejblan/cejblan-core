@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import Error500 from "@/components/pages/Error500";
+import Error500 from "@/components/pages/Error";
 
 const images = [
   "https://www.cejblan-cms.vercel.app/Gato500.webp",

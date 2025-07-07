@@ -1,4 +1,4 @@
-import Error404 from '@/components/pages/Error404';
+import Error404 from '@/components/pages/Not-found';
 
 export const metadata = {
   title: "Error 404 - Cejblan",
