@@ -689,7 +689,6 @@ export default function Editor({ file, contenido }) {
           <>
             <h3>Editor de código</h3>
             <MonacoEditor
-              height="400px"
               defaultLanguage="javascript"
               value={content}
               onChange={(val) => {
@@ -698,9 +697,30 @@ export default function Editor({ file, contenido }) {
                   setContent(val);
                 }
               }}
-              options={{ minimap: { enabled: false }, fontSize: 14, wordWrap: 'on', wrappingIndent: 'same' }}
+              options={{
+                minimap: { enabled: false },
+                fontSize: 14,
+                wordWrap: 'on',
+                wrappingIndent: 'same',
+                scrollBeyondLastLine: false,
+                scrollbar: {
+                  vertical: 'hidden', // 👈 oculta barra vertical
+                  horizontal: 'auto',
+                },
+                overviewRulerLanes: 0, // 👈 oculta reglas de colores a la derecha
+              }}
               onMount={(editor) => {
                 monacoRef.current = editor;
+
+                // 🔄 Ajustar la altura automáticamente según contenido
+                const resize = () => {
+                  const contentHeight = editor.getContentHeight();
+                  editor.layout({ width: editor.getLayoutInfo().width, height: contentHeight });
+                };
+
+                // Llamar cuando el contenido cambie
+                editor.onDidContentSizeChange(resize);
+                resize();
               }}
             />
           </>
@@ -711,7 +731,7 @@ export default function Editor({ file, contenido }) {
               ref={editorRef}
               contentEditable
               onInput={handleVisualInput}
-              className="border p-4 min-h-[300px] max-h-[70vh] bg-white overflow-y-auto"
+              className="border p-4 min-h-[300px] bg-white overflow-hidden"
               spellCheck={false}
             />
           </>
