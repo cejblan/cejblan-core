@@ -58,17 +58,16 @@ export default function TelegramPanel() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row h-[90vh] relative top-[-1rem]">
+    <div className="flex h-full w-full">
       {/* Lista de chats */}
-      <aside className="md:w-1/3 w-full border-r border-slate-300 md:overflow-y-auto">
+      <aside className="md:w-1/3 w-full border-r border-slate-300 overflow-y-auto">
         <div className="p-2 font-bold text-lg border-b">Chats</div>
         {chats.map(chat => (
           <div
             key={chat.chatId}
             onClick={() => setSelectedChat(chat)}
-            className={`p-2 hover:bg-white cursor-pointer border-b ${
-              selectedChat?.chatId === chat.chatId ? 'bg-slate-100' : ''
-            }`}
+            className={`p-2 hover:bg-white cursor-pointer border-b ${selectedChat?.chatId === chat.chatId ? 'bg-slate-100' : ''
+              }`}
           >
             {chat.name || `Usuario ${chat.chatId}`}
           </div>
@@ -76,22 +75,26 @@ export default function TelegramPanel() {
       </aside>
 
       {/* Panel de mensajes */}
-      <section className="flex-1 flex flex-col">
-        <div className="p-2 border-b border-slate-300 font-bold">
+      <div className="flex flex-col w-full">
+        {/* Header fijo */}
+        <div className="p-2 border-b border-slate-300 font-bold shrink-0">
           {selectedChat ? (selectedChat.name || selectedChat.chatId) : 'Selecciona un chat'}
         </div>
 
-        <div className="flex-1 overflow-y-scroll p-2 space-y-1">
+        {/* Área de mensajes con altura fija */}
+        <div
+          className="p-2 space-y-1 overflow-y-auto"
+          style={{ height: 'calc(90dvh - 8.1rem)' }}
+        >
           {selectedChat ? (
             <>
               {messages.map((msg, i) => (
                 <div
                   key={i}
-                  className={`p-1 rounded max-w-fit break-words ${
-                    msg.from_bot
-                      ? 'bg-blue-200 text-right ml-auto'
-                      : 'bg-white text-left'
-                  }`}
+                  className={`p-1 rounded max-w-fit break-words ${msg.from_bot
+                    ? 'bg-blue-200 text-right ml-auto'
+                    : 'bg-white text-left'
+                    }`}
                 >
                   {msg.text}
                 </div>
@@ -103,25 +106,30 @@ export default function TelegramPanel() {
           )}
         </div>
 
-        {/* Input de mensaje */}
-        <div className="border-t md:p-2 p-1 flex gap-1">
+        {/* Input fijo */}
+        <div className="border-t px-2 pt-2 flex gap-1 items-center shrink-0">
           <input
             type="text"
             value={messageInput}
             onChange={e => setMessageInput(e.target.value)}
             placeholder="Escribe un mensaje..."
-            className="md:flex-1 w-full border p-1 rounded"
+            className="flex-1 border p-1 rounded"
           />
           <button
             onClick={handleSend}
-            className="bg-blue-500 text-white px-2 py-1 rounded"
+            className="bg-blue-500 text-white px-3 py-1 rounded"
           >
             Enviar
           </button>
         </div>
 
-        {status && <div className="text-center text-sm text-green-600 py-2">{status}</div>}
-      </section>
+        {/* Status opcional */}
+        {status && (
+          <div className="text-center text-sm text-green-600 py-1 shrink-0">
+            {status}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
