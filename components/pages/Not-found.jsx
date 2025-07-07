@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { FaRegWindowMinimize, FaRegWindowMaximize, FaRegWindowClose } from "react-icons/fa";
-import Gato404 from "public/Gato404.webp";
 
 export default function Client404() {
   const router = useRouter();
@@ -30,7 +29,7 @@ export default function Client404() {
             </button>
           </div>
           <div className="max-[420px]:w-full w-1/2 flex justify-end items-end">
-            <Image className="drop-shadow-6xl mx-auto" src={Gato404} alt="Logo 404" width={300} height={300} />
+            <Image className="drop-shadow-6xl mx-auto" src="https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/Gato404.webp" alt="Logo 404" width={300} height={300} />
           </div>
         </div>
       </div>
