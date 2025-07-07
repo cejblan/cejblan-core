@@ -128,10 +128,12 @@ export default function CMS() {
             href={
               archivoSeleccionado.includes('components/pages/Home')
                 ? `${process.env.NEXT_PUBLIC_SITE_URL}`
-                : `${process.env.NEXT_PUBLIC_SITE_URL}/${archivoSeleccionado
-                  .replace('components/pages/', '')
-                  .replace(/\.[^/.]+$/, '')
-                  .toLowerCase()}`
+                : archivoSeleccionado.includes('components/pages/Error')
+                  ? `${process.env.NEXT_PUBLIC_SITE_URL}/error-preview`
+                  : `${process.env.NEXT_PUBLIC_SITE_URL}/${archivoSeleccionado
+                    .replace('components/pages/', '')
+                    .replace(/\.[^/.]+$/, '')
+                    .toLowerCase()}`
             }
             target="_blank"
             rel="noopener noreferrer"
