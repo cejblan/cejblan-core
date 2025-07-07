@@ -411,7 +411,7 @@ export default function Profile() {
                   </tbody>
                 </table>
                 {latitude && longitude ? (
-                  <div className="m-auto h-48 w-48">
+                  <div className="m-auto h-48 w-full">
                     <Maps
                       latitude={dataProfile[0]?.latitude || latitude}
                       longitude={dataProfile[0]?.longitude || longitude}

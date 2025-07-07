@@ -1,9 +1,10 @@
-import React from 'react'
+"use client"
+
 import Image from "next/image";
 import { FaRegWindowMinimize, FaRegWindowMaximize, FaRegWindowClose } from "react-icons/fa";
-import Gato404 from "public/Gato500.webp"
 
-function Error500() {
+export default function Error500( ) {
+
   return (
     // ===START_RETURN===
     <section className="font-bold text-center max-[420px]:px-4 pb-8 px-8 grid grid-cols-1 justify-center items-center">
@@ -26,7 +27,7 @@ function Error500() {
             </button>
           </div>
           <div className="max-[420px]:w-full w-1/2 flex justify-end items-end">
-            <Image className="drop-shadow-6xl mx-auto" src={Gato404} alt="Logo 404" width={300} height={300} />
+            <Image className="drop-shadow-6xl mx-auto" src="https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/Gato500.webp" alt="Logo 404" width="300" height="300" />
           </div>
         </div>
       </div>
@@ -34,5 +35,3 @@ function Error500() {
     // ===END_RETURN===
   )
 }
-
-export default Error500

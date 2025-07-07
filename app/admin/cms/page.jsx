@@ -125,10 +125,16 @@ export default function CMS() {
 
         {archivoSeleccionado.includes('components/pages/') && (
           <a
-            href={`${process.env.NEXT_PUBLIC_SITE_URL}/${archivoSeleccionado
-              .replace('components/pages/', '')
-              .replace(/\.[^/.]+$/, '')
-              .toLowerCase()}`}
+            href={
+              archivoSeleccionado.includes('components/pages/Home')
+                ? `${process.env.NEXT_PUBLIC_SITE_URL}`
+                : archivoSeleccionado.includes('components/pages/Error')
+                  ? `${process.env.NEXT_PUBLIC_SITE_URL}/error-preview`
+                  : `${process.env.NEXT_PUBLIC_SITE_URL}/${archivoSeleccionado
+                    .replace('components/pages/', '')
+                    .replace(/\.[^/.]+$/, '')
+                    .toLowerCase()}`
+            }
             target="_blank"
             rel="noopener noreferrer"
             className="w-full sm:w-auto bg-green-600 text-white font-bold px-3 py-2 rounded hover:bg-green-700 text-center"

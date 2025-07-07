@@ -58,40 +58,107 @@ export default function TelegramPanel() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row h-[90vh] relative top-[-1rem]">
-      {/* Lista de chats */}
-      <aside className="md:w-1/3 w-full border-r border-slate-300 md:overflow-y-auto">
+    <div className="flex h-full w-full">
+      {/* ==== MÓVIL: lista o chat ==== */}
+      <div className="w-full md:hidden">
+        {selectedChat ? (
+          // ===== Chat seleccionado en móvil =====
+          <div className="flex flex-col h-full">
+            <div className="flex items-center p-2 border-b border-slate-300">
+              <button
+                onClick={() => setSelectedChat(null)}
+                className="mr-2 text-blue-500"
+              >
+                Atrás
+              </button>
+              <span className="font-bold">
+                {selectedChat.name || selectedChat.chatId}
+              </span>
+            </div>
+            <div
+              className="p-2 space-y-1 overflow-y-auto flex-1"
+              style={{ height: 'calc(100dvh - 8rem)' }}
+            >
+              {messages.map((msg, i) => (
+                <div
+                  key={i}
+                  className={`p-1 rounded max-w-fit break-words ${msg.from_bot
+                    ? 'bg-blue-200 text-right ml-auto'
+                    : 'bg-white text-left'
+                    }`}
+                >
+                  {msg.text}
+                </div>
+              ))}
+              <div ref={messageEndRef} />
+            </div>
+            <div className="border-t px-2 pt-2 flex gap-1 items-center">
+              <input
+                type="text"
+                value={messageInput}
+                onChange={(e) => setMessageInput(e.target.value)}
+                placeholder="Escribe un mensaje..."
+                className="flex-1 border p-1 rounded"
+              />
+              <button
+                onClick={handleSend}
+                className="bg-blue-500 text-white px-3 py-1 rounded"
+              >
+                Enviar
+              </button>
+            </div>
+          </div>
+        ) : (
+          // ===== Lista de chats en móvil =====
+          <aside className="w-full border-r border-slate-300 overflow-y-auto h-full">
+            <div className="p-2 font-bold text-lg border-b">Chats</div>
+            {chats.map((chat) => (
+              <div
+                key={chat.chatId}
+                onClick={() => setSelectedChat(chat)}
+                className="p-2 hover:bg-white cursor-pointer border-b"
+              >
+                {chat.name || `Usuario ${chat.chatId}`}
+              </div>
+            ))}
+          </aside>
+        )}
+      </div>
+
+      {/* ==== DESKTOP: lista + chat lado a lado ==== */}
+      <aside className="hidden md:block md:w-1/3 border-r border-slate-300 overflow-y-auto">
         <div className="p-2 font-bold text-lg border-b">Chats</div>
-        {chats.map(chat => (
+        {chats.map((chat) => (
           <div
             key={chat.chatId}
             onClick={() => setSelectedChat(chat)}
-            className={`p-2 hover:bg-white cursor-pointer border-b ${
-              selectedChat?.chatId === chat.chatId ? 'bg-slate-100' : ''
-            }`}
+            className={`p-2 hover:bg-white cursor-pointer border-b ${selectedChat?.chatId === chat.chatId ? 'bg-slate-100' : ''
+              }`}
           >
             {chat.name || `Usuario ${chat.chatId}`}
           </div>
         ))}
       </aside>
 
-      {/* Panel de mensajes */}
-      <section className="flex-1 flex flex-col">
-        <div className="p-2 border-b border-slate-300 font-bold">
-          {selectedChat ? (selectedChat.name || selectedChat.chatId) : 'Selecciona un chat'}
+      <div className="hidden md:flex flex-col w-full">
+        <div className="p-2 border-b border-slate-300 font-bold shrink-0">
+          {selectedChat
+            ? selectedChat.name || selectedChat.chatId
+            : 'Selecciona un chat'}
         </div>
-
-        <div className="flex-1 overflow-y-scroll p-2 space-y-1">
+        <div
+          className="p-2 space-y-1 overflow-y-auto"
+          style={{ height: 'calc(90dvh - 8.1rem)' }}
+        >
           {selectedChat ? (
             <>
               {messages.map((msg, i) => (
                 <div
                   key={i}
-                  className={`p-1 rounded max-w-fit break-words ${
-                    msg.from_bot
-                      ? 'bg-blue-200 text-right ml-auto'
-                      : 'bg-white text-left'
-                  }`}
+                  className={`p-1 rounded max-w-fit break-words ${msg.from_bot
+                    ? 'bg-blue-200 text-right ml-auto'
+                    : 'bg-white text-left'
+                    }`}
                 >
                   {msg.text}
                 </div>
@@ -102,26 +169,27 @@ export default function TelegramPanel() {
             <p className="text-slate-500">Selecciona un chat para comenzar</p>
           )}
         </div>
-
-        {/* Input de mensaje */}
-        <div className="border-t md:p-2 p-1 flex gap-1">
+        <div className="border-t px-2 pt-2 flex gap-1 items-center shrink-0">
           <input
             type="text"
             value={messageInput}
-            onChange={e => setMessageInput(e.target.value)}
+            onChange={(e) => setMessageInput(e.target.value)}
             placeholder="Escribe un mensaje..."
-            className="md:flex-1 w-full border p-1 rounded"
+            className="flex-1 border p-1 rounded"
           />
           <button
             onClick={handleSend}
-            className="bg-blue-500 text-white px-2 py-1 rounded"
+            className="bg-blue-500 text-white px-3 py-1 rounded"
           >
             Enviar
           </button>
         </div>
-
-        {status && <div className="text-center text-sm text-green-600 py-2">{status}</div>}
-      </section>
+        {status && (
+          <div className="text-center text-sm text-green-600 py-1 shrink-0">
+            {status}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
