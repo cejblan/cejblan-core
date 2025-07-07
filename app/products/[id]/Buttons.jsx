@@ -134,7 +134,7 @@ export default function Buttons(product) {
           ref={form}
         >
           <button
-            className="text-white bg-[#64ffda] hover:bg-[#6ed8bf] max-[420px]:text-lg text-3xl font-bold p-1 rounded-xl shadow-6xl"
+            className="text-white bg-[#6ed8bf] hover:bg-[#64ffda] max-[420px]:text-lg text-3xl font-bold p-1 rounded-xl shadow-6xl"
           >
             <IoIosHeart />
           </button>
@@ -146,7 +146,7 @@ export default function Buttons(product) {
           ref={form}
         >
           <button
-            className="text-white bg-[#64ffda] hover:bg-[#6ed8bf] max-[420px]:text-lg text-3xl font-bold p-1 rounded-xl shadow-6xl"
+            className="text-white bg-[#6ed8bf] hover:bg-[#64ffda] max-[420px]:text-lg text-3xl font-bold p-1 rounded-xl shadow-6xl"
           >
             <IoIosHeartEmpty />
           </button>

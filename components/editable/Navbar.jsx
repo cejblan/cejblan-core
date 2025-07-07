@@ -64,51 +64,51 @@ export default function Navbar() {
   return (
     // ===START_RETURN===
     <DoNotShowAdmin>
-      <nav id="navCejblan" className="bg-gradient-to-b from-[#0A192F] to-[#64FFDA] text-[#F8F8F8] text-xl font-bold justify-center items-center grid max-[420px]:grid-cols-6 grid-cols-12 gap-1 py-1 px-2 shadow-8xl h-9 w-full z-30 fixed">
+      <nav id="navCejblan" className="bg-gradient-to-b from-[#0A192F] to-[#6ed8bf] text-[#F8F8F8] text-xl font-bold justify-center items-center grid max-[420px]:grid-cols-6 grid-cols-12 gap-1 py-1 px-2 shadow-8xl h-9 w-full z-30 fixed">
         {session?.user ?
           <>
             <div className="burger max-[420px]:m-auto col-start-1 col-end-1 justify-center items-center" onClick={handleClick}>
               <TiThMenu className={`w-4 h-4 hover:fill-slate-800 ${isOpen ? "hidden" : ""}`} cursor="pointer" />
               <TiTimes className={`w-4 h-4 hover:fill-slate-800 ${isOpen ? "" : "hidden"}`} cursor="pointer" />
               <div className={`menu bg-slate-500 text-2xl grid grid-cols-1 gap-1 gap-white absolute left-5 top-5 p-1 rounded-xl z-20 ${isOpen ? "" : "hidden"}`}>
-                <Link href="/" className="hover:text-[#64FFDA]">
+                <Link href="/" className="hover:text-[#6ed8bf]">
                   <p className={`${urlClass("/")} rounded-xl px-2 flex justify-center items-center`}>
                     Inicio
                     <FaBookOpen className="ml-1" />
                   </p>
                 </Link>
-                <Link href="/products" className="hover:text-[#64FFDA]">
+                <Link href="/products" className="hover:text-[#6ed8bf]">
                   <p className={`${urlClass("/products")} rounded-xl px-2 flex justify-center items-center`}>
                     Productos
                     <IoLogoOctocat className="ml-1" />
                   </p>
                 </Link>
-                <Link href="/wishlist" className="hover:text-[#64FFDA] max-[420px]:block hidden">
+                <Link href="/wishlist" className="hover:text-[#6ed8bf] max-[420px]:block hidden">
                   <p className={`${urlClass("/wishlist")} rounded-xl px-2 flex justify-center items-center`}>
                     Favoritos
                     <IoIosHeart className="ml-1" />
                   </p>
                 </Link>
-                <Link href="/cart" className="hover:text-[#64FFDA] max-[420px]:block hidden">
+                <Link href="/cart" className="hover:text-[#6ed8bf] max-[420px]:block hidden">
                   <p className={`${urlClass("/cart")} rounded-xl px-2 flex justify-center items-center`}>
                     Carrito
                     <FaCartShopping className="ml-1" />
                   </p>
                 </Link>
-                <Link href="/orders" className="hover:text-[#64FFDA]">
+                <Link href="/orders" className="hover:text-[#6ed8bf]">
                   <p className={`${urlClass("/orders")} rounded-xl px-2 flex justify-center items-center`}>
                     Pedidos
                     <MdBorderColor className="ml-1" />
                   </p>
                 </Link>
-                <Link href="/profile" className="hover:text-[#64FFDA]">
+                <Link href="/profile" className="hover:text-[#6ed8bf]">
                   <p className={`${urlClass("/profile")} rounded-xl px-2 flex justify-center items-center`}>
                     Perfil
                     <IoPersonSharp className="ml-1" />
                   </p>
                 </Link>
                 <button
-                  className="hover:text-[#64FFDA] bg-slate-700 rounded-xl px-2 flex justify-center items-center"
+                  className="hover:text-[#6ed8bf] bg-slate-700 rounded-xl px-2 flex justify-center items-center"
                   onClick={() => signOut({
                     callbackUrl: "/",
                   })}
@@ -117,14 +117,14 @@ export default function Navbar() {
                 </button>
               </div>
             </div>
-            <Link href="/wishlist" className="hover:text-[#64FFDA] text-sm max-[420px]:hidden col-start-2 col-end-3 block">
-              <p className={`${urlClass2("/wishlist")} hover:border-[#64FFDA] rounded-xl`}>
+            <Link href="/wishlist" className="hover:text-[#6ed8bf] text-sm max-[420px]:hidden col-start-2 col-end-3 block">
+              <p className={`${urlClass2("/wishlist")} hover:border-[#6ed8bf] rounded-xl`}>
                 Favoritos
                 <IoIosHeart className="m-auto w-4 h-4" />
               </p>
             </Link>
-            <Link href="/cart" className="hover:text-[#64FFDA] text-sm max-[420px]:hidden col-start-3 col-end-4 block">
-              <p className={`${urlClass2("/cart")} hover:border-[#64FFDA] rounded-xl w-4/5`}>
+            <Link href="/cart" className="hover:text-[#6ed8bf] text-sm max-[420px]:hidden col-start-3 col-end-4 block">
+              <p className={`${urlClass2("/cart")} hover:border-[#6ed8bf] rounded-xl w-4/5`}>
                 Carrito
                 <FaCartShopping className="m-auto w-4 h-4" />
               </p>
@@ -132,10 +132,10 @@ export default function Navbar() {
           </>
           :
           <button
-            className="hover:text-[#64FFDA] max-[420px]:text-sm text-2xl col-start-1 max-[420px]:col-end-2 col-end-3 flex justify-center items-center"
+            className="hover:text-[#6ed8bf] max-[420px]:text-sm text-2xl col-start-1 max-[420px]:col-end-2 col-end-3 flex justify-center items-center"
             onClick={() => signIn()}
           >
-            <p className="hover:border-[#64FFDA] max-[420px]:leading-3 leading-6 rounded-xl">Iniciar Sesión</p>
+            <p className="hover:border-[#6ed8bf] max-[420px]:leading-3 leading-6 rounded-xl">Iniciar Sesión</p>
             <FaSignInAlt className="m-auto w-4 h-4 max-[420px]:hidden" />
           </button>
         }
@@ -170,7 +170,7 @@ export default function Navbar() {
             <button
               onClick={Open}
             >
-              <PiMagnifyingGlassBold className="w-4 h-4 hover:fill-[#64FFDA]" />
+              <PiMagnifyingGlassBold className="w-4 h-4 hover:fill-[#6ed8bf]" />
             </button>
           </div>
         )}

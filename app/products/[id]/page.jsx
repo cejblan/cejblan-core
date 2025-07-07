@@ -86,10 +86,10 @@ export default async function ProductPage({ params }) {
             </div>
 
             <div className="mt-6"> {/* Botones abajo */}
-              <p className="text-[#64ffda] text-xl text-left font-bold pl-1 mt-2">Categoría:
+              <p className="text-[#6ed8bf] text-xl text-left font-bold pl-1 mt-2">Categoría:
                 <span className="text-slate-700 ml-1">{product.category}</span>
               </p>
-              <p className="text-[#64ffda] text-xl text-left font-bold flex items-center pl-1">Calificación:
+              <p className="text-[#6ed8bf] text-xl text-left font-bold flex items-center pl-1">Calificación:
                 <span className="text-slate-700 ml-1 flex justify-center items-center">
                   {renderStars(average)}
                   <span className="ml-1 text-slate-600 text-base">({totalRatings} Cliente{totalRatings === 1 ? '' : 's'})</span>

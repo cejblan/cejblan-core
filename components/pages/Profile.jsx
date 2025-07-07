@@ -280,7 +280,7 @@ export default function Profile() {
                   </tbody>
                 </table>
                 <button
-                  className="bg-[#64ffda] hover:bg-[#6ed8bf] text-white font-bold py-1 px-2 rounded-xl shadow-6xl mt-2 mx-auto block"
+                  className="bg-[#6ed8bf] hover:bg-[#64ffda] text-white font-bold py-1 px-2 rounded-xl shadow-6xl mt-2 mx-auto block"
                   onClick={editData}>
                   Editar Perfil
                 </button>
@@ -421,7 +421,7 @@ export default function Profile() {
                   <p className="text-center m-auto">Cargando ubicación...</p>
                 )}
                 <button
-                  className="bg-[#64ffda] hover:bg-[#6ed8bf] text-white font-bold py-1 px-2 rounded-xl shadow-6xl mt-2 mx-auto block"
+                  className="bg-[#6ed8bf] hover:bg-[#64ffda] text-white font-bold py-1 px-2 rounded-xl shadow-6xl mt-2 mx-auto block"
                   onClick={dataSubmit}>
                   Guardar Datos
                 </button>
