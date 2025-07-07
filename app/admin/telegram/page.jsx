@@ -111,12 +111,12 @@ export default function TelegramPanel() {
         ) : (
           // ===== Lista de chats en móvil =====
           <aside className="w-full border-r border-slate-300 overflow-y-auto h-full">
-            <div className="p-2 font-bold text-lg border-b">Chats</div>
+            <div className="p-2 font-bold text-lg border-b border-slate-300">Chats</div>
             {chats.map((chat) => (
               <div
                 key={chat.chatId}
                 onClick={() => setSelectedChat(chat)}
-                className="p-2 hover:bg-white cursor-pointer border-b"
+                className="p-2 hover:bg-white cursor-pointer border-b border-slate-300"
               >
                 {chat.name || `Usuario ${chat.chatId}`}
               </div>
@@ -127,12 +127,12 @@ export default function TelegramPanel() {
 
       {/* ==== DESKTOP: lista + chat lado a lado ==== */}
       <aside className="hidden md:block md:w-1/3 border-r border-slate-300 overflow-y-auto">
-        <div className="p-2 font-bold text-lg border-b">Chats</div>
+        <div className="p-2 font-bold text-lg border-b border-slate-300">Chats</div>
         {chats.map((chat) => (
           <div
             key={chat.chatId}
             onClick={() => setSelectedChat(chat)}
-            className={`p-2 hover:bg-white cursor-pointer border-b ${selectedChat?.chatId === chat.chatId ? 'bg-slate-100' : ''
+            className={`p-2 hover:bg-white cursor-pointer border-b border-slate-300 ${selectedChat?.chatId === chat.chatId ? 'bg-slate-100' : ''
               }`}
           >
             {chat.name || `Usuario ${chat.chatId}`}
