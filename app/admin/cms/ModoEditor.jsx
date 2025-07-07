@@ -155,37 +155,6 @@ export default function ModoEditor({
                   Copiar URL
                 </button>
               </div>
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={async (e) => {
-                  const file = e.target.files[0];
-                  if (!file) return;
-                  const formData = new FormData();
-                  formData.append("image", file);
-                  try {
-                    const res = await fetch("/api/cms/upload-image", {
-                      method: "POST",
-                      body: formData,
-                    });
-                    const data = await res.json();
-                    if (data.secure_url) {
-                      setLogoURL(data.secure_url);
-                      await fetch("/api/admin/settings", {
-                        method: "PUT",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                          name: "logo_sitio",
-                          value: data.secure_url,
-                        }),
-                      });
-                    }
-                  } catch (err) {
-                    console.error("Error al subir logo:", err);
-                  }
-                }}
-              />
             </label>
           </div>
         )}
