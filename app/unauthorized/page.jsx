@@ -2,10 +2,10 @@ import { GiCat } from "react-icons/gi";
 import { FaRegWindowMinimize, FaRegWindowMaximize, FaRegWindowClose } from "react-icons/fa";
 
 export const metadata = {
-  title: "No Autorizado - Cejblan",
+  title: "No Autorizado - " + process.env.NEXT_PUBLIC_SITE_NAME,
   description: "Página de acceso no autorizado (unauthorized).",
   openGraph: {
-    title: "No Autorizado - Cejblan",
+    title: "No Autorizado - " + process.env.NEXT_PUBLIC_SITE_NAME,
     description: "Página de acceso no autorizado (unauthorized).",
     url: "https://www.cejblan-cms.vercel.app/unauthorized",
   },
@@ -15,7 +15,7 @@ export default function UnauthorizedPage() {
   return (
     <section className="font-bold text-center max-[420px]:px-4 pb-8 px-8 grid grid-cols-1 justify-center items-center">
       <div className="rounded-xl shadow-5xl">
-        <div className="bg-gradient-to-b from-[#0A192F] to-[#64FFDA] p-0.5 rounded-t-xl w-full flex justify-end">
+        <div className="bg-gradient-to-b from-[#0A192F] to-[#6ed8bf] p-0.5 rounded-t-xl w-full flex justify-end">
           <div className="w-fit flex gap-1">
             <FaRegWindowMinimize className="bg-white p-0.5 rounded h-3 w-3" />
             <FaRegWindowMaximize className="bg-white p-0.5 rounded h-3 w-3" />

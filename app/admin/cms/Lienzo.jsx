@@ -526,129 +526,6 @@ export default function Editor({ file, contenido }) {
 
   return (
     <div className="flex flex-col gap-2 px-2 sm:px-0">
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
-        <div className="md:col-span-4 gap-2 flex flex-col">
-          <div className="flex flex-wrap gap-2">
-            {/* Botones rápidos */}
-            <button className={btnSmall} onClick={() => insertHTML('<h1>Título H1</h1>')}>H1</button>
-            <button className={btnSmall} onClick={() => insertHTML('<p>Párrafo nuevo</p>')}>Párrafo</button>
-            <button className={btnSmall} onClick={() => insertHTML('<a href="https://ejemplo.com">Texto del enlace</a>')}>Enlace</button>
-            <button className={btnSmall} onClick={() => insertHTML('<div>Contenido dentro de DIV</div>')}>Div</button>
-            <button className={btnSmall} onClick={() => insertHTML('<section>Contenido dentro de SECTION</section>')}>Section</button>
-            <button className={btnSmall} onClick={() => insertHTML('<ul><li>Item 1</li><li>Item 2</li></ul>')}>Lista</button>
-            <button className={btnSmall} onClick={() => insertHTML('<img src="https://img.ejemplo.com/150" />')}>Imagen</button>
-          </div>
-
-          {/* Paleta de colores */}
-          {modoEditor === 'visual' && (
-            <div className="p-2 bg-gray-100 border rounded-xl flex flex-col items-center h-full">
-              <button
-                onClick={() => setMostrandoEditorPaleta(!mostrandoEditorPaleta)}
-                className="m-auto px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-500"
-              >
-                {mostrandoEditorPaleta ? 'Ocultar paleta del sitio' : 'Editar paleta del sitio'}
-              </button>
-
-              {mostrandoEditorPaleta && (
-                <div className="mt-1 grid grid-cols-3 sm:grid-cols-6 gap-1 w-full">
-                  {[0, 1, 2, 3, 4, 5].map((i) => (
-                    <input
-                      key={i}
-                      type="color"
-                      value={paletaUsuario[i] || "#ffffff"}
-                      onChange={(e) => {
-                        const nueva = [...paletaUsuario];
-                        nueva[i] = e.target.value;
-                        setPaletaUsuario(nueva);
-                      }}
-                      className="w-full h-6 border rounded"
-                    />
-                  ))}
-                  <button
-                    onClick={async () => {
-                      await fetch("/api/admin/settings", {
-                        method: "PUT",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                          name: "paleta_colores",
-                          value: JSON.stringify(paletaUsuario),
-                        }),
-                      });
-                      setMostrandoEditorPaleta(false);
-                    }}
-                    className="col-span-3 sm:col-span-6 mt-2 bg-green-600 text-white py-1 rounded hover:bg-green-700"
-                  >
-                    Guardar Paleta
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Logo */}
-        {modoEditor === 'visual' && (
-          <div className="md:col-span-1 p-2 bg-gray-100 border rounded-xl">
-            <p className="mb-1 font-semibold">Logo del sitio:</p>
-            <label className="inline-block cursor-pointer w-full">
-              <div className="w-full aspect-square bg-white border border-dashed rounded flex items-center justify-center overflow-hidden hover:shadow transition">
-                <img
-                  src={logoURL || "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/ImageNotSupported.webp"}
-                  alt="Logo del sitio"
-                  className="object-contain w-full h-full"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/ImageNotSupported.webp";
-                  }}
-                />
-              </div>
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={async (e) => {
-                  const file = e.target.files[0];
-                  if (!file) return;
-                  const formData = new FormData();
-                  formData.append("image", file);
-                  try {
-                    const res = await fetch("/api/cms/upload-image", {
-                      method: "POST",
-                      body: formData,
-                    });
-                    const data = await res.json();
-                    if (data.secure_url) {
-                      setLogoURL(data.secure_url);
-                      await fetch("/api/admin/settings", {
-                        method: "PUT",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                          name: "logo_sitio",
-                          value: data.secure_url,
-                        }),
-                      });
-                    }
-                  } catch (err) {
-                    console.error("Error al subir logo:", err);
-                  }
-                }}
-              />
-            </label>
-          </div>
-        )}
-      </div>
-
-      {/* Controles de modo/deshacer */}
-      <div className="flex flex-wrap gap-2 items-center justify-between">
-        <button className={btnSmall2} onClick={() => setModoEditor(modoEditor === 'visual' ? 'codigo' : 'visual')}>
-          {modoEditor === 'visual' ? 'Ver Código' : 'Ver Visual'}
-        </button>
-        <div className="flex gap-2">
-          <button className={btnSmall3} onClick={deshacer} disabled={indiceHistorial <= 0}>Deshacer</button>
-          <button className={btnSmall3} onClick={rehacer} disabled={indiceHistorial >= historial.length - 1}>Rehacer</button>
-        </div>
-      </div>
-
       {/* Editor visual/código */}
       <ModoEditor
         modoEditor={modoEditor}
@@ -668,43 +545,26 @@ export default function Editor({ file, contenido }) {
         setImagenSeleccionada={setImagenSeleccionada}
         editorRef={editorRef}
         setContent={setContent}
+        insertHTML={insertHTML}
+        btnSmall={btnSmall}
+        btnSmall2={btnSmall2}
+        btnSmall3={btnSmall3}
+        setMostrandoEditorPaleta={setMostrandoEditorPaleta}
+        mostrandoEditorPaleta={mostrandoEditorPaleta}
+        setPaletaUsuario={setPaletaUsuario}
+        setModoEditor={setModoEditor}
+        deshacer={deshacer}
+        rehacer={rehacer}
+        indiceHistorial={indiceHistorial}
+        historial={historial}
+        MonacoEditor={MonacoEditor}
+        monacoRef={monacoRef}
+        handleVisualInput={handleVisualInput}
+        registrarCambio={registrarCambio}
+        logoURL={logoURL}
+        setLogoURL={setLogoURL}
+        content={content}
       />
-
-      {/* Código o visual */}
-      <div className="flex-1">
-        {modoEditor === 'codigo' ? (
-          <>
-            <h3>Editor de código</h3>
-            <MonacoEditor
-              height="400px"
-              defaultLanguage="javascript"
-              value={content}
-              onChange={(val) => {
-                if (val !== null) {
-                  registrarCambio(val);
-                  setContent(val);
-                }
-              }}
-              options={{ minimap: { enabled: false }, fontSize: 14, wordWrap: 'on', wrappingIndent: 'same' }}
-              onMount={(editor) => {
-                monacoRef.current = editor;
-              }}
-            />
-          </>
-        ) : (
-          <>
-            <h3>Editor visual</h3>
-            <div
-              ref={editorRef}
-              contentEditable
-              onInput={handleVisualInput}
-              className="border p-4 min-h-[300px] max-h-[70vh] bg-white overflow-y-auto"
-              spellCheck={false}
-            />
-          </>
-        )}
-      </div>
-
       {/* Guardar cambios */}
       <div className="text-center">
         {mensaje && <p className="text-green-600 my-2">{mensaje}</p>}

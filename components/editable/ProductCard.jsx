@@ -53,7 +53,7 @@ export default function ProductCard({ product }) {
             onSubmit={(e) => HandleWish2(e, product, session, form) + CheckWish(product, session, setIsInWishlist)}
             ref={form}
           >
-            <button className="text-[#64ffda] text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center">
+            <button className="text-[#6ed8bf] text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center">
               <IoIosHeart />
             </button>
           </form>
@@ -64,7 +64,7 @@ export default function ProductCard({ product }) {
             ref={form}
           >
             <button
-              className="text-[#64ffda] text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center"
+              className="text-[#6ed8bf] text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center"
             >
               <IoIosHeartEmpty />
             </button>
@@ -93,7 +93,7 @@ export default function ProductCard({ product }) {
             onSubmit={(e) => HandleWish2(e, product, session, form) + iconHeart()}
             ref={form}
           >
-            <button className="text-[#64ffda] text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center">
+            <button className="text-[#6ed8bf] text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center">
               <IoIosHeart />
             </button>
           </form>
@@ -103,7 +103,7 @@ export default function ProductCard({ product }) {
             onSubmit={(e) => HandleWish1(e, product, session, form) + iconHeart()}
             ref={form}
           >
-            <button className="text-[#64ffda] text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center">
+            <button className="text-[#6ed8bf] text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center">
               <IoIosHeartEmpty />
             </button>
           </form>

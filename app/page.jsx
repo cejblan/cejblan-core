@@ -4,10 +4,10 @@ import WhatsappButton from "@/components/editable/WhatsappButton"
 import PaypalButton from "@/components/editable/PaypalButton"
 
 export const metadata = {
-  title: "Inicio - Cejblan",
+  title: "Inicio - " + process.env.NEXT_PUBLIC_SITE_NAME,
   description: "Página de inicio.",
   openGraph: {
-    title: "Inicio - Cejblan",
+    title: "Inicio - " + process.env.NEXT_PUBLIC_SITE_NAME,
     description: "Página de inicio.",
     url: "https://www.cejblan-cms.vercel.app/",
   },

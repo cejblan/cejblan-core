@@ -73,7 +73,7 @@ export default function NavbarAdmin({ children }) {
           </button>
           <Link href="/" className="hover:bg-slate-700 hover:text-blue-300 p-1 flex items-center">
             <FaHome className="mr-1 w-3 h-3" />
-            <h1 className="font-bold max-[420px]:hidden">CejblanCMS</h1>
+            <h1 className="font-bold max-[420px]:hidden">{process.env.NEXT_PUBLIC_SITE_NAME}</h1>
           </Link>
           <div onClick={handleNewMenuClick} className="p-1 relative">
             <FaPlus className={`hover:fill-blue-300 w-3 h-3 ${isOpenTwo ? "rotate-45" : ""}`} />
