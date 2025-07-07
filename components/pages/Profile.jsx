@@ -157,10 +157,10 @@ export default function Profile() {
   return (
     // ===START_RETURN===
     <div className="py-6">
-      <div className="bg-white text-start tracking-tighter py-2 rounded-xl mx-auto max-[420px]:w-full w-fit">
+      <div className="bg-white text-start tracking-tighter py-6 md:py-8 px-4 md:px-8 rounded-xl mx-auto w-full max-w-[480px] md:max-w-3xl shadow-md">
         <Image src={session?.user.image}
           alt="Imagen de Usuario"
-          className="rounded-full mb-1 mx-auto cursor-pointer"
+          className="rounded-full mb-3 mx-auto cursor-pointer border-2 border-gray-300"
           width={100} height={100} />
         {
           status === "authenticated" && dataProfile[0]?.verified === 0 ?
@@ -168,7 +168,7 @@ export default function Profile() {
               <h2 className="text-center">
                 Necesitamos enlazar su perfil con nuestro:
               </h2>
-              <div className="text-center mt-2 max-[420px]:flex grid grid-cols-2 gap-2 justify-center items-center">
+              <div className="text-center mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 justify-center items-start">
                 <div className="my-3 mx-auto w-fit grid grid-cols-1 justify-center items-center">
                   <span className="flex justify-center items-center">
                     <span className="text-xl">Bot de&nbsp;</span>
@@ -206,7 +206,7 @@ export default function Profile() {
             :
             status === "authenticated" && !edit ?
               <>
-                <table className="max-[420px]:text-base text-xl text-gray-800 table-auto border-collapse max-[420px]:w-full">
+                <table className="text-base md:text-lg lg:text-xl w-full text-gray-800 table-auto border-collapse max-[420px]:w-full">
                   <tbody>
                     <tr className="border-b-2 border-gray-300">
                       <td className="text-slate-600 pl-4 pr-2">
@@ -280,7 +280,7 @@ export default function Profile() {
                   </tbody>
                 </table>
                 <button
-                  className="bg-[#6ed8bf] hover:bg-[#64ffda] text-white font-bold py-1 px-2 rounded-xl shadow-6xl mt-2 mx-auto block"
+                  className="bg-[#6ed8bf] hover:bg-[#64ffda] text-white font-bold py-1 px-2 rounded-xl shadow-6xl mx-auto mt-4 block md:w-1/2 lg:w-1/3"
                   onClick={editData}>
                   Editar Perfil
                 </button>
@@ -411,7 +411,7 @@ export default function Profile() {
                   </tbody>
                 </table>
                 {latitude && longitude ? (
-                  <div className="m-auto h-48 w-48">
+                  <div className="m-auto h-48 md:h-64 lg:h-72 w-full">
                     <Maps
                       latitude={dataProfile[0]?.latitude || latitude}
                       longitude={dataProfile[0]?.longitude || longitude}
