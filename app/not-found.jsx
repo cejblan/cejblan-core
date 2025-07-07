@@ -7,9 +7,6 @@ export const metadata = {
     title: "Error 404 - " + process.env.NEXT_PUBLIC_SITE_NAME,
     description: "Página de error 404 (Not Found).",
     url: "https://www.cejblan-cms.vercel.app/not-found",
-    images: [
-      { url: "https://www.cejblan-cms.vercel.app/Gato404.webp" }
-    ],
   },
 };
 
