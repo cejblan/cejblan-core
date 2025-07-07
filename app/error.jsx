@@ -8,10 +8,10 @@ const images = [
 ];
 
 export const metadata = {
-  title: "Error 500 - Cejblan",
+  title: "Error 500 - " + process.env.NEXT_PUBLIC_SITE_NAME,
   description: "Página de error 500 y otros.",
   openGraph: {
-    title: "Error 500 - Cejblan",
+    title: "Error 500 - " + process.env.NEXT_PUBLIC_SITE_NAME,
     description: "Página de error 500 y otros.",
     url: "https://www.cejblan-cms.vercel.app/error",
     images: images.map((url) => ({ url })),

@@ -2,10 +2,10 @@ import { GiCat } from "react-icons/gi";
 import { FaRegWindowMinimize, FaRegWindowMaximize, FaRegWindowClose } from "react-icons/fa";
 
 export const metadata = {
-  title: "No Autorizado - Cejblan",
+  title: "No Autorizado - " + process.env.NEXT_PUBLIC_SITE_NAME,
   description: "Página de acceso no autorizado (unauthorized).",
   openGraph: {
-    title: "No Autorizado - Cejblan",
+    title: "No Autorizado - " + process.env.NEXT_PUBLIC_SITE_NAME,
     description: "Página de acceso no autorizado (unauthorized).",
     url: "https://www.cejblan-cms.vercel.app/unauthorized",
   },
