@@ -126,36 +126,45 @@ export default function ModoEditor({
         {modoEditor === 'visual' && (
           <div className="md:col-span-1 p-2 bg-gray-100 border rounded-xl">
             <p className="mb-1 font-semibold">Logo del sitio:</p>
-            <label className="inline-block cursor-pointer w-full">
-              <div className="w-full aspect-square bg-white border border-dashed rounded flex items-center justify-center overflow-hidden hover:shadow transition relative">
-                <img
-                  src={logoURL || "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/ImageNotSupported.webp"}
-                  alt="Logo del sitio"
-                  onClick={() => {
-                    setImagenSeleccionada('logo');
-                    setGaleriaAbierta(true);
-                  }}
-                  className="object-contain w-full h-full"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/ImageNotSupported.webp";
-                  }}
-                />
-                <button
-                  onClick={async () => {
-                    try {
-                      await navigator.clipboard.writeText(logoURL);
-                      alert("URL copiada");
-                    } catch {
-                      alert("Error");
-                    }
-                  }}
-                  className="absolute bottom-1 right-1 z-10 bg-blue-600 text-white rounded px-1 py-0.5 text-xs hover:bg-blue-500"
-                >
-                  Copiar URL
-                </button>
-              </div>
-            </label>
+            <div
+              className="w-full aspect-square bg-white border border-dashed rounded flex items-center justify-center overflow-hidden hover:shadow transition relative"
+              onClick={(e) => {
+                // Si el clic vino desde el botón, no hacemos nada
+                if (e.target.tagName === "BUTTON") return;
+
+                setImagenSeleccionada('logo');
+                setGaleriaAbierta(true);
+              }}
+            >
+              <img
+                src={
+                  logoURL ||
+                  "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/ImageNotSupported.webp"
+                }
+                alt="Logo del sitio"
+                className="object-contain w-full h-full"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src =
+                    "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/ImageNotSupported.webp";
+                }}
+              />
+              <button
+                onClick={async (e) => {
+                  e.stopPropagation(); // aún lo mantenemos
+                  try {
+                    await navigator.clipboard.writeText(logoURL);
+                    alert("URL copiada");
+                  } catch {
+                    alert("Error");
+                  }
+                }}
+                className="absolute bottom-1 right-1 z-10 bg-blue-600 text-white rounded px-1 py-0.5 text-xs hover:bg-blue-500"
+              >
+                Copiar URL
+              </button>
+            </div>
+
           </div>
         )}
       </div>
