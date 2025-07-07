@@ -1,3 +1,5 @@
+import { useState, useEffect, useRef } from 'react';
+
 export default function ModoEditor({
   modoEditor,
   selectedElement,
@@ -34,8 +36,30 @@ export default function ModoEditor({
   registrarCambio,
   logoURL,
   setLogoURL,
-  content
+  content,
+  galeriaAbierta,
+  setGaleriaAbierta,
 }) {
+  const [imagenes, setImagenes] = useState([]);
+  const [paginaGaleria, setPaginaGaleria] = useState(1);
+  const [totalPaginasGaleria, setTotalPaginasGaleria] = useState(1);
+  const porPagina = 36;
+
+  useEffect(() => {
+    if (galeriaAbierta) cargarImagenesGaleria();
+  }, [galeriaAbierta, paginaGaleria]);
+
+  const cargarImagenesGaleria = async () => {
+    try {
+      const res = await fetch(`/api/cms/images?page=${paginaGaleria}&limit=${porPagina}`);
+      const data = await res.json();
+      setImagenes(data.imagenes || []);
+      setTotalPaginasGaleria(data.totalPaginas || 1);
+    } catch (err) {
+      console.error("Error al cargar imágenes:", err);
+    }
+  };
+
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
@@ -107,6 +131,10 @@ export default function ModoEditor({
                 <img
                   src={logoURL || "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/ImageNotSupported.webp"}
                   alt="Logo del sitio"
+                  onClick={() => {
+                    setImagenSeleccionada('logo');
+                    setGaleriaAbierta(true);
+                  }}
                   className="object-contain w-full h-full"
                   onError={(e) => {
                     e.target.onerror = null;
@@ -173,35 +201,47 @@ export default function ModoEditor({
           <button className={btnSmall3} onClick={rehacer} disabled={indiceHistorial >= historial.length - 1}>Rehacer</button>
         </div>
       </div>
-      {modoEditor === 'visual' && imagenSeleccionada && (
-        <div className="mt-4 p-4 bg-gray-100 border rounded">
-          <p className="mb-2 font-semibold">Subir imagen para: <code>{imagenSeleccionada.src}</code></p>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={async (e) => {
-              const file = e.target.files[0];
-              if (!file) return;
 
-              const formData = new FormData();
-              formData.append("image", file);
-
-              try {
-                const res = await fetch("/api/cms/upload-image", {
-                  method: "POST",
-                  body: formData,
-                });
-                const data = await res.json();
-                if (data.secure_url) {
-                  imagenSeleccionada.src = data.secure_url;
-                  setContent(editorRef.current.innerHTML);
-                  setImagenSeleccionada(null); // Oculta input después de cargar
-                }
-              } catch (err) {
-                console.error("Error al subir imagen:", err);
-              }
-            }}
-          />
+      {/* Modal de galería */}
+      {galeriaAbierta && (
+        <div className="fixed inset-0 bg-black bg-opacity-80 z-50 flex justify-center items-center">
+          <div className="relative bg-white rounded-xl p-4 max-w-4xl w-full m-4 max-h-[90vh] overflow-auto">
+            <button onClick={() => setGaleriaAbierta(false)} className="absolute top-2 right-2 text-slate-600 hover:text-black text-xl">✕</button>
+            <h2 className="text-lg font-bold mb-4">Seleccionar imagen</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              {imagenes.map((img, i) => (
+                <div key={i} className="relative w-full aspect-square border rounded-2xl overflow-hidden bg-slate-100 cursor-pointer">
+                  <img
+                    src={img.url}
+                    alt={img.pathname}
+                    className="object-cover w-full h-full"
+                    onClick={() => {
+                      imagenSeleccionada.src = img.url;
+                      setGaleriaAbierta(false);
+                      setImagenSeleccionada(null);
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 flex justify-center gap-2">
+              <button
+                onClick={() => setPaginaGaleria((p) => Math.max(1, p - 1))}
+                className="px-3 py-1 rounded bg-slate-300 hover:bg-slate-400"
+                disabled={paginaGaleria === 1}
+              >
+                Anterior
+              </button>
+              <span className="px-2 py-1">{paginaGaleria}/{totalPaginasGaleria}</span>
+              <button
+                onClick={() => setPaginaGaleria((p) => Math.min(totalPaginasGaleria, p + 1))}
+                className="px-3 py-1 rounded bg-slate-300 hover:bg-slate-400"
+                disabled={paginaGaleria === totalPaginasGaleria}
+              >
+                Siguiente
+              </button>
+            </div>
+          </div>
         </div>
       )}
       {modoEditor === 'visual' && selectedElement && (

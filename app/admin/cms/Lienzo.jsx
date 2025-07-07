@@ -110,7 +110,8 @@ export default function Editor({ file, contenido }) {
   const [mostrandoModalGuardar, setMostrandoModalGuardar] = useState(false);
   const [nombreCommit, setNombreCommit] = useState('');
   const [descripcionCommit, setDescripcionCommit] = useState('');
-
+  const [galeriaAbierta, setGaleriaAbierta] = useState(false);
+  
   const editorRef = useRef(null);
   const monacoRef = useRef(null);
   const timeoutRef = useRef(null);
@@ -354,22 +355,19 @@ export default function Editor({ file, contenido }) {
     if (!el || el === editorRef.current) return;
 
     if (el.tagName === 'IMG') {
-      setImagenSeleccionada(el);
-    } else {
-      setImagenSeleccionada(null);
+      e.preventDefault();
+      setImagenSeleccionada(el);      // guarda la referencia
+      setMostrandoEditorPaleta(false); // oculta paleta si estaba abierta
+      setTabActivo('Colores');         // opcional: cambia pestaña
+      return setGaleriaAbierta(true);  // abre galería directamente
     }
 
+    setImagenSeleccionada(null);
+
+    // ...lógica original para tailwind y estilos
     const styles = window.getComputedStyle(el);
-
-    // Obtener clases del elemento
     const clases = el.className.split(' ').filter(Boolean);
-    let tieneTailwind = false;
-
-    // Regex genérica para detectar prefijos Tailwind
-    const TAILWIND_REGEX = /^(m|p|w|h|text|bg|border|rounded|grid|gap|col-start|col-span|col-end|cursor|flex|inline|block|hidden|justify|items|place|font|z|top|left|right|bottom|inset|row|overflow|shadow|opacity|scale|translate|rotate|skew|transform|transition|duration|ease|delay|animate|select|appearance|outline|ring|visible|invisible|sr|list|float|clear|object|box|align|order|space|divide|whitespace|break|from|via|to|underline|decoration|fill|stroke|blur|brightness|contrast|grayscale|hue|invert|saturate|sepia|filter|backdrop|mix-blend|bg-blend)-/;
-
-    // Detección corregida: distinguir arrays y objetos en TAILWIND_MAP
-    tieneTailwind = clases.some(clase =>
+    let tieneTailwind = clases.some(clase =>
       TAILWIND_REGEX.test(clase) ||
       Object.values(TAILWIND_MAP).some(opciones =>
         Array.isArray(opciones)
@@ -378,46 +376,23 @@ export default function Editor({ file, contenido }) {
       )
     );
 
-    setTailwindMode(tieneTailwind);
-
-    // Preparar objeto con estilos o clases para inputs
     const nuevosSelectedStyles = { tag: el.tagName };
-
     Object.entries(TAILWIND_MAP).forEach(([prop, opciones]) => {
       if (tieneTailwind && prop !== 'backgroundImage') {
         if (Array.isArray(opciones)) {
-          // Propiedad simple (array)
           const claseActiva = clases.find(c => opciones.includes(c)) || '';
           nuevosSelectedStyles[prop] = claseActiva;
         } else {
-          // Propiedad con subgrupos
           Object.entries(opciones).forEach(([subgrupo, clasesDisponibles]) => {
             const claseActiva = clases.find(c => clasesDisponibles.includes(c)) || '';
             nuevosSelectedStyles[`${prop}-${subgrupo}`] = claseActiva;
           });
         }
       } else {
-        // Estilos en línea (no modo Tailwind o backgroundImage)
         if (prop === 'backgroundImage') {
           const bg = styles.backgroundImage;
           const match = bg.match(/url\("?(.+?)"?\)/);
           nuevosSelectedStyles[prop] = match ? match[1] : '';
-        } else if (prop === 'display') {
-          nuevosSelectedStyles[prop] = styles.display || '';
-        } else if (prop === 'backgroundPosition') {
-          nuevosSelectedStyles[prop] = styles.backgroundPosition || '';
-        }
-        else if (prop === 'backgroundRepeat') {
-          nuevosSelectedStyles[prop] = styles.backgroundRepeat || '';
-        }
-        else if (prop === 'backgroundSize') {
-          nuevosSelectedStyles[prop] = styles.backgroundSize || '';
-        } else if (prop === 'backgroundPosition') {
-          nuevosSelectedStyles[prop] = styles.backgroundPosition || '';
-        } else if (prop === 'backgroundRepeat') {
-          nuevosSelectedStyles[prop] = styles.backgroundRepeat || '';
-        } else if (prop === 'backgroundSize') {
-          nuevosSelectedStyles[prop] = styles.backgroundSize || '';
         } else if (prop === 'display') {
           nuevosSelectedStyles[prop] = styles.display || '';
         } else {
@@ -426,6 +401,7 @@ export default function Editor({ file, contenido }) {
       }
     });
 
+    setTailwindMode(tieneTailwind);
     setSelectedElement(el);
     setSelectedStyles(nuevosSelectedStyles);
   };
@@ -564,6 +540,8 @@ export default function Editor({ file, contenido }) {
         logoURL={logoURL}
         setLogoURL={setLogoURL}
         content={content}
+        galeriaAbierta={galeriaAbierta}
+        setGaleriaAbierta={setGaleriaAbierta}
       />
       {/* Guardar cambios */}
       <div className="text-center">
