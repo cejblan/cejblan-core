@@ -92,7 +92,7 @@ export default function TelegramPanel() {
               ))}
               <div ref={messageEndRef} />
             </div>
-            <div className="border-t px-2 pt-2 flex gap-1 items-center">
+            <div className="border-t px-2 pt-2 flex gap-1 items-center justify-center">
               <input
                 type="text"
                 value={messageInput}
@@ -169,7 +169,7 @@ export default function TelegramPanel() {
             <p className="text-slate-500">Selecciona un chat para comenzar</p>
           )}
         </div>
-        <div className="border-t px-2 pt-2 flex gap-1 items-center shrink-0">
+        <div className="border-t px-2 pt-2 flex gap-1 items-center justify-center shrink-0">
           <input
             type="text"
             value={messageInput}
