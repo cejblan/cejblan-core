@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import ImageNotSupported from "public/ImageNotSupported.webp"
 
 export default function ProductCardAdmin({ product }) {
   return (
@@ -8,7 +9,7 @@ export default function ProductCardAdmin({ product }) {
         href={`/admin/products/${product.id}`}
       >
         <div key={product.id}>
-          <Image src={product.image} alt="Product 1" className="max-[420px]:min-w-10 min-w-12 max-[420px]:max-w-10 max-w-12 max-[420px]:min-h-10 min-h-12 max-[420px]:max-h-10 max-h-12 object-scale-down rounded-xl shadow-xl m-auto mb-1" width={100} height={100} />
+          <Image src={product.image || ImageNotSupported} alt="Product 1" className="max-[420px]:min-w-10 min-w-12 max-[420px]:max-w-10 max-w-12 max-[420px]:min-h-10 min-h-12 max-[420px]:max-h-10 max-h-12 object-scale-down rounded-xl shadow-xl m-auto mb-1" width={100} height={100} />
           <div className="text-sm">
             <h3 className="font-medium">{product.name}</h3>
           </div>
