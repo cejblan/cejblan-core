@@ -24,6 +24,10 @@ export default async function ProductPage({ params }) {
       </Link>
       <div className="grid max-[420px]:grid-cols-1 grid-cols-2 gap-2 justify-center mb-4">
         <div className="max-[420px]:text-center text-left max-[420px]:pt-4 max-[420px]:mx-auto ml-4">
+          <div className="mb-1 flex gap-1 justify-center items-center">
+            <h2 className="text-lg font-semibold pr-1">ID:</h2>
+            <h3 className="bg-white py-1 px-2 rounded-md w-full">{product.id}</h3>
+          </div>
           <div className="mb-1">
             <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Nombre:</h2>
             <h3 className="bg-white py-1 px-2 rounded-md">{product.name}</h3>
@@ -57,12 +61,12 @@ export default async function ProductPage({ params }) {
         </div>
         <div className="max-[420px]:text-center text-left mx-auto">
           <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Imagen:</h2>
-            <Image
-              src={product.image || ImageNotSupported}
-              className="rounded-md drop-shadow-6xl m-auto"
-              alt={product.name}
-              width={200} height={200}
-            />
+          <Image
+            src={product.image || ImageNotSupported}
+            className="rounded-md drop-shadow-6xl m-auto"
+            alt={product.name}
+            width={200} height={200}
+          />
         </div>
       </div>
       <Buttons productId={product.id} />

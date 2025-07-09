@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
+import Image from "next/image";
+import ImageNotSupported from "public/ImageNotSupported.webp"
 
 export default function ModoEditor({
   modoEditor,
@@ -138,15 +140,13 @@ export default function ModoEditor({
             >
               <img
                 src={
-                  logoURL ||
-                  "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/ImageNotSupported.webp"
+                  logoURL || ImageNotSupported
                 }
                 alt="Logo del sitio"
                 className="object-contain w-full h-full"
                 onError={(e) => {
                   e.target.onerror = null;
-                  e.target.src =
-                    "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/ImageNotSupported.webp";
+                  e.target.src = ImageNotSupported;
                 }}
               />
               <button
