@@ -15,10 +15,13 @@ export default function ProductForm() {
     category: "",
     quantity: "",
     image: "",
+    id: "",
   });
+
   const form = useRef(null);
   const router = useRouter();
   const params = useParams();
+  const paddedId = String(params.id).padStart(4, '0');
   const [dataCategories, setDataCategories] = useState([]);
   const handleChange = (e) => {
     setProduct({
@@ -44,8 +47,8 @@ export default function ProductForm() {
       formData.append("image", file);
     }
 
-    const url = params.id ? `/api/admin/products/${params.id}` : "/api/admin/products";
-    const method = params.id ? "PUT" : "POST";
+    const url = paddedId ? `/api/admin/products/${paddedId}` : "/api/admin/products";
+    const method = paddedId ? "PUT" : "POST";
 
     try {
       const res = await fetch(url, {
@@ -59,12 +62,12 @@ export default function ProductForm() {
 
       const data = await res.json();
       console.log(
-        params.id ? "Producto actualizado:" : "Producto creado:",
+        paddedId ? "Producto actualizado:" : "Producto creado:",
         data
       );
     } catch (error) {
       console.error(
-        params.id ? "Error al actualizar el producto:" : "Error al crear el producto:",
+        paddedId ? "Error al actualizar el producto:" : "Error al crear el producto:",
         error
       );
     }
@@ -99,13 +102,13 @@ export default function ProductForm() {
       }
     };
     loadData();
-  });
+  }, []); // <- ESTA LÍNEA evita el bucle infinito
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        if (params.id) {
-          const res = await fetch(`/api/admin/products/${params.id}`);
+        if (paddedId) {
+          const res = await fetch(`/api/admin/products/${paddedId}`);
           if (!res.ok) {
             throw new Error(`Error: ${res.status} ${res.statusText}`);
           }
@@ -125,16 +128,30 @@ export default function ProductForm() {
     };
 
     fetchProduct();
-  }, [params.id]);
+  }, [paddedId]);
 
   return (
     <>
-      <Link href={params.id ? `/admin/products/${params.id}` : "/admin/products"} className=" bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl">
+      <Link href={paddedId ? `/admin/products/${paddedId}` : "/admin/products"} className=" bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl">
         <FaArrowLeft />
       </Link>
       <form onSubmit={handleSubmit} ref={form} >
         <div className="grid max-[420px]:grid-cols-1 grid-cols-2 gap-2 justify-center mb-4">
           <div className="max-[420px]:text-center text-left max-[420px]:pt-4 max-[420px]:mx-auto ml-4 max-[420px]:w-full">
+            <div className="mb-1 flex gap-1 justify-center items-center">
+              <label htmlFor="price" className="text-lg font-semibold pr-1 block">
+                ID:
+              </label>
+              <input
+                name="id"
+                id="id"
+                type="text"
+                placeholder="id"
+                onChange={handleChange}
+                value={paddedId}
+                className="bg-white max-[420px]:text-center py-1 px-2 rounded-md w-full"
+              />
+            </div>
             <div className="mb-1">
               <label htmlFor="name" className="text-lg font-semibold pr-1 mb-1 block">
                 Nombre:
@@ -239,68 +256,11 @@ export default function ProductForm() {
                   />
                 </label>
               </div>
-              <div className="relative">
-                <Image
-                  src={file ? URL.createObjectURL(file) : product.image || ImageNotSupported}
-                  className="rounded-md drop-shadow-6xl m-auto h-fit"
-                  alt={product.name}
-                  width={100} height={100}
-                />
-                <label htmlFor="image" className="text-xs absolute max-[420px]:top-1/3 top-2/3 left-0 w-full">
-                  <span className="bg-blue-500 hover:bg-blue-500 text-white py-1 px-3 rounded-xl shadow-6xl mx-auto w-fit cursor-pointer block">Subir</span>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    id="image"
-                    className="bg-white py-1 px-2 rounded-md"
-                    onChange={handleChange2}
-                    style={{ display: "none" }}
-                  />
-                </label>
-              </div>
-              <div className="relative">
-                <Image
-                  src={file ? URL.createObjectURL(file) : product.image || ImageNotSupported}
-                  className="rounded-md drop-shadow-6xl m-auto h-fit"
-                  alt={product.name}
-                  width={100} height={100}
-                />
-                <label htmlFor="image" className="text-xs absolute max-[420px]:top-1/3 top-2/3 left-0 w-full">
-                  <span className="bg-blue-500 hover:bg-blue-500 text-white py-1 px-3 rounded-xl shadow-6xl mx-auto w-fit cursor-pointer block">Subir</span>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    id="image"
-                    className="bg-white py-1 px-2 rounded-md"
-                    onChange={handleChange2}
-                    style={{ display: "none" }}
-                  />
-                </label>
-              </div>
-              <div className="relative">
-                <Image
-                  src={file ? URL.createObjectURL(file) : product.image || ImageNotSupported}
-                  className="rounded-md drop-shadow-6xl m-auto h-fit"
-                  alt={product.name}
-                  width={100} height={100}
-                />
-                <label htmlFor="image" className="text-xs absolute max-[420px]:top-1/3 top-2/3 left-0 w-full">
-                  <span className="bg-blue-500 hover:bg-blue-500 text-white py-1 px-3 rounded-xl shadow-6xl mx-auto w-fit cursor-pointer block">Subir</span>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    id="image"
-                    className="bg-white py-1 px-2 rounded-md"
-                    onChange={handleChange2}
-                    style={{ display: "none" }}
-                  />
-                </label>
-              </div>
             </div>
           </div>
         </div>
         <button className="text-white bg-blue-500 hover:bg-blue-600 font-bold py-1 px-2 rounded-xl shadow-6xl mx-auto w-fit">
-          {params.id ? "Actualizar Producto" : "Crear Producto"}
+          {paddedId ? "Actualizar Producto" : "Crear Producto"}
         </button>
       </form>
     </>
