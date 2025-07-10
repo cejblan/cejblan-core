@@ -50,7 +50,10 @@ export default function ProductCard({ product }) {
         {isInWishlist ?
           <form
             className="flex gap-x-1 items-center"
-            onSubmit={(e) => HandleWish2(e, product, session, form) + CheckWish(product, session, setIsInWishlist)}
+            onSubmit={(e) => {
+              HandleWish2(e, product, session, form);
+              CheckWish(product, session, setIsInWishlist);
+            }}
             ref={form}
           >
             <button className="text-[#6ed8bf] text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center">
@@ -60,7 +63,10 @@ export default function ProductCard({ product }) {
           :
           <form
             className="flex gap-x-1 items-center"
-            onSubmit={(e) => HandleWish1(e, product, session, form) + CheckWish(product, session, setIsInWishlist)}
+            onSubmit={(e) => {
+              HandleWish2(e, product, session, form);
+              CheckWish(product, session, setIsInWishlist);
+            }}
             ref={form}
           >
             <button
@@ -90,7 +96,10 @@ export default function ProductCard({ product }) {
         {isInWishlist ?
           <form
             className="flex gap-x-1 items-center"
-            onSubmit={(e) => HandleWish2(e, product, session, form) + iconHeart()}
+            onSubmit={(e) => {
+              HandleWish1(e, product, session, form);
+              iconHeart();
+            }}
             ref={form}
           >
             <button className="text-[#6ed8bf] text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center">
@@ -100,7 +109,10 @@ export default function ProductCard({ product }) {
           :
           <form
             className="flex gap-x-1 items-center"
-            onSubmit={(e) => HandleWish1(e, product, session, form) + iconHeart()}
+            onSubmit={(e) => {
+              HandleWish1(e, product, session, form);
+              iconHeart();
+            }}
             ref={form}
           >
             <button className="text-[#6ed8bf] text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center">
