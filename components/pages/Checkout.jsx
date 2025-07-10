@@ -9,14 +9,14 @@ import { LoadProfileData } from "../LoadProfileData";
 import { CalculateTotalPrice, GroupedProducts } from "../GroupedProducts";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import Loading from "./Loading";
+import Loading from "../editable/Loading";
 import ProductCardAdmin from "@/app/admin/components/ProductCardAdmin";
 import ImageNotSupported from "@/public/ImageNotSupported.webp";
 // Carga el componente Maps dinámicamente y desactiva SSR
 const Maps = dynamic(() => import("../Maps"), { ssr: false });
 
 export default function Checkout() {
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: session } = useSession(); // Obtener la sesión actual del usuario
   const [products, setProducts] = useState([]);
   const sessionUser = session?.user?.email;
@@ -59,8 +59,10 @@ export default function Checkout() {
   };
   const productsIds = products.map(product => product.id);
   const productsQuantity = products.map(product => product.quantity);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true); // 🔹 Desactiva el botón
 
     const formData = new FormData();
     formData.append("productsIds", productsIds);
@@ -132,8 +134,11 @@ export default function Checkout() {
     } catch (error) {
       console.error("Error al enviar el pedido:", error);
       alert("Hubo un problema al procesar el pedido");
+    } finally {
+      setIsSubmitting(false); // 🔹 Reactiva si quieres que el usuario pueda reintentar
     }
   };
+
   //Estilos input
   const [file, setFile] = useState(null);
   const fileInputRef = useRef(null);
@@ -360,8 +365,13 @@ export default function Checkout() {
             </>
           )}
         </div>
-        <button className="bg-blue-600 hover:bg-blue-600 text-xl font-bold text-white py-1 px-2 rounded-xl shadow-6xl mb-2 mx-auto w-fit col-start-1 col-end-9 block">
-          Enviar Pedido
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className={`bg-blue-600 hover:bg-blue-600 text-xl font-bold text-white py-1 px-2 rounded-xl shadow-6xl mb-2 mx-auto w-fit col-start-1 col-end-9 block ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+        >
+          {isSubmitting ? "Enviando..." : "Enviar Pedido"}
         </button>
       </div>
     </form >

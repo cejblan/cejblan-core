@@ -10,7 +10,7 @@ export async function GET(req, { params }) {
     if (result.length === 0) {
       return NextResponse.json(
         {
-          message: "Forma de pago no encontrada",
+          message: "Peido no encontrado",
         },
         {
           status: 404,

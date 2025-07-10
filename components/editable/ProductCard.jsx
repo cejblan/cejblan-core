@@ -35,10 +35,10 @@ export default function ProductCard({ product }) {
       <div className="bg-white opacity-60 hover:bg-slate-100 text-start text-black text-xl font-bold relative grid grid-cols-3 justify-center items-center shadow-6xl rounded-2xl py-1 pl-1 pr-2 z-10">
         <QR id={product.id} name={product.name} image={product.image} quantity={product.quantity} />
         <div className="col-start-2 col-end-4">
-          <div className="py-2 px-1">
+          <div>
             <div className="flex">
               <h1 className="flex-1 leading-6 min-h-7">{product.name}</h1>
-              <h2 className="text-lg text-slate-700 font-bold mt-3">
+              <h2 className="text-lg text-slate-700 font-bold mt-4">
                 ${product.price}
               </h2>
             </div>
@@ -50,7 +50,10 @@ export default function ProductCard({ product }) {
         {isInWishlist ?
           <form
             className="flex gap-x-1 items-center"
-            onSubmit={(e) => HandleWish2(e, product, session, form) + CheckWish(product, session, setIsInWishlist)}
+            onSubmit={(e) => {
+              HandleWish2(e, product, session, form);
+              CheckWish(product, session, setIsInWishlist);
+            }}
             ref={form}
           >
             <button className="text-[#6ed8bf] text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center">
@@ -60,7 +63,10 @@ export default function ProductCard({ product }) {
           :
           <form
             className="flex gap-x-1 items-center"
-            onSubmit={(e) => HandleWish1(e, product, session, form) + CheckWish(product, session, setIsInWishlist)}
+            onSubmit={(e) => {
+              HandleWish2(e, product, session, form);
+              CheckWish(product, session, setIsInWishlist);
+            }}
             ref={form}
           >
             <button
@@ -73,12 +79,12 @@ export default function ProductCard({ product }) {
       </div>
       :
       <div className="bg-white hover:bg-slate-100 text-start text-black text-xl font-bold relative grid grid-cols-3 justify-center items-center shadow-6xl rounded-2xl py-1 pl-1 pr-2 z-10">
-        <QR id={product.id} name={product.name} image={product.image} />
+        <QR id={product.id} name={product.name} image={product.image} quantity={product.quantity} />
         <Link href={`/products/${product.id}`} className="col-start-2 col-end-4">
-          <div className="py-2 px-1">
+          <div>
             <div className="flex">
               <h1 className="flex-1 leading-6 min-h-7">{product.name}</h1>
-              <h2 className="text-lg text-slate-700 font-bold mt-3">
+              <h2 className="text-lg text-slate-700 font-bold mt-4">
                 ${product.price}
               </h2>
             </div>
@@ -90,7 +96,10 @@ export default function ProductCard({ product }) {
         {isInWishlist ?
           <form
             className="flex gap-x-1 items-center"
-            onSubmit={(e) => HandleWish2(e, product, session, form) + iconHeart()}
+            onSubmit={(e) => {
+              HandleWish1(e, product, session, form);
+              iconHeart();
+            }}
             ref={form}
           >
             <button className="text-[#6ed8bf] text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center">
@@ -100,7 +109,10 @@ export default function ProductCard({ product }) {
           :
           <form
             className="flex gap-x-1 items-center"
-            onSubmit={(e) => HandleWish1(e, product, session, form) + iconHeart()}
+            onSubmit={(e) => {
+              HandleWish1(e, product, session, form);
+              iconHeart();
+            }}
             ref={form}
           >
             <button className="text-[#6ed8bf] text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center">

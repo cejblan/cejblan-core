@@ -9,6 +9,7 @@ import { LoadCategoriesData } from "../../components/LoadCategoriesData";
 
 export default function ProductForm() {
   const [product, setProduct] = useState({
+    id: "",
     name: "",
     price: "",
     description: "",
@@ -21,7 +22,6 @@ export default function ProductForm() {
   const form = useRef(null);
   const router = useRouter();
   const params = useParams();
-  const paddedId = String(params.id).padStart(4, '0');
   const [dataCategories, setDataCategories] = useState([]);
   const handleChange = (e) => {
     setProduct({
@@ -47,8 +47,8 @@ export default function ProductForm() {
       formData.append("image", file);
     }
 
-    const url = paddedId ? `/api/admin/products/${paddedId}` : "/api/admin/products";
-    const method = paddedId ? "PUT" : "POST";
+    const url = params.id ? `/api/admin/products/${params.id}` : "/api/admin/products";
+    const method = params.id ? "PUT" : "POST";
 
     try {
       const res = await fetch(url, {
@@ -61,13 +61,9 @@ export default function ProductForm() {
       }
 
       const data = await res.json();
-      console.log(
-        paddedId ? "Producto actualizado:" : "Producto creado:",
-        data
-      );
     } catch (error) {
       console.error(
-        paddedId ? "Error al actualizar el producto:" : "Error al crear el producto:",
+        params.id ? "Error al actualizar el producto:" : "Error al crear el producto:",
         error
       );
     }
@@ -93,6 +89,7 @@ export default function ProductForm() {
     setFile(event.target.files[0]);
   };
   //Fin estilos input
+
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -107,13 +104,12 @@ export default function ProductForm() {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        if (paddedId) {
-          const res = await fetch(`/api/admin/products/${paddedId}`);
-          if (!res.ok) {
-            throw new Error(`Error: ${res.status} ${res.statusText}`);
-          }
+        if (params.id) {
+          const res = await fetch(`/api/admin/products/${params.id}`);
+          if (!res.ok) throw new Error(`Error: ${res.status} ${res.statusText}`);
           const data = await res.json();
           setProduct({
+            id: String(data[0].id ?? "").padStart(4, "0"),
             name: data[0].name ?? "",
             price: data[0].price ?? "",
             description: data[0].description ?? "",
@@ -121,18 +117,25 @@ export default function ProductForm() {
             quantity: data[0].quantity ?? "",
             image: data[0].image ?? "",
           });
+        } else {
+          // Nuevo producto: obtener el siguiente ID
+          const res = await fetch("/api/admin/products/next-id");
+          if (!res.ok) throw new Error(`Error: ${res.status} ${res.statusText}`);
+          const data = await res.json();
+          const nextId = String(data.nextId).padStart(4, "0");
+          setProduct((prev) => ({ ...prev, id: nextId }));
         }
       } catch (error) {
-        console.error("Error al cargar el producto:", error);
+        console.error("Error al cargar el producto o ID:", error);
       }
     };
 
     fetchProduct();
-  }, [paddedId]);
+  }, [params.id]);
 
   return (
     <>
-      <Link href={paddedId ? `/admin/products/${paddedId}` : "/admin/products"} className=" bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl">
+      <Link href={params.id ? `/admin/products/${params.id}` : "/admin/products"} className=" bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl">
         <FaArrowLeft />
       </Link>
       <form onSubmit={handleSubmit} ref={form} >
@@ -147,8 +150,17 @@ export default function ProductForm() {
                 id="id"
                 type="text"
                 placeholder="id"
-                onChange={handleChange}
-                value={paddedId}
+                inputMode="numeric"
+                pattern="\d*"
+                maxLength={4}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  // Solo permitir dígitos y máximo 4
+                  if (/^\d{0,4}$/.test(value)) {
+                    setProduct((prev) => ({ ...prev, id: value }));
+                  }
+                }}
+                value={product.id}
                 className="bg-white max-[420px]:text-center py-1 px-2 rounded-md w-full"
               />
             </div>
@@ -207,7 +219,7 @@ export default function ProductForm() {
                 type="number"
                 placeholder="Cantidad"
                 onChange={handleChange}
-                value={product.quantity || 1}
+                value={product.quantity}
                 min="0"
                 className="bg-white max-[420px]:text-center py-1 px-2 rounded-md w-full"
                 required
@@ -233,36 +245,32 @@ export default function ProductForm() {
             </div>
           </div>
           <div className="max-[420px]:text-center text-left mx-auto">
-            <p htmlFor="image" className="text-lg font-semibold pr-1 mb-1 block">
-              Imagenes:
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="relative">
-                <Image
-                  src={file ? URL.createObjectURL(file) : product.image || ImageNotSupported}
-                  className="rounded-md drop-shadow-6xl m-auto h-fit"
-                  alt={product.name}
-                  width={100} height={100}
+            <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Imagen:</h2>
+            <div className="relative">
+              <Image
+                src={file ? URL.createObjectURL(file) : product.image || ImageNotSupported}
+                className="rounded-md drop-shadow-6xl m-auto"
+                alt={product.name}
+                width={200} height={200}
+              />
+              <label htmlFor="image" className="text-xs absolute max-[420px]:top-1/3 top-2/3 left-0 w-full">
+                <button className="bg-blue-500 hover:bg-blue-500 text-white py-1 px-3 rounded-xl shadow-6xl mx-auto w-fit cursor-pointer block">Subir</button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  id="image"
+                  className="bg-white py-1 px-2 rounded-md"
+                  onChange={handleChange2}
+                  style={{ display: "none" }}
                 />
-                <label htmlFor="image" className="text-xs absolute max-[420px]:top-1/3 top-2/3 left-0 w-full">
-                  <span className="bg-blue-500 hover:bg-blue-500 text-white py-1 px-3 rounded-xl shadow-6xl mx-auto w-fit cursor-pointer block">Subir</span>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    id="image"
-                    className="bg-white py-1 px-2 rounded-md"
-                    onChange={handleChange2}
-                    style={{ display: "none" }}
-                  />
-                </label>
-              </div>
+              </label>
             </div>
           </div>
         </div>
         <button className="text-white bg-blue-500 hover:bg-blue-600 font-bold py-1 px-2 rounded-xl shadow-6xl mx-auto w-fit">
-          {paddedId ? "Actualizar Producto" : "Crear Producto"}
+          {params.id ? "Actualizar Producto" : "Crear Producto"}
         </button>
-      </form>
+      </form >
     </>
   );
 }

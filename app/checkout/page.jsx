@@ -1,4 +1,4 @@
-import CheckoutComponent from "@/components/editable/Checkout";
+import CheckoutComponent from "@/components/pages/Checkout";
 
 export const metadata = {
   title: "Verificar Pedido - " + process.env.NEXT_PUBLIC_SITE_NAME,
@@ -10,7 +10,7 @@ export const metadata = {
   },
 };
 
-export default function Checkout() {
+export default function CheckoutPage() {
   return (
     <CheckoutComponent />
   );
