@@ -92,7 +92,7 @@ export default function OrderForm() {
         throw new Error("Error al actualizar la orden");
       } else {
         const dataOrder = await res.json();
-        
+
         if (dataOrder.status === "COMPLETADO") {
           const telegram = await fetch("/api/telegram/qualification", {
             method: "POST",
@@ -101,9 +101,24 @@ export default function OrderForm() {
             },
             body: JSON.stringify({ dataOrder }),
           });
-  
+
           if (telegram.ok) {
             console.log("Solicitud de calificacion envianda al Telegram");
+          } else {
+            const errorData = await telegram.json();
+            console.log(errorData.message);
+          }
+        } else if (dataOrder.status === "CANCELADO") {
+          const telegram = await fetch("/api/telegram/canceleOrder", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ dataOrder }),
+          });
+
+          if (telegram.ok) {
+            console.log("Mensaje de Cancelacion enviando al Telegram");
           } else {
             const errorData = await telegram.json();
             console.log(errorData.message);
