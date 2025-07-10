@@ -40,7 +40,7 @@ const renderStars = (average) => {
 
 // Generar metadatos dinámicos
 export async function generateMetadata({ params }) {
-  const { id } = await params;
+  const { id } = params;
   const product = await loadProduct(id);
 
   return {
@@ -67,7 +67,7 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function ProductPage({ params }) {
-  const { id } = await params;
+  const { id } = params;
   const product = await loadProduct(id);
 
   const average = calculateAverage(product.qualifications);
