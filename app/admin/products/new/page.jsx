@@ -149,7 +149,16 @@ export default function ProductForm() {
                 id="id"
                 type="text"
                 placeholder="id"
-                onChange={handleChange}
+                inputMode="numeric"
+                pattern="\d*"
+                maxLength={4}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  // Solo permitir dígitos y máximo 4
+                  if (/^\d{0,4}$/.test(value)) {
+                    setProduct((prev) => ({ ...prev, id: value }));
+                  }
+                }}
                 value={product.id}
                 className="bg-white max-[420px]:text-center py-1 px-2 rounded-md w-full"
               />
