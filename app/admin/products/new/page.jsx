@@ -251,10 +251,10 @@ export default function ProductForm() {
                 src={file ? URL.createObjectURL(file) : product.image || ImageNotSupported}
                 className="rounded-md drop-shadow-6xl m-auto"
                 alt={product.name}
-                width={100} height={100}
+                width={200} height={200}
               />
               <label htmlFor="image" className="text-xs absolute max-[420px]:top-1/3 top-2/3 left-0 w-full">
-                <span className="bg-blue-500 hover:bg-blue-500 text-white py-1 px-3 rounded-xl shadow-6xl mx-auto w-fit cursor-pointer block">Subir</span>
+                <button className="bg-blue-500 hover:bg-blue-500 text-white py-1 px-3 rounded-xl shadow-6xl mx-auto w-fit cursor-pointer block">Subir</button>
                 <input
                   ref={fileInputRef}
                   type="file"
