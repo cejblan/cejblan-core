@@ -66,8 +66,7 @@ export default function CartCard({ onProductCountChange }) {
   };
 
   return (
-    // ===START_RETURN===
-    <div>
+    <>
       {groupedProducts.map((product) => {
         let priceIVA;
         let subtotal;
@@ -96,6 +95,7 @@ export default function CartCard({ onProductCountChange }) {
         }
 
         return (
+          // ===START_RETURN===
           <tr key={product.id}>
             <td className="border-r border-b border-slate-900 text-blue-500 hover:text-blue-600 underline">
               <Link href={`/products/${product.id}`}>{product.name}</Link>
@@ -126,7 +126,7 @@ export default function CartCard({ onProductCountChange }) {
           <PrecioProducto precio={totalPrice} format={0} />
         </th>
       </tr>
-    </div>
+    </>
     // ===END_RETURN===
   );
 }
