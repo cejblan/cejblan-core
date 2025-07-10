@@ -79,7 +79,7 @@ ${quantity}
   }
   // Guardar el mensaje enviado en la base de datos (tabla telegram_messages)
   try {
-    await conexion.execute(
+    await conexion.query(
       `INSERT INTO telegram_messages (chat_id, text, from_bot) VALUES (?, ?, ?)`,
       [chatId, message, 1] // from_bot = 1 porque fue enviado por el bot
     );
