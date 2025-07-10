@@ -23,8 +23,13 @@ export default function QR({ id, name, image, quantity }) {
             <QRCode value={`https://www.cejblan-cms.vercel.app/products/${id}`} className="max-[420px]:min-w-12 min-w-14 max-[420px]:max-w-12 max-w-14 max-[420px]:min-h-12 min-h-14 max-[420px]:max-h-12 max-h-14 z-10" />
           </div>
           <div className={`m-auto justify-center flex ${isOpen ? "hidden" : ""}`}>
-            {image &&
-              <Image src={image || ImageNotSupported} className="max-[420px]:min-w-12 min-w-14 max-[420px]:max-w-12 max-w-14 max-[420px]:min-h-12 min-h-14 max-[420px]:max-h-12 max-h-14 w-auto h-auto rounded-xl object-scale-down" alt={name} width={100} height={100} />}
+            <Image
+              src={image || ImageNotSupported}
+              className="max-[420px]:min-w-12 min-w-14 max-[420px]:max-w-12 max-w-14 max-[420px]:min-h-12 min-h-14 max-[420px]:max-h-12 max-h-14 w-auto h-auto rounded-xl object-scale-down"
+              alt={name || "Imagen no disponible"}
+              width={100}
+              height={100}
+            />
           </div>
         </div>
       </>
@@ -38,9 +43,13 @@ export default function QR({ id, name, image, quantity }) {
             <QRCode value={`https://www.cejblan-cms.vercel.app/products/${id}`} className="max-[420px]:min-w-12 min-w-14 max-[420px]:max-w-12 max-w-14 max-[420px]:min-h-12 min-h-14 max-[420px]:max-h-12 max-h-14 z-10" />
           </div>
           <div className={`m-auto justify-center flex ${isOpen ? "hidden" : ""}`}>
-            {image &&
-              <Image src={image || ImageNotSupported} className="max-[420px]:min-w-12 min-w-14 max-[420px]:max-w-12 max-w-14 max-[420px]:min-h-12 min-h-14 max-[420px]:max-h-12 max-h-14 w-auto h-auto rounded-xl object-scale-down" alt={name} width={100} height={100} />
-            }
+            <Image
+              src={image || ImageNotSupported}
+              className="max-[420px]:min-w-12 min-w-14 max-[420px]:max-w-12 max-w-14 max-[420px]:min-h-12 min-h-14 max-[420px]:max-h-12 max-h-14 w-auto h-auto rounded-xl object-scale-down"
+              alt={name || "Imagen no disponible"}
+              width={100}
+              height={100}
+            />
           </div>
         </Link>
       </>
