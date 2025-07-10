@@ -32,8 +32,10 @@ export default function Cart() {
               <th className="bg-blue-500 text-white border-b border-slate-900 rounded-tr-xl">Acción</th>
             </tr>
           </thead>
-          {/* Renderizar productos desde el componente cliente y pasar handleProducts */}
-          <CartCard onProductCountChange={handleProducts} />
+          <tbody>
+            {/* Renderizar productos desde el componente cliente y pasar handleProducts */}
+            <CartCard onProductCountChange={handleProducts} />
+          </tbody>
         </table>
       </div>
       {/* Mostrar el botón de realizar pedido solo si hay productos */}

@@ -67,7 +67,7 @@ export default function CartCard({ onProductCountChange }) {
 
   return (
     // ===START_RETURN===
-    <tbody>
+    <>
       {groupedProducts.map((product) => {
         let priceIVA;
         let subtotal;
@@ -126,7 +126,7 @@ export default function CartCard({ onProductCountChange }) {
           <PrecioProducto precio={totalPrice} format={0} />
         </th>
       </tr>
-    </tbody>
+    </>
     // ===END_RETURN===
   );
 }
