@@ -14,7 +14,7 @@ export default function ProductForm() {
     price: "",
     description: "",
     category: "",
-    quantity: 1,
+    quantity: "",
     image: "",
     id: "",
   });
@@ -61,10 +61,6 @@ export default function ProductForm() {
       }
 
       const data = await res.json();
-      console.log(
-        params.id ? "Producto actualizado:" : "Producto creado:",
-        data
-      );
     } catch (error) {
       console.error(
         params.id ? "Error al actualizar el producto:" : "Error al crear el producto:",
@@ -223,7 +219,7 @@ export default function ProductForm() {
                 type="number"
                 placeholder="Cantidad"
                 onChange={handleChange}
-                value={product.quantity || 1}
+                value={product.quantity}
                 min="0"
                 className="bg-white max-[420px]:text-center py-1 px-2 rounded-md w-full"
                 required
