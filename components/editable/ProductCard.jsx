@@ -35,10 +35,10 @@ export default function ProductCard({ product }) {
       <div className="bg-white opacity-60 hover:bg-slate-100 text-start text-black text-xl font-bold relative grid grid-cols-3 justify-center items-center shadow-6xl rounded-2xl py-1 pl-1 pr-2 z-10">
         <QR id={product.id} name={product.name} image={product.image} quantity={product.quantity} />
         <div className="col-start-2 col-end-4">
-          <div className="py-2 px-1">
+          <div>
             <div className="flex">
               <h1 className="flex-1 leading-6 min-h-7">{product.name}</h1>
-              <h2 className="text-lg text-slate-700 font-bold mt-3">
+              <h2 className="text-lg text-slate-700 font-bold mt-4">
                 ${product.price}
               </h2>
             </div>
@@ -81,10 +81,10 @@ export default function ProductCard({ product }) {
       <div className="bg-white hover:bg-slate-100 text-start text-black text-xl font-bold relative grid grid-cols-3 justify-center items-center shadow-6xl rounded-2xl py-1 pl-1 pr-2 z-10">
         <QR id={product.id} name={product.name} image={product.image} quantity={product.quantity} />
         <Link href={`/products/${product.id}`} className="col-start-2 col-end-4">
-          <div className="py-2 px-1">
+          <div>
             <div className="flex">
               <h1 className="flex-1 leading-6 min-h-7">{product.name}</h1>
-              <h2 className="text-lg text-slate-700 font-bold mt-3">
+              <h2 className="text-lg text-slate-700 font-bold mt-4">
                 ${product.price}
               </h2>
             </div>
