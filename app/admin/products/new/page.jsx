@@ -110,9 +110,7 @@ export default function ProductForm() {
       try {
         if (params.id) {
           const res = await fetch(`/api/admin/products/${params.id}`);
-          if (!res.ok) {
-            throw new Error(`Error: ${res.status} ${res.statusText}`);
-          }
+          if (!res.ok) throw new Error(`Error: ${res.status} ${res.statusText}`);
           const data = await res.json();
           setProduct({
             id: String(data[0].id ?? "").padStart(4, "0"),
@@ -123,9 +121,16 @@ export default function ProductForm() {
             quantity: data[0].quantity ?? "",
             image: data[0].image ?? "",
           });
+        } else {
+          // Nuevo producto: obtener el siguiente ID
+          const res = await fetch("/api/admin/products/next-id");
+          if (!res.ok) throw new Error(`Error: ${res.status} ${res.statusText}`);
+          const data = await res.json();
+          const nextId = String(data.nextId).padStart(4, "0");
+          setProduct((prev) => ({ ...prev, id: nextId }));
         }
       } catch (error) {
-        console.error("Error al cargar el producto:", error);
+        console.error("Error al cargar el producto o ID:", error);
       }
     };
 
