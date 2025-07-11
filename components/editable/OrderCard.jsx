@@ -3,71 +3,63 @@ import PrecioProducto from "@/components/editable/PrecioProducto";
 
 export default function OrderCard({ order }) {
   const moment = require("moment");
-  const date = moment(order.date).subtract(4, "hours").format("DD/MM/YYYY")
+  const date = moment(order.date).subtract(4, "hours").format("DD/MM/YYYY");
 
+  // ===START_RETURN===
   return (
-    // ===START_RETURN===
-    <div className="bg-slate-200 text-slate-900 max-[420px]:text-sm text-base text-left font-bold leading-5 max-[420px]:block grid grid-cols-12 justify-center items-center gap-2 p-1 shadow-6xl rounded-xl z-10">
-      <div className="col-start-1 col-end-5 max-[420px]:pl-0 pl-1 border-r max-[420px]:border-slate-200 border-slate-400 flex">
-        <div>
-          <p>Nombre:</p>
-          <p>Correo:</p>
-          <p>Teléfono:</p>
-        </div>
-        <div className="ml-1">
-          <p>{order.name}</p>
-          <p className="max-[420px]:text-xs">{order.email}</p>
-          <p>{order.phoneNumber}</p>
-        </div>
+    <div className="bg-white text-slate-800 rounded-xl p-2 shadow-md grid md:grid-cols-4 gap-2 text-sm md:text-base">
+      
+      {/* Cliente */}
+      <div>
+        <p className="font-semibold mb-1 text-slate-500">Cliente</p>
+        <p><strong>Nombre:</strong> {order.name}</p>
+        <p><strong>Correo:</strong> <span className="break-words">{order.email}</span></p>
+        <p><strong>Teléfono:</strong> {order.phoneNumber}</p>
       </div>
-      <div className="col-start-5 col-end-8 border-r max-[420px]:border-slate-200 border-slate-400 flex">
-        <div>
-          <p>Productos:</p>
-          <p>Cantidad:</p>
-          <p>Total:</p>
-        </div>
-        <div className="ml-1">
-          <p>{order.productsIds}</p>
-          <p>{order.productsQuantity}</p>
-          <h2 className="text-lg text-slate-700 font-bold">
+
+      {/* Productos */}
+      <div>
+        <p className="font-semibold mb-1 text-slate-500">Pedido</p>
+        <p><strong>Productos:</strong> {order.productsIds}</p>
+        <p><strong>Cantidad:</strong> {order.productsQuantity}</p>
+        <p><strong>Total:</strong>{" "}
+          <span className="text-blue-600 font-bold">
             <PrecioProducto precio={order.totalPrice} format={0} />
-          </h2>
-        </div>
+          </span>
+        </p>
       </div>
-      <div className="col-start-8 col-end-11 border-r max-[420px]:border-slate-200 border-slate-400 flex">
-        <div>
-          <p>Pago:</p>
-          {order.image &&
-            <p>Foto Billete:</p>
-          }
-          <p>Entrega:</p>
-          <p>Dirección:</p>
-        </div>
-        <div className="ml-1">
-          <p>{order.paymentMethod}</p>
-          {order.image &&
+
+      {/* Envío y Pago */}
+      <div>
+        <p className="font-semibold mb-1 text-slate-500">Entrega & Pago</p>
+        <p><strong>Pago:</strong> {order.paymentMethod}</p>
+        {order.image && (
+          <p>
+            <strong>Foto:</strong>{" "}
             <Link
               href={order.image}
-              className="text-blue-500 hover:text-blue-600 underline"
-              target="_blank">
-              Foto
+              target="_blank"
+              className="text-blue-500 underline hover:text-blue-600"
+            >
+              Ver
             </Link>
-          }
-          <p>{order.deliveryMethod}</p>
-          {order.deliveryMethod === "Delivery" ?
-            <p>{order.address}</p>
-            :
-            <p>{order.deliveryMethodData}</p>
-          }
-        </div>
+          </p>
+        )}
+        <p><strong>Entrega:</strong> {order.deliveryMethod}</p>
+        <p>
+          <strong>Dirección:</strong>{" "}
+          {order.deliveryMethod === "Delivery" ? order.address : order.deliveryMethodData}
+        </p>
       </div>
-      <div className="col-start-11 col-end-13 text-center max-[420px]:mt-2">
-        <p>Fecha:</p>
+
+      {/* Fecha y estado */}
+      <div className="text-center">
+        <p className="font-semibold text-slate-500">Fecha</p>
         <p>{date}</p>
-        <p>Estado:</p>
-        <p className="text-lg text-blue-500 font-bold">{order.status}</p>
+        <p className="mt-2 font-semibold text-slate-500">Estado</p>
+        <p className="text-blue-500 text-lg font-bold">{order.status}</p>
       </div>
     </div>
-    // ===END_RETURN===
   );
+  // ===END_RETURN===
 }

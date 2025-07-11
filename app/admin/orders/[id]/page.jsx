@@ -147,125 +147,90 @@ export default function OrderForm() {
       <Link href={`/admin/orders/`} className=" bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl">
         <FaArrowLeft />
       </Link>
-      <form onSubmit={handleSubmit}>
-        <div className="grid max-[420px]:block grid-cols-12 gap-2 justify-center pl-3 max-[420px]:pb-4 mb-4 ml-4 max-[420px]:ml-0">
-          <div className="max-[420px]:text-center text-left max-[420px]:pt-4 max-[420px]:mx-auto col-start-1 col-end-3">
-            <div className="mb-1">
-              <h2 className="text-lg font-semibold pr-1 mb-1 w-full">#Pedido:</h2>
-              <h3 className="bg-white text-gray-400 py-1 px-2 rounded-md">{order.id}</h3>
-            </div>
-            <div className="mb-1">
-              <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Fecha:</h2>
-              <h3 className="bg-white py-1 px-2 rounded-md">{moment(order.date).subtract(4, "hours").format("DD/MM/YYYY")}</h3>
-            </div>
-            <div className="mb-1">
-              <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Monto:</h2>
-              <h3 className="bg-white py-1 px-2 rounded-md">{order.totalPrice}$</h3>
-            </div>
-            <div className="font-semibold mb-1">
-              <label htmlFor="status" className="text-lg pr-1 mb-1 w-full block">Estado:</label>
-              <select
-                id="status"
-                name="status"
-                value={order.status}
-                onChange={handleChange}
-                className={`bg-white py-1 px-2 rounded-md ${order.status === "COMPLETADO"
-                  ? "text-green-500"
+
+      <form onSubmit={handleSubmit} className="px-4 py-6 max-w-screen-xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
+
+          {/* Sección Pedido */}
+          <div className="bg-white rounded-xl shadow-md p-4 space-y-2">
+            <h2 className="font-bold text-slate-700 mb-2">Información del Pedido</h2>
+            <p><strong>#Pedido:</strong> {order.id}</p>
+            <p><strong>Fecha:</strong> {moment(order.date).subtract(4, "hours").format("DD/MM/YYYY")}</p>
+            <p><strong>Monto:</strong> {order.totalPrice}$</p>
+            <label className="block font-semibold text-slate-600 mt-2">Estado:</label>
+            <select
+              name="status"
+              value={order.status}
+              onChange={handleChange}
+              className={`w-full border rounded-md p-2 ${order.status === "COMPLETADO"
+                  ? "text-green-600"
                   : order.status === "PROCESANDO"
-                    ? "text-blue-500"
-                    : order.status === "CANCELADO"
-                    && "text-red-500"
-                  }`}
-                required
-              >
-                <option value="COMPLETADO">COMPLETADO</option>
-                <option value="PROCESANDO">PROCESANDO</option>
-                <option value="CANCELADO">CANCELADO</option>
-              </select>
-            </div>
+                    ? "text-blue-600"
+                    : "text-red-600"
+                }`}
+            >
+              <option value="COMPLETADO">COMPLETADO</option>
+              <option value="PROCESANDO">PROCESANDO</option>
+              <option value="CANCELADO">CANCELADO</option>
+            </select>
           </div>
-          <div className="max-[420px]:text-center text-left max-[420px]:pt-4 max-[420px]:mx-auto col-start-3 col-end-5">
-            <div className="mb-1">
-              <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Productos:</h2>
-              <div className="bg-white py-1 px-2 rounded-md block">
-                {Array.isArray(order.productsIds)
-                  ? order.productsIds.map((id, i) => (
-                    <Link
-                      key={i}
-                      href={`/admin/products/${id}`}
-                      className="text-blue-500 hover:underline mr-1"
-                    >
-                      {String(id).padStart(4, "0")}
-                    </Link>
-                  ))
-                  : (
-                    <Link
-                      href={`/admin/products/${order.productsIds}`}
-                      className="text-blue-500 hover:underline"
-                    >
-                      {String(order.productsIds ?? "").padStart(4, "0")}
-                    </Link>
-                  )
-                }
-              </div>
-            </div>
-            <div className="mb-1">
-              <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Cantidad:</h2>
-              <h3 className="bg-white py-1 px-2 rounded-md">{order.productsQuantity}</h3>
-            </div>
-            <div className="mb-1">
-              <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Pago:</h2>
-              <h3 className="bg-white py-1 px-2 rounded-md">{order.paymentMethod}</h3>
-            </div>
-            <div className="mb-1">
-              <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Imagen:</h2>
-              {order.image ?
-                <Link href={order.image} className="bg-white text-blue-500 hover:text-blue-600 underline py-1 px-2 rounded-md block">Imagen</Link>
-                :
-                <button disabled className="bg-white py-1 px-2 rounded-md block">Imagen</button>
-              }
-            </div>
+
+          {/* Sección Productos */}
+          <div className="bg-white rounded-xl shadow-md p-4 space-y-2">
+            <h2 className="font-bold text-slate-700 mb-2">Productos</h2>
+            <p>
+              <strong>IDs:</strong>{" "}
+              {Array.isArray(order.productsIds)
+                ? order.productsIds.map((id, i) => (
+                  <Link key={i} href={`/admin/products/${id}`} className="text-blue-600 hover:underline mr-1">
+                    {String(id).padStart(4, "0")}
+                  </Link>
+                ))
+                : (
+                  <Link href={`/admin/products/${order.productsIds}`} className="text-blue-600 hover:underline">
+                    {String(order.productsIds).padStart(4, "0")}
+                  </Link>
+                )}
+            </p>
+            <p><strong>Cantidad:</strong> {order.productsQuantity}</p>
+            <p><strong>Pago:</strong> {order.paymentMethod}</p>
+            <p><strong>Comprobante:</strong></p>
+            {order.image ? (
+              <Link href={order.image} target="_blank" className="text-blue-500 hover:underline">Ver Imagen</Link>
+            ) : (
+              <span className="text-slate-400">Sin imagen</span>
+            )}
           </div>
-          <div className="max-[420px]:text-center text-left max-[420px]:pt-4 max-[420px]:mx-auto col-start-5 col-end-9">
-            <div className="mb-1">
-              <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Nombre:</h2>
-              <h3 className="bg-white py-1 px-2 rounded-md">{order.name}</h3>
-            </div>
-            <div className="mb-1">
-              <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Correo:</h2>
-              <h3 className="bg-white py-1 px-2 rounded-md">{order.email}</h3>
-            </div>
-            <div className="mb-1">
-              <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Teléfono:</h2>
-              <h3 className="bg-white py-1 px-2 rounded-md">{order.phoneNumber}</h3>
-            </div>
-            <div className="mb-1">
-              <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Dirección:</h2>
-              <h3 className="bg-white py-1 px-2 rounded-md">{order.address}</h3>
-            </div>
+
+          {/* Sección Cliente */}
+          <div className="bg-white rounded-xl shadow-md p-4 space-y-2">
+            <h2 className="font-bold text-slate-700 mb-2">Cliente</h2>
+            <p><strong>Nombre:</strong> {order.name}</p>
+            <p><strong>Email:</strong> {order.email}</p>
+            <p><strong>Teléfono:</strong> {order.phoneNumber}</p>
+            <p><strong>Dirección:</strong> {order.address}</p>
           </div>
-          <div className="max-[420px]:text-center text-left max-[420px]:pt-4 max-[420px]:mx-auto col-start-9 col-end-13">
-            <div className="mb-1">
-              <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Entrega:</h2>
-              <h3 className="bg-white py-1 px-2 rounded-md">{order.deliveryMethod}</h3>
-            </div>
-            <div className="mb-1">
-              <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Lugar de Entrega:</h2>
-              <h3 className="bg-white py-1 px-2 rounded-md">{order.deliveryMethodData}</h3>
-            </div>
-            <div className="mx-auto h-[37%] max-[420px]:h-40 w-64 max-[420px]:w-full">
-              <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Ubicación:</h2>
-              {order.latitude && order.longitude && (
+
+          {/* Sección Entrega */}
+          <div className="bg-white rounded-xl shadow-md p-4 space-y-2">
+            <h2 className="font-bold text-slate-700 mb-2">Entrega</h2>
+            <p><strong>Método:</strong> {order.deliveryMethod}</p>
+            <p><strong>Ubicación:</strong> {order.deliveryMethodData}</p>
+            {order.latitude && order.longitude && (
+              <div className="mt-2 rounded-md overflow-hidden border">
                 <Maps latitude={order.latitude} longitude={order.longitude} />
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
-        <div className="flex gap-x-2 justify-center">
+
+        {/* Botón actualizar */}
+        <div className="text-center mt-6">
           <button
-            className="text-white bg-blue-500 hover:bg-blue-600 font-bold py-1 px-2 rounded-xl shadow-6xl"
+            type="submit"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-xl shadow-md"
           >
-            Actualizar
+            Actualizar Pedido
           </button>
         </div>
       </form>
