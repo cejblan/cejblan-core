@@ -7,21 +7,22 @@ import OrderCard from "@/components/editable/OrderCard";
 export default function OrdersComponent() {
   const { data: session } = useSession();
   const [orders, setOrders] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1); // Estado para la página actual
-  const itemsPerPage = 9; // Número de productos por página
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
 
-  // Cálculo de los índices para la página actual
+  // Se invierte el arreglo antes de paginar
+  const reversedOrders = [...orders].reverse();
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentOrders = orders.slice(startIndex, endIndex);
-  // Controladores de navegación
+  const currentOrders = reversedOrders.slice(startIndex, endIndex);
+
   const handlePrevPage = () => {
     if (currentPage > 1) setCurrentPage((prev) => prev - 1);
   };
+
   const handleNextPage = () => {
     if (endIndex < orders.length) setCurrentPage((prev) => prev + 1);
   };
-
 
   const loadBuys = useCallback(async () => {
     try {
@@ -58,7 +59,9 @@ export default function OrdersComponent() {
             ))
           ) : (
             <div className="col-start-1 max-[420px]:col-end-2 col-end-4 max-w-fit m-auto">
-              <p className="bg-white text-xl py-1 px-2 rounded-xl mx-auto">Actualmente no tienes pedidos...</p>
+              <p className="bg-white text-xl py-1 px-2 rounded-xl mx-auto">
+                Actualmente no tienes pedidos...
+              </p>
             </div>
           )}
         </div>
@@ -86,5 +89,5 @@ export default function OrdersComponent() {
       </p>
     </div>
     // ===END_RETURN===
-  )
+  );
 }
