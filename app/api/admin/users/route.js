@@ -1,25 +1,20 @@
 import { hash } from "bcryptjs";
 import { NextResponse } from "next/server";
 import { conexion } from "@/libs/mysql";
-import cloudinary from "@/libs/cloudinary";
-import { processImage } from "@/libs/processImage";
+import { put } from "@vercel/blob";
 
-export async function GET(req, res) {
+export async function GET(req) {
   try {
     const [results] = await conexion.query("SELECT * FROM users");
-    // Devuelve la respuesta con los encabezados configurados dentro de NextResponse
+
     return NextResponse.json(results, {
       status: 200,
     });
   } catch (error) {
     console.log(error);
     return NextResponse.json(
-      {
-        message: error.message,
-      },
-      {
-        status: 500,
-      }
+      { message: error.message },
+      { status: 500 }
     );
   }
 }
@@ -27,67 +22,44 @@ export async function GET(req, res) {
 export async function POST(request) {
   try {
     const data = await request.formData();
-    //const password = data.get("password");
-    // Hashear la contraseña
-    //const hashedPassword = await hash(password, 10); // 10 es el número de saltos (nivel de seguridad)
+
+    const name = data.get("name");
+    const email = data.get("email");
+    const rol = data.get("rol");
     const image = data.get("image");
-    if (!image) {
-      const [result] = await conexion.query("INSERT INTO users SET ?", {
-        name: data.get("name"),
-        email: data.get("email"),
-        //password: hashedPassword,
-        rol: data.get("rol"),
-      });
 
-      return NextResponse.json({
-        name: data.get("name"),
-        email: data.get("email"),
-        //password: hashedPassword,
-        rol: data.get("rol"),
-      });
-    } else {
-      const buffer = await processImage(image);
-      const res = await new Promise((resolve, reject) => {
-        cloudinary.uploader
-          .upload_stream(
-            {
-              resource_type: "image",
-            },
-            async (err, result) => {
-              if (err) {
-                console.log(err);
-                reject(err);
-              }
-              resolve(result);
-            }
-          )
-          .end(buffer);
-      });
-      const [result] = await conexion.query("INSERT INTO users SET ?", {
-        name: data.get("name"),
-        email: data.get("email"),
-        //password: hashedPassword,
-        rol: data.get("rol"),
-        image: res.secure_url,
-      });
+    // const password = data.get("password");
+    // const hashedPassword = await hash(password, 10);
 
-      return NextResponse.json({
-        name: data.get("name"),
-        email: data.get("email"),
-        //password: hashedPassword,
-        rol: data.get("rol"),
-        image: res.secure_url,
+    let imageUrl = null;
+
+    if (image && image instanceof Blob) {
+      const blob = await put(image.name, image, {
+        access: "public",
       });
+      imageUrl = blob.url;
     }
+
+    const [result] = await conexion.query("INSERT INTO users SET ?", {
+      name,
+      email,
+      rol,
+      image: imageUrl,
+      // password: hashedPassword,
+    });
+
+    return NextResponse.json({
+      name,
+      email,
+      rol,
+      image: imageUrl,
+      // password: hashedPassword,
+    });
   } catch (error) {
     console.log(error);
     return NextResponse.json(
-      {
-        message: error.message,
-      },
-      {
-        status: 500,
-      }
+      { message: error.message },
+      { status: 500 }
     );
   }
 }
