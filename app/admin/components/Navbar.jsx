@@ -62,16 +62,19 @@ export default function NavbarAdmin({ children }) {
   };
 
   const getVisibleItems = () => {
-    if (!role) return []; // aún no cargó el rol
+    if (!role) return [];
 
     return MAIN_ITEMS.filter(({ label }) => {
       if (role === "vendedor") {
-        return !["Usuarios", "Productos", "Categorías", "Galeria", "CMS", "Configurar"].includes(label);
+        return !["Usuarios", "Productos", "Categorías", "Galeria", "CMS", "Configurar", "Desarrollar"].includes(label);
       }
       if (role === "admin") {
-        return label !== "Desarrollador"; // futura opción
+        return label !== "Desarrollar";
       }
-      return true; // desarrollador o sin filtro
+      if (role === "desarrollador") {
+        return true;
+      }
+      return false;
     });
   };
 
@@ -93,7 +96,6 @@ export default function NavbarAdmin({ children }) {
             <h1 className="font-bold max-[420px]:hidden">{process.env.NEXT_PUBLIC_SITE_NAME}</h1>
           </Link>
 
-          {/* Accesos rápidos solo si no es vendedor */}
           {role !== "vendedor" && (
             <div onClick={handleNewMenuClick} className="p-1 relative">
               <FaPlus className={`hover:fill-blue-300 w-3 h-3 ${isOpenTwo ? "rotate-45" : ""}`} />
