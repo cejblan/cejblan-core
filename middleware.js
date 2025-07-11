@@ -4,22 +4,26 @@ import { getToken } from "next-auth/jwt";
 
 export default withAuth(async function middleware(req) {
   const { pathname } = req.nextUrl;
-  // Solo aplicamos la validación en las rutas de admin
+
+  // Rutas de admin: solo para roles permitidos
   if (pathname.startsWith("/admin")) {
     const token = await getToken({ req });
-    if (!token.role) {
-      // El usuario no es vendedor, admin o desarrollador, redirige a una página de acceso denegado
+    const role = token?.role?.toLowerCase();
+    const allowedRoles = ["Admin", "Desarrollador", "Vendedor"];
+
+    if (!allowedRoles.includes(role)) {
       return NextResponse.redirect(new URL("/unauthorized", req.url));
     }
   }
-  // Si la ruta es "/checkout"
+
+  // Validación de referrer para checkout
   if (req.nextUrl.pathname === "/checkout") {
     const referrer = req.headers.get("referer");
-    // Si no viene de la página del carrito, redirige a otra página
     if (!referrer || !referrer.includes("/cart")) {
       return NextResponse.redirect(new URL("/cart", req.url));
     }
   }
+
   return NextResponse.next();
 });
 

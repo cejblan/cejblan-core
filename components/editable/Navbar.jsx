@@ -147,7 +147,7 @@ export default function Navbar() {
         {session?.user ? (
           <div className="max-[420px]:m-auto max-[420px]:col-start-6 max-[420px]:col-end-6 col-start-10 col-end-13 flex max-[420px]:justify-center justify-end items-center">
             <span className="text-lg max-[420px]:hidden mr-1">¡Hola, {session?.user.name}!</span>
-            {session?.user.admin ? (
+            {["Admin", "Desarrollador", "Vendedor"].includes(session?.user?.role?.toLowerCase()) ? (
               <div className="hover:bg-slate-500 bg-slate-600 text-4xl py-0.5 pl-1 pr-0.5 rounded-full shadow-6xl w-6 h-6">
                 <Link href="/admin">
                   <MdAdminPanelSettings />
@@ -155,10 +155,13 @@ export default function Navbar() {
               </div>
             ) : (
               <Link href="/profile">
-                <Image src={session?.user.image}
+                <Image
+                  src={session?.user.image}
                   alt="Imagen de Usuario"
                   className="rounded-full w-6 h-6"
-                  width={100} height={100} />
+                  width={100}
+                  height={100}
+                />
               </Link>
             )}
           </div>
