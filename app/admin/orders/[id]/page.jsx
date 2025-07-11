@@ -148,7 +148,7 @@ export default function OrderForm() {
         <FaArrowLeft />
       </Link>
       <form onSubmit={handleSubmit}>
-        <div className="grid max-[420px]:block grid-cols-12 gap-2 justify-center max-[420px]:pb-4 mb-4 ml-4 max-[420px]:ml-0">
+        <div className="grid max-[420px]:block grid-cols-12 gap-2 justify-center pl-3 max-[420px]:pb-4 mb-4 ml-4 max-[420px]:ml-0">
           <div className="max-[420px]:text-center text-left max-[420px]:pt-4 max-[420px]:mx-auto col-start-1 col-end-3">
             <div className="mb-1">
               <h2 className="text-lg font-semibold pr-1 mb-1 w-full">#Pedido:</h2>
@@ -169,7 +169,13 @@ export default function OrderForm() {
                 name="status"
                 value={order.status}
                 onChange={handleChange}
-                className="bg-white text-blue-500 py-1 px-2 rounded-md"
+                className={`bg-white py-1 px-2 rounded-md ${order.status === "COMPLETADO"
+                  ? "text-green-500"
+                  : order.status === "PROCESANDO"
+                    ? "text-blue-500"
+                    : order.status === "CANCELADO"
+                    && "text-red-500"
+                  }`}
                 required
               >
                 <option value="COMPLETADO">COMPLETADO</option>
@@ -181,7 +187,27 @@ export default function OrderForm() {
           <div className="max-[420px]:text-center text-left max-[420px]:pt-4 max-[420px]:mx-auto col-start-3 col-end-5">
             <div className="mb-1">
               <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Productos:</h2>
-              <h3 className="bg-white py-1 px-2 rounded-md block">{order.productsIds}</h3>
+              <div className="bg-white py-1 px-2 rounded-md block">
+                {Array.isArray(order.productsIds)
+                  ? order.productsIds.map((id, i) => (
+                    <Link
+                      key={i}
+                      href={`/admin/products/${id}`}
+                      className="text-blue-500 hover:underline mr-1"
+                    >
+                      {String(id).padStart(4, "0")}
+                    </Link>
+                  ))
+                  : (
+                    <Link
+                      href={`/admin/products/${order.productsIds}`}
+                      className="text-blue-500 hover:underline"
+                    >
+                      {String(order.productsIds ?? "").padStart(4, "0")}
+                    </Link>
+                  )
+                }
+              </div>
             </div>
             <div className="mb-1">
               <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Cantidad:</h2>
@@ -193,7 +219,11 @@ export default function OrderForm() {
             </div>
             <div className="mb-1">
               <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Imagen:</h2>
-              <Link href={order.image || "/"} className="bg-white text-blue-500 hover:text-blue-600 underline py-1 px-2 rounded-md block">Imagen</Link>
+              {order.image ?
+                <Link href={order.image} className="bg-white text-blue-500 hover:text-blue-600 underline py-1 px-2 rounded-md block">Imagen</Link>
+                :
+                <button disabled className="bg-white py-1 px-2 rounded-md block">Imagen</button>
+              }
             </div>
           </div>
           <div className="max-[420px]:text-center text-left max-[420px]:pt-4 max-[420px]:mx-auto col-start-5 col-end-9">
