@@ -1,7 +1,6 @@
 import { hash } from "bcryptjs";
 import { NextResponse } from "next/server";
 import { conexion } from "@/libs/mysql";
-import { processImage } from "@/libs/processImage";
 import { put, del } from "@vercel/blob";
 
 // GET /api/users/[id]
@@ -35,13 +34,9 @@ export async function POST(request) {
     let imageUrl = null;
 
     if (image && image instanceof Blob) {
-      const buffer = await processImage(image);
-      const file = new File([buffer], image.name, { type: image.type });
-
-      const blob = await put(file.name, file, {
+      const blob = await put(image.name, image, {
         access: "public",
       });
-
       imageUrl = blob.url;
     }
 
@@ -76,15 +71,10 @@ export async function PUT(request, { params }) {
       rol: data.get("rol"),
     };
 
-    // Subir nueva imagen si viene en el form
     if (image && image instanceof Blob) {
-      const buffer = await processImage(image);
-      const file = new File([buffer], image.name, { type: image.type });
-
-      const blob = await put(file.name, file, {
+      const blob = await put(image.name, image, {
         access: "public",
       });
-
       updateData.image = blob.url;
     }
 
