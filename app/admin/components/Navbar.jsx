@@ -39,7 +39,7 @@ const MAIN_ITEMS = [
   { href: "/admin/gallery", label: "Galeria", icon: GrGallery },
   { href: "/admin/cms", label: "CMS", icon: RiPaintBrushFill },
   { href: "/admin/settings", label: "Configurar", icon: VscSettings },
-  { href: "/admin/developer", label: "Desarrollador", icon: LiaConnectdevelop },
+  { href: "/admin/developer", label: "Desarrollar", icon: LiaConnectdevelop },
 ];
 
 export default function NavbarAdmin({ children }) {
