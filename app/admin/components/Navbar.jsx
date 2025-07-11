@@ -13,6 +13,7 @@ import { TiThMenu } from "react-icons/ti";
 import { VscTriangleLeft, VscSettings } from "react-icons/vsc";
 import { GrGallery } from "react-icons/gr";
 import { LiaConnectdevelop } from "react-icons/lia";
+import { LuPackageOpen } from "react-icons/lu";
 import Image from "next/image";
 import Loading from "@/components/editable/Loading";
 import Link from "next/link";
@@ -31,7 +32,8 @@ const MAIN_ITEMS = [
   { href: "/admin/products", label: "Productos", icon: AiFillShopping, match: /^\/admin\/products/ },
   { href: "/admin/categories", label: "Categorías", icon: MdCategory },
   { href: "/admin/payments", label: "Pagos", icon: PiCurrencyDollarSimpleFill },
-  { href: "/admin/deliveries", label: "Entregas", icon: MdDeliveryDining },
+  { href: "/admin/deliveries", label: "Entregas", icon: LuPackageOpen },
+  { href: "/admin/shipments", label: "Envios", icon: MdDeliveryDining },
   { href: "/admin/orders", label: "Pedidos", icon: MdBorderColor },
   { href: "/admin/deliveryNote", label: "Notas", icon: PiBlueprintFill },
   { href: "/admin/coins", label: "Monedas", icon: PiCoinsFill },
@@ -65,6 +67,9 @@ export default function NavbarAdmin({ children }) {
     if (!role) return [];
 
     return MAIN_ITEMS.filter(({ label }) => {
+      if (role === "delivery") {
+        return !["Usuarios", "Productos", "Categorías", "Pagos", "Entregas", "Pedidos", "Notas", "Galeria", "CMS", "Configurar", "Desarrollar"].includes(label);
+      }
       if (role === "vendedor") {
         return !["Usuarios", "Productos", "Categorías", "Galeria", "CMS", "Configurar", "Desarrollar"].includes(label);
       }
