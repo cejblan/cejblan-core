@@ -12,6 +12,7 @@ import { RiPaintBrushFill } from "react-icons/ri";
 import { TiThMenu } from "react-icons/ti";
 import { VscTriangleLeft, VscSettings } from "react-icons/vsc";
 import { GrGallery } from "react-icons/gr";
+import { LiaConnectdevelop } from "react-icons/lia";
 import Image from "next/image";
 import Loading from "@/components/editable/Loading";
 import Link from "next/link";
@@ -38,6 +39,7 @@ const MAIN_ITEMS = [
   { href: "/admin/gallery", label: "Galeria", icon: GrGallery },
   { href: "/admin/cms", label: "CMS", icon: RiPaintBrushFill },
   { href: "/admin/settings", label: "Configurar", icon: VscSettings },
+  { href: "/admin/developer", label: "Desarrollador", icon: LiaConnectdevelop },
 ];
 
 export default function NavbarAdmin({ children }) {
