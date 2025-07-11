@@ -92,8 +92,8 @@ export default function NavbarAdmin({ children }) {
             <TiThMenu />
           </button>
           <Link href="/" className="hover:bg-slate-700 hover:text-blue-300 p-1 flex items-center">
-            <FaHome className="mr-1 w-3 h-3" />
-            <h1 className="font-bold max-[420px]:hidden">{process.env.NEXT_PUBLIC_SITE_NAME}</h1>
+            <FaHome className="w-3 h-3" />
+            <h1 className="font-bold ml-1 max-[420px]:hidden">{process.env.NEXT_PUBLIC_SITE_NAME}</h1>
           </Link>
 
           {role !== "vendedor" && (
