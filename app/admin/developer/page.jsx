@@ -50,7 +50,7 @@ export default function Developer() {
           </div>
         </div>
       </div>
-      <div className="border rounded p-4 bg-gray-100 space-y-4 mt-6">
+      <div className="bg-gray-100 p-4 border rounded-xl shadow-6xl mt-6 space-y-4">
         <h2 className="text-lg font-semibold">Registrar nueva configuración</h2>
         <input
           type="text"
