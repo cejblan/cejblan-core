@@ -7,28 +7,25 @@ import OrderCard from "@/components/editable/OrderCard";
 export default function OrdersComponent() {
   const { data: session } = useSession();
   const [orders, setOrders] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1); // Estado para la página actual
-  const itemsPerPage = 9; // Número de productos por página
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
 
-  // Cálculo de los índices para la página actual
+  const reversedOrders = [...orders].reverse();
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentOrders = orders.slice(startIndex, endIndex);
-  // Controladores de navegación
+  const currentOrders = reversedOrders.slice(startIndex, endIndex);
+
   const handlePrevPage = () => {
     if (currentPage > 1) setCurrentPage((prev) => prev - 1);
   };
+
   const handleNextPage = () => {
     if (endIndex < orders.length) setCurrentPage((prev) => prev + 1);
   };
 
-
   const loadBuys = useCallback(async () => {
     try {
-      const response = await fetch(`/api/orders?customerEmail=${encodeURIComponent(session.user.email)}`, {
-        method: "GET",
-      });
-
+      const response = await fetch(`/api/orders?customerEmail=${encodeURIComponent(session.user.email)}`);
       const orders = await response.json();
 
       if (response.ok) {
@@ -47,44 +44,43 @@ export default function OrdersComponent() {
     }
   }, [session, loadBuys]);
 
+  // ===START_RETURN===
   return (
-    // ===START_RETURN===
-    <div>
-      <div className="max-[420px]:p-2 p-4">
-        <div className="bg-white p-2 rounded-xl grid grid-cols-1 gap-2">
-          {currentOrders.length > 0 ? (
-            currentOrders.map((order) => (
-              <OrderCard order={order} key={order.id} />
-            ))
-          ) : (
-            <div className="col-start-1 max-[420px]:col-end-2 col-end-4 max-w-fit m-auto">
-              <p className="bg-white text-xl py-1 px-2 rounded-xl mx-auto">Actualmente no tienes pedidos...</p>
-            </div>
-          )}
-        </div>
+    <div className="px-2 py-4">
+      <div className="grid gap-2">
+        {currentOrders.length > 0 ? (
+          currentOrders.map((order) => (
+            <OrderCard order={order} key={order.id} />
+          ))
+        ) : (
+          <p className="text-center text-gray-600 text-lg font-medium py-6">
+            Actualmente no tienes pedidos...
+          </p>
+        )}
       </div>
-      {/* Controles de paginación */}
-      <div className="flex justify-center gap-4 mt-4">
+
+      {/* Paginación */}
+      <div className="flex justify-center items-center gap-4 mt-6">
         <button
           onClick={handlePrevPage}
           disabled={currentPage === 1}
-          className="px-2 py-1 bg-white rounded hover:bg-gray-300 disabled:opacity-50"
+          className="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 disabled:opacity-50 transition"
         >
           Anterior
         </button>
         <button
           onClick={handleNextPage}
           disabled={endIndex >= orders.length}
-          className="px-2 py-1 bg-white rounded hover:bg-gray-300 disabled:opacity-50"
+          className="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 disabled:opacity-50 transition"
         >
           Siguiente
         </button>
       </div>
-      {/* Indicador de página */}
-      <p className="text-center text-white font-bold drop-shadow-6xl py-1">
+
+      <p className="text-center text-sm text-gray-500 mt-2">
         Página {currentPage} de {Math.ceil(orders.length / itemsPerPage)}
       </p>
     </div>
-    // ===END_RETURN===
-  )
+  );
+  // ===END_RETURN===
 }

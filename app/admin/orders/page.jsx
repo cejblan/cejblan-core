@@ -7,76 +7,99 @@ import { LoadOrders } from "../components/LoadOrders";
 
 export default function OrdersPageAdmin() {
   const [orders, setOrders] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
   const moment = require("moment");
 
   useEffect(() => {
     LoadOrders(setOrders);
   }, [setOrders]);
 
+  // Calcular paginación
+  const reversedOrders = [...orders].reverse();
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentOrders = reversedOrders.slice(startIndex, endIndex);
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+  };
+
+  const handleNextPage = () => {
+    if (endIndex < orders.length) setCurrentPage((prev) => prev + 1);
+  };
+
   if (orders.length === 0) {
     return (
-      <h1 className="max-[420px]:text-base text-2xl text-center p-1 mx-auto">
-        Cargando pedidos...
-      </h1>
+      <h1 className="text-center text-xl md:text-2xl py-4 text-gray-600">Cargando pedidos...</h1>
     );
-  };
+  }
 
   return (
     <>
       <Titulos texto="Pedidos" />
-      <div className="grid max-[420px]:grid-cols-1 grid-cols-2 gap-1 justify-center items-center pb-4">
-        {orders.map(order => (
+
+      {/* Grid de pedidos */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 px-4 pb-6">
+        {currentOrders.map((order) => (
           <Link
             key={order.id}
-            className="bg-white hover:bg-slate-300 text-slate-800 text-lg max-[420px]:text-xs tracking-normal leading-5 shadow-6xl rounded-xl p-2 z-10"
             href={`/admin/orders/${order.id}`}
+            className="bg-white hover:bg-slate-100 border border-slate-200 rounded-xl p-4 shadow-sm transition-all duration-150"
           >
-            <div className="text-justify">
-              <h3 className="text-xlmax-[420px]:text-sm text-center font-bold mb-1">#Pedido: {order.id}</h3>
-              <div className="grid grid-cols-2">
-                <h3>
-                  <span className="font-semibold">Nombre: </span>
-                  {order.name}
-                </h3>
-                <h3>
-                  <span className="font-semibold">Teléfono: </span>
-                  {order.phoneNumber}
-                </h3>
-              </div>
-              <div className="grid grid-cols-2">
-                <h3>
-                  <span className="font-semibold">Monto: </span>
-                  {order.totalPrice}$
-                </h3>
-                <h3>
-                  <span className="font-semibold">Pago: </span>
-                  {order.paymentMethod}
-                </h3>
-              </div>
-              <div className="grid grid-cols-2">
-                <h3>
-                  <span className="font-semibold">Entrega: </span>
-                  {order.deliveryMethod}
-                </h3>
-                <h3>
-                  <span className="font-semibold">Metodo: </span>
-                  {order.deliveryMethodData}
-                </h3>
+            <div className="mb-2">
+              <h3 className="text-lg font-bold text-slate-700 text-center mb-2">
+                #Pedido: {order.id}
+              </h3>
+
+              <div className="grid grid-cols-2 text-sm text-slate-700 gap-y-1">
+                <p><span className="font-semibold">Nombre:</span> {order.name}</p>
+                <p><span className="font-semibold">Teléfono:</span> {order.phoneNumber}</p>
+                <p><span className="font-semibold">Monto:</span> {order.totalPrice}$</p>
+                <p><span className="font-semibold">Pago:</span> {order.paymentMethod}</p>
+                <p><span className="font-semibold">Entrega:</span> {order.deliveryMethod}</p>
+                <p><span className="font-semibold">Método:</span> {order.deliveryMethodData}</p>
               </div>
             </div>
-            <div className="text-center mt-2 grid grid-cols-2 justify-center items-center">
-              <h3>
-                <span className="font-semibold">Estado: </span>
-                <span className="text-blue-500 text-xlmax-[420px]:text-sm font-bold tracking-tighter">{order.status}</span>
-              </h3>
-              <h3 className="font-semibold">
-                <span>Fecha: </span>
-                <span className="text-xlmax-[420px]:text-sm font-bold">{moment(order.date).subtract(4, "hours").format("DD/MM/YYYY")}</span>
-              </h3>
+
+            <div className="border-t pt-2 mt-2 grid grid-cols-2 text-sm text-center text-slate-600">
+              <p>
+                <span className="font-semibold">Estado:</span>{" "}
+                <span className="text-blue-600 font-bold">{order.status}</span>
+              </p>
+              <p>
+                <span className="font-semibold">Fecha:</span>{" "}
+                <span className="font-medium">
+                  {moment(order.date).subtract(4, "hours").format("DD/MM/YYYY")}
+                </span>
+              </p>
             </div>
           </Link>
         ))}
       </div>
+
+      {/* Controles de paginación */}
+      <div className="flex justify-center items-center gap-4 mt-4">
+        <button
+          onClick={handlePrevPage}
+          disabled={currentPage === 1}
+          className="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 disabled:opacity-50 transition"
+        >
+          Anterior
+        </button>
+        <button
+          onClick={handleNextPage}
+          disabled={endIndex >= orders.length}
+          className="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 disabled:opacity-50 transition"
+        >
+          Siguiente
+        </button>
+      </div>
+
+      {/* Indicador de página */}
+      <p className="text-center text-sm text-gray-500 mt-2 mb-6">
+        Página {currentPage} de {Math.ceil(orders.length / itemsPerPage)}
+      </p>
     </>
-  )
+  );
 }

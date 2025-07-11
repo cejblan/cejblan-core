@@ -1,9 +1,9 @@
 "use client";
+
 import { useRef, useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { FaArrowLeft } from "react-icons/fa";
-import { PiCurrencyDollarSimpleFill } from "react-icons/pi";
 import dynamic from "next/dynamic";
 const Maps = dynamic(() => import("@/components/Maps"), { ssr: false });
 
@@ -26,52 +26,44 @@ export default function OrderForm() {
     latitude: "",
     longitude: "",
   });
+
+  const [deliveries, setDeliveries] = useState([]);
+  const [selectedDelivery, setSelectedDelivery] = useState("");
+
   const router = useRouter();
   const params = useParams();
   const moment = require("moment");
+
   const handleChange = (e) => {
-    setOrder({
-      ...order,
-      [e.target.name]: e.target.value,
-    });
+    setOrder({ ...order, [e.target.name]: e.target.value });
   };
 
   useEffect(() => {
     const fetchOrder = async () => {
       try {
         if (params.id) {
-          const res = await fetch(`/api/admin/orders/${params.id}`, {
-            method: 'GET',
-          });
-          if (!res.ok) {
-            throw new Error(`Error: ${res.status} ${res.statusText}`);
-          }
+          const res = await fetch(`/api/admin/orders/${params.id}`, { method: 'GET' });
+          if (!res.ok) throw new Error(`Error: ${res.status} ${res.statusText}`);
           const data = await res.json();
-          setOrder({
-            id: data.id,
-            name: data.name,
-            email: data.email,
-            date: data.date,
-            status: data.status,
-            totalPrice: data.totalPrice,
-            productsIds: data.productsIds,
-            productsQuantity: data.productsQuantity,
-            paymentMethod: data.paymentMethod,
-            image: data.image,
-            phoneNumber: data.phoneNumber,
-            address: data.address,
-            deliveryMethod: data.deliveryMethod,
-            deliveryMethodData: data.deliveryMethodData,
-            latitude: data.latitude,
-            longitude: data.longitude,
-          });
+          setOrder({ ...data });
         }
       } catch (error) {
-        console.error("Error al cargar el pago:", error);
+        console.error("Error al cargar el pedido:", error);
+      }
+    };
+
+    const fetchDeliveries = async () => {
+      try {
+        const res = await fetch("/api/admin/deliveries");
+        const data = await res.json();
+        setDeliveries(data);
+      } catch (err) {
+        console.error("Error al cargar deliveries:", err);
       }
     };
 
     fetchOrder();
+    fetchDeliveries();
   }, [params.id]);
 
   const handleSubmit = async (e) => {
@@ -88,154 +80,147 @@ export default function OrderForm() {
         body: formData,
       });
 
-      if (!res.ok) {
-        throw new Error("Error al actualizar la orden");
-      } else {
-        const dataOrder = await res.json();
+      if (!res.ok) throw new Error("Error al actualizar la orden");
 
-        if (dataOrder.status === "COMPLETADO") {
-          const telegram = await fetch("/api/telegram/qualification", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
+      const dataOrder = await res.json();
+
+      if (dataOrder.status === "COMPLETADO") {
+        await fetch("/api/telegram/qualification", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ dataOrder }),
+        });
+      } else if (dataOrder.status === "CANCELADO") {
+        await fetch("/api/telegram/canceleOrder", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ dataOrder }),
+        });
+      } else if (dataOrder.status === "PROCESANDO" && selectedDelivery) {
+        await fetch("/api/telegram/notifyDelivery", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            delivery: {
+              chatId: selectedDelivery,
+              id: dataOrder.id,
+              address: dataOrder.address,
+              deliveryMethod: dataOrder.deliveryMethod,
+              paymentMethod: dataOrder.paymentMethod,
+              totalPrice: dataOrder.totalPrice,
             },
-            body: JSON.stringify({ dataOrder }),
-          });
-
-          if (telegram.ok) {
-            console.log("Solicitud de calificacion envianda al Telegram");
-          } else {
-            const errorData = await telegram.json();
-            console.log(errorData.message);
-          }
-        } else if (dataOrder.status === "CANCELADO") {
-          const telegram = await fetch("/api/telegram/canceleOrder", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ dataOrder }),
-          });
-
-          if (telegram.ok) {
-            console.log("Mensaje de Cancelacion enviando al Telegram");
-          } else {
-            const errorData = await telegram.json();
-            console.log(errorData.message);
-          }
-        }
+          }),
+        });
       }
 
-      alert("El pedido se actualizo correctamente.");
+      alert("El pedido se actualizó correctamente.");
+      router.push("/admin/orders");
     } catch (error) {
       console.error("Error al actualizar el pedido:", error);
-      alert("Ocurrió un error al actualizar el pedido. Por favor, inténtalo nuevamente.");
+      alert("Ocurrió un error al actualizar el pedido. Inténtalo nuevamente.");
     }
-
-    router.push("/admin/orders");
   };
 
-  if (order.id.length === 0) {
-    return (
-      <h1 className="max-[420px]:text-base text-2xl text-center p-1 mx-auto">
-        Cargando pedido...
-      </h1>
-    );
-  };
+  if (!order.id) {
+    return <h1 className="text-center text-2xl p-4">Cargando pedido...</h1>;
+  }
+
   return (
     <>
-      <Link href={`/admin/orders/`} className=" bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl">
+      <Link href="/admin/orders" className="absolute top-2 left-2 bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md shadow-6xl">
         <FaArrowLeft />
       </Link>
-      <form onSubmit={handleSubmit}>
-        <div className="grid max-[420px]:block grid-cols-12 gap-2 justify-center max-[420px]:pb-4 mb-4 ml-4 max-[420px]:ml-0">
-          <div className="max-[420px]:text-center text-left max-[420px]:pt-4 max-[420px]:mx-auto col-start-1 col-end-3">
-            <div className="mb-1">
-              <h2 className="text-lg font-semibold pr-1 mb-1 w-full">#Pedido:</h2>
-              <h3 className="bg-white text-gray-400 py-1 px-2 rounded-md">{order.id}</h3>
-            </div>
-            <div className="mb-1">
-              <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Fecha:</h2>
-              <h3 className="bg-white py-1 px-2 rounded-md">{moment(order.date).subtract(4, "hours").format("DD/MM/YYYY")}</h3>
-            </div>
-            <div className="mb-1">
-              <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Monto:</h2>
-              <h3 className="bg-white py-1 px-2 rounded-md">{order.totalPrice}$</h3>
-            </div>
-            <div className="font-semibold mb-1">
-              <label htmlFor="status" className="text-lg pr-1 mb-1 w-full block">Estado:</label>
+
+      <form onSubmit={handleSubmit} className="px-4 py-6 max-w-screen-xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
+          {/* Info Pedido */}
+          <div className="bg-white rounded-xl shadow-md p-4 space-y-2">
+            <h2 className="font-bold text-slate-700 mb-2">Información del Pedido</h2>
+            <p><strong>#Pedido:</strong> {order.id}</p>
+            <p><strong>Fecha:</strong> {moment(order.date).subtract(4, "hours").format("DD/MM/YYYY")}</p>
+            <p><strong>Monto:</strong> {order.totalPrice}$</p>
+            <label className="block font-semibold text-slate-600 mt-2">Estado:</label>
+            <select
+              name="status"
+              value={order.status}
+              onChange={handleChange}
+              className={`w-full border rounded-md p-2 ${order.status === "COMPLETADO" ? "text-green-600" : order.status === "PROCESANDO" ? "text-blue-600" : "text-red-600"}`}
+            >
+              <option value="COMPLETADO">COMPLETADO</option>
+              <option value="PROCESANDO">PROCESANDO</option>
+              <option value="CANCELADO">CANCELADO</option>
+            </select>
+          </div>
+
+          {/* Productos */}
+          <div className="bg-white rounded-xl shadow-md p-4 space-y-2">
+            <h2 className="font-bold text-slate-700 mb-2">Productos</h2>
+            <p><strong>IDs:</strong>{" "}
+              {Array.isArray(order.productsIds)
+                ? order.productsIds.map((id, i) => (
+                  <Link key={i} href={`/admin/products/${id}`} className="text-blue-600 hover:underline mr-1">
+                    {String(id).padStart(4, "0")}
+                  </Link>
+                )) : (
+                  <Link href={`/admin/products/${order.productsIds}`} className="text-blue-600 hover:underline">
+                    {String(order.productsIds).padStart(4, "0")}
+                  </Link>
+                )}
+            </p>
+            <p><strong>Cantidad:</strong> {order.productsQuantity}</p>
+            <p><strong>Pago:</strong> {order.paymentMethod}</p>
+            <p><strong>Comprobante:</strong></p>
+            {order.image ? (
+              <Link href={order.image} target="_blank" className="text-blue-500 hover:underline">Ver Imagen</Link>
+            ) : (
+              <span className="text-slate-400">Sin imagen</span>
+            )}
+          </div>
+
+          {/* Cliente */}
+          <div className="bg-white rounded-xl shadow-md p-4 space-y-2">
+            <h2 className="font-bold text-slate-700 mb-2">Cliente</h2>
+            <p><strong>Nombre:</strong> {order.name}</p>
+            <p><strong>Email:</strong> {order.email}</p>
+            <p><strong>Teléfono:</strong> {order.phoneNumber}</p>
+            <p><strong>Dirección:</strong> {order.address}</p>
+          </div>
+
+          {/* Entrega */}
+          <div className="bg-white rounded-xl shadow-md p-4 space-y-2">
+            <h2 className="font-bold text-slate-700 mb-2">Entrega</h2>
+            <p><strong>Método:</strong> {order.deliveryMethod}</p>
+            <p><strong>Ubicación:</strong> {order.deliveryMethodData}</p>
+            {order.latitude && order.longitude && (
+              <div className="mt-2 rounded-md overflow-hidden border">
+                <Maps latitude={order.latitude} longitude={order.longitude} />
+              </div>
+            )}
+
+            <div className="mt-2">
+              <label className="font-semibold text-slate-600 block mb-1">Asignar Repartidor:</label>
               <select
-                id="status"
-                name="status"
-                value={order.status}
-                onChange={handleChange}
-                className="bg-white text-blue-500 py-1 px-2 rounded-md"
-                required
+                className="w-full border rounded-md p-2"
+                value={selectedDelivery}
+                onChange={(e) => setSelectedDelivery(e.target.value)}
               >
-                <option value="COMPLETADO">COMPLETADO</option>
-                <option value="PROCESANDO">PROCESANDO</option>
-                <option value="CANCELADO">CANCELADO</option>
+                <option value="">-- Seleccionar Delivery --</option>
+                {deliveries.map((d) => (
+                  <option key={d.id} value={d.chatId}>
+                    {d.name} ({d.username})
+                  </option>
+                ))}
               </select>
             </div>
           </div>
-          <div className="max-[420px]:text-center text-left max-[420px]:pt-4 max-[420px]:mx-auto col-start-3 col-end-5">
-            <div className="mb-1">
-              <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Productos:</h2>
-              <h3 className="bg-white py-1 px-2 rounded-md block">{order.productsIds}</h3>
-            </div>
-            <div className="mb-1">
-              <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Cantidad:</h2>
-              <h3 className="bg-white py-1 px-2 rounded-md">{order.productsQuantity}</h3>
-            </div>
-            <div className="mb-1">
-              <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Pago:</h2>
-              <h3 className="bg-white py-1 px-2 rounded-md">{order.paymentMethod}</h3>
-            </div>
-            <div className="mb-1">
-              <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Imagen:</h2>
-              <Link href={order.image || "/"} className="bg-white text-blue-500 hover:text-blue-600 underline py-1 px-2 rounded-md block">Imagen</Link>
-            </div>
-          </div>
-          <div className="max-[420px]:text-center text-left max-[420px]:pt-4 max-[420px]:mx-auto col-start-5 col-end-9">
-            <div className="mb-1">
-              <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Nombre:</h2>
-              <h3 className="bg-white py-1 px-2 rounded-md">{order.name}</h3>
-            </div>
-            <div className="mb-1">
-              <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Correo:</h2>
-              <h3 className="bg-white py-1 px-2 rounded-md">{order.email}</h3>
-            </div>
-            <div className="mb-1">
-              <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Teléfono:</h2>
-              <h3 className="bg-white py-1 px-2 rounded-md">{order.phoneNumber}</h3>
-            </div>
-            <div className="mb-1">
-              <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Dirección:</h2>
-              <h3 className="bg-white py-1 px-2 rounded-md">{order.address}</h3>
-            </div>
-          </div>
-          <div className="max-[420px]:text-center text-left max-[420px]:pt-4 max-[420px]:mx-auto col-start-9 col-end-13">
-            <div className="mb-1">
-              <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Entrega:</h2>
-              <h3 className="bg-white py-1 px-2 rounded-md">{order.deliveryMethod}</h3>
-            </div>
-            <div className="mb-1">
-              <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Lugar de Entrega:</h2>
-              <h3 className="bg-white py-1 px-2 rounded-md">{order.deliveryMethodData}</h3>
-            </div>
-            <div className="mx-auto h-[37%] max-[420px]:h-40 w-64 max-[420px]:w-full">
-              <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Ubicación:</h2>
-              {order.latitude && order.longitude && (
-                <Maps latitude={order.latitude} longitude={order.longitude} />
-              )}
-            </div>
-          </div>
         </div>
-        <div className="flex gap-x-2 justify-center">
+
+        <div className="text-center mt-6">
           <button
-            className="text-white bg-blue-500 hover:bg-blue-600 font-bold py-1 px-2 rounded-xl shadow-6xl"
+            type="submit"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-xl shadow-md"
           >
-            Actualizar
+            Actualizar Pedido
           </button>
         </div>
       </form>
