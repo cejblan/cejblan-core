@@ -42,7 +42,7 @@ const handler = NextAuth({
             "SELECT rol FROM users WHERE email = ?",
             [token.email]
           );
-          token.role = role[0]?.rol === "Admin" || role[0]?.rol === "Desarrollador" || role[0]?.rol === "Vendedor";
+          token.role = role[0]?.rol || null;
 
           // Configuraciones
           const [settings] = await conexion.query(
