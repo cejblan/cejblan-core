@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { conexion } from "@/libs/mysql";
+import { del } from "@vercel/blob";
 
-export async function GET(req, { params }) {
+export async function GET(request, context) {
+  const { params } = context;
+
   try {
     const [result] = await conexion.query("SELECT * FROM orders WHERE id = ?", [
       params.id,
@@ -9,33 +12,25 @@ export async function GET(req, { params }) {
 
     if (result.length === 0) {
       return NextResponse.json(
-        {
-          message: "Peido no encontrado",
-        },
-        {
-          status: 404,
-        }
+        { message: "Pedido no encontrado" },
+        { status: 404 }
       );
     }
 
-    // Devuelve la respuesta con los encabezados configurados dentro de NextResponse
-    return NextResponse.json(result[0], {
-      status: 200,
-    });
+    return NextResponse.json(result[0], { status: 200 });
   } catch (error) {
     console.log(error);
     return NextResponse.json(
-      {
-        message: error.message,
-      },
+      { message: error.message },
       { status: 500 }
     );
   }
 }
 
-export async function DELETE(request, { params }) {
+export async function DELETE(request, context) {
+  const { params } = context;
+
   try {
-    // Obtén el pedido de la base de datos para obtener el enlace de la imagen
     const [order] = await conexion.query(
       "SELECT image FROM orders WHERE id = ?",
       [params.id]
@@ -47,14 +42,19 @@ export async function DELETE(request, { params }) {
         { status: 404 }
       );
     }
-    const imageUrl = order.image;
-    // Si el pedido tiene una imagen, intenta eliminarla de Cloudinary
-    if (imageUrl) {
-      const publicId = imageUrl.split("/").pop().split(".")[0];
-      // Llama a Cloudinary para eliminar la imagen
-      await cloudinary.uploader.destroy(publicId);
+
+    const imageUrl = order[0].image;
+
+    // Eliminar imagen de Vercel Blob si existe
+    if (imageUrl && imageUrl.includes("vercel-storage.com")) {
+      const filePath = imageUrl.split("/").slice(3).join("/");
+      try {
+        await del(filePath); // borra la imagen del bucket
+      } catch (err) {
+        console.warn("No se pudo eliminar la imagen de Vercel Blob:", err.message);
+      }
     }
-    // Elimina el pedido de la base de datos
+
     const [result] = await conexion.query("DELETE FROM orders WHERE id = ?", [
       params.id,
     ]);
@@ -76,9 +76,12 @@ export async function DELETE(request, { params }) {
   }
 }
 
-export async function PUT(request, { params }) {
+export async function PUT(request, context) {
+  const { params } = context;
+
   try {
     const data = await request.formData();
+
     const updateData = {
       name: data.get("name"),
       status: data.get("status"),
@@ -91,28 +94,21 @@ export async function PUT(request, { params }) {
 
     if (result.affectedRows === 0) {
       return NextResponse.json(
-        {
-          message: "Forma de pago no encontrada",
-        },
-        {
-          status: 404,
-        }
+        { message: "Pedido no encontrado" },
+        { status: 404 }
       );
     }
 
-    const [updatedProduct] = await conexion.query(
+    const [updatedOrder] = await conexion.query(
       "SELECT * FROM orders WHERE id = ?",
       [params.id]
     );
 
-    return NextResponse.json(updatedProduct[0]);
-
+    return NextResponse.json(updatedOrder[0]);
   } catch (error) {
     console.log(error);
     return NextResponse.json(
-      {
-        message: error.message,
-      },
+      { message: error.message },
       { status: 500 }
     );
   }
