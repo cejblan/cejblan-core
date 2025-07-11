@@ -42,6 +42,7 @@ const handler = NextAuth({
             "SELECT rol FROM users WHERE email = ?",
             [token.email]
           );
+
           token.role = role[0]?.rol || null;
 
           // Configuraciones
@@ -90,7 +91,7 @@ const handler = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      session.user.role = !!token.role;
+      session.user.role = token.role;
       session.user.conversion_activa = token.conversion_activa;
       session.user.conversion_moneda = token.conversion_moneda;
       session.user.tasa_conversion = token.tasa_conversion;

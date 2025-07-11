@@ -8,7 +8,8 @@ export default withAuth(async function middleware(req) {
   // Rutas de admin: solo para roles permitidos
   if (pathname.startsWith("/admin")) {
     const token = await getToken({ req });
-    const role = token?.role?.toLowerCase();
+
+    const role = token?.role;
     const allowedRoles = ["Admin", "Desarrollador", "Vendedor"];
 
     if (!allowedRoles.includes(role)) {
