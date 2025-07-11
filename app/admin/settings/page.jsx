@@ -1,4 +1,5 @@
 "use client"
+
 import { useEffect, useState } from "react"
 
 export default function Settings() {
@@ -6,10 +7,6 @@ export default function Settings() {
   const [moneda, setMoneda] = useState("USD")
   const [cargando, setCargando] = useState(true)
   const [guardando, setGuardando] = useState(false)
-
-  const [nuevoNombre, setNuevoNombre] = useState("")
-  const [nuevoValor, setNuevoValor] = useState("")
-  const [nuevoDescription, setNuevoDescription] = useState("")
 
   const [nombreTienda, setNombreTienda] = useState("")
   const [rifTienda, setRifTienda] = useState("")
@@ -63,34 +60,6 @@ export default function Settings() {
       alert("Hubo un error al guardar las configuraciones")
     } finally {
       setGuardando(false)
-    }
-  }
-
-  const registrarConfiguracion = async () => {
-    if (!nuevoNombre || !nuevoValor) {
-      return alert('Debes completar al menos "name" y "value"')
-    }
-
-    const formDescription = new FormData()
-    formDescription.append("name", nuevoNombre)
-    formDescription.append("value", nuevoValor)
-    formDescription.append("description", nuevoDescription)
-
-    try {
-      const res = await fetch("/api/admin/settings", {
-        method: "POST",
-        body: formDescription,
-      })
-
-      if (!res.ok) throw new Error("Error al registrar configuración")
-      alert("Configuración registrada")
-
-      setNuevoNombre("")
-      setNuevoValor("")
-      setNuevoDescription("")
-    } catch (error) {
-      console.error(error)
-      alert("Hubo un error al registrar la nueva configuración")
     }
   }
 
@@ -160,37 +129,6 @@ export default function Settings() {
           disabled={guardando}
         >
           {guardando ? "Guardando..." : "Guardar configuración"}
-        </button>
-      </div>
-
-      <div className="border rounded p-4 bg-gray-100 space-y-4 mt-6">
-        <h2 className="text-lg font-semibold">Registrar nueva configuración</h2>
-        <input
-          type="text"
-          placeholder="Nombre (name)"
-          className="w-full p-2 border rounded"
-          value={nuevoNombre}
-          onChange={(e) => setNuevoNombre(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Valor (value)"
-          className="w-full p-2 border rounded"
-          value={nuevoValor}
-          onChange={(e) => setNuevoValor(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Descripción (description)"
-          className="w-full p-2 border rounded"
-          value={nuevoDescription}
-          onChange={(e) => setNuevoDescription(e.target.value)}
-        />
-        <button
-          onClick={registrarConfiguracion}
-          className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700"
-        >
-          Registrar nueva configuración
         </button>
       </div>
     </div>

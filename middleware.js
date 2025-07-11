@@ -4,22 +4,48 @@ import { getToken } from "next-auth/jwt";
 
 export default withAuth(async function middleware(req) {
   const { pathname } = req.nextUrl;
-  // Solo aplicamos la validación en las rutas de admin
+  const token = await getToken({ req });
+  const role = token?.role?.toLowerCase();
+
+  // Bloqueo general si no tiene sesión válida
+  if (!role) {
+    return NextResponse.redirect(new URL("/unauthorized", req.url));
+  }
+
+  // Bloqueo por rutas específicas
   if (pathname.startsWith("/admin")) {
-    const token = await getToken({ req });
-    if (!token.admin) {
-      // El usuario no es admin, redirige a una página de acceso denegado
-      return NextResponse.redirect(new URL("/unauthorized", req.url));
+    const blockedByRole = {
+      vendedor: [
+        "/admin/users",
+        "/admin/products",
+        "/admin/categories",
+        "/admin/gallery",
+        "/admin/cms",
+        "/admin/settings",
+        "/admin/developer",
+      ],
+      admin: [
+        "/admin/developer"
+      ]
+    };
+
+    const blockedPaths = blockedByRole[role] || [];
+
+    for (const blocked of blockedPaths) {
+      if (pathname === blocked || pathname.startsWith(`${blocked}/`)) {
+        return NextResponse.redirect(new URL("/unauthorized", req.url));
+      }
     }
   }
-  // Si la ruta es "/checkout"
-  if (req.nextUrl.pathname === "/checkout") {
+
+  // Validación del checkout solo desde /cart
+  if (pathname === "/checkout") {
     const referrer = req.headers.get("referer");
-    // Si no viene de la página del carrito, redirige a otra página
     if (!referrer || !referrer.includes("/cart")) {
       return NextResponse.redirect(new URL("/cart", req.url));
     }
   }
+
   return NextResponse.next();
 });
 

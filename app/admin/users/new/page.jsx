@@ -74,10 +74,7 @@ export default function UserForm() {
       }
 
       const data = await res.json();
-      console.log(
-        params.id ? "Usuario actualizado:" : "Usuario creado:",
-        data
-      );
+
     } catch (error) {
       console.error(
         params.id ? "Error al actualizar el usuario:" : "Error al crear el usuario:",
@@ -162,10 +159,10 @@ export default function UserForm() {
                 required
               >
                 <option value="">Selecciona una categoría</option>
-                <option value="Admin">Admin</option>
+                <option value="Cliente">Cliente</option>
                 <option value="Vendedor">Vendedor</option>
                 <option value="Delivery">Delivery</option>
-                <option value="Cliente">Cliente</option>
+                <option value="Admin">Admin</option>
               </select>
             </div>
           </div>

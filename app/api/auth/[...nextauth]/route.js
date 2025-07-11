@@ -38,11 +38,12 @@ const handler = NextAuth({
     async jwt({ token }) {
       try {
         if (token?.email) {
-          const [admin] = await conexion.query(
+          const [role] = await conexion.query(
             "SELECT rol FROM users WHERE email = ?",
             [token.email]
           );
-          token.admin = admin[0]?.rol === "Admin" || admin[0]?.rol === "Desarrollador" || admin[0]?.rol === "Vendedor";
+
+          token.role = role[0]?.rol || null;
 
           // Configuraciones
           const [settings] = await conexion.query(
@@ -90,7 +91,7 @@ const handler = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      session.user.admin = !!token.admin;
+      session.user.role = token.role;
       session.user.conversion_activa = token.conversion_activa;
       session.user.conversion_moneda = token.conversion_moneda;
       session.user.tasa_conversion = token.tasa_conversion;
