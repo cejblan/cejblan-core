@@ -3,7 +3,7 @@ import { conexion } from "@/libs/mysql";
 import { del } from "@vercel/blob";
 
 export async function GET(request, context) {
-  const { params } = context;
+  const params = await context.params;
 
   try {
     const [result] = await conexion.query("SELECT * FROM orders WHERE id = ?", [
@@ -11,24 +11,18 @@ export async function GET(request, context) {
     ]);
 
     if (result.length === 0) {
-      return NextResponse.json(
-        { message: "Pedido no encontrado" },
-        { status: 404 }
-      );
+      return NextResponse.json({ message: "Pedido no encontrado" }, { status: 404 });
     }
 
     return NextResponse.json(result[0], { status: 200 });
   } catch (error) {
     console.log(error);
-    return NextResponse.json(
-      { message: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: error.message }, { status: 500 });
   }
 }
 
 export async function DELETE(request, context) {
-  const { params } = context;
+  const params = await context.params;
 
   try {
     const [order] = await conexion.query(
@@ -37,19 +31,15 @@ export async function DELETE(request, context) {
     );
 
     if (!order || order.length === 0) {
-      return NextResponse.json(
-        { message: "Pedido no encontrado" },
-        { status: 404 }
-      );
+      return NextResponse.json({ message: "Pedido no encontrado" }, { status: 404 });
     }
 
     const imageUrl = order[0].image;
 
-    // Eliminar imagen de Vercel Blob si existe
     if (imageUrl && imageUrl.includes("vercel-storage.com")) {
       const filePath = imageUrl.split("/").slice(3).join("/");
       try {
-        await del(filePath); // borra la imagen del bucket
+        await del(filePath);
       } catch (err) {
         console.warn("No se pudo eliminar la imagen de Vercel Blob:", err.message);
       }
@@ -60,24 +50,18 @@ export async function DELETE(request, context) {
     ]);
 
     if (result.affectedRows === 0) {
-      return NextResponse.json(
-        { message: "Pedido no encontrado" },
-        { status: 404 }
-      );
+      return NextResponse.json({ message: "Pedido no encontrado" }, { status: 404 });
     }
 
     return new Response(null, { status: 204 });
   } catch (error) {
     console.error("Error en el servidor:", error);
-    return NextResponse.json(
-      { message: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: error.message }, { status: 500 });
   }
 }
 
 export async function PUT(request, context) {
-  const { params } = context;
+  const params = await context.params;
 
   try {
     const data = await request.formData();
@@ -93,10 +77,7 @@ export async function PUT(request, context) {
     ]);
 
     if (result.affectedRows === 0) {
-      return NextResponse.json(
-        { message: "Pedido no encontrado" },
-        { status: 404 }
-      );
+      return NextResponse.json({ message: "Pedido no encontrado" }, { status: 404 });
     }
 
     const [updatedOrder] = await conexion.query(
@@ -107,9 +88,6 @@ export async function PUT(request, context) {
     return NextResponse.json(updatedOrder[0]);
   } catch (error) {
     console.log(error);
-    return NextResponse.json(
-      { message: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: error.message }, { status: 500 });
   }
 }
