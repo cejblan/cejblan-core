@@ -7,8 +7,8 @@ export default withAuth(async function middleware(req) {
   // Solo aplicamos la validación en las rutas de admin
   if (pathname.startsWith("/admin")) {
     const token = await getToken({ req });
-    if (!token.admin) {
-      // El usuario no es admin, redirige a una página de acceso denegado
+    if (!token.role) {
+      // El usuario no es vendedor, admin o desarrollador, redirige a una página de acceso denegado
       return NextResponse.redirect(new URL("/unauthorized", req.url));
     }
   }
