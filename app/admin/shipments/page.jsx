@@ -60,7 +60,7 @@ export default function DeliveryCalendar() {
       {days.map((day) => (
         <div key={day} className="mb-6 border rounded-lg p-4 shadow">
           <h2 className="text-xl font-semibold mb-2">{moment(day).format("dddd, DD [de] MMMM YYYY")}</h2>
-          <ul>
+          <div>
             {ordersByDay[day].map((order) => (
               <li key={order.id} className="mb-1">
                 <Link
@@ -71,7 +71,7 @@ export default function DeliveryCalendar() {
                 </Link>
               </li>
             ))}
-          </ul>
+          </div>
         </div>
       ))}
     </div>
