@@ -247,7 +247,6 @@ export default function OrderForm() {
                 <Maps latitude={order.latitude} longitude={order.longitude} />
               </div>
             )}
-
             <div className="mt-2">
               <label className="font-semibold text-slate-600 block mb-1">Asignar Repartidor:</label>
               <select
@@ -258,7 +257,7 @@ export default function OrderForm() {
                 <option value="">Seleccionar Delivery</option>
                 {deliveries.map((d) => (
                   <option key={d.id} value={d.id}>
-                    {d.name} ({d.username})
+                    {d.name}
                   </option>
                 ))}
               </select>
