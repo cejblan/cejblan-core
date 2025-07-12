@@ -62,14 +62,14 @@ export default function DeliveryCalendar() {
           <h2 className="text-xl font-semibold mb-2">{moment(day).format("dddd, DD [de] MMMM YYYY")}</h2>
           <div>
             {ordersByDay[day].map((order) => (
-              <li key={order.id} className="mb-1">
+              <div key={order.id} className="mb-1">
                 <Link
                   href={`/orders/${order.id}`}
                   className="text-blue-600 hover:underline"
                 >
                   {moment(order.DeliveryDate).format("HH:mm")} - Pedido #{order.id} - {order.name}
                 </Link>
-              </li>
+              </div>
             ))}
           </div>
         </div>
