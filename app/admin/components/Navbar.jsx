@@ -68,7 +68,7 @@ export default function NavbarAdmin({ children }) {
 
     return MAIN_ITEMS.filter(({ label }) => {
       if (role === "delivery") {
-        return !["Usuarios", "Productos", "Categorías", "Pagos", "Entregas", "Pedidos", "Notas", "Galeria", "CMS", "Configurar", "Desarrollar"].includes(label);
+        return !["Usuarios", "Productos", "Categorías", "Pagos", "Entregas", "Pedidos", "Notas", "Monedas", "Galeria", "CMS", "Configurar", "Desarrollar"].includes(label);
       }
       if (role === "vendedor") {
         return !["Usuarios", "Productos", "Categorías", "Galeria", "CMS", "Configurar", "Desarrollar"].includes(label);
