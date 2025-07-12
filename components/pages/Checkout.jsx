@@ -16,6 +16,11 @@ import ImageNotSupported from "@/public/ImageNotSupported.webp";
 const Maps = dynamic(() => import("../Maps"), { ssr: false });
 
 export default function Checkout() {
+  const [deliveryDate, setDeliveryDate] = useState(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedHour, setSelectedHour] = useState("");
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: session } = useSession(); // Obtener la sesión actual del usuario
   const [products, setProducts] = useState([]);
@@ -77,6 +82,7 @@ export default function Checkout() {
     formData.append("latitude", data[0].latitude);
     formData.append("longitude", data[0].longitude);
     formData.append("chatId", data[0].chatId);
+    formData.append("deliveryDate", deliveryDate);
 
     const deliveryMethodData = dataCheckout[1][0].find(option => option.name === data[0]?.deliveryMethod);
 
@@ -365,6 +371,55 @@ export default function Checkout() {
             </>
           )}
         </div>
+
+        <div className="bg-white p-2 rounded-xl shadow-6xl h-fit w-full col-start-3 col-end-7 mb-2">
+          <label className="block text-slate-700 font-medium mb-1">
+            Fecha de Entrega:
+          </label>
+          <button
+            type="button"
+            onClick={() => setShowDatePicker(!showDatePicker)}
+            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-3 rounded"
+          >
+            {deliveryDate
+              ? moment(deliveryDate).format("dddd, D [de] MMMM [a las] HH:mm")
+              : "Seleccionar día y hora"}
+          </button>
+
+          {showDatePicker && (
+            <div className="mt-2 border border-slate-300 rounded p-2 bg-white shadow-md">
+              <input
+                type="date"
+                className="border px-2 py-1 rounded mb-2 w-full"
+                min={moment().format("YYYY-MM-DD")}
+                onChange={(e) => {
+                  setSelectedDate(e.target.value);
+                  setSelectedHour(""); // reset hora
+                }}
+              />
+              {selectedDate && (
+                <select
+                  className="w-full border px-2 py-1 rounded"
+                  value={selectedHour}
+                  onChange={(e) => {
+                    setSelectedHour(e.target.value);
+                    const combined = moment(`${selectedDate} ${e.target.value}`, "YYYY-MM-DD HH:mm");
+                    setDeliveryDate(combined.toISOString());
+                    setShowDatePicker(false);
+                  }}
+                >
+                  <option value="">Selecciona la hora</option>
+                  {Array.from({ length: 12 }, (_, i) => {
+                    const hour = 9 + i; // de 9:00 a 20:00
+                    const label = `${hour.toString().padStart(2, "0")}:00`;
+                    return <option key={hour} value={label}>{label}</option>;
+                  })}
+                </select>
+              )}
+            </div>
+          )}
+        </div>
+
         <button
           type="submit"
           disabled={isSubmitting}
