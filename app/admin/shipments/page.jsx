@@ -86,31 +86,33 @@ export default function DeliveryCalendar() {
 
   return (
     <div className="max-w-6xl mx-auto p-2">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-4 text-center sm:text-left">
         <button
           onClick={goToPrevMonth}
-          className="px-3 py-1 border rounded hover:bg-gray-100"
+          className="px-3 py-1 border rounded hover:bg-gray-100 text-sm"
         >
           ← Mes anterior
         </button>
-        <h1 className="text-2xl font-bold text-center capitalize">
+        <h1 className="text-xl sm:text-2xl font-bold capitalize">
           {startOfMonth.format("MMMM YYYY")}
         </h1>
         <button
           onClick={goToNextMonth}
-          className="px-3 py-1 border rounded hover:bg-gray-100"
+          className="px-3 py-1 border rounded hover:bg-gray-100 text-sm"
         >
           Mes siguiente →
         </button>
       </div>
 
-      <div className="grid grid-cols-7 gap-px bg-gray-300 text-center font-semibold text-gray-700 border border-slate-400">
+      <div className="grid grid-cols-7 gap-px bg-gray-300 text-center font-semibold text-gray-700 border border-slate-400 text-xs sm:text-sm">
         {["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"].map((d) => (
-          <div key={d} className="bg-white p-2 border border-slate-400 font-bold">{d}</div>
+          <div key={d} className="bg-white p-1 sm:p-2 border border-slate-400 font-bold">
+            {d}
+          </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-7 gap-px bg-gray-300 border border-slate-400">
+      <div className="grid grid-cols-7 gap-px bg-gray-300 border border-slate-400 text-xs sm:text-sm">
         {days.map(({ date, isCurrentMonth }, idx) => {
           const dateKey = date.format("YYYY-MM-DD");
           const isToday = dateKey === today;
@@ -119,17 +121,16 @@ export default function DeliveryCalendar() {
           return (
             <div
               key={dateKey + idx}
-              className={`h-28 border border-slate-400 p-1 text-sm flex flex-col ${isCurrentMonth
-                  ? "bg-white"
-                  : "bg-gray-200 text-gray-500"
-                } ${isToday ? "bg-yellow-100 border-yellow-400" : ""}`}
+              className={`min-h-[80px] sm:h-28 border border-slate-400 p-1 flex flex-col overflow-hidden
+                ${isCurrentMonth ? "bg-white" : "bg-gray-200 text-gray-500"}
+                ${isToday ? "bg-yellow-100 border-yellow-400" : ""}`}
             >
-              <div className="text-xs font-bold mb-1">{date.date()}</div>
-              <div className="overflow-y-auto space-y-1">
+              <div className="text-[10px] sm:text-xs font-bold mb-1">{date.date()}</div>
+              <div className="overflow-y-auto space-y-1 scrollbar-thin scrollbar-thumb-gray-400">
                 {dayOrders.map((order) => (
                   <div
                     key={order.id}
-                    className="text-blue-700 text-xs bg-blue-100 rounded px-1 py-0.5 cursor-pointer hover:bg-blue-200"
+                    className="text-blue-700 text-[10px] sm:text-xs bg-blue-100 rounded px-1 py-0.5 cursor-pointer hover:bg-blue-200"
                     onClick={() => setSelectedOrder(order)}
                   >
                     {moment(order.DeliveryDate).format("HH:mm")} – #{order.id}
@@ -143,8 +144,8 @@ export default function DeliveryCalendar() {
 
       {/* Modal */}
       {selectedOrder && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full relative">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl p-4 sm:p-6 max-w-md w-full relative">
             <button
               className="absolute top-2 right-2 text-gray-500 hover:text-black"
               onClick={() => setSelectedOrder(null)}
