@@ -10,7 +10,8 @@ export default function DeliveryCalendar() {
   const { data: session, status } = useSession();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedOrder, setSelectedOrder] = useState(null); // Modal
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [currentMonth, setCurrentMonth] = useState(moment().startOf("month"));
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -47,53 +48,81 @@ export default function DeliveryCalendar() {
     return acc;
   }, {});
 
-  const lastDate = moment.max(orders.map((o) => moment(o.DeliveryDate)));
-  const year = lastDate.year();
-  const month = lastDate.month();
-
-  const startOfMonth = moment([year, month]).startOf("month");
-  const endOfMonth = moment([year, month]).endOf("month");
-  const startDayOfWeek = startOfMonth.isoWeekday();
-  const daysInMonth = endOfMonth.date();
   const today = moment().format("YYYY-MM-DD");
 
+  const startOfMonth = currentMonth.clone().startOf("month");
+  const endOfMonth = currentMonth.clone().endOf("month");
+  const startDayOfWeek = startOfMonth.isoWeekday(); // 1 (lunes) - 7 (domingo)
+  const daysInMonth = endOfMonth.date();
+
   const days = [];
-  for (let i = 1; i < startDayOfWeek; i++) {
-    days.push(null);
+
+  // Agregar días del mes anterior (inicio de semana)
+  const prevMonth = currentMonth.clone().subtract(1, "month");
+  const prevMonthEnd = prevMonth.clone().endOf("month");
+
+  for (let i = startDayOfWeek - 1; i > 0; i--) {
+    const date = prevMonthEnd.clone().subtract(i - 1, "day");
+    days.push({ date, isCurrentMonth: false });
   }
+
+  // Agregar días del mes actual
   for (let d = 1; d <= daysInMonth; d++) {
-    const date = moment([year, month, d]);
-    days.push(date);
+    const date = currentMonth.clone().date(d);
+    days.push({ date, isCurrentMonth: true });
   }
+
+  // Agregar días del mes siguiente para completar la última fila
+  const totalCells = Math.ceil(days.length / 7) * 7;
+  const nextMonth = currentMonth.clone().add(1, "month");
+
+  for (let i = 1; days.length < totalCells; i++) {
+    const date = nextMonth.clone().date(i);
+    days.push({ date, isCurrentMonth: false });
+  }
+
+  const goToPrevMonth = () => setCurrentMonth(prev => prev.clone().subtract(1, "month"));
+  const goToNextMonth = () => setCurrentMonth(prev => prev.clone().add(1, "month"));
 
   return (
-    <div className="max-w-6xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4 text-center">
-        Calendario de Pedidos – {startOfMonth.format("MMMM YYYY")}
-      </h1>
+    <div className="max-w-6xl mx-auto p-2">
+      <div className="flex justify-between items-center mb-4">
+        <button
+          onClick={goToPrevMonth}
+          className="px-3 py-1 border rounded hover:bg-gray-100"
+        >
+          ← Mes anterior
+        </button>
+        <h1 className="text-2xl font-bold text-center capitalize">
+          {startOfMonth.format("MMMM YYYY")}
+        </h1>
+        <button
+          onClick={goToNextMonth}
+          className="px-3 py-1 border rounded hover:bg-gray-100"
+        >
+          Mes siguiente →
+        </button>
+      </div>
 
-      <div className="grid grid-cols-7 gap-px bg-gray-300 text-center font-semibold text-gray-700">
+      <div className="grid grid-cols-7 gap-px bg-gray-300 text-center font-semibold text-gray-700 border border-slate-400">
         {["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"].map((d) => (
-          <div key={d} className="bg-white p-2 border font-bold">{d}</div>
+          <div key={d} className="bg-white p-2 border border-slate-400 font-bold">{d}</div>
         ))}
       </div>
 
-      <div className="grid grid-cols-7 gap-px bg-gray-300">
-        {days.map((date, idx) => {
-          if (!date) {
-            return <div key={idx} className="h-28 bg-white border" />;
-          }
-
+      <div className="grid grid-cols-7 gap-px bg-gray-300 border border-slate-400">
+        {days.map(({ date, isCurrentMonth }, idx) => {
           const dateKey = date.format("YYYY-MM-DD");
           const isToday = dateKey === today;
-          const dayOrders = ordersByDay[dateKey] || [];
+          const dayOrders = isCurrentMonth ? (ordersByDay[dateKey] || []) : [];
 
           return (
             <div
-              key={dateKey}
-              className={`h-28 bg-white border p-1 text-sm flex flex-col ${
-                isToday ? "bg-yellow-100 border-yellow-400" : ""
-              }`}
+              key={dateKey + idx}
+              className={`h-28 border border-slate-400 p-1 text-sm flex flex-col ${isCurrentMonth
+                  ? "bg-white"
+                  : "bg-gray-200 text-gray-500"
+                } ${isToday ? "bg-yellow-100 border-yellow-400" : ""}`}
             >
               <div className="text-xs font-bold mb-1">{date.date()}</div>
               <div className="overflow-y-auto space-y-1">
@@ -127,7 +156,6 @@ export default function DeliveryCalendar() {
             <p><strong>Fecha:</strong> {moment(selectedOrder.DeliveryDate).format("dddd, D [de] MMMM HH:mm")}</p>
             <p><strong>Dirección:</strong> {selectedOrder.address}</p>
             <p><strong>Teléfono:</strong> {selectedOrder.phoneNumber}</p>
-            {/* Agrega más campos si deseas */}
           </div>
         </div>
       )}
