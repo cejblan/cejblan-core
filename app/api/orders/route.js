@@ -32,6 +32,12 @@ export async function POST(request) {
       imageUrl = blob.url;
     }
 
+    // 🔹 Formatear fecha de entrega si existe
+    const deliveryDateRaw = data.get("deliveryDate");
+    let deliveryDateFormatted = null;
+    if (deliveryDateRaw) {
+      deliveryDateFormatted = new Date(deliveryDateRaw).toISOString().slice(0, 19).replace("T", " ");
+    }
 
     const [result] = await conexion.query("INSERT INTO orders SET ?", {
       productsIds: data.get("productsIds"),
@@ -41,7 +47,7 @@ export async function POST(request) {
       email: data.get("email"),
       phoneNumber: data.get("phoneNumber"),
       paymentMethod: data.get("paymentMethod"),
-      deliveryDate: data.get("deliveryDate"),
+      deliveryDate: deliveryDateFormatted, // ✅ Aquí va ya formateada
       deliveryMethod: data.get("deliveryMethod"),
       deliveryMethodData: data.get("deliveryMethodData"),
       address: data.get("address"),
@@ -52,7 +58,7 @@ export async function POST(request) {
       chatId: data.get("chatId"),
     });
 
-    // --- Descuento de stock por cada producto ---
+    // 🔸 Descontar stock
     const ids = data.get("productsIds").split(",").map(id => Number(id));
     const quantities = data.get("productsQuantity").split(",").map(qty => Number(qty));
 
@@ -105,7 +111,7 @@ export async function POST(request) {
       email: data.get("email"),
       phoneNumber: data.get("phoneNumber"),
       paymentMethod: data.get("paymentMethod"),
-      deliveryDate: data.get("deliveryDate"),
+      deliveryDate: deliveryDateFormatted,
       deliveryMethod: data.get("deliveryMethod"),
       deliveryMethodData: data.get("deliveryMethodData"),
       address: data.get("address"),
