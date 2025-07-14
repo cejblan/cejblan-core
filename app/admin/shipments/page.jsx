@@ -130,7 +130,12 @@ export default function DeliveryCalendar() {
                 {dayOrders.map((order) => (
                   <div
                     key={order.id}
-                    className="text-blue-700 text-[10px] sm:text-xs bg-blue-100 rounded px-1 py-0.5 cursor-pointer hover:bg-blue-200"
+                    className={`text-[10px] sm:text-xs rounded px-1 py-0.5 cursor-pointer ${order.status === "COMPLETADO"
+                      ? "bg-green-100 hover:bg-green-200 text-green-600"
+                      : order.status === "PROCESANDO"
+                        ? "bg-blue-100 hover:bg-blue-200 text-blue-600"
+                        : "bg-red-100 hover:bg-red-200 text-red-600"
+                      }`}
                     onClick={() => setSelectedOrder(order)}
                   >
                     {moment(order.deliveryDate).format("HH:mm")} – #{order.id}
