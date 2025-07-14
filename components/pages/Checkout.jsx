@@ -372,53 +372,55 @@ export default function Checkout() {
           )}
         </div>
 
-        <div className="bg-white p-2 rounded-xl shadow-6xl h-fit w-full col-start-3 col-end-7 mb-2">
-          <label className="block text-slate-700 font-medium mb-1">
-            Fecha de Entrega:
-          </label>
-          <button
-            type="button"
-            onClick={() => setShowDatePicker(!showDatePicker)}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-3 rounded"
-          >
-            {deliveryDate
-              ? moment(deliveryDate).format("dddd, D [de] MMMM [a las] HH:mm")
-              : "Seleccionar día y hora"}
-          </button>
+        {data[0]?.deliveryMethod === "Delivery" && (
+          <div className="bg-white p-2 rounded-xl shadow-6xl h-fit w-full col-start-3 col-end-7 mb-2">
+            <label className="block text-slate-700 font-medium mb-1">
+              Fecha de Entrega:
+            </label>
+            <button
+              type="button"
+              onClick={() => setShowDatePicker(!showDatePicker)}
+              className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-3 rounded"
+            >
+              {deliveryDate
+                ? moment(deliveryDate).format("dddd, D [de] MMMM [a las] HH:mm")
+                : "Seleccionar día y hora"}
+            </button>
 
-          {showDatePicker && (
-            <div className="mt-2 border border-slate-300 rounded p-2 bg-white shadow-md">
-              <input
-                type="date"
-                className="border px-2 py-1 rounded mb-2 w-full"
-                min={moment().format("YYYY-MM-DD")}
-                onChange={(e) => {
-                  setSelectedDate(e.target.value);
-                  setSelectedHour(""); // reset hora
-                }}
-              />
-              {selectedDate && (
-                <select
-                  className="w-full border px-2 py-1 rounded"
-                  value={selectedHour}
+            {showDatePicker && (
+              <div className="mt-2 border border-slate-300 rounded p-2 bg-white shadow-md">
+                <input
+                  type="date"
+                  className="border px-2 py-1 rounded mb-2 w-full"
+                  min={moment().format("YYYY-MM-DD")}
                   onChange={(e) => {
-                    setSelectedHour(e.target.value);
-                    const combined = moment(`${selectedDate} ${e.target.value}`, "YYYY-MM-DD HH:mm");
-                    setDeliveryDate(combined.toISOString());
-                    setShowDatePicker(false);
+                    setSelectedDate(e.target.value);
+                    setSelectedHour("");
                   }}
-                >
-                  <option value="">Selecciona la hora</option>
-                  {Array.from({ length: 12 }, (_, i) => {
-                    const hour = 9 + i; // de 9:00 a 20:00
-                    const label = `${hour.toString().padStart(2, "0")}:00`;
-                    return <option key={hour} value={label}>{label}</option>;
-                  })}
-                </select>
-              )}
-            </div>
-          )}
-        </div>
+                />
+                {selectedDate && (
+                  <select
+                    className="w-full border px-2 py-1 rounded"
+                    value={selectedHour}
+                    onChange={(e) => {
+                      setSelectedHour(e.target.value);
+                      const combined = moment(`${selectedDate} ${e.target.value}`, "YYYY-MM-DD HH:mm");
+                      setDeliveryDate(combined.toISOString());
+                      setShowDatePicker(false);
+                    }}
+                  >
+                    <option value="">Selecciona la hora</option>
+                    {Array.from({ length: 12 }, (_, i) => {
+                      const hour = 9 + i;
+                      const label = `${hour.toString().padStart(2, "0")}:00`;
+                      return <option key={hour} value={label}>{label}</option>;
+                    })}
+                  </select>
+                )}
+              </div>
+            )}
+          </div>
+        )}
 
         <button
           type="submit"
