@@ -14,6 +14,9 @@ import ProductCardAdmin from "@/app/admin/components/ProductCardAdmin";
 import ImageNotSupported from "@/public/ImageNotSupported.webp";
 // Carga el componente Maps dinámicamente y desactiva SSR
 const Maps = dynamic(() => import("../Maps"), { ssr: false });
+import moment from "moment";
+import "moment/locale/es";
+moment.locale("es");
 
 export default function Checkout() {
   const [deliveryDate, setDeliveryDate] = useState(null);
@@ -48,6 +51,38 @@ export default function Checkout() {
   ]);
   const showPhoneNumber = "+58" + data[0].phoneCode + data[0].phoneNumber;
   const showPhoneNumberDos = "+58" + data[0].phoneCodeDos + data[0].phoneNumberDos;
+
+  const [allowedHours, setAllowedHours] = useState([]);
+
+  useEffect(() => {
+    const fetchDeliverySettings = async () => {
+      try {
+        const res = await fetch("/api/admin/settings/delivery");
+        const data = await res.json();
+
+        let hours = [];
+
+        if (data.deliveryHours && data.deliveryHours.trim() !== "") {
+          hours = data.deliveryHours.split(",").map(h => h.trim());
+        } else if (data.workingHours) {
+          const [start, end] = data.workingHours.split("-");
+          const startHour = parseInt(start.split(":")[0]);
+          const endHour = parseInt(end.split(":")[0]);
+
+          hours = Array.from({ length: endHour - startHour + 1 }, (_, i) => {
+            return `${(startHour + i).toString().padStart(2, "0")}:00`;
+          });
+        }
+
+        setAllowedHours(hours);
+      } catch (err) {
+        console.error("Error cargando horarios:", err);
+      }
+    };
+
+    fetchDeliverySettings();
+  }, []);
+
   const handleChange = (event) => {
     setData([
       {
@@ -56,12 +91,14 @@ export default function Checkout() {
       }
     ]);
   };
+
   const handlePositionChange = (newPosition) => {
     const latitudeTruncated = parseFloat(newPosition[0].toFixed(7));
     const longitudeTruncated = parseFloat(newPosition[1].toFixed(7));
     setLatitude(latitudeTruncated);
     setLongitude(longitudeTruncated);
   };
+
   const productsIds = products.map(product => product.id);
   const productsQuantity = products.map(product => product.quantity);
 
@@ -372,53 +409,58 @@ export default function Checkout() {
           )}
         </div>
 
-        <div className="bg-white p-2 rounded-xl shadow-6xl h-fit w-full col-start-3 col-end-7 mb-2">
-          <label className="block text-slate-700 font-medium mb-1">
-            Fecha de Entrega:
-          </label>
-          <button
-            type="button"
-            onClick={() => setShowDatePicker(!showDatePicker)}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-3 rounded"
-          >
-            {deliveryDate
-              ? moment(deliveryDate).format("dddd, D [de] MMMM [a las] HH:mm")
-              : "Seleccionar día y hora"}
-          </button>
+        {data[0]?.deliveryMethod === "Delivery" && (
+          <div className="bg-white p-2 rounded-xl shadow-6xl h-fit w-full col-start-3 col-end-7 mb-2">
+            <label className="block text-slate-700 font-medium mb-1">
+              Fecha de Entrega:
+            </label>
+            <button
+              type="button"
+              onClick={() => setShowDatePicker(!showDatePicker)}
+              className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-3 rounded"
+            >
+              {deliveryDate
+                ? moment(deliveryDate).format("dddd, D [de] MMMM [a las] HH:mm")
+                : "Seleccionar día y hora"}
+            </button>
 
-          {showDatePicker && (
-            <div className="mt-2 border border-slate-300 rounded p-2 bg-white shadow-md">
-              <input
-                type="date"
-                className="border px-2 py-1 rounded mb-2 w-full"
-                min={moment().format("YYYY-MM-DD")}
-                onChange={(e) => {
-                  setSelectedDate(e.target.value);
-                  setSelectedHour(""); // reset hora
-                }}
-              />
-              {selectedDate && (
-                <select
-                  className="w-full border px-2 py-1 rounded"
-                  value={selectedHour}
+            {showDatePicker && (
+              <div className="mt-2 border border-slate-300 rounded p-2 bg-white shadow-md">
+                <input
+                  type="date"
+                  className="border px-2 py-1 rounded mb-2 w-full"
+                  min={moment().format("YYYY-MM-DD")}
                   onChange={(e) => {
-                    setSelectedHour(e.target.value);
-                    const combined = moment(`${selectedDate} ${e.target.value}`, "YYYY-MM-DD HH:mm");
-                    setDeliveryDate(combined.toISOString());
-                    setShowDatePicker(false);
+                    setSelectedDate(e.target.value);
+                    setSelectedHour("");
                   }}
-                >
-                  <option value="">Selecciona la hora</option>
-                  {Array.from({ length: 12 }, (_, i) => {
-                    const hour = 9 + i; // de 9:00 a 20:00
-                    const label = `${hour.toString().padStart(2, "0")}:00`;
-                    return <option key={hour} value={label}>{label}</option>;
-                  })}
-                </select>
-              )}
-            </div>
-          )}
-        </div>
+                />
+                {selectedDate && (
+                  <select
+                    className="w-full border px-2 py-1 rounded"
+                    value={selectedHour}
+                    onChange={(e) => {
+                      setSelectedHour(e.target.value);
+                      const combined = moment(`${selectedDate} ${e.target.value}`, "YYYY-MM-DD HH:mm");
+                      setDeliveryDate(combined.toISOString());
+                      setShowDatePicker(false);
+                    }}
+                  >
+                    <option value="">Selecciona la hora</option>
+                    {allowedHours.map((hour) => {
+                      const label = moment(hour, "HH:mm").format("h:mm A");
+                      return (
+                        <option key={hour} value={hour}>
+                          {label}
+                        </option>
+                      );
+                    })}
+                  </select>
+                )}
+              </div>
+            )}
+          </div>
+        )}
 
         <button
           type="submit"

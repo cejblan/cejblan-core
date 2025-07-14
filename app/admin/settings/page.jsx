@@ -12,6 +12,9 @@ export default function Settings() {
   const [rifTienda, setRifTienda] = useState("")
   const [direccionTienda, setDireccionTienda] = useState("")
 
+  const [workingHours, setWorkingHours] = useState("") // NUEVO
+  const [deliveryHours, setDeliveryHours] = useState("") // NUEVO
+
   useEffect(() => {
     fetch("/api/admin/settings")
       .then(res => res.json())
@@ -22,6 +25,8 @@ export default function Settings() {
         const nombre = data.find(s => s.name === "nombre_tienda")
         const rif = data.find(s => s.name === "rif_tienda")
         const direccion = data.find(s => s.name === "direccion_tienda")
+        const horario = data.find(s => s.name === "working_hours") // NUEVO
+        const entregas = data.find(s => s.name === "delivery_hours") // NUEVO
 
         if (activaConfig) setActiva(activaConfig.value === "true")
         if (monedaConfig) setMoneda(monedaConfig.value)
@@ -29,7 +34,8 @@ export default function Settings() {
         if (nombre) setNombreTienda(nombre.value)
         if (rif) setRifTienda(rif.value)
         if (direccion) setDireccionTienda(direccion.value)
-
+        if (horario) setWorkingHours(horario.value) // NUEVO
+        if (entregas) setDeliveryHours(entregas.value) // NUEVO
       })
       .finally(() => setCargando(false))
   }, [])
@@ -53,6 +59,9 @@ export default function Settings() {
       await actualizar("rif_tienda", rifTienda)
       await actualizar("direccion_tienda", direccionTienda)
 
+      // NUEVOS campos
+      await actualizar("working_hours", workingHours)
+      await actualizar("delivery_hours", deliveryHours)
 
       alert("Configuraciones guardadas correctamente")
     } catch (error) {
@@ -83,6 +92,7 @@ export default function Settings() {
             className="mr-auto w-2 h-2"
           />
         </div>
+
         <div>
           <label className="block font-semibold mb-1">Moneda base para conversión</label>
           <select
@@ -104,6 +114,7 @@ export default function Settings() {
             onChange={(e) => setNombreTienda(e.target.value)}
           />
         </div>
+
         <div>
           <label className="block font-semibold mb-1">Dirección de la tienda</label>
           <textarea
@@ -113,6 +124,7 @@ export default function Settings() {
             onChange={(e) => setDireccionTienda(e.target.value)}
           />
         </div>
+
         <div>
           <label className="block font-semibold mb-1">RIF de la tienda</label>
           <input
@@ -121,6 +133,33 @@ export default function Settings() {
             value={rifTienda}
             onChange={(e) => setRifTienda(e.target.value)}
           />
+        </div>
+
+        {/* NUEVO: Horario laboral */}
+        <div>
+          <label className="block font-semibold mb-1">Horario de trabajo</label>
+          <input
+            type="text"
+            placeholder="Ej: 08:00-18:00"
+            className="w-full p-2 border rounded"
+            value={workingHours}
+            onChange={(e) => setWorkingHours(e.target.value)}
+          />
+        </div>
+
+        {/* NUEVO: Horas de entrega */}
+        <div>
+          <label className="block font-semibold mb-1">Horas exactas de entrega</label>
+          <input
+            type="text"
+            placeholder="Ej: 10:00,12:00,14:00"
+            className="w-full p-2 border rounded"
+            value={deliveryHours}
+            onChange={(e) => setDeliveryHours(e.target.value)}
+          />
+          <p className="text-sm text-slate-500 mt-1">
+            Si se deja vacío, se usarán los rangos del horario de trabajo.
+          </p>
         </div>
 
         <button

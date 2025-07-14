@@ -42,7 +42,7 @@ export default function DeliveryCalendar() {
   if (orders.length === 0) return <p>No tienes pedidos asignados.</p>;
 
   const ordersByDay = orders.reduce((acc, order) => {
-    const day = moment(order.DeliveryDate).format("YYYY-MM-DD");
+    const day = moment(order.deliveryDate).format("YYYY-MM-DD");
     if (!acc[day]) acc[day] = [];
     acc[day].push(order);
     return acc;
@@ -104,7 +104,7 @@ export default function DeliveryCalendar() {
         </button>
       </div>
 
-      <div className="grid grid-cols-7 gap-px bg-gray-300 text-center font-semibold text-gray-700 border border-slate-400 text-xs sm:text-sm">
+      <div className="grid grid-cols-2 min-[500px]:grid-cols-3 sm:grid-cols-7 gap-px bg-gray-300 text-center font-semibold text-gray-700 border border-slate-400 text-xs sm:text-sm">
         {["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"].map((d) => (
           <div key={d} className="bg-white p-1 sm:p-2 border border-slate-400 font-bold">
             {d}
@@ -112,7 +112,7 @@ export default function DeliveryCalendar() {
         ))}
       </div>
 
-      <div className="grid grid-cols-7 gap-px bg-gray-300 border border-slate-400 text-xs sm:text-sm">
+      <div className="grid grid-cols-2 min-[500px]:grid-cols-3 sm:grid-cols-7 gap-px bg-gray-300 border border-slate-400 text-xs sm:text-sm">
         {days.map(({ date, isCurrentMonth }, idx) => {
           const dateKey = date.format("YYYY-MM-DD");
           const isToday = dateKey === today;
@@ -121,19 +121,25 @@ export default function DeliveryCalendar() {
           return (
             <div
               key={dateKey + idx}
-              className={`min-h-[80px] sm:h-28 border border-slate-400 p-1 flex flex-col overflow-hidden
-                ${isCurrentMonth ? "bg-white" : "bg-gray-200 text-gray-500"}
-                ${isToday ? "bg-yellow-100 border-yellow-400" : ""}`}
+              className={`min-h-[100px] sm:h-32 border border-slate-400 p-1 flex flex-col overflow-hidden
+          ${isCurrentMonth ? "bg-white" : "bg-gray-100 text-gray-400"}
+          ${isToday ? "bg-yellow-100 border-yellow-400" : ""}`}
             >
-              <div className="text-[10px] sm:text-xs font-bold mb-1">{date.date()}</div>
-              <div className="overflow-y-auto space-y-1 scrollbar-thin scrollbar-thumb-gray-400">
+              <div className="text-[11px] sm:text-xs font-bold mb-1">{date.date()}</div>
+              <div className="flex-1 overflow-y-auto space-y-1 scrollbar-thin scrollbar-thumb-gray-400 pr-1">
                 {dayOrders.map((order) => (
                   <div
                     key={order.id}
-                    className="text-blue-700 text-[10px] sm:text-xs bg-blue-100 rounded px-1 py-0.5 cursor-pointer hover:bg-blue-200"
+                    className={`text-[11px] sm:text-xs rounded px-1 py-0.5 cursor-pointer truncate
+                ${order.status === "COMPLETADO"
+                        ? "bg-green-100 hover:bg-green-200 text-green-600"
+                        : order.status === "PROCESANDO"
+                          ? "bg-blue-100 hover:bg-blue-200 text-blue-600"
+                          : "bg-red-100 hover:bg-red-200 text-red-600"}`}
                     onClick={() => setSelectedOrder(order)}
+                    title={`Pedido #${order.id} - ${moment(order.deliveryDate).format("HH:mm")}`}
                   >
-                    {moment(order.DeliveryDate).format("HH:mm")} – #{order.id}
+                    {moment(order.deliveryDate).format("HH:mm")} – #{order.id}
                   </div>
                 ))}
               </div>
@@ -154,7 +160,7 @@ export default function DeliveryCalendar() {
             </button>
             <h2 className="text-lg font-bold mb-2">Pedido #{selectedOrder.id}</h2>
             <p><strong>Cliente:</strong> {selectedOrder.name}</p>
-            <p><strong>Fecha:</strong> {moment(selectedOrder.DeliveryDate).format("dddd, D [de] MMMM HH:mm")}</p>
+            <p><strong>Fecha:</strong> {moment(selectedOrder.deliveryDate).format("dddd, D [de] MMMM HH:mm")}</p>
             <p><strong>Dirección:</strong> {selectedOrder.address}</p>
             <p><strong>Teléfono:</strong> {selectedOrder.phoneNumber}</p>
           </div>

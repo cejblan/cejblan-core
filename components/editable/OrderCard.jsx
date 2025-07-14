@@ -8,7 +8,7 @@ export default function OrderCard({ order }) {
   // ===START_RETURN===
   return (
     <div className="bg-white text-slate-800 rounded-xl p-2 shadow-md grid md:grid-cols-4 gap-2 text-sm md:text-base">
-      
+
       {/* Cliente */}
       <div>
         <p className="font-semibold mb-1 text-slate-500">Cliente</p>
@@ -54,10 +54,24 @@ export default function OrderCard({ order }) {
 
       {/* Fecha y estado */}
       <div className="text-center">
-        <p className="font-semibold text-slate-500">Fecha</p>
+        <p className="font-semibold text-slate-500">Fecha del Pedido</p>
         <p>{date}</p>
+        {/* ✅ Mostrar deliveryDate si existe */}
+        {order.deliveryDate && (
+          <>
+            <p className="font-semibold text-slate-500 mt-2">Entrega Programada</p>
+            <p className="text-green-600 font-semibold text-sm">
+              {moment(order.deliveryDate).format("D MMMM, h:mm A")}
+            </p>
+          </>
+        )}
         <p className="mt-2 font-semibold text-slate-500">Estado</p>
-        <p className="text-blue-500 text-lg font-bold">{order.status}</p>
+        <p className={`text-lg font-bold ${order.status === "COMPLETADO"
+          ? "text-green-600"
+          : order.status === "PROCESANDO"
+            ? "text-blue-600"
+            : "text-red-600"
+          }`}>{order.status}</p>
       </div>
     </div>
   );

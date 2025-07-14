@@ -59,13 +59,24 @@ export default function OrdersPageAdmin() {
                 <p><span className="font-semibold">Pago:</span> {order.paymentMethod}</p>
                 <p><span className="font-semibold">Entrega:</span> {order.deliveryMethod}</p>
                 <p><span className="font-semibold">Método:</span> {order.deliveryMethodData}</p>
+                {order.deliveryMethod === "Delivery" && order.deliveryDate && (
+                  <p className="col-span-2">
+                    <span className="font-semibold">Hora de Entrega:</span>{" "}
+                    {moment(order.deliveryDate).format("DD/MM/YYYY HH:mm")}
+                  </p>
+                )}
               </div>
             </div>
 
             <div className="border-t pt-2 mt-2 grid grid-cols-2 text-sm text-center text-slate-600">
               <p>
                 <span className="font-semibold">Estado:</span>{" "}
-                <span className="text-blue-600 font-bold">{order.status}</span>
+                <span className={`font-bold ${order.status === "COMPLETADO"
+                  ? "text-green-600"
+                  : order.status === "PROCESANDO"
+                    ? "text-blue-600"
+                    : "text-red-600"
+                  }`}>{order.status}</span>
               </p>
               <p>
                 <span className="font-semibold">Fecha:</span>{" "}

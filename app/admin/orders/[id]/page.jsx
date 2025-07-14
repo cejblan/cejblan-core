@@ -242,26 +242,37 @@ export default function OrderForm() {
             <p>
               <strong>Ubicación:</strong> {order.deliveryMethodData}
             </p>
+            {/* ✅ Mostrar fecha y hora de entrega si existe */}
+            {order.deliveryDate && (
+              <p>
+                <strong>Entrega programada:</strong>{" "}
+                {moment(order.deliveryDate).format("dddd, D [de] MMMM [a las] h:mm A")}
+              </p>
+            )}
+            {/* ✅ Mostrar mapa si hay coordenadas */}
             {order.latitude && order.longitude && (
               <div className="mt-2 rounded-md overflow-hidden border">
                 <Maps latitude={order.latitude} longitude={order.longitude} />
               </div>
             )}
-            <div className="mt-2">
-              <label className="font-semibold text-slate-600 block mb-1">Asignar Repartidor:</label>
-              <select
-                className="w-full border rounded-md p-2"
-                value={selectedDelivery}
-                onChange={(e) => setSelectedDelivery(e.target.value)}
-              >
-                <option value="">Seleccionar Delivery</option>
-                {deliveries.map((d) => (
-                  <option key={d.id} value={d.id}>
-                    {d.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {/* ✅ Mostrar select solo si es Delivery */}
+            {order.deliveryMethod === "Delivery" && (
+              <div className="mt-2">
+                <label className="font-semibold text-slate-600 block mb-1">Asignar Repartidor:</label>
+                <select
+                  className="w-full border rounded-md p-2"
+                  value={selectedDelivery}
+                  onChange={(e) => setSelectedDelivery(e.target.value)}
+                >
+                  <option value="">Seleccionar Delivery</option>
+                  {deliveries.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
         </div>
 
