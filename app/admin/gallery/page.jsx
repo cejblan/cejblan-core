@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react';
 import NextImage from 'next/image';
+import { FcOpenedFolder } from "react-icons/fc";
 
 export default function Gallery() {
   const [imagenes, setImagenes] = useState([]);
@@ -46,7 +47,17 @@ export default function Gallery() {
     try {
       const res = await fetch(`/api/cms/images?page=${pagina}&limit=${porPagina}`);
       const data = await res.json();
-      setImagenes(data.imagenes || []);
+
+      const agrupadas = {};
+
+      (data.imagenes || []).forEach(img => {
+        const partes = img.pathname.split('/');
+        const folder = partes.length > 1 ? partes.slice(0, -1).join('/') : '/';
+        if (!agrupadas[folder]) agrupadas[folder] = [];
+        agrupadas[folder].push(img);
+      });
+
+      setImagenes(agrupadas);
       setTotalPaginas(data.totalPaginas || 1);
     } catch (err) {
       console.error('Error al cargar imágenes:', err);
@@ -215,22 +226,32 @@ export default function Gallery() {
           <input type="file" accept="image/*" onChange={handleUpload} className="hidden" />
         </label>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        {imagenes.map((img, i) => (
-          <div key={i} className="relative w-full aspect-square border rounded-2xl overflow-hidden bg-slate-100">
-            <NextImage src={img.url} alt={img.pathname} className="object-cover w-full h-full" width={200} height={200} />
-            <button
-              onClick={async () => {
-                if (!confirm("¿Eliminar esta imagen?")) return;
-                await fetch(`/api/cms/images?pathname=${encodeURIComponent(img.pathname)}`, { method: "DELETE" });
-                await cargarImagenes();
-              }}
-              className="absolute top-1 right-1 z-10 bg-red-600 text-white rounded px-1 py-0.5 text-xs hover:bg-red-700"
-            >
-              Eliminar
-            </button>
-            <button onClick={() => setImagenSeleccionada(img)} className="absolute bottom-5 right-1 z-10 bg-green-600 text-white rounded px-1 py-0.5 text-xs hover:bg-green-500">Recortar</button>
-            <button onClick={async () => { try { await navigator.clipboard.writeText(img.url); alert("URL copiada"); } catch { alert("Error"); } }} className="absolute bottom-1 right-1 z-10 bg-blue-600 text-white rounded px-1 py-0.5 text-xs hover:bg-blue-500">Copiar URL</button>
+      <div className="space-y-6">
+        {Object.entries(imagenes).map(([folder, imgs]) => (
+          <div key={folder}>
+            <div className="flex items-center gap-2 text-lg font-semibold mb-2">
+              <FcOpenedFolder className="text-xl" />
+              <span>{folder === '/' ? 'Raíz' : folder}</span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              {imgs.map((img, i) => (
+                <div key={i} className="relative w-full aspect-square border rounded-2xl overflow-hidden bg-slate-100">
+                  <NextImage src={img.url} alt={img.pathname} className="object-cover w-full h-full" width={200} height={200} />
+                  <button
+                    onClick={async () => {
+                      if (!confirm("¿Eliminar esta imagen?")) return;
+                      await fetch(`/api/cms/images?pathname=${encodeURIComponent(img.pathname)}`, { method: "DELETE" });
+                      await cargarImagenes();
+                    }}
+                    className="absolute top-1 right-1 z-10 bg-red-600 text-white rounded px-1 py-0.5 text-xs hover:bg-red-700"
+                  >
+                    Eliminar
+                  </button>
+                  <button onClick={() => setImagenSeleccionada(img)} className="absolute bottom-5 right-1 z-10 bg-green-600 text-white rounded px-1 py-0.5 text-xs hover:bg-green-500">Recortar</button>
+                  <button onClick={async () => { try { await navigator.clipboard.writeText(img.url); alert("URL copiada"); } catch { alert("Error"); } }} className="absolute bottom-1 right-1 z-10 bg-blue-600 text-white rounded px-1 py-0.5 text-xs hover:bg-blue-500">Copiar URL</button>
+                </div>
+              ))}
+            </div>
           </div>
         ))}
       </div>
