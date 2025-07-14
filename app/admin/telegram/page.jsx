@@ -2,6 +2,20 @@
 
 import { useState, useEffect, useRef } from "react";
 
+// ✅ Limpia el HTML del bot, convierte etiquetas útiles y elimina las demás
+function parseBotMessage(html) {
+  if (!html) return "";
+
+  // Negrita → <strong>
+  html = html.replace(/<b>(.*?)<\/b>/g, (_, texto) => `<strong>${texto}</strong>`);
+
+  // Enlaces (<a>) ya los dejamos
+  // Elimina cualquier etiqueta que no sea <strong> o <a>
+  html = html.replace(/<(?!\/?(strong|a)(\s|>)).*?>/g, "");
+
+  return html;
+}
+
 export default function TelegramPanel() {
   const [chats, setChats] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
@@ -62,7 +76,6 @@ export default function TelegramPanel() {
       {/* ==== MÓVIL: lista o chat ==== */}
       <div className="w-full md:hidden">
         {selectedChat ? (
-          // ===== Chat seleccionado en móvil =====
           <div className="flex flex-col h-full">
             <div className="flex items-center p-2 border-b border-slate-300">
               <button
@@ -82,12 +95,16 @@ export default function TelegramPanel() {
               {messages.map((msg, i) => (
                 <div
                   key={i}
-                  className={`p-1 rounded max-w-fit break-words ${msg.from_bot
+                  className={`p-1 rounded max-w-fit break-words whitespace-pre-wrap ${msg.from_bot
                     ? 'bg-blue-200 text-right ml-auto'
                     : 'bg-white text-left'
                     }`}
                 >
-                  {msg.text}
+                  {msg.from_bot ? (
+                    <div dangerouslySetInnerHTML={{ __html: parseBotMessage(msg.text) }} />
+                  ) : (
+                    msg.text
+                  )}
                 </div>
               ))}
               <div ref={messageEndRef} />
@@ -109,7 +126,6 @@ export default function TelegramPanel() {
             </div>
           </div>
         ) : (
-          // ===== Lista de chats en móvil =====
           <aside className="w-full border-r border-slate-300 overflow-y-auto h-full">
             <div className="p-2 font-bold text-lg border-b border-slate-300">Chats</div>
             {chats.map((chat) => (
@@ -155,12 +171,16 @@ export default function TelegramPanel() {
               {messages.map((msg, i) => (
                 <div
                   key={i}
-                  className={`p-1 rounded max-w-fit break-words ${msg.from_bot
+                  className={`p-1 rounded max-w-fit break-words whitespace-pre-wrap ${msg.from_bot
                     ? 'bg-blue-200 text-right ml-auto'
                     : 'bg-white text-left'
                     }`}
                 >
-                  {msg.text}
+                  {msg.from_bot ? (
+                    <div dangerouslySetInnerHTML={{ __html: parseBotMessage(msg.text) }} />
+                  ) : (
+                    msg.text
+                  )}
                 </div>
               ))}
               <div ref={messageEndRef} />
@@ -190,6 +210,14 @@ export default function TelegramPanel() {
           </div>
         )}
       </div>
+
+      {/* ✅ Estilo adicional para los links del bot */}
+      <style jsx global>{`
+        .bg-blue-200 a {
+          color: #1d4ed8;
+          text-decoration: underline;
+        }
+      `}</style>
     </div>
   );
 }

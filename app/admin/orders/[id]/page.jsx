@@ -117,8 +117,9 @@ export default function OrderForm() {
                 address: dataOrder.address,
                 deliveryMethodData: dataOrder.deliveryMethodData,
               },
-              paymentMethod: dataOrder.paymentMethod,
-              totalPrice: dataOrder.totalPrice,
+              name: dataOrder.name,
+              phoneNumber: dataOrder.phoneNumber,
+              deliveryDate: dataOrder.deliveryDate,
             }),
           });
         }

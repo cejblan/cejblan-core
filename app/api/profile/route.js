@@ -16,7 +16,7 @@ export async function GET(req, res) {
     );
 
     if (profileItems.length === 0) {
-      return NextResponse.json(false, { status: 200 }); // Si el usuario no esta registrado, devuelve false
+      return NextResponse.json(false, { status: 200 }); // Si el usuario no está registrado, devuelve false
     }
 
     return NextResponse.json(profileItems, { status: 200 });
@@ -28,9 +28,28 @@ export async function GET(req, res) {
 
 export async function PUT(request) {
   try {
-    const data = await request.json(); // Recibir JSON
+    const data = await request.json();
+
+    const { email, chatId, code } = data;
+
+    // Validar que ningún otro usuario tenga ya este chatId
+    if (chatId) {
+      const [existeChatId] = await conexion.query(
+        "SELECT email FROM users WHERE chatId = ? AND email != ?",
+        [chatId, email]
+      );
+
+      if (existeChatId.length > 0) {
+        return NextResponse.json(
+          { error: "Este chat de Telegram ya está vinculado con otro usuario." },
+          { status: 400 }
+        );
+      }
+    }
+
     // Filtrar solo las claves y valores válidos
     const keys = Object.keys(data).filter((key) => data[key] !== undefined && data[key] !== null);
+
     // Construir dinámicamente las partes del query
     const fields = keys.filter((key) => key !== "email").map((key) => `${key} = ?`).join(", ");
     const values = keys.filter((key) => key !== "email").map((key) => data[key]);
@@ -39,13 +58,12 @@ export async function PUT(request) {
       return new Response("No hay datos para actualizar", { status: 400 });
     }
 
-    values.push(data.email);
+    values.push(email);
     const query = `UPDATE users SET ${fields} WHERE email = ?`;
 
     await conexion.query(query, values);
-    // Iniciar cuenta regresiva para establecer el código en null después de 1 minuto
-    const { code, email } = data;
 
+    // Iniciar cuenta regresiva para establecer el código en null después de 1 minuto
     if (code) {
       setTimeout(async () => {
         try {

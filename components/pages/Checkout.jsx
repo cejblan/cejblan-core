@@ -119,7 +119,9 @@ export default function Checkout() {
     formData.append("latitude", data[0].latitude);
     formData.append("longitude", data[0].longitude);
     formData.append("chatId", data[0].chatId);
-    formData.append("deliveryDate", deliveryDate);
+    if (deliveryDate) {
+      formData.append("deliveryDate", deliveryDate);
+    }
 
     const deliveryMethodData = dataCheckout[1][0].find(option => option.name === data[0]?.deliveryMethod);
 
