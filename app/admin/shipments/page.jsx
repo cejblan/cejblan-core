@@ -104,9 +104,9 @@ export default function DeliveryCalendar() {
         </button>
       </div>
 
-      <div className="grid grid-cols-2 min-[500px]:grid-cols-3 sm:grid-cols-7 gap-px bg-gray-300 text-center font-semibold text-gray-700 border border-slate-400 text-xs sm:text-sm">
+      <div className="hidden sm:grid grid-cols-7 gap-px bg-gray-300 text-center font-semibold text-gray-700 border border-slate-400 text-xs sm:text-sm">
         {["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"].map((d) => (
-          <div key={d} className="bg-white p-1 sm:p-2 border border-slate-400 font-bold">
+          <div key={d} className="bg-white p-2 border border-slate-400 font-bold">
             {d}
           </div>
         ))}
