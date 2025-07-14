@@ -1,18 +1,14 @@
 import { NextResponse } from "next/server";
 
 export async function POST(request) {
-  console.log("API /notifyDelivery llamada"); // <-- este log
-  const body = await request.json();
-  console.log("NotifyDelivery received body:", body);
-
-  const { chatId, orderId, deliveryInfo, name, phoneNumber, deliveryDate } = body;
+  const { chatId, orderId, deliveryInfo, name, phoneNumber, deliveryDate } = await request.json();
   const token = process.env.BOT_TOKEN;
 
   if (!chatId || !orderId) {
-    console.log("Faltan chatId o orderId");
     return NextResponse.json({ status: "error", message: "Datos incompletos." });
   }
 
+  // Formatear fecha y hora (suponiendo que deliveryDate viene en ISO o similar)
   const moment = require("moment");
   const formattedDate = deliveryDate
     ? moment(deliveryDate).format("dddd, D [de] MMMM [a las] h:mm A")
@@ -45,7 +41,6 @@ export async function POST(request) {
       return NextResponse.json({ status: "error", message: "No se pudo enviar mensaje a delivery." });
     }
 
-    console.log("Mensaje enviado al delivery correctamente");
     return NextResponse.json({ status: "success", message: "Mensaje enviado al delivery." });
   } catch (error) {
     console.error("Error en API Telegram:", error);
