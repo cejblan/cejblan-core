@@ -42,7 +42,7 @@ export default function DeliveryCalendar() {
   if (orders.length === 0) return <p>No tienes pedidos asignados.</p>;
 
   const ordersByDay = orders.reduce((acc, order) => {
-    const day = moment(order.DeliveryDate).format("YYYY-MM-DD");
+    const day = moment(order.deliveryDate).format("YYYY-MM-DD");
     if (!acc[day]) acc[day] = [];
     acc[day].push(order);
     return acc;
@@ -133,7 +133,7 @@ export default function DeliveryCalendar() {
                     className="text-blue-700 text-[10px] sm:text-xs bg-blue-100 rounded px-1 py-0.5 cursor-pointer hover:bg-blue-200"
                     onClick={() => setSelectedOrder(order)}
                   >
-                    {moment(order.DeliveryDate).format("HH:mm")} – #{order.id}
+                    {moment(order.deliveryDate).format("HH:mm")} – #{order.id}
                   </div>
                 ))}
               </div>
@@ -154,7 +154,7 @@ export default function DeliveryCalendar() {
             </button>
             <h2 className="text-lg font-bold mb-2">Pedido #{selectedOrder.id}</h2>
             <p><strong>Cliente:</strong> {selectedOrder.name}</p>
-            <p><strong>Fecha:</strong> {moment(selectedOrder.DeliveryDate).format("dddd, D [de] MMMM HH:mm")}</p>
+            <p><strong>Fecha:</strong> {moment(selectedOrder.deliveryDate).format("dddd, D [de] MMMM HH:mm")}</p>
             <p><strong>Dirección:</strong> {selectedOrder.address}</p>
             <p><strong>Teléfono:</strong> {selectedOrder.phoneNumber}</p>
           </div>
