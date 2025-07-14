@@ -53,6 +53,9 @@ export default function OrderCard({ order }) {
           <strong>Dirección:</strong>{" "}
           {order.deliveryMethod === "Delivery" ? order.address : order.deliveryMethodData}
         </p>
+        {order.deliveryMethod === "Delivery" && order.delivery && (
+          <p><strong>Repartidor:</strong> {order.delivery}</p>
+        )}
       </div>
 
       {/* Fecha y estado */}
