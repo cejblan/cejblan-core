@@ -7,11 +7,33 @@ export async function GET(request, res) {
   const customerEmail = searchParams.get("customerEmail");
 
   try {
-    const [results] = await conexion.query("SELECT * FROM orders WHERE email = ?", [
-      customerEmail
-    ]);
+    const [orders] = await conexion.query("SELECT * FROM orders WHERE email = ?", [customerEmail]);
 
-    return NextResponse.json(results, { status: 200 });
+    // Obtener IDs únicos de repartidores
+    const deliveryIds = [...new Set(orders.map(order => order.delivery).filter(Boolean))];
+
+    let deliveryMap = {};
+
+    if (deliveryIds.length > 0) {
+      const [users] = await conexion.query(
+        `SELECT id, name FROM users WHERE id IN (${deliveryIds.map(() => '?').join(',')})`,
+        deliveryIds
+      );
+
+      // Mapear { id: name }
+      deliveryMap = users.reduce((acc, user) => {
+        acc[user.id] = user.name;
+        return acc;
+      }, {});
+    }
+
+    // Añadir deliveryName a cada pedido
+    const ordersWithNames = orders.map(order => ({
+      ...order,
+      deliveryName: deliveryMap[order.delivery] || null,
+    }));
+
+    return NextResponse.json(ordersWithNames, { status: 200 });
   } catch (error) {
     console.log(error);
     return NextResponse.json({ message: error.message }, { status: 500 });
