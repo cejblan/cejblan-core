@@ -66,7 +66,12 @@ export default function OrderCard({ order }) {
           </>
         )}
         <p className="mt-2 font-semibold text-slate-500">Estado</p>
-        <p className="text-blue-500 text-lg font-bold">{order.status}</p>
+        <p className={`text-lg font-bold ${order.status === "COMPLETADO"
+          ? "text-green-600"
+          : order.status === "PROCESANDO"
+            ? "text-blue-600"
+            : "text-red-600"
+          }`}>{order.status}</p>
       </div>
     </div>
   );
