@@ -51,6 +51,38 @@ export default function Checkout() {
   ]);
   const showPhoneNumber = "+58" + data[0].phoneCode + data[0].phoneNumber;
   const showPhoneNumberDos = "+58" + data[0].phoneCodeDos + data[0].phoneNumberDos;
+
+  const [allowedHours, setAllowedHours] = useState([]);
+
+  useEffect(() => {
+    const fetchDeliverySettings = async () => {
+      try {
+        const res = await fetch("/api/admin/settings/delivery");
+        const data = await res.json();
+
+        let hours = [];
+
+        if (data.deliveryHours && data.deliveryHours.trim() !== "") {
+          hours = data.deliveryHours.split(",").map(h => h.trim());
+        } else if (data.workingHours) {
+          const [start, end] = data.workingHours.split("-");
+          const startHour = parseInt(start.split(":")[0]);
+          const endHour = parseInt(end.split(":")[0]);
+
+          hours = Array.from({ length: endHour - startHour + 1 }, (_, i) => {
+            return `${(startHour + i).toString().padStart(2, "0")}:00`;
+          });
+        }
+
+        setAllowedHours(hours);
+      } catch (err) {
+        console.error("Error cargando horarios:", err);
+      }
+    };
+
+    fetchDeliverySettings();
+  }, []);
+
   const handleChange = (event) => {
     setData([
       {
@@ -59,12 +91,14 @@ export default function Checkout() {
       }
     ]);
   };
+
   const handlePositionChange = (newPosition) => {
     const latitudeTruncated = parseFloat(newPosition[0].toFixed(7));
     const longitudeTruncated = parseFloat(newPosition[1].toFixed(7));
     setLatitude(latitudeTruncated);
     setLongitude(longitudeTruncated);
   };
+
   const productsIds = products.map(product => product.id);
   const productsQuantity = products.map(product => product.quantity);
 
@@ -413,10 +447,13 @@ export default function Checkout() {
                     }}
                   >
                     <option value="">Selecciona la hora</option>
-                    {Array.from({ length: 12 }, (_, i) => {
-                      const hour = 9 + i;
-                      const label = `${hour.toString().padStart(2, "0")}:00`;
-                      return <option key={hour} value={label}>{label}</option>;
+                    {allowedHours.map((hour) => {
+                      const label = moment(hour, "HH:mm").format("h:mm A");
+                      return (
+                        <option key={hour} value={hour}>
+                          {label}
+                        </option>
+                      );
                     })}
                   </select>
                 )}
