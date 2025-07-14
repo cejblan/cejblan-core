@@ -1,51 +1,49 @@
 import { NextResponse } from "next/server";
 import { conexion } from "@/libs/mysql";
 
-// === OBTENER CONFIGURACIONES ===
+// === GET: obtener deliveryHours y workingHours ===
 export async function GET() {
   try {
-    const [deliveryHoursResult] = await conexion.query(
+    const [deliveryRows] = await conexion.query(
       "SELECT value FROM settings WHERE name = 'delivery_hours' LIMIT 1"
     );
-    const [workingHoursResult] = await conexion.query(
+    const [workingRows] = await conexion.query(
       "SELECT value FROM settings WHERE name = 'working_hours' LIMIT 1"
     );
 
-    const deliveryHours = deliveryHoursResult?.value || "";
-    const workingHours = workingHoursResult?.value || "";
+    const deliveryHours = deliveryRows?.[0]?.value || null;
+    const workingHours = workingRows?.[0]?.value || null;
 
-    return NextResponse.json({
-      deliveryHours,
-      workingHours,
-    });
+    return NextResponse.json({ deliveryHours, workingHours });
   } catch (error) {
-    console.error("Error al obtener horarios:", error);
+    console.error("Error al obtener delivery settings:", error);
     return NextResponse.json({ message: error.message }, { status: 500 });
   }
 }
 
-// === ACTUALIZAR CONFIGURACIONES ===
+// === PUT: actualizar delivery_hours o working_hours ===
 export async function PUT(req) {
   try {
-    const { deliveryHours, workingHours } = await req.json();
+    const body = await req.json();
+    const { deliveryHours, workingHours } = body;
 
-    if (typeof deliveryHours !== "string" || typeof workingHours !== "string") {
-      return NextResponse.json({ message: "Datos inválidos" }, { status: 400 });
+    if (deliveryHours !== undefined) {
+      await conexion.query(
+        "UPDATE settings SET value = ? WHERE name = 'delivery_hours'",
+        [deliveryHours]
+      );
     }
 
-    await conexion.query(
-      "UPDATE settings SET value = ? WHERE name = 'delivery_hours'",
-      [deliveryHours]
-    );
-
-    await conexion.query(
-      "UPDATE settings SET value = ? WHERE name = 'working_hours'",
-      [workingHours]
-    );
+    if (workingHours !== undefined) {
+      await conexion.query(
+        "UPDATE settings SET value = ? WHERE name = 'working_hours'",
+        [workingHours]
+      );
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error al actualizar horarios:", error);
+    console.error("Error al actualizar delivery settings:", error);
     return NextResponse.json({ message: error.message }, { status: 500 });
   }
 }
