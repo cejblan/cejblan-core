@@ -14,6 +14,8 @@ import ProductCardAdmin from "@/app/admin/components/ProductCardAdmin";
 import ImageNotSupported from "@/public/ImageNotSupported.webp";
 // Carga el componente Maps dinámicamente y desactiva SSR
 const Maps = dynamic(() => import("../Maps"), { ssr: false });
+import "moment/locale/es";
+moment.locale("es");
 
 export default function Checkout() {
   const [deliveryDate, setDeliveryDate] = useState(null);
