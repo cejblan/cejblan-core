@@ -253,17 +253,25 @@ export default function ProductForm() {
                 alt={product.name}
                 width={200} height={200}
               />
-              <label htmlFor="image" className="text-xs absolute max-[420px]:top-1/3 top-2/3 left-0 w-full">
-                <button className="bg-blue-500 hover:bg-blue-500 text-white py-1 px-3 rounded-xl shadow-6xl mx-auto w-fit cursor-pointer block">Subir</button>
+              <div className="text-xs absolute max-[420px]:top-1/3 top-2/3 left-0 w-full flex justify-center">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation(); // <-- evita propagación
+                    fileInputRef.current?.click();
+                  }}
+                  className="bg-blue-500 hover:bg-blue-500 text-white py-1 px-3 rounded-xl shadow-6xl mx-auto"
+                >
+                  Subir
+                </button>
                 <input
                   ref={fileInputRef}
                   type="file"
                   id="image"
-                  className="bg-white py-1 px-2 rounded-md"
+                  className="hidden"
                   onChange={handleChange2}
-                  style={{ display: "none" }}
                 />
-              </label>
+              </div>
             </div>
           </div>
         </div>
