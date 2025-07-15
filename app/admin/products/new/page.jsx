@@ -19,6 +19,12 @@ export default function ProductForm() {
     id: "",
   });
 
+  const [galeriaAbierta, setGaleriaAbierta] = useState(false);
+  const [imagenes, setImagenes] = useState([]);
+  const [paginaGaleria, setPaginaGaleria] = useState(1);
+  const [totalPaginasGaleria, setTotalPaginasGaleria] = useState(1);
+  const porPagina = 36;
+
   const form = useRef(null);
   const router = useRouter();
   const params = useParams();
@@ -29,6 +35,7 @@ export default function ProductForm() {
       [e.target.name]: e.target.value,
     });
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
@@ -73,6 +80,7 @@ export default function ProductForm() {
     router.push("/admin/products");
     router.refresh(); // Solo actualiza los componentes del servidor
   };
+
   //Estilos input
   const [file, setFile] = useState(null);
   const fileInputRef = useRef(null);
@@ -89,6 +97,21 @@ export default function ProductForm() {
     setFile(event.target.files[0]);
   };
   //Fin estilos input
+
+  const cargarImagenesGaleria = async () => {
+    try {
+      const res = await fetch(`/api/cms/images?page=${paginaGaleria}&limit=${porPagina}`);
+      const data = await res.json();
+      setImagenes(data.imagenes || []);
+      setTotalPaginasGaleria(data.totalPaginas || 1);
+    } catch (err) {
+      console.error("Error al cargar imágenes:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (galeriaAbierta) cargarImagenesGaleria();
+  }, [galeriaAbierta, paginaGaleria]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -138,7 +161,7 @@ export default function ProductForm() {
       <Link href={params.id ? `/admin/products/${params.id}` : "/admin/products"} className=" bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl">
         <FaArrowLeft />
       </Link>
-      <form onSubmit={handleSubmit} ref={form} >
+      <form onSubmit={handleSubmit} ref={form} className="pl-3" >
         <div className="grid max-[420px]:grid-cols-1 grid-cols-2 gap-2 justify-center mb-4">
           <div className="max-[420px]:text-center text-left max-[420px]:pt-4 max-[420px]:mx-auto ml-4 max-[420px]:w-full">
             <div className="mb-1 flex gap-1 justify-center items-center">
@@ -256,21 +279,11 @@ export default function ProductForm() {
               <div className="text-xs absolute max-[420px]:top-1/3 top-2/3 left-0 w-full flex justify-center">
                 <button
                   type="button"
-                  onClick={(e) => {
-                    e.stopPropagation(); // <-- evita propagación
-                    fileInputRef.current?.click();
-                  }}
+                  onClick={() => setGaleriaAbierta(true)}
                   className="bg-blue-500 hover:bg-blue-500 text-white py-1 px-3 rounded-xl shadow-6xl mx-auto"
                 >
-                  Subir
+                  Seleccionar
                 </button>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  id="image"
-                  className="hidden"
-                  onChange={handleChange2}
-                />
               </div>
             </div>
           </div>
@@ -279,6 +292,48 @@ export default function ProductForm() {
           {params.id ? "Actualizar Producto" : "Crear Producto"}
         </button>
       </form >
+      {galeriaAbierta && (
+        <div className="fixed inset-0 bg-black bg-opacity-80 z-50 flex justify-center items-center">
+          <div className="relative bg-white rounded-xl p-4 max-w-4xl w-full m-4 max-h-[90vh] overflow-auto">
+            <button onClick={() => setGaleriaAbierta(false)} className="absolute top-2 right-2 text-slate-600 hover:text-black text-xl">✕</button>
+            <h2 className="text-lg font-bold mb-4">Seleccionar imagen</h2>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              {imagenes.map((img, i) => (
+                <div key={i} className="relative w-full aspect-square border rounded-2xl overflow-hidden bg-slate-100 cursor-pointer">
+                  <img
+                    src={img.url}
+                    alt={img.pathname}
+                    className="object-cover w-full h-full"
+                    onClick={() => {
+                      setProductData((prev) => ({ ...prev, image: img.url }));
+                      setGaleriaAbierta(false);
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-4 flex justify-center gap-2">
+              <button
+                onClick={() => setPaginaGaleria((p) => Math.max(1, p - 1))}
+                className="px-3 py-1 rounded bg-slate-300 hover:bg-slate-400"
+                disabled={paginaGaleria === 1}
+              >
+                Anterior
+              </button>
+              <span className="px-2 py-1">{paginaGaleria}/{totalPaginasGaleria}</span>
+              <button
+                onClick={() => setPaginaGaleria((p) => Math.min(totalPaginasGaleria, p + 1))}
+                className="px-3 py-1 rounded bg-slate-300 hover:bg-slate-400"
+                disabled={paginaGaleria === totalPaginasGaleria}
+              >
+                Siguiente
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
