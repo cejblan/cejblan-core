@@ -5,8 +5,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaArrowLeft } from "react-icons/fa";
 import ImageNotSupported from "@/public/ImageNotSupported.webp";
+import GaleriaModal from "@/app/admin/components/GaleriaModal";
 
 export default function UserForm() {
+  const [galeriaAbierta, setGaleriaAbierta] = useState(false);
+
   const [user, setUser] = useState({
     id: "",
     name: "",
@@ -14,9 +17,11 @@ export default function UserForm() {
     rol: "",
     image: "",
   });
+
   const form = useRef(null);
   const router = useRouter();
   const params = useParams();
+
   const handleChange = (e) => {
     setUser({
       ...user,
@@ -29,9 +34,7 @@ export default function UserForm() {
       try {
         if (params.id) {
           const res = await fetch(`/api/admin/users/${params.id}`);
-          if (!res.ok) {
-            throw new Error(`Error: ${res.status} ${res.statusText}`);
-          }
+          if (!res.ok) throw new Error(`Error: ${res.status} ${res.statusText}`);
           const data = await res.json();
           setUser({
             id: data.id,
@@ -45,36 +48,25 @@ export default function UserForm() {
         console.error("Error al cargar el usuario:", error);
       }
     };
-
     fetchUser();
   }, [params.id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const formData = new FormData();
     formData.append("name", user.name);
     formData.append("email", user.email);
     formData.append("rol", user.rol);
-
-    if (file) {
-      formData.append("image", file);
-    }
+    formData.append("image", user.image || "");
 
     const url = params.id ? `/api/admin/users/${params.id}` : "/api/admin/users";
     const method = params.id ? "PUT" : "POST";
 
     try {
-      const res = await fetch(url, {
-        method,
-        body: formData, // FormData se pasa directamente
-      });
-
-      if (!res.ok) {
-        throw new Error(`Error: ${res.status} ${res.statusText}`);
-      }
-
-      const data = await res.json();
-
+      const res = await fetch(url, { method, body: formData });
+      if (!res.ok) throw new Error(`Error: ${res.status} ${res.statusText}`);
+      await res.json();
     } catch (error) {
       console.error(
         params.id ? "Error al actualizar el usuario:" : "Error al crear el usuario:",
@@ -85,30 +77,19 @@ export default function UserForm() {
     alert("Usuario registrado");
     form.current.reset();
     router.push("/admin/users");
-    router.refresh(); // Solo actualiza los componentes del servidor
+    router.refresh();
   };
-  //Estilos input
-  const [file, setFile] = useState(null);
-  const fileInputRef = useRef(null);
-  const [fileName, setFileName] = useState("Ningún archivo seleccionado");
-  const handleChange2 = (event) => {
-    const files = event.target.files;
-    if (files.length === 0) {
-      setFileName(dataEmpty);
-    } else if (files.length > 1) {
-      setFileName(`${files.length} archivos seleccionados`);
-    } else {
-      setFileName(files[0].name);
-    }
-    setFile(event.target.files[0]);
-  };
-  //Fin estilos input
+
   return (
     <>
-      <Link href={params.id ? `/admin/users/${params.id}` : "/admin/users"} className=" bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl">
+      <Link
+        href={params.id ? `/admin/users/${params.id}` : "/admin/users"}
+        className="bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl"
+      >
         <FaArrowLeft />
       </Link>
-      <form onSubmit={handleSubmit} ref={form} >
+
+      <form onSubmit={handleSubmit} ref={form} className="pl-3">
         <div className="grid max-[420px]:grid-cols-1 grid-cols-2 gap-2 justify-center mb-4">
           <div className="max-[420px]:text-center text-left max-[420px]:pt-4 max-[420px]:mx-auto ml-4 max-[420px]:w-full">
             <div className="mb-1">
@@ -166,37 +147,42 @@ export default function UserForm() {
               </select>
             </div>
           </div>
+
           <div className="max-[420px]:text-center text-left mx-auto">
-            <p htmlFor="image" className="text-lg font-semibold pr-1 mb-1 block">
-              Foto:
-            </p>
+            <p className="text-lg font-semibold pr-1 mb-1 block">Foto:</p>
             <div className="grid grid-cols-1">
               <div className="relative">
                 <Image
-                  src={file ? URL.createObjectURL(file) : user.image || ImageNotSupported}
-                  className="rounded-md drop-shadow-6xl m-auto h-fit"
+                  src={user.image || ImageNotSupported}
+                  className="rounded-md drop-shadow-6xl m-auto"
                   alt={user.name}
-                  width={300} height={300}
+                  width={200}
+                  height={200}
                 />
-                <label htmlFor="image" className="text-xs absolute max-[420px]:top-1/3 top-2/3 left-0 w-full">
-                  <span className="bg-blue-500 hover:bg-blue-500 text-white py-1 px-3 rounded-xl shadow-6xl mx-auto w-fit cursor-pointer block">Subir</span>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    id="image"
-                    className="bg-white py-1 px-2 rounded-md"
-                    onChange={handleChange2}
-                    style={{ display: "none" }}
-                  />
-                </label>
+                <div className="text-xs absolute max-[420px]:top-1/3 top-2/3 left-0 w-full flex justify-center">
+                  <button
+                    type="button"
+                    onClick={() => setGaleriaAbierta(true)}
+                    className="bg-blue-500 hover:bg-blue-500 text-white py-1 px-3 rounded-xl shadow-6xl mx-auto"
+                  >
+                    Seleccionar
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
+
         <button className="text-white bg-blue-500 hover:bg-blue-600 font-bold py-1 px-2 rounded-xl shadow-6xl mx-auto w-fit">
           {params.id ? "Actualizar Usuario" : "Crear Usuario"}
         </button>
       </form>
+
+      <GaleriaModal
+        abierto={galeriaAbierta}
+        onClose={() => setGaleriaAbierta(false)}
+        onSelect={(url) => setUser(prev => ({ ...prev, image: url }))}
+      />
     </>
   );
 }

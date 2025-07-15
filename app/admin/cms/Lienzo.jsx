@@ -5,6 +5,9 @@ import MonacoEditor from '@monaco-editor/react';
 import { FiLayout, FiType, FiDroplet, FiBox, FiGrid, FiSquare, FiSliders } from 'react-icons/fi';
 import { TbScanPosition } from "react-icons/tb";
 import ModoEditor from './ModoEditor';
+import GaleriaModal from "@/app/admin/components/GaleriaModal";
+
+const TAILWIND_REGEX = /^[a-z]+(?:-[a-z0-9]+)+$/;
 
 const TAILWIND_MAP = {
   padding: {
@@ -111,7 +114,7 @@ export default function Editor({ file, contenido }) {
   const [nombreCommit, setNombreCommit] = useState('');
   const [descripcionCommit, setDescripcionCommit] = useState('');
   const [galeriaAbierta, setGaleriaAbierta] = useState(false);
-  
+
   const editorRef = useRef(null);
   const monacoRef = useRef(null);
   const timeoutRef = useRef(null);
@@ -542,6 +545,24 @@ export default function Editor({ file, contenido }) {
         content={content}
         galeriaAbierta={galeriaAbierta}
         setGaleriaAbierta={setGaleriaAbierta}
+      />
+      <GaleriaModal
+        abierto={galeriaAbierta}
+        onClose={() => setGaleriaAbierta(false)}
+        onSelect={(url) => {
+          // si es el logo:
+          if (imagenSeleccionada === 'logo') {
+            setLogoURL(url);
+          }
+          // si es una <img> seleccionada en el editor:
+          else if (imagenSeleccionada?.src !== undefined) {
+            imagenSeleccionada.src = url;
+            setContent(editorRef.current.innerHTML);
+          }
+          // cerrar modal y limpiar selección
+          setGaleriaAbierta(false);
+          setImagenSeleccionada(null);
+        }}
       />
       {/* Guardar cambios */}
       <div className="text-center">
