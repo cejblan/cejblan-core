@@ -5,8 +5,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaArrowLeft } from "react-icons/fa";
 import ImageNotSupported from "@/public/ImageNotSupported.webp";
+import GaleriaModal from "@/app/admin/components/GaleriaModal";
 
 export default function UserForm() {
+  const [galeriaAbierta, setGaleriaAbierta] = useState(false);
+  const [imagenes, setImagenes] = useState({});
+  const [paginaGaleria, setPaginaGaleria] = useState(1);
+  const [totalPaginasGaleria, setTotalPaginasGaleria] = useState(1);
+  const porPagina = 36;
+
   const [user, setUser] = useState({
     id: "",
     name: "",
@@ -108,7 +115,7 @@ export default function UserForm() {
       <Link href={params.id ? `/admin/users/${params.id}` : "/admin/users"} className=" bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl">
         <FaArrowLeft />
       </Link>
-      <form onSubmit={handleSubmit} ref={form} >
+      <form onSubmit={handleSubmit} ref={form} className="pl-3">
         <div className="grid max-[420px]:grid-cols-1 grid-cols-2 gap-2 justify-center mb-4">
           <div className="max-[420px]:text-center text-left max-[420px]:pt-4 max-[420px]:mx-auto ml-4 max-[420px]:w-full">
             <div className="mb-1">
@@ -173,22 +180,14 @@ export default function UserForm() {
             <div className="grid grid-cols-1">
               <div className="relative">
                 <Image
-                  src={file ? URL.createObjectURL(file) : user.image || ImageNotSupported}
-                  className="rounded-md drop-shadow-6xl m-auto h-fit"
+                  src={user.image || ImageNotSupported}
+                  className="rounded-md drop-shadow-6xl m-auto"
                   alt={user.name}
-                  width={300} height={300}
+                  width={200} height={200}
                 />
-                <label htmlFor="image" className="text-xs absolute max-[420px]:top-1/3 top-2/3 left-0 w-full">
-                  <span className="bg-blue-500 hover:bg-blue-500 text-white py-1 px-3 rounded-xl shadow-6xl mx-auto w-fit cursor-pointer block">Subir</span>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    id="image"
-                    className="bg-white py-1 px-2 rounded-md"
-                    onChange={handleChange2}
-                    style={{ display: "none" }}
-                  />
-                </label>
+                <div className="text-xs absolute max-[420px]:top-1/3 top-2/3 left-0 w-full flex justify-center">
+                  <button type="button" onClick={() => setGaleriaAbierta(true)} className="bg-blue-500 hover:bg-blue-500 text-white py-1 px-3 rounded-xl shadow-6xl mx-auto">Seleccionar</button>
+                </div>
               </div>
             </div>
           </div>
@@ -197,6 +196,12 @@ export default function UserForm() {
           {params.id ? "Actualizar Usuario" : "Crear Usuario"}
         </button>
       </form>
+
+      <GaleriaModal
+        abierto={galeriaAbierta}
+        onClose={() => setGaleriaAbierta(false)}
+        onSelect={(url) => setUser(prev => ({ ...prev, image: url }))}
+      />
     </>
   );
 }
