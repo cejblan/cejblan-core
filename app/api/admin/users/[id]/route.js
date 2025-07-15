@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { conexion } from "@/libs/mysql";
+import { del } from '@vercel/blob';
 
 // Obtener un usuario por ID
 export async function GET(req, { params: { id } }) {
