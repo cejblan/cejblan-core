@@ -2,10 +2,8 @@ import { NextResponse } from 'next/server';
 import { conexion } from '@/libs/mysql';
 import { del } from '@vercel/blob';
 
-export async function GET(req, context) {
+export async function GET(req, { params: { id } }) {
   try {
-    const { id } = context.params;
-
     const [result] = await conexion.query("SELECT * FROM products WHERE id = ?", [id]);
 
     if (result.length === 0) {
@@ -19,10 +17,8 @@ export async function GET(req, context) {
   }
 }
 
-export async function DELETE(req, context) {
+export async function DELETE(req, { params: { id } }) {
   try {
-    const { id } = context.params;
-
     const [product] = await conexion.query("SELECT image FROM products WHERE id = ?", [id]);
 
     if (!product || product.length === 0) {
@@ -52,9 +48,8 @@ export async function DELETE(req, context) {
   }
 }
 
-export async function PUT(req, context) {
+export async function PUT(req, { params: { id } }) {
   try {
-    const { id } = context.params;
     const data = await req.formData();
 
     const updateData = {
@@ -63,7 +58,7 @@ export async function PUT(req, context) {
       description: data.get("description"),
       category: data.get("category"),
       quantity: data.get("quantity"),
-      image: data.get("imageUrl") || "", // <- guarda imagen elegida de galería
+      image: data.get("imageUrl") || "", // ← imagen elegida desde galería
     };
 
     if (!updateData.name) {
