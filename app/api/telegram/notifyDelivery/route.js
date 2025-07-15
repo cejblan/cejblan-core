@@ -8,8 +8,10 @@ export async function POST(request) {
     return NextResponse.json({ status: "error", message: "Datos incompletos." });
   }
 
-  // Formatear fecha y hora (suponiendo que deliveryDate viene en ISO o similar)
   const moment = require("moment");
+  require("moment/locale/es"); // Cargar idioma español
+  moment.locale("es");         // Establecer idioma
+
   const formattedDate = deliveryDate
     ? moment(deliveryDate).format("dddd, D [de] MMMM [a las] h:mm A")
     : "No especificada";

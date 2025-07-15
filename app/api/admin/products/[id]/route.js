@@ -1,92 +1,61 @@
 import { NextResponse } from 'next/server';
 import { conexion } from '@/libs/mysql';
-import { put } from '@vercel/blob';
+import { del } from '@vercel/blob';
 
-export async function GET(req, { params }) {
+export async function GET(req, context) {
   try {
-    const [result] = await conexion.query("SELECT * FROM products WHERE id = ?", [
-      params.id,
-    ]);
+    const { id } = context.params;
+
+    const [result] = await conexion.query("SELECT * FROM products WHERE id = ?", [id]);
 
     if (result.length === 0) {
-      return NextResponse.json(
-        {
-          message: "Producto no encontrado",
-        },
-        {
-          status: 404,
-        }
-      );
+      return NextResponse.json({ message: "Producto no encontrado" }, { status: 404 });
     }
 
-    return NextResponse.json(result, {
-      status: 200,
-    });
+    return NextResponse.json(result, { status: 200 });
   } catch (error) {
-    console.log(error);
-    return NextResponse.json(
-      {
-        message: error.message,
-      },
-      { status: 500 }
-    );
+    console.error(error);
+    return NextResponse.json({ message: error.message }, { status: 500 });
   }
 }
 
-export async function DELETE(request, { params }) {
+export async function DELETE(req, context) {
   try {
-    // Buscar la imagen del producto
-    const [product] = await conexion.query(
-      "SELECT image FROM products WHERE id = ?",
-      [params.id]
-    );
+    const { id } = context.params;
+
+    const [product] = await conexion.query("SELECT image FROM products WHERE id = ?", [id]);
 
     if (!product || product.length === 0) {
-      return NextResponse.json(
-        { message: "Producto no encontrado" },
-        { status: 404 }
-      );
+      return NextResponse.json({ message: "Producto no encontrado" }, { status: 404 });
     }
 
     const imageUrl = product[0].image;
-
-    // Eliminar imagen de Vercel Blob si existe
     if (imageUrl && imageUrl.includes('vercel-storage.com')) {
       const filePath = imageUrl.split('/').slice(3).join('/');
       try {
-        await del(filePath); // borra la imagen del bucket
+        await del(filePath);
       } catch (err) {
         console.warn("No se pudo eliminar la imagen de Vercel Blob:", err.message);
       }
     }
 
-    // Eliminar el producto de la base de datos
-    const [result] = await conexion.query(
-      "DELETE FROM products WHERE id = ?",
-      [params.id]
-    );
+    const [result] = await conexion.query("DELETE FROM products WHERE id = ?", [id]);
 
     if (result.affectedRows === 0) {
-      return NextResponse.json(
-        { message: "Producto no encontrado" },
-        { status: 404 }
-      );
+      return NextResponse.json({ message: "Producto no encontrado" }, { status: 404 });
     }
 
     return new Response(null, { status: 204 });
   } catch (error) {
-    console.error("Error en el servidor:", error);
-    return NextResponse.json(
-      { message: error.message },
-      { status: 500 }
-    );
+    console.error(error);
+    return NextResponse.json({ message: error.message }, { status: 500 });
   }
 }
 
-export async function PUT(request, { params }) {
+export async function PUT(req, context) {
   try {
-    const data = await request.formData();
-    const image = data.get("image");
+    const { id } = context.params;
+    const data = await req.formData();
 
     const updateData = {
       name: data.get("name"),
@@ -94,45 +63,23 @@ export async function PUT(request, { params }) {
       description: data.get("description"),
       category: data.get("category"),
       quantity: data.get("quantity"),
+      image: data.get("imageUrl") || "", // <- guarda imagen elegida de galería
     };
 
     if (!updateData.name) {
-      return NextResponse.json(
-        { message: "Name is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ message: "Name is required" }, { status: 400 });
     }
 
-    if (image && image instanceof Blob) {
-      const blob = await put(image.name, image, {
-        access: "public",
-      });
-      updateData.image = blob.url;
-    }
-
-    const [result] = await conexion.query(
-      "UPDATE products SET ? WHERE id = ?",
-      [updateData, params.id]
-    );
+    const [result] = await conexion.query("UPDATE products SET ? WHERE id = ?", [updateData, id]);
 
     if (result.affectedRows === 0) {
-      return NextResponse.json(
-        { message: "Producto no encontrado" },
-        { status: 404 }
-      );
+      return NextResponse.json({ message: "Producto no encontrado" }, { status: 404 });
     }
 
-    const [updatedProduct] = await conexion.query(
-      "SELECT * FROM products WHERE id = ?",
-      [params.id]
-    );
-
+    const [updatedProduct] = await conexion.query("SELECT * FROM products WHERE id = ?", [id]);
     return NextResponse.json(updatedProduct);
   } catch (error) {
-    console.log(error);
-    return NextResponse.json(
-      { message: error.message },
-      { status: 500 }
-    );
+    console.error(error);
+    return NextResponse.json({ message: error.message }, { status: 500 });
   }
 }
