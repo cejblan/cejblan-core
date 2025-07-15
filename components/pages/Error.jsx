@@ -3,8 +3,7 @@
 import Image from "next/image";
 import { FaRegWindowMinimize, FaRegWindowMaximize, FaRegWindowClose } from "react-icons/fa";
 
-export default function Error500( ) {
-
+export default function Error500({ reset }) {
   return (
     // ===START_RETURN===
     <section className="font-bold text-center max-[420px]:px-4 pb-8 px-8 grid grid-cols-1 justify-center items-center">
@@ -27,11 +26,17 @@ export default function Error500( ) {
             </button>
           </div>
           <div className="max-[420px]:w-full w-1/2 flex justify-end items-end">
-            <Image className="drop-shadow-6xl mx-auto" src="https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/Gato500.webp" alt="Logo 404" width="300" height="300" />
+            <Image
+              className="drop-shadow-6xl mx-auto"
+              src="https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/Gato500.webp"
+              alt="Logo 500"
+              width="300"
+              height="300"
+            />
           </div>
         </div>
       </div>
-    </section >
+    </section>
     // ===END_RETURN===
-  )
+  );
 }
