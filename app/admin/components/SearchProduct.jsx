@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export default function SearchProduct({ onSelectProduct }) {
+export default function SearchProduct({ onSelectProduct, onSearchQueryChange }) {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -11,6 +11,11 @@ export default function SearchProduct({ onSelectProduct }) {
   const handleSearch = async (e) => {
     const value = e.target.value;
     setQuery(value);
+    setAction(false); // Evita mostrar sugerencias si vuelves a escribir
+
+    if (onSearchQueryChange) {
+      onSearchQueryChange(value); // ⬅️ aquí avisamos al padre
+    }
 
     if (!value.trim()) {
       setSuggestions([]);
@@ -18,7 +23,6 @@ export default function SearchProduct({ onSelectProduct }) {
     }
 
     setLoading(true);
-
     try {
       const response = await fetch(`/api/admin/products/search?q=${encodeURIComponent(value)}`);
       const results = await response.json();
@@ -31,9 +35,9 @@ export default function SearchProduct({ onSelectProduct }) {
   };
 
   const OnClick = (product) => {
-    setQuery(product.name)
-    setAction(product.name)
-    onSelectProduct && onSelectProduct(product); // 🧠 Aquí "avisamos" al padre
+    setQuery(product.name);
+    setAction(product.name);
+    onSelectProduct && onSelectProduct(product);
   };
 
   return (
@@ -45,11 +49,11 @@ export default function SearchProduct({ onSelectProduct }) {
         placeholder="Buscar producto..."
         className="w-full px-2 py-1 border border-slate-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
       />
-      {loading &&
+      {loading && (
         <div className="absolute top-6 w-full bg-white border border-slate-300 rounded-lg shadow-lg z-50">
           <p className="hover:bg-slate-100 text-slate-700 px-2 py-1 rounded-lg">Cargando...</p>
         </div>
-      }
+      )}
       {suggestions.length > 0 && query !== action && (
         <div className="absolute top-6 w-full bg-white border border-slate-300 rounded-lg shadow-lg z-50">
           {suggestions.map((product, index) => (
