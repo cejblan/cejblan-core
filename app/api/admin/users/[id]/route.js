@@ -3,13 +3,9 @@ import { NextResponse } from "next/server";
 import { conexion } from "@/libs/mysql";
 import { put, del } from "@vercel/blob";
 
-export async function GET(req, context) {
-  const { params } = context;
-
+export async function GET(req, { params: { id } }) {
   try {
-    const [result] = await conexion.query("SELECT * FROM users WHERE id = ?", [
-      params.id,
-    ]);
+    const [result] = await conexion.query("SELECT * FROM users WHERE id = ?", [id]);
 
     if (result.length === 0) {
       return NextResponse.json({ message: "Usuario no encontrado" }, { status: 404 });
@@ -59,8 +55,7 @@ export async function POST(request) {
   }
 }
 
-export async function PUT(request, context) {
-  const { params } = context;
+export async function PUT(request, { params: { id } }) {
   try {
     const data = await request.formData();
     const image = data.get("image");
@@ -80,7 +75,7 @@ export async function PUT(request, context) {
 
     const [result] = await conexion.query("UPDATE users SET ? WHERE id = ?", [
       updateData,
-      params.id,
+      id,
     ]);
 
     if (result.affectedRows === 0) {
@@ -88,7 +83,7 @@ export async function PUT(request, context) {
     }
 
     const [updatedUser] = await conexion.query("SELECT * FROM users WHERE id = ?", [
-      params.id,
+      id,
     ]);
 
     return NextResponse.json(updatedUser[0]);
@@ -98,12 +93,9 @@ export async function PUT(request, context) {
   }
 }
 
-export async function DELETE(request, context) {
-  const { params } = context;
+export async function DELETE(request, { params: { id } }) {
   try {
-    const [user] = await conexion.query("SELECT image FROM users WHERE id = ?", [
-      params.id,
-    ]);
+    const [user] = await conexion.query("SELECT image FROM users WHERE id = ?", [id]);
 
     if (!user || user.length === 0) {
       return NextResponse.json({ message: "Usuario no encontrado" }, { status: 404 });
@@ -120,9 +112,7 @@ export async function DELETE(request, context) {
       }
     }
 
-    const [result] = await conexion.query("DELETE FROM users WHERE id = ?", [
-      params.id,
-    ]);
+    const [result] = await conexion.query("DELETE FROM users WHERE id = ?", [id]);
 
     if (result.affectedRows === 0) {
       return NextResponse.json({ message: "Usuario no encontrado" }, { status: 404 });
