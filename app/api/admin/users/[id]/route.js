@@ -3,8 +3,9 @@ import { NextResponse } from "next/server";
 import { conexion } from "@/libs/mysql";
 import { put, del } from "@vercel/blob";
 
-// GET /api/users/[id]
-export async function GET(req, { params }) {
+export async function GET(req, context) {
+  const { params } = context;
+
   try {
     const [result] = await conexion.query("SELECT * FROM users WHERE id = ?", [
       params.id,
@@ -21,7 +22,6 @@ export async function GET(req, { params }) {
   }
 }
 
-// POST /api/users
 export async function POST(request) {
   try {
     const data = await request.formData();
@@ -59,8 +59,8 @@ export async function POST(request) {
   }
 }
 
-// PUT /api/users/[id]
-export async function PUT(request, { params }) {
+export async function PUT(request, context) {
+  const { params } = context;
   try {
     const data = await request.formData();
     const image = data.get("image");
@@ -98,8 +98,8 @@ export async function PUT(request, { params }) {
   }
 }
 
-// DELETE /api/users/[id]
-export async function DELETE(request, { params }) {
+export async function DELETE(request, context) {
+  const { params } = context;
   try {
     const [user] = await conexion.query("SELECT image FROM users WHERE id = ?", [
       params.id,
