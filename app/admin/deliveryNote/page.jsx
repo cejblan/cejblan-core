@@ -245,8 +245,8 @@ export default function DeliveryNote() {
             <p className="center">{customAddress}</p>
             <p className="center">RIF: {customRif}</p>
             <div className="fecha-hora">
-              <span class="fecha">Fecha: ${now.toLocaleDateString()}</span>
-              <span class="hora">Hora: ${time}</span>
+              <span className="fecha">Fecha: ${now.toLocaleDateString()}</span>
+              <span className="hora">Hora: ${time}</span>
             </div>
             <div className="line" />
             <p>Cliente: {clientName}</p>
