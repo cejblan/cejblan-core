@@ -54,10 +54,10 @@ export default function ProductsPageAdmin() {
   }
 
   const handlePrint = () => {
-    const printContent = document.getElementById("print-catalog")
-    if (!printContent) return
+    const printContent = document.getElementById("print-catalog");
+    if (!printContent) return;
 
-    const printWindow = window.open("", "_blank")
+    const printWindow = window.open("", "_blank");
 
     const styles = `
       <style>
@@ -75,7 +75,7 @@ export default function ProductsPageAdmin() {
         .title { font-weight: 600; font-size: 14px; }
         .text-xs { font-size: 12px; color: #374151; padding: 0px; margin: 0px; }
       </style>
-    `
+    `;
 
     printWindow.document.write(`
       <html>
@@ -87,13 +87,27 @@ export default function ProductsPageAdmin() {
           ${printContent.innerHTML}
         </body>
       </html>
-    `)
+    `);
 
-    printWindow.document.close()
-    printWindow.focus()
-    printWindow.print()
-    printWindow.close()
-  }
+    printWindow.document.close();
+
+    const images = printWindow.document.images;
+    const imagePromises = Array.from(images).map(img => {
+      return new Promise(resolve => {
+        if (img.complete) resolve();
+        else {
+          img.onload = resolve;
+          img.onerror = resolve;
+        }
+      });
+    });
+
+    Promise.all(imagePromises).then(() => {
+      printWindow.focus();
+      printWindow.print();
+      printWindow.close();
+    });
+  };
 
   return (
     <>
