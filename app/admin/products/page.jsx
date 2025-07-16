@@ -1,4 +1,4 @@
-// Código actualizado completo, reemplazando html2canvas y jsPDF por window.print() y manteniendo estilos originales durante la impresión
+// Código actualizado: impresión con estilos en línea equivalentes a los estilos Tailwind usados en pantalla
 
 "use client"
 
@@ -51,25 +51,32 @@ export default function ProductsPageAdmin() {
     if (!printContent) return
 
     const printWindow = window.open("", "_blank")
-    const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
-      .map(el => el.outerHTML).join('')
+
+    const styles = `
+      <style>
+        @media print {
+          @page { margin: 20mm; }
+          body { -webkit-print-color-adjust: exact; }
+        }
+        table { border-collapse: collapse; width: 100%; font-size: 14px; }
+        th, td { border: 1px solid #d1d5db; padding: 8px; text-align: center; }
+        h2 { font-size: 20px; font-weight: bold; margin-bottom: 16px; text-align: center; }
+        .grid { display: grid; gap: 16px; }
+        .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        .card { border: 1px solid #e5e7eb; padding: 8px; border-radius: 8px; text-align: center; background-color: #ffffff; }
+        .img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; margin-bottom: 8px; }
+        .title { font-weight: 600; font-size: 14px; }
+        .text-xs { font-size: 12px; color: #374151; }
+      </style>
+    `
 
     printWindow.document.write(`
       <html>
         <head>
           <title>Catálogo de Productos</title>
           ${styles}
-          <style>
-            @media print {
-              @page {
-                size: auto;
-                margin: 20mm;
-              }
-              body {
-                -webkit-print-color-adjust: exact;
-              }
-            }
-          </style>
         </head>
         <body>
           ${printContent.innerHTML}
@@ -148,14 +155,14 @@ export default function ProductsPageAdmin() {
                 ) : (
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                     {products.map((p) => (
-                      <div key={p.id || p._id || p.name} className="border p-2 rounded shadow text-center bg-white">
+                      <div key={p.id || p._id || p.name} className="card border p-2 rounded shadow text-center bg-white">
                         <img
                           src={p.image || ImageNotSupported.src}
                           onError={(e) => { e.target.src = ImageNotSupported.src }}
                           alt={p.name}
-                          className="w-full aspect-square object-cover mb-2"
+                          className="img w-full aspect-square object-cover mb-2"
                         />
-                        <h4 className="font-semibold text-sm">{p.name}</h4>
+                        <h4 className="title font-semibold text-sm">{p.name}</h4>
                         <p className="text-xs">{showBs ? <PrecioProducto precio={parseFloat(p.price)} format={0} /> : `${p.price} $`}</p>
                         <p className="text-xs">Cantidad: {p.quantity ?? "-"}</p>
                       </div>
