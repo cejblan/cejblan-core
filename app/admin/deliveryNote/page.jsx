@@ -28,6 +28,7 @@ export default function DeliveryNote() {
   const [customRif, setCustomRif] = useState("J-000000000");
   const [showPhone, setShowPhone] = useState(true);
   const [showAddress, setShowAddress] = useState(true);
+  const [showIva, setShowIva] = useState(true);
 
   const handleAddProduct = () => {
     setProducts([
@@ -91,6 +92,11 @@ export default function DeliveryNote() {
   
             .footer {
               margin-top: 10px;
+            }
+
+            .fecha-hora {
+              display: flex;
+              justify-content: space-between;
             }
           </style>
         </head>
@@ -238,7 +244,10 @@ export default function DeliveryNote() {
             <p className="center">{customHeader}</p>
             <p className="center">{customAddress}</p>
             <p className="center">RIF: {customRif}</p>
-            <p>Fecha: {now.toLocaleDateString()}  Hora: {time}</p>
+            <div className="fecha-hora">
+              <span class="fecha">Fecha: ${now.toLocaleDateString()}</span>
+              <span class="hora">Hora: ${time}</span>
+            </div>
             <div className="line" />
             <p>Cliente: {clientName}</p>
             <p>Documento: {documentType}-{documentNumber}</p>
@@ -253,8 +262,12 @@ export default function DeliveryNote() {
                 <div className="line" />
               </div>
             ))}
-            <p className="total">SUBTOTAL: <PrecioProducto precio={baseAmount} format={0} /></p>
-            <p className="total">IVA (16%): <PrecioProducto precio={ivaAmount} format={0} /></p>
+            {showIva && (
+              <>
+                <p className="total">SUBTOTAL: <PrecioProducto precio={baseAmount} format={0} /></p>
+                <p className="total">IVA (16%): <PrecioProducto precio={ivaAmount} format={0} /></p>
+              </>
+            )}
             <p className="total">TOTAL: <PrecioProducto precio={total} format={0} /></p>
             <p className="footer">Forma de pago: {paymentMethod}</p>
           </div>
@@ -340,6 +353,10 @@ export default function DeliveryNote() {
                   <div className="flex items-center gap-2">
                     <input type="checkbox" checked={showAddress} onChange={(e) => setShowAddress(e.target.checked)} />
                     <label className="text-sm">Mostrar dirección del cliente</label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input type="checkbox" checked={showIva} onChange={(e) => setShowIva(e.target.checked)} />
+                    <label className="text-sm">Mostrar IVA en la impresión</label>
                   </div>
                 </div>
               </div>
