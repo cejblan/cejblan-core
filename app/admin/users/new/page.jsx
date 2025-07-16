@@ -89,7 +89,7 @@ export default function UserForm() {
         <FaArrowLeft />
       </Link>
 
-      <form onSubmit={handleSubmit} ref={form} className="pl-3">
+      <form onSubmit={handleSubmit} ref={form} className="md:pl-3">
         <div className="grid max-[420px]:grid-cols-1 grid-cols-2 gap-2 justify-center mb-4">
           <div className="max-[420px]:text-center text-left max-[420px]:pt-4 max-[420px]:mx-auto ml-4 max-[420px]:w-full">
             <div className="mb-1">

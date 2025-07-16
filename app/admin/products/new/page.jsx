@@ -123,7 +123,7 @@ export default function ProductForm() {
       <Link href={params.id ? `/admin/products/${params.id}` : "/admin/products"} className=" bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl">
         <FaArrowLeft />
       </Link>
-      <form onSubmit={handleSubmit} ref={form} className="pl-3" >
+      <form onSubmit={handleSubmit} ref={form} className="md:pl-3" >
         <div className="grid max-[420px]:grid-cols-1 grid-cols-2 gap-2 justify-center mb-4">
           <div className="max-[420px]:text-center text-left max-[420px]:pt-4 max-[420px]:mx-auto ml-4 max-[420px]:w-full">
             <div className="mb-1 flex gap-1 justify-center items-center">

@@ -22,7 +22,7 @@ export default async function ProductPage({ params }) {
       <Link href="/admin/products" className=" bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md block absolute top-2 left-2 shadow-6xl">
         <FaArrowLeft />
       </Link>
-      <div className="grid max-[420px]:grid-cols-1 grid-cols-2 gap-2 justify-center pl-3 mb-4">
+      <div className="grid max-[420px]:grid-cols-1 grid-cols-2 gap-2 justify-center md:pl-3 mb-4">
         <div className="max-[420px]:text-center text-left max-[420px]:pt-4 max-[420px]:mx-auto ml-4">
           <div className="mb-1 flex gap-1 justify-center items-center">
             <h2 className="text-lg font-semibold pr-1">ID:</h2>

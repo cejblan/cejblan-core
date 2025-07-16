@@ -20,7 +20,7 @@ export default async function PayPage({ params }) {
       <Link href={`/admin/payments/`} className=" bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl">
         <FaArrowLeft />
       </Link>
-      <div className="grid max-[420px]:grid-cols-1 grid-cols-2 gap-2 justify-center mb-4">
+      <div className="grid max-[420px]:grid-cols-1 grid-cols-2 gap-2 justify-center md:pl-3 mb-4">
         <div className="max-[420px]:text-center text-left max-[420px]:pt-4 max-[420px]:mx-auto ml-4">
           <div className="mb-1">
             <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Id:</h2>
