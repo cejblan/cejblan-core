@@ -59,16 +59,14 @@ export default function ProductsPageAdmin() {
           body { -webkit-print-color-adjust: exact; }
         }
         table { border-collapse: collapse; width: 100%; font-size: 14px; }
-        th, td { border: 1px solid #d1d5db; padding: 8px; text-align: center; }
+        th, td { border: 1px solid #d1d5db; padding: 3px; text-align: center; }
         h2 { font-size: 20px; font-weight: bold; margin-bottom: 16px; text-align: center; }
         .grid { display: grid; gap: 16px; }
-        .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
         .grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
         .card { border: 1px solid #e5e7eb; padding: 8px; border-radius: 8px; text-align: center; background-color: #ffffff; }
         .img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; margin-bottom: 8px; }
         .title { font-weight: 600; font-size: 14px; }
-        .text-xs { font-size: 12px; color: #374151; }
+        .text-xs { font-size: 12px; color: #374151; padding: 0px; margin: 0px; }
       </style>
     `
 
@@ -135,25 +133,25 @@ export default function ProductsPageAdmin() {
                   <table className="w-full border border-collapse">
                     <thead>
                       <tr>
-                        <th className="border px-2">Código</th>
-                        <th className="border px-2">Nombre</th>
-                        <th className="border px-2">Precio</th>
-                        <th className="border px-2">Cantidad</th>
+                        <th className="border p-[3px]">Código</th>
+                        <th className="border p-[3px]">Nombre</th>
+                        <th className="border p-[3px]">Precio</th>
+                        <th className="border p-[3px]">Cantidad</th>
                       </tr>
                     </thead>
                     <tbody>
                       {products.map((p) => (
                         <tr key={p.id || p._id || p.name}>
-                          <td className="border px-2">{p.id || "-"}</td>
-                          <td className="border px-2">{p.name}</td>
-                          <td className="border px-2">{showBs ? <PrecioProducto precio={parseFloat(p.price)} format={0} /> : `${p.price} $`}</td>
-                          <td className="border px-2">{p.quantity ?? "-"}</td>
+                          <td className="border p-[3px]">{p.id || "-"}</td>
+                          <td className="border p-[3px]">{p.name}</td>
+                          <td className="border p-[3px]">{showBs ? <PrecioProducto precio={parseFloat(p.price)} format={0} /> : `${p.price} $`}</td>
+                          <td className="border p-[3px]">{p.quantity ?? "-"}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 ) : (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-4 gap-4">
                     {products.map((p) => (
                       <div key={p.id || p._id || p.name} className="card border p-2 rounded shadow text-center bg-white">
                         <img
