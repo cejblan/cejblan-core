@@ -61,11 +61,19 @@ export default function ProductsPageAdmin() {
 
     const preloadImages = Array.from(images).map((img) => {
       return new Promise((resolve) => {
-        const src = img.getAttribute("src")
-        const preload = new Image()
-        preload.src = src || ImageNotSupported.src
-        preload.onload = resolve
-        preload.onerror = resolve
+        const src = img.getAttribute("src") || ImageNotSupported.src
+        fetch(src)
+          .then((res) => res.blob())
+          .then((blob) => {
+            const reader = new FileReader()
+            reader.onload = () => {
+              img.setAttribute("src", reader.result)
+              resolve()
+            }
+            reader.onerror = resolve
+            reader.readAsDataURL(blob)
+          })
+          .catch(resolve)
       })
     })
 
@@ -198,4 +206,4 @@ export default function ProductsPageAdmin() {
       <p className="text-center font-bold mt-1 mx-auto w-fit">Página {currentPage} de {Math.ceil(productosFiltrados.length / itemsPerPage)}</p>
     </>
   )
-} 
+}
