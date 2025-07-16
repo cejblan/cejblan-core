@@ -54,20 +54,66 @@ export default function ProductsPageAdmin() {
   const handlePrintCatalogPDF = async () => {
     const element = document.getElementById("print-catalog")
     if (!element) return
+
+    // Clonar el contenido a imprimir
     const clone = element.cloneNode(true)
     clone.style.display = "block"
     clone.style.position = "absolute"
     clone.style.top = "-10000px"
+
+    // Inyectar estilos de la página (Tailwind + UI Libraries)
+    const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+      .map(el => el.outerHTML)
+      .join('')
+    const headWrapper = document.createElement('div')
+    headWrapper.innerHTML = styles
+    clone.prepend(headWrapper)
+
     document.body.appendChild(clone)
 
+    // Esperar carga completa de imágenes
+    await Promise.all(
+      Array.from(clone.querySelectorAll('img')).map(img =>
+        img.complete ? Promise.resolve() : new Promise(res => { img.onload = res; img.onerror = res })
+      )
+    )
+
+    // Capturar con html2canvas
     const canvas = await html2canvas(clone, { scale: 2, useCORS: true })
     document.body.removeChild(clone)
 
-    const imgData = canvas.toDataURL("image/jpeg", 1.0)
+    // Configurar PDF multipágina
     const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" })
     const pdfWidth = pdf.internal.pageSize.getWidth()
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width
-    pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight)
+    const pdfHeight = pdf.internal.pageSize.getHeight()
+    const canvasWidth = canvas.width
+    const canvasHeight = canvas.height
+    const pageHeightPx = Math.floor(canvasWidth * (pdfHeight / pdfWidth))
+    let position = 0
+    let remaining = canvasHeight
+
+    while (remaining > 0) {
+      const pageCanvas = document.createElement('canvas')
+      pageCanvas.width = canvasWidth
+      pageCanvas.height = Math.min(pageHeightPx, remaining)
+      const ctx = pageCanvas.getContext('2d')
+      ctx.drawImage(
+        canvas,
+        0, position,
+        canvasWidth, pageCanvas.height,
+        0, 0,
+        canvasWidth, pageCanvas.height
+      )
+
+      const imgData = pageCanvas.toDataURL('image/png')
+      const imgHeightMm = (pageCanvas.height * pdfWidth) / canvasWidth
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, imgHeightMm)
+
+      remaining -= pageCanvas.height
+      position += pageCanvas.height
+      if (remaining > 0) pdf.addPage()
+    }
+
     pdf.save("catalogo-productos.pdf")
   }
 
