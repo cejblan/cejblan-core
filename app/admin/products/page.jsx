@@ -209,7 +209,7 @@ export default function ProductsPageAdmin() {
                             `${product.price} $`
                           )}
                         </td>
-                        <td className="border px-2 py-1">{product.stock ?? "-"}</td>
+                        <td className="border px-2 py-1">{product.quantity ?? "-"}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -233,7 +233,7 @@ export default function ProductsPageAdmin() {
                           `${product.price} $`
                         )}
                       </p>
-                      <p className="text-xs text-gray-600 mt-1">Cantidad: {product.stock ?? "-"}</p>
+                      <p className="text-xs text-gray-600 mt-1">Cantidad: {product.quantity ?? "-"}</p>
                     </div>
                   ))}
                 </div>
@@ -258,7 +258,7 @@ export default function ProductsPageAdmin() {
                             ) : (
                               `${p.price} $`
                             )}</td>
-                            <td>{p.stock ?? "-"}</td>
+                            <td>{p.quantity ?? "-"}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -284,8 +284,8 @@ export default function ProductsPageAdmin() {
                               `${p.price} $`
                             )}
                           </p>
-                          <p style="font-size:13px;">
-                            Cantidad: ${p.stock ?? "-"}
+                          <p className="text-sm">
+                            Cantidad: ${p.quantity ?? "-"}
                           </p>
                         </div>
                       ))}
