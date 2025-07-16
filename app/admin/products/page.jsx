@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Titulos from "@/components/editable/Titulos"
 import { LoadProducts } from "../components/LoadProducts"
 import ProductCardAdmin from "../components/ProductCardAdmin"
@@ -8,9 +8,11 @@ import SearchProduct from "@/app/admin/components/SearchProduct"
 import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "@/app/admin/components/ui/dialog"
 import { Button } from "@/app/admin/components/ui/button"
 import PrecioProducto from "@/components/editable/PrecioProducto"
-import Image from "next/image";
-import ImageNotSupported from "@/public/ImageNotSupported.webp";
-import { useRef } from "react";
+import ImageNotSupported from "@/public/ImageNotSupported.webp"
+
+// librerías para generar PDF
+import html2canvas from "html2canvas"
+import jsPDF from "jspdf"
 
 export default function ProductsPageAdmin() {
   const [products, setProducts] = useState([])
@@ -19,10 +21,9 @@ export default function ProductsPageAdmin() {
   const [catalogOpen, setCatalogOpen] = useState(false)
   const [showBs, setShowBs] = useState(false)
   const [format, setFormat] = useState("tabla") // tabla | cuadricula
-  const [configOpen, setConfigOpen] = useState(false);
+  const [configOpen, setConfigOpen] = useState(false)
   const itemsPerPage = 12
-  const dialogRef = useRef(null);
-  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+  const dialogRef = useRef(null)
 
   useEffect(() => {
     LoadProducts(setProducts)
@@ -30,15 +31,14 @@ export default function ProductsPageAdmin() {
 
   useEffect(() => {
     if (configOpen && dialogRef.current) {
-      dialogRef.current.style.overflow = "hidden";
+      dialogRef.current.style.overflow = "hidden"
     } else if (dialogRef.current) {
-      dialogRef.current.style.overflow = "auto";
+      dialogRef.current.style.overflow = "auto"
     }
-
     return () => {
-      if (dialogRef.current) dialogRef.current.style.overflow = "auto";
-    };
-  }, [configOpen]);
+      if (dialogRef.current) dialogRef.current.style.overflow = "auto"
+    }
+  }, [configOpen])
 
   const handleProductSelect = (product) => {
     setSearchQuery(product.name)
@@ -61,90 +61,27 @@ export default function ProductsPageAdmin() {
     if (endIndex < productosFiltrados.length) setCurrentPage((prev) => prev + 1)
   }
 
-  const handlePrintCatalog = () => {
-    const printContainer = document.getElementById("print-catalog");
-    if (!printContainer) return;
+  // Generar PDF con html2canvas + jsPDF
+  const handlePrintCatalogPDF = async () => {
+    const element = document.getElementById("print-catalog")
+    if (!element) return
 
-    const contentHtml = Array.from(printContainer.querySelectorAll('.card, table')).map(el => el.outerHTML).join('');
-    const printHtml = `
-      <html>
-        <head>
-          <title>Catálogo de Productos</title>
-          <style>
-          @media print {
-            @page {
-              size: A4;
-              margin: 20mm;
-            }
-            body {
-              font-family: sans-serif;
-              font-size: 12px;
-              padding: 0;
-              margin: 0;
-            }
-            table {
-              width: 100%;
-              border-collapse: collapse;
-            }
-            th, td {
-              border: 1px solid #000;
-              padding: 6px;
-              text-align: left;
-            }
-            th {
-              background-color: #f0f0f0;
-            }
-            .grid {
-              display: grid;
-              grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-              gap: 12px;
-            }
-            .card {
-              border: 1px solid #ccc;
-              padding: 6px;
-              text-align: center;
-            }
-            .card-img {
-              width: 100%;
-              aspect-ratio: 1 / 1;
-              object-fit: cover;
-              border: 1px solid #ccc;
-            }
-          }
-        </style>
-        </head>
-        <body>${contentHtml}</body>
-      </html>
-    `;
+    const canvas = await html2canvas(element, { scale: 2 })
+    const imgData = canvas.toDataURL("image/png")
 
-    const iframe = document.createElement("iframe");
-    Object.assign(iframe.style, {
-      position: "fixed", right: "0", bottom: "0",
-      width: "0", height: "0", border: "0",
-    });
-    document.body.appendChild(iframe);
-    const doc = iframe.contentWindow?.document;
-    if (!doc) return;
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    })
 
-    doc.open();
-    doc.write(printHtml);
-    doc.close();
+    const pdfWidth = pdf.internal.pageSize.getWidth()
+    const imgProps = pdf.getImageProperties(imgData)
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width
 
-    // esperar que todas las imágenes carguen
-    const imgs = doc.querySelectorAll("img");
-    const promises = Array.from(imgs).map(img => new Promise(res => {
-      img.onload = res;
-      img.onerror = res;
-    }));
-
-    Promise.all(promises).then(() => {
-      setTimeout(() => {
-        iframe.contentWindow?.focus();
-        iframe.contentWindow?.print();
-        document.body.removeChild(iframe);
-      }, 100);
-    });
-  };
+    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight)
+    pdf.save("catalogo-productos.pdf")
+  }
 
   return (
     <>
@@ -164,15 +101,16 @@ export default function ProductsPageAdmin() {
             <DialogTrigger asChild>
               <Button>Ver Catálogo</Button>
             </DialogTrigger>
-            <DialogContent
-              ref={dialogRef}
-              className="max-w-6xl max-h-[90vh] overflow-y-auto"
-            >
+            <DialogContent ref={dialogRef} className="max-w-6xl max-h-[90vh] overflow-y-auto">
               <div className="flex justify-between items-center mb-4">
                 <DialogTitle>Catálogo de Productos</DialogTitle>
                 <div className="space-x-2 pr-10">
-                  <Button variant="outline" onClick={() => setConfigOpen(true)}>Configuración</Button>
-                  <Button onClick={handlePrintCatalog}>Imprimir</Button>
+                  <Button variant="outline" onClick={() => setConfigOpen(true)}>
+                    Configuración
+                  </Button>
+                  <Button onClick={handlePrintCatalogPDF}>
+                    Descargar PDF
+                  </Button>
                 </div>
               </div>
 
@@ -244,13 +182,14 @@ export default function ProductsPageAdmin() {
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                   {products.map((product) => (
-                    <div key={product.id || product._id || product.name} className="border p-2 rounded shadow text-center bg-white">
-                      <Image
-                        src={product.image || ImageNotSupported}
+                    <div
+                      key={product.id || product._id || product.name}
+                      className="border p-2 rounded shadow text-center bg-white"
+                    >
+                      <img
+                        src={product.image || ImageNotSupported.src}
                         alt={product.name}
-                        className="w-full h-32 object-contain mb-2"
-                        width={100}
-                        height={100}
+                        className="w-full aspect-square object-cover mb-2"
                       />
                       <h3 className="font-semibold">{product.name}</h3>
                       <p className="text-sm text-gray-700">
@@ -260,7 +199,9 @@ export default function ProductsPageAdmin() {
                           `${product.price} $`
                         )}
                       </p>
-                      <p className="text-xs text-gray-600 mt-1">Cantidad: {product.quantity ?? "-"}</p>
+                      <p className="text-xs text-gray-600 mt-1">
+                        Cantidad: {product.quantity ?? "-"}
+                      </p>
                     </div>
                   ))}
                 </div>
@@ -273,18 +214,25 @@ export default function ProductsPageAdmin() {
                     <h2>Catálogo de Productos</h2>
                     <table>
                       <thead>
-                        <tr><th>Código</th><th>Nombre</th><th>Precio</th><th>Cantidad</th></tr>
+                        <tr>
+                          <th>Código</th>
+                          <th>Nombre</th>
+                          <th>Precio</th>
+                          <th>Cantidad</th>
+                        </tr>
                       </thead>
                       <tbody>
                         {products.map((p) => (
                           <tr key={p.id || p._id || p.name}>
                             <td>{p.id || "-"}</td>
                             <td>{p.name}</td>
-                            <td>{showBs ? (
-                              <PrecioProducto precio={parseFloat(p.price)} format={0} />
-                            ) : (
-                              `${p.price} $`
-                            )}</td>
+                            <td>
+                              {showBs ? (
+                                <PrecioProducto precio={parseFloat(p.price)} format={0} />
+                              ) : (
+                                `${p.price} $`
+                              )}
+                            </td>
                             <td>{p.quantity ?? "-"}</td>
                           </tr>
                         ))}
@@ -296,12 +244,14 @@ export default function ProductsPageAdmin() {
                     <h2>Catálogo de Productos</h2>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                       {products.map((p) => (
-                        <div key={p.id || p._id || p.name} className="card border p-2 rounded shadow text-center bg-white">
-                          <Image
+                        <div
+                          key={p.id || p._id || p.name}
+                          className="card border p-2 rounded shadow text-center bg-white"
+                        >
+                          <img
                             src={p.image || ImageNotSupported.src}
                             alt={p.name}
-                            className="w-full h-32 object-contain mb-2"
-                            width={100} height={100}
+                            className="w-full aspect-square object-cover mb-2"
                           />
                           <h4 className="font-semibold">{p.name}</h4>
                           <p className="text-sm text-gray-700">
@@ -312,7 +262,7 @@ export default function ProductsPageAdmin() {
                             )}
                           </p>
                           <p className="text-sm">
-                            Cantidad: ${p.quantity ?? "-"}
+                            Cantidad: {p.quantity ?? "-"}
                           </p>
                         </div>
                       ))}
