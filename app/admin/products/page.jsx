@@ -78,7 +78,18 @@ export default function ProductsPageAdmin() {
     })
 
     Promise.all(preloadImages).then(() => {
-      const printWindow = window.open("", "_blank")
+      // Crear iframe oculto
+      const iframe = document.createElement("iframe")
+      iframe.style.position = "fixed"
+      iframe.style.right = "0"
+      iframe.style.bottom = "0"
+      iframe.style.width = "0"
+      iframe.style.height = "0"
+      iframe.style.border = "0"
+      document.body.appendChild(iframe)
+
+      const doc = iframe.contentDocument || iframe.contentWindow.document
+
       const styles = `
         <style>
           @media print {
@@ -96,16 +107,25 @@ export default function ProductsPageAdmin() {
           .text-xs { font-size: 12px; color: #374151; padding: 0px; margin: 0px; }
         </style>
       `
-      printWindow.document.write(`
+
+      doc.open()
+      doc.write(`
         <html>
           <head><title>Catálogo de Productos</title>${styles}</head>
           <body>${clonedContent.innerHTML}</body>
         </html>
       `)
-      printWindow.document.close()
-      printWindow.focus()
-      printWindow.print()
-      printWindow.close()
+      doc.close()
+
+      iframe.onload = () => {
+        iframe.contentWindow.focus()
+        iframe.contentWindow.print()
+
+        // Eliminar iframe luego de imprimir
+        setTimeout(() => {
+          document.body.removeChild(iframe)
+        }, 1000)
+      }
     })
   }
 
