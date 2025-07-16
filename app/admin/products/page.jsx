@@ -60,7 +60,7 @@ export default function ProductsPageAdmin() {
     clone.style.top = "-10000px"
     document.body.appendChild(clone)
 
-    const canvas = await html2canvas(clone, { scale: 2 })
+    const canvas = await html2canvas(clone, { scale: 2, useCORS: true })
     document.body.removeChild(clone)
 
     const imgData = canvas.toDataURL("image/jpeg", 1.0)
@@ -74,6 +74,7 @@ export default function ProductsPageAdmin() {
   return (
     <>
       <Titulos texto="Lista de Productos" />
+
       <div className="flex gap-1 pb-4">
         <div className="max-w-md ml-auto my-auto">
           <SearchProduct onSelectProduct={handleProductSelect} onSearchQueryChange={setSearchQuery} />
@@ -114,19 +115,19 @@ export default function ProductsPageAdmin() {
                 <table className="w-full border border-gray-500 border-collapse text-sm">
                   <thead className="bg-gray-100">
                     <tr>
-                      <th className="border border-gray-400 px-2 py-1">Código</th>
-                      <th className="border border-gray-400 px-2 py-1">Nombre</th>
-                      <th className="border border-gray-400 px-2 py-1">Precio</th>
-                      <th className="border border-gray-400 px-2 py-1">Cantidad</th>
+                      <th className="border border-gray-400 px-2 text-center align-middle leading-none">Código</th>
+                      <th className="border border-gray-400 px-2 text-center align-middle leading-none">Nombre</th>
+                      <th className="border border-gray-400 px-2 text-center align-middle leading-none">Precio</th>
+                      <th className="border border-gray-400 px-2 text-center align-middle leading-none">Cantidad</th>
                     </tr>
                   </thead>
                   <tbody>
                     {products.map((p) => (
                       <tr key={p.id || p._id || p.name}>
-                        <td className="border border-gray-400 px-2 py-1">{p.id || "-"}</td>
-                        <td className="border border-gray-400 px-2 py-1">{p.name}</td>
-                        <td className="border border-gray-400 px-2 py-1">{showBs ? <PrecioProducto precio={parseFloat(p.price)} format={0} /> : `${p.price} $`}</td>
-                        <td className="border border-gray-400 px-2 py-1">{p.quantity ?? "-"}</td>
+                        <td className="border border-gray-400 px-2 text-center">{p.id || "-"}</td>
+                        <td className="border border-gray-400 px-2">{p.name}</td>
+                        <td className="border border-gray-400 px-2 text-center">{showBs ? <PrecioProducto precio={parseFloat(p.price)} format={0} /> : `${p.price} $`}</td>
+                        <td className="border border-gray-400 px-2 text-center">{p.quantity ?? "-"}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -135,7 +136,12 @@ export default function ProductsPageAdmin() {
                 <div className="p-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                   {products.map((p) => (
                     <div key={p.id || p._id || p.name} className="border p-2 rounded shadow text-center bg-white">
-                      <img src={p.image || ImageNotSupported.src} alt={p.name} className="w-full aspect-square object-cover mb-2" />
+                      <img
+                        src={p.image || ImageNotSupported.src}
+                        onError={(e) => { e.target.src = ImageNotSupported.src }}
+                        alt={p.name}
+                        className="w-full aspect-square object-cover mb-2"
+                      />
                       <h3 className="font-semibold text-sm">{p.name}</h3>
                       <p className="text-xs text-gray-700">
                         {showBs ? <PrecioProducto precio={parseFloat(p.price)} format={0} /> : `${p.price} $`}
@@ -146,26 +152,48 @@ export default function ProductsPageAdmin() {
                 </div>
               )}
 
-              <div id="print-catalog" className="hidden p-6 bg-white text-black">
+              <div id="print-catalog" className="hidden p-6 bg-white text-black text-sm leading-none">
                 {format === "tabla" ? (
                   <div>
-                    <h2>Catálogo de Productos</h2>
+                    <h2 className="text-xl font-bold mb-4 text-center">Catálogo de Productos</h2>
                     <table className="w-full border border-gray-500 border-collapse text-sm">
                       <thead className="bg-gray-100">
                         <tr>
-                          <th className="border border-gray-400 px-2 py-1">Código</th>
-                          <th className="border border-gray-400 px-2 py-1">Nombre</th>
-                          <th className="border border-gray-400 px-2 py-1">Precio</th>
-                          <th className="border border-gray-400 px-2 py-1">Cantidad</th>
+                          <th className="border border-gray-400 px-2">
+                            <span className="relative bottom-1">Código</span>
+                          </th>
+                          <th className="border border-gray-400 px-2">
+                            <span className="relative bottom-1">Nombre</span>
+                          </th>
+                          <th className="border border-gray-400 px-2">
+                            <span className="relative bottom-1">Precio</span>
+                          </th>
+                          <th className="border border-gray-400 px-2">
+                            <span className="relative bottom-1">Cantidad</span>
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
                         {products.map((p) => (
                           <tr key={p.id || p._id || p.name}>
-                            <td className="border border-gray-400 px-2 py-1">{p.id || "-"}</td>
-                            <td className="border border-gray-400 px-2 py-1">{p.name}</td>
-                            <td className="border border-gray-400 px-2 py-1">{showBs ? <PrecioProducto precio={parseFloat(p.price)} format={0} /> : `${p.price} $`}</td>
-                            <td className="border border-gray-400 px-2 py-1">{p.quantity ?? "-"}</td>
+                            <td className="border border-gray-400 px-2 text-center">
+                              <span className="relative bottom-1">{p.id || "-"}</span>
+                            </td>
+                            <td className="border border-gray-400 px-2">
+                              <span className="relative bottom-1">{p.name}</span>
+                            </td>
+                            <td className="border border-gray-400 px-2 text-center">
+                              <span className="relative bottom-1">
+                                {showBs ?
+                                  <PrecioProducto precio={parseFloat(p.price)} format={0} />
+                                  :
+                                  `${p.price} $`
+                                }
+                              </span>
+                            </td>
+                            <td className="border border-gray-400 px-2 text-center">
+                              <span className="relative bottom-1">{p.quantity ?? "-"}</span>
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -173,11 +201,16 @@ export default function ProductsPageAdmin() {
                   </div>
                 ) : (
                   <div>
-                    <h2>Catálogo de Productos</h2>
+                    <h2 className="text-xl font-bold mb-4 text-center">Catálogo de Productos</h2>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                       {products.map((p) => (
                         <div key={p.id || p._id || p.name} className="border p-2 rounded shadow text-center bg-white">
-                          <img src={p.image || ImageNotSupported.src} alt={p.name} className="w-full aspect-square object-cover mb-2" />
+                          <img
+                            src={p.image || ImageNotSupported.src}
+                            onError={(e) => { e.target.src = ImageNotSupported.src }}
+                            alt={p.name}
+                            className="w-full aspect-square object-cover mb-2"
+                          />
                           <h4 className="font-semibold text-sm">{p.name}</h4>
                           <p className="text-xs">
                             {showBs ? <PrecioProducto precio={parseFloat(p.price)} format={0} /> : `${p.price} $`}
