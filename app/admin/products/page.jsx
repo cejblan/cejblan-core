@@ -22,6 +22,7 @@ export default function ProductsPageAdmin() {
   const [configOpen, setConfigOpen] = useState(false);
   const itemsPerPage = 12
   const dialogRef = useRef(null);
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 
   useEffect(() => {
     LoadProducts(setProducts)
@@ -64,62 +65,74 @@ export default function ProductsPageAdmin() {
     const printContainer = document.getElementById("print-catalog")
     if (!printContainer) return
 
-    const content = printContainer.outerHTML
-    const printWindow = window.open("", "_blank")
-    printWindow?.document.write(`
-      <html>
-        <head>
-          <title>Catálogo de Productos</title>
-          <style>
-            @media print {
-              @page {
-                size: A4;
-                margin: 20mm;
+    const content = printContainer.innerHTML
+    const isMobile = /Mobi|Android/i.test(navigator.userAgent)
+
+    if (isMobile) {
+      // Imprimir en la misma ventana (más seguro en móviles)
+      const originalContent = document.body.innerHTML
+      document.body.innerHTML = content
+      window.print()
+      document.body.innerHTML = originalContent
+      window.location.reload()
+    } else {
+      // Escritorio: usar ventana nueva
+      const printWindow = window.open("", "_blank")
+      printWindow?.document.write(`
+        <html>
+          <head>
+            <title>Catálogo de Productos</title>
+            <style>
+              @media print {
+                @page {
+                  size: A4;
+                  margin: 20mm;
+                }
+                body {
+                  font-family: sans-serif;
+                  font-size: 12px;
+                }
+                table {
+                  width: 100%;
+                  border-collapse: collapse;
+                }
+                th, td {
+                  border: 1px solid #000;
+                  padding: 6px;
+                  text-align: left;
+                }
+                th {
+                  background-color: #f0f0f0;
+                }
+                .grid {
+                  display: grid;
+                  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                  gap: 12px;
+                }
+                .card {
+                  border: 1px solid #ccc;
+                  padding: 6px;
+                  text-align: center;
+                }
+                .card-img {
+                  width: 100%;
+                  aspect-ratio: 1 / 1;
+                  object-fit: cover;
+                  border: 1px solid #ccc;
+                }
               }
-              body {
-                font-family: sans-serif;
-                font-size: 12px;
-              }
-              table {
-                width: 100%;
-                border-collapse: collapse;
-              }
-              th, td {
-                border: 1px solid #000;
-                padding: 6px;
-                text-align: left;
-              }
-              th {
-                background-color: #f0f0f0;
-              }
-              .grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-                gap: 12px;
-              }
-              .card {
-                border: 1px solid #ccc;
-                padding: 6px;
-                text-align: center;
-              }
-              .card-img {
-                width: 100%;
-                aspect-ratio: 1 / 1; /* Cuadrado perfecto */
-                object-fit: cover;
-                border: 1px solid #ccc;
-              }              
-            }
-          </style>
-        </head>
-        <body>
-          ${content}
-        </body>
-      </html>
-    `)
-    printWindow?.document.close()
-    printWindow?.focus()
-    printWindow?.print()
-    printWindow?.close()
+            </style>
+          </head>
+          <body>
+            ${content}
+          </body>
+        </html>
+      `)
+      printWindow?.document.close()
+      printWindow?.focus()
+      printWindow?.print()
+      printWindow?.close()
+    }
   }
 
   return (
