@@ -25,7 +25,6 @@ export default function ProductsPageAdmin() {
     LoadProducts(setProducts)
   }, [])
 
-  // Control overflow de DialogContent cuando abre configuración
   useEffect(() => {
     if (configOpen && dialogRef.current) dialogRef.current.style.overflow = "hidden"
     else if (dialogRef.current) dialogRef.current.style.overflow = "auto"
@@ -54,16 +53,24 @@ export default function ProductsPageAdmin() {
   }
 
   const handlePrint = () => {
-    const printContent = document.getElementById("print-catalog");
-    if (!printContent) return;
+    const printContent = document.getElementById("print-catalog")
+    if (!printContent) return
 
-    const printWindow = window.open("", "_blank");
+    const originalContent = document.body.innerHTML
+    const clonedContent = printContent.cloneNode(true)
+
+    const imgs = clonedContent.querySelectorAll("img")
+    imgs.forEach((img) => {
+      if (!img.src) {
+        img.src = ImageNotSupported.src
+      }
+    })
 
     const styles = `
       <style>
         @media print {
           @page { margin: 20mm; }
-          body { -webkit-print-color-adjust: exact; }
+          body { -webkit-print-color-adjust: exact; background: white; }
         }
         table { border-collapse: collapse; width: 100%; font-size: 14px; }
         th, td { border: 1px solid #d1d5db; padding: 3px; text-align: center; }
@@ -75,39 +82,18 @@ export default function ProductsPageAdmin() {
         .title { font-weight: 600; font-size: 14px; }
         .text-xs { font-size: 12px; color: #374151; padding: 0px; margin: 0px; }
       </style>
-    `;
+    `
 
-    printWindow.document.write(`
-      <html>
-        <head>
-          <title>Catálogo de Productos</title>
-          ${styles}
-        </head>
-        <body>
-          ${printContent.innerHTML}
-        </body>
-      </html>
-    `);
+    document.body.innerHTML = styles + clonedContent.outerHTML
 
-    printWindow.document.close();
+    window.focus()
+    window.print()
 
-    const images = printWindow.document.images;
-    const imagePromises = Array.from(images).map(img => {
-      return new Promise(resolve => {
-        if (img.complete) resolve();
-        else {
-          img.onload = resolve;
-          img.onerror = resolve;
-        }
-      });
-    });
-
-    Promise.all(imagePromises).then(() => {
-      printWindow.focus();
-      printWindow.print();
-      printWindow.close();
-    });
-  };
+    window.onafterprint = () => {
+      document.body.innerHTML = originalContent
+      window.location.reload()
+    }
+  }
 
   return (
     <>
@@ -148,7 +134,7 @@ export default function ProductsPageAdmin() {
                 </div>
               )}
 
-              <div id="print-catalog" className="p-6 bg-white text-black text-sm leading-none">
+              <div id="print-catalog" className="p-4 bg-white text-black text-sm leading-none">
                 <h2 className="text-xl font-bold mb-4">Catálogo de Productos</h2>
                 {format === "tabla" ? (
                   <table className="w-full border border-collapse">
