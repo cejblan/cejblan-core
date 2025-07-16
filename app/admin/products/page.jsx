@@ -62,7 +62,7 @@ export default function ProductsPageAdmin() {
         th, td { border: 1px solid #d1d5db; padding: 3px; text-align: center; }
         h2 { font-size: 20px; font-weight: bold; margin-bottom: 16px; text-align: center; }
         .grid { display: grid; gap: 16px; }
-        .grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        .md:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
         .card { border: 1px solid #e5e7eb; padding: 8px; border-radius: 8px; text-align: center; background-color: #ffffff; }
         .img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; margin-bottom: 8px; }
         .title { font-weight: 600; font-size: 14px; }
@@ -151,7 +151,7 @@ export default function ProductsPageAdmin() {
                     </tbody>
                   </table>
                 ) : (
-                  <div className="grid grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                     {products.map((p) => (
                       <div key={p.id || p._id || p.name} className="card border p-2 rounded shadow text-center bg-white">
                         <img
