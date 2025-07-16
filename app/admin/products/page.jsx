@@ -1,5 +1,3 @@
-// Código actualizado: impresión con estilos en línea equivalentes a los estilos Tailwind usados en pantalla
-
 "use client"
 
 import { useState, useEffect, useRef } from "react"
@@ -23,7 +21,16 @@ export default function ProductsPageAdmin() {
   const itemsPerPage = 12
   const dialogRef = useRef(null)
 
-  useEffect(() => { LoadProducts(setProducts) }, [])
+  useEffect(() => {
+    LoadProducts(setProducts)
+  }, [])
+
+  // Control overflow de DialogContent cuando abre configuración
+  useEffect(() => {
+    if (configOpen && dialogRef.current) dialogRef.current.style.overflow = "hidden"
+    else if (dialogRef.current) dialogRef.current.style.overflow = "auto"
+    return () => { if (dialogRef.current) dialogRef.current.style.overflow = "auto" }
+  }, [configOpen])
 
   const handleProductSelect = (product) => {
     setSearchQuery(product.name)
