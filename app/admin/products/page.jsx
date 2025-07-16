@@ -8,6 +8,8 @@ import SearchProduct from "@/app/admin/components/SearchProduct"
 import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "@/app/admin/components/ui/dialog"
 import { Button } from "@/app/admin/components/ui/button"
 import PrecioProducto from "@/components/editable/PrecioProducto"
+import Image from "next/image";
+import ImageNotSupported from "@/public/ImageNotSupported.webp";
 
 export default function ProductsPageAdmin() {
   const [products, setProducts] = useState([])
@@ -22,6 +24,20 @@ export default function ProductsPageAdmin() {
   useEffect(() => {
     LoadProducts(setProducts)
   }, [])
+
+  useEffect(() => {
+    const dialogContent = document.querySelector('[data-state="open"]'); // DialogContent visible
+  
+    if (configOpen && dialogContent) {
+      dialogContent.style.overflow = "hidden";
+    } else if (dialogContent) {
+      dialogContent.style.overflow = "";
+    }
+  
+    return () => {
+      if (dialogContent) dialogContent.style.overflow = "";
+    };
+  }, [configOpen]);  
 
   const handleProductSelect = (product) => {
     setSearchQuery(product.name)
@@ -132,17 +148,22 @@ export default function ProductsPageAdmin() {
 
               {/* Configuración */}
               {configOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex justify-center items-center">
-                  <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md relative">
-                    <button onClick={() => setConfigOpen(false)} className="absolute top-2 right-4 text-gray-500 hover:text-black">✕</button>
+                <div className="fixed inset-0 z-50 flex justify-center items-center">
+                  <div className="bg-white p-6 rounded-lg shadow-6xl w-full max-w-md relative">
+                    <button
+                      onClick={() => setConfigOpen(false)}
+                      className="absolute top-2 right-4 text-gray-500 hover:text-black"
+                    >
+                      ✕
+                    </button>
                     <h2 className="text-lg font-semibold mb-4">Configuración de Catálogo</h2>
 
                     <div className="mb-4">
                       <label className="flex items-center gap-2">
                         <input
                           type="checkbox"
-                          checked={usarTasaBCV}
-                          onChange={(e) => setUsarTasaBCV(e.target.checked)}
+                          checked={showBs}
+                          onChange={(e) => setShowBs(e.target.checked)}
                         />
                         Mostrar precios en bolívares (tasa BCV)
                       </label>
@@ -151,8 +172,8 @@ export default function ProductsPageAdmin() {
                     <div className="mb-2">
                       <label className="block mb-1 font-medium">Formato de impresión</label>
                       <select
-                        value={formato}
-                        onChange={(e) => setFormato(e.target.value)}
+                        value={format}
+                        onChange={(e) => setFormat(e.target.value)}
                         className="w-full border rounded px-3 py-2"
                       >
                         <option value="tabla">Tabla</option>
@@ -192,13 +213,12 @@ export default function ProductsPageAdmin() {
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                   {products.map((product) => (
                     <div key={product.id || product._id || product.name} className="border p-2 rounded shadow text-center bg-white">
-                      {product.image && (
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          className="w-full h-32 object-contain mb-2"
-                        />
-                      )}
+                      <Image
+                        src={product.image || ImageNotSupported}
+                        alt={product.name}
+                        className="w-full h-32 object-contain mb-2"
+                        width={100} height={100}
+                      />
                       <h3 className="font-semibold">{product.name}</h3>
                       <p className="text-sm text-gray-700">
                         {showBs ? (
@@ -240,7 +260,7 @@ export default function ProductsPageAdmin() {
                   <div class="grid">
                     ${products.map((p) => `
                       <div class="card">
-                        ${p.image ? `<img src="${p.image}" alt="${p.name}" />` : ""}
+                        <img src="${p.image || ImageNotSupported}" alt="${p.name}" />
                         <h4>${p.name}</h4>
                         <p>${showBs
                       ? `<span>${document.getElementById(`precio-${p.id}`)?.innerHTML || "-"}</span>`
