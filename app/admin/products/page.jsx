@@ -27,17 +27,17 @@ export default function ProductsPageAdmin() {
 
   useEffect(() => {
     const dialogContent = document.querySelector('[data-state="open"]'); // DialogContent visible
-  
+
     if (configOpen && dialogContent) {
       dialogContent.style.overflow = "hidden";
     } else if (dialogContent) {
       dialogContent.style.overflow = "";
     }
-  
+
     return () => {
       if (dialogContent) dialogContent.style.overflow = "";
     };
-  }, [configOpen]);  
+  }, [configOpen]);
 
   const handleProductSelect = (product) => {
     setSearchQuery(product.name)
@@ -61,7 +61,10 @@ export default function ProductsPageAdmin() {
   }
 
   const handlePrintCatalog = () => {
-    const content = document.getElementById("print-catalog")?.innerHTML
+    const printContainer = document.getElementById("print-catalog")
+    if (!printContainer) return
+
+    const content = printContainer.outerHTML
     const printWindow = window.open("", "_blank")
     printWindow?.document.write(`
       <html>
@@ -235,41 +238,53 @@ export default function ProductsPageAdmin() {
               {/* Área oculta para imprimir */}
               <div id="print-catalog" className="hidden">
                 {format === "tabla" ? (
-                  `
-                  <h2>Catálogo de Productos</h2>
-                  <table>
-                    <thead>
-                      <tr><th>Código</th><th>Nombre</th><th>Precio</th></tr>
-                    </thead>
-                    <tbody>
-                      ${products.map((p) => `
-                        <tr>
-                          <td>${p.id || "-"}</td>
-                          <td>${p.name}</td>
-                          <td>${showBs
-                      ? `<span>${document.getElementById(`precio-${p.id}`)?.innerHTML || "-"}</span>`
-                      : `${p.price} $`
-                    }</td>
-                        </tr>
-                      `).join("")}
-                    </tbody>
-                  </table>
-                  `
-                ) : (
-                  `
-                  <div class="grid">
-                    ${products.map((p) => `
-                      <div class="card">
-                        <img src="${p.image || ImageNotSupported}" alt="${p.name}" />
-                        <h4>${p.name}</h4>
-                        <p>${showBs
-                      ? `<span>${document.getElementById(`precio-${p.id}`)?.innerHTML || "-"}</span>`
-                      : `${p.price} $`
-                    }</p>
-                      </div>
-                    `).join("")}
+                  <div>
+                    <h2>Catálogo de Productos</h2>
+                    <table>
+                      <thead>
+                        <tr><th>Código</th><th>Nombre</th><th>Precio</th></tr>
+                      </thead>
+                      <tbody>
+                        {products.map((p) => (
+                          <tr key={p.id || p._id || p.name}>
+                            <td>{p.id || "-"}</td>
+                            <td>{p.name}</td>
+                            <td>
+                              {showBs ? (
+                                <PrecioProducto precio={parseFloat(p.price)} format={0} />
+                              ) : (
+                                `${p.price} $`
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
-                  `
+                ) : (
+                  <div>
+                    <h2>Catálogo de Productos</h2>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                      {products.map((p) => (
+                        <div key={p.id || p._id || p.name} className="card border p-2 rounded shadow text-center bg-white">
+                          <Image
+                            src={p.image || ImageNotSupported.src}
+                            alt={p.name}
+                            className="w-full h-32 object-contain mb-2"
+                            width={100} height={100}
+                          />
+                          <h4 className="font-semibold">{p.name}</h4>
+                          <p className="text-sm text-gray-700">
+                            {showBs ? (
+                              <PrecioProducto precio={parseFloat(p.price)} format={0} />
+                            ) : (
+                              `${p.price} $`
+                            )}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 )}
               </div>
             </DialogContent>
