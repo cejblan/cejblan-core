@@ -62,22 +62,74 @@ export default function ProductsPageAdmin() {
   }
 
   const handlePrintCatalog = () => {
-    const printContainer = document.getElementById("print-catalog")
-    if (!printContainer) return
+    const printContainer = document.getElementById("print-catalog");
+    if (!printContainer) return;
 
-    const content = printContainer.innerHTML
-    const isMobile = /Mobi|Android/i.test(navigator.userAgent)
+    const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+    const content = printContainer.innerHTML;
 
     if (isMobile) {
-      // Imprimir en la misma ventana (más seguro en móviles)
-      const originalContent = document.body.innerHTML
-      document.body.innerHTML = content
-      window.print()
-      document.body.innerHTML = originalContent
-      window.location.reload()
+      // Crear un contenedor temporal para imprimir sin destruir el DOM
+      const printArea = document.createElement("div");
+      printArea.innerHTML = content;
+      printArea.id = "temp-print-area";
+
+      // Aplicar estilos de impresión manualmente
+      const style = document.createElement("style");
+      style.textContent = `
+        @media print {
+          @page {
+            size: A4;
+            margin: 20mm;
+          }
+          body {
+            font-family: sans-serif;
+            font-size: 12px;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+          th, td {
+            border: 1px solid #000;
+            padding: 6px;
+            text-align: left;
+          }
+          th {
+            background-color: #f0f0f0;
+          }
+          .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+          }
+          .card {
+            border: 1px solid #ccc;
+            padding: 6px;
+            text-align: center;
+          }
+          .card-img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border: 1px solid #ccc;
+          }
+        }
+      `;
+
+      document.body.appendChild(style);
+      document.body.appendChild(printArea);
+
+      // Esperar un momento antes de imprimir para que se renderice correctamente
+      setTimeout(() => {
+        window.print();
+        // Limpiar luego de imprimir
+        document.body.removeChild(printArea);
+        document.body.removeChild(style);
+      }, 100);
     } else {
-      // Escritorio: usar ventana nueva
-      const printWindow = window.open("", "_blank")
+      // Escritorio: abrir nueva ventana
+      const printWindow = window.open("", "_blank");
       printWindow?.document.write(`
         <html>
           <head>
@@ -127,13 +179,13 @@ export default function ProductsPageAdmin() {
             ${content}
           </body>
         </html>
-      `)
-      printWindow?.document.close()
-      printWindow?.focus()
-      printWindow?.print()
-      printWindow?.close()
+      `);
+      printWindow?.document.close();
+      printWindow?.focus();
+      printWindow?.print();
+      printWindow?.close();
     }
-  }
+  };
 
   return (
     <>
