@@ -138,23 +138,23 @@ export default function DeliveryNote() {
       try {
         const response = await fetch(`/api/admin/settings`);
         const data = await response.json();
-  
+
         const nombre = data.find(item => item.name === "nombre_tienda")?.value || "MI NEGOCIO, C.A.";
         const direccion = data.find(item => item.name === "direccion_tienda")?.value || "Dirección del negocio editable";
         const rif = data.find(item => item.name === "rif_tienda")?.value || "J-000000000";
-  
+
         setCustomHeader(nombre);
         setCustomAddress(direccion);
         setCustomRif(rif);
-  
+
       } catch (error) {
         console.error("Error al cargar ajustes:", error);
       }
     };
-  
+
     fetchSettings();
   }, []);
-  
+
   return (
     <>
       <Titulos texto="Notas de Entrega" />
@@ -234,7 +234,7 @@ export default function DeliveryNote() {
         </DialogTrigger>
         <DialogContent className="max-w-3xl">
           <div id="print-area" className="hidden">
-          <DialogTitle></DialogTitle>
+            <DialogTitle></DialogTitle>
             <p className="center">{customHeader}</p>
             <p className="center">{customAddress}</p>
             <p className="center">RIF: {customRif}</p>
@@ -292,11 +292,12 @@ export default function DeliveryNote() {
             <select className="border rounded-md px-4 py-2 w-full" value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
               <option value="">Seleccione forma de pago</option>
               {
-                payments.map((payments, index) => {
-                  return (
-                    <option key={index} value={payments.name}>{payments.name}</option>
-                  )
-                })}
+                payments
+                  .filter(p => p.status === "Activado")
+                  .map((p, index) => (
+                    <option key={index} value={p.name}>{p.name}</option>
+                  ))
+              }
             </select>
           </div>
 
