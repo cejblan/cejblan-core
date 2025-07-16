@@ -56,43 +56,49 @@ export default function ProductsPageAdmin() {
     const printContent = document.getElementById("print-catalog")
     if (!printContent) return
 
-    const originalContent = document.body.innerHTML
     const clonedContent = printContent.cloneNode(true)
+    const images = clonedContent.querySelectorAll("img")
 
-    const imgs = clonedContent.querySelectorAll("img")
-    imgs.forEach((img) => {
-      if (!img.src) {
-        img.src = ImageNotSupported.src
-      }
+    const preloadImages = Array.from(images).map((img) => {
+      return new Promise((resolve) => {
+        const src = img.getAttribute("src")
+        const preload = new Image()
+        preload.src = src || ImageNotSupported.src
+        preload.onload = resolve
+        preload.onerror = resolve
+      })
     })
 
-    const styles = `
-      <style>
-        @media print {
-          @page { margin: 20mm; }
-          body { -webkit-print-color-adjust: exact; background: white; }
-        }
-        table { border-collapse: collapse; width: 100%; font-size: 14px; }
-        th, td { border: 1px solid #d1d5db; padding: 3px; text-align: center; }
-        h2 { font-size: 20px; font-weight: bold; margin-bottom: 16px; text-align: center; }
-        .grid { display: grid; gap: 16px; }
-        .grid4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-        .card { border: 1px solid #e5e7eb; padding: 8px; border-radius: 8px; text-align: center; background-color: #ffffff; }
-        .img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; margin-bottom: 8px; }
-        .title { font-weight: 600; font-size: 14px; }
-        .text-xs { font-size: 12px; color: #374151; padding: 0px; margin: 0px; }
-      </style>
-    `
-
-    document.body.innerHTML = styles + clonedContent.outerHTML
-
-    window.focus()
-    window.print()
-
-    window.onafterprint = () => {
-      document.body.innerHTML = originalContent
-      window.location.reload()
-    }
+    Promise.all(preloadImages).then(() => {
+      const printWindow = window.open("", "_blank")
+      const styles = `
+        <style>
+          @media print {
+            @page { margin: 20mm; }
+            body { -webkit-print-color-adjust: exact; background: white; }
+          }
+          table { border-collapse: collapse; width: 100%; font-size: 14px; }
+          th, td { border: 1px solid #d1d5db; padding: 3px; text-align: center; }
+          h2 { font-size: 20px; font-weight: bold; margin-bottom: 16px; text-align: center; }
+          .grid { display: grid; gap: 16px; }
+          .grid4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+          .card { border: 1px solid #e5e7eb; padding: 8px; border-radius: 8px; text-align: center; background-color: #ffffff; }
+          .img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; margin-bottom: 8px; }
+          .title { font-weight: 600; font-size: 14px; }
+          .text-xs { font-size: 12px; color: #374151; padding: 0px; margin: 0px; }
+        </style>
+      `
+      printWindow.document.write(`
+        <html>
+          <head><title>Catálogo de Productos</title>${styles}</head>
+          <body>${clonedContent.innerHTML}</body>
+        </html>
+      `)
+      printWindow.document.close()
+      printWindow.focus()
+      printWindow.print()
+      printWindow.close()
+    })
   }
 
   return (
@@ -134,7 +140,7 @@ export default function ProductsPageAdmin() {
                 </div>
               )}
 
-              <div id="print-catalog" className="p-4 bg-white text-black text-sm leading-none">
+              <div id="print-catalog" className="p-2 bg-white text-black text-sm leading-none">
                 <h2 className="text-xl font-bold mb-4">Catálogo de Productos</h2>
                 {format === "tabla" ? (
                   <table className="w-full border border-collapse">
@@ -192,4 +198,4 @@ export default function ProductsPageAdmin() {
       <p className="text-center font-bold mt-1 mx-auto w-fit">Página {currentPage} de {Math.ceil(productosFiltrados.length / itemsPerPage)}</p>
     </>
   )
-}
+} 
