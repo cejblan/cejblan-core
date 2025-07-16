@@ -194,6 +194,7 @@ export default function ProductsPageAdmin() {
                       <th className="border px-2 py-1">Código</th>
                       <th className="border px-2 py-1">Nombre</th>
                       <th className="border px-2 py-1">Precio</th>
+                      <th className="border px-2 py-1">Cantidad</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -208,6 +209,7 @@ export default function ProductsPageAdmin() {
                             `${product.price} $`
                           )}
                         </td>
+                        <td className="border px-2 py-1">{product.stock ?? "-"}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -220,7 +222,8 @@ export default function ProductsPageAdmin() {
                         src={product.image || ImageNotSupported}
                         alt={product.name}
                         className="w-full h-32 object-contain mb-2"
-                        width={100} height={100}
+                        width={100}
+                        height={100}
                       />
                       <h3 className="font-semibold">{product.name}</h3>
                       <p className="text-sm text-gray-700">
@@ -230,6 +233,7 @@ export default function ProductsPageAdmin() {
                           `${product.price} $`
                         )}
                       </p>
+                      <p className="text-xs text-gray-600 mt-1">Cantidad: {product.stock ?? "-"}</p>
                     </div>
                   ))}
                 </div>
@@ -242,20 +246,19 @@ export default function ProductsPageAdmin() {
                     <h2>Catálogo de Productos</h2>
                     <table>
                       <thead>
-                        <tr><th>Código</th><th>Nombre</th><th>Precio</th></tr>
+                        <tr><th>Código</th><th>Nombre</th><th>Precio</th><th>Cantidad</th></tr>
                       </thead>
                       <tbody>
                         {products.map((p) => (
                           <tr key={p.id || p._id || p.name}>
                             <td>{p.id || "-"}</td>
                             <td>{p.name}</td>
-                            <td>
-                              {showBs ? (
-                                <PrecioProducto precio={parseFloat(p.price)} format={0} />
-                              ) : (
-                                `${p.price} $`
-                              )}
-                            </td>
+                            <td>{showBs ? (
+                              <PrecioProducto precio={parseFloat(p.price)} format={0} />
+                            ) : (
+                              `${p.price} $`
+                            )}</td>
+                            <td>{p.stock ?? "-"}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -280,6 +283,9 @@ export default function ProductsPageAdmin() {
                             ) : (
                               `${p.price} $`
                             )}
+                          </p>
+                          <p style="font-size:13px;">
+                            Cantidad: ${p.stock ?? "-"}
                           </p>
                         </div>
                       ))}
