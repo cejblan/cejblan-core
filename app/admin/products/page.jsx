@@ -65,71 +65,64 @@ export default function ProductsPageAdmin() {
     const printContainer = document.getElementById("print-catalog");
     if (!printContainer) return;
 
-    const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-    const content = printContainer.innerHTML;
-
+    const contentHtml = Array.from(printContainer.querySelectorAll('.card, table')).map(el => el.outerHTML).join('');
     const printHtml = `
       <html>
         <head>
           <title>Catálogo de Productos</title>
           <style>
-            @media print {
-              @page {
-                size: A4;
-                margin: 20mm;
-              }
-              body {
-                font-family: sans-serif;
-                font-size: 12px;
-                padding: 0;
-                margin: 0;
-              }
-              table {
-                width: 100%;
-                border-collapse: collapse;
-              }
-              th, td {
-                border: 1px solid #000;
-                padding: 6px;
-                text-align: left;
-              }
-              th {
-                background-color: #f0f0f0;
-              }
-              .grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-                gap: 12px;
-              }
-              .card {
-                border: 1px solid #ccc;
-                padding: 6px;
-                text-align: center;
-              }
-              .card-img {
-                width: 100%;
-                aspect-ratio: 1 / 1;
-                object-fit: cover;
-                border: 1px solid #ccc;
-              }
+          @media print {
+            @page {
+              size: A4;
+              margin: 20mm;
             }
-          </style>
+            body {
+              font-family: sans-serif;
+              font-size: 12px;
+              padding: 0;
+              margin: 0;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+            }
+            th, td {
+              border: 1px solid #000;
+              padding: 6px;
+              text-align: left;
+            }
+            th {
+              background-color: #f0f0f0;
+            }
+            .grid {
+              display: grid;
+              grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+              gap: 12px;
+            }
+            .card {
+              border: 1px solid #ccc;
+              padding: 6px;
+              text-align: center;
+            }
+            .card-img {
+              width: 100%;
+              aspect-ratio: 1 / 1;
+              object-fit: cover;
+              border: 1px solid #ccc;
+            }
+          }
+        </style>
         </head>
-        <body>${content}</body>
+        <body>${contentHtml}</body>
       </html>
     `;
 
-    // Usamos iframe para asegurar impresión confiable en móviles
     const iframe = document.createElement("iframe");
-    iframe.style.position = "fixed";
-    iframe.style.right = "0";
-    iframe.style.bottom = "0";
-    iframe.style.width = "0";
-    iframe.style.height = "0";
-    iframe.style.border = "0";
-
+    Object.assign(iframe.style, {
+      position: "fixed", right: "0", bottom: "0",
+      width: "0", height: "0", border: "0",
+    });
     document.body.appendChild(iframe);
-
     const doc = iframe.contentWindow?.document;
     if (!doc) return;
 
@@ -137,13 +130,20 @@ export default function ProductsPageAdmin() {
     doc.write(printHtml);
     doc.close();
 
-    iframe.onload = () => {
+    // esperar que todas las imágenes carguen
+    const imgs = doc.querySelectorAll("img");
+    const promises = Array.from(imgs).map(img => new Promise(res => {
+      img.onload = res;
+      img.onerror = res;
+    }));
+
+    Promise.all(promises).then(() => {
       setTimeout(() => {
         iframe.contentWindow?.focus();
         iframe.contentWindow?.print();
-        document.body.removeChild(iframe); // limpiar después de imprimir
-      }, 300); // Esperar a que cargue todo (CSS e imágenes)
-    };
+        document.body.removeChild(iframe);
+      }, 100);
+    });
   };
 
   return (
