@@ -102,12 +102,12 @@ export default function ProductsPageAdmin() {
                 padding: 6px;
                 text-align: center;
               }
-              img {
+              .card-img {
                 width: 100%;
-                height: auto;
-                max-height: 120px;
+                aspect-ratio: 1 / 1; /* Cuadrado perfecto */
                 object-fit: cover;
-              }
+                border: 1px solid #ccc;
+              }              
             }
           </style>
         </head>
