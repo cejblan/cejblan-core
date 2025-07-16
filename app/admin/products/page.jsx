@@ -10,6 +10,7 @@ import { Button } from "@/app/admin/components/ui/button"
 import PrecioProducto from "@/components/editable/PrecioProducto"
 import Image from "next/image";
 import ImageNotSupported from "@/public/ImageNotSupported.webp";
+import { useRef } from "react";
 
 export default function ProductsPageAdmin() {
   const [products, setProducts] = useState([])
@@ -20,22 +21,21 @@ export default function ProductsPageAdmin() {
   const [format, setFormat] = useState("tabla") // tabla | cuadricula
   const [configOpen, setConfigOpen] = useState(false);
   const itemsPerPage = 12
+  const dialogRef = useRef(null);
 
   useEffect(() => {
     LoadProducts(setProducts)
   }, [])
 
   useEffect(() => {
-    const dialogContent = document.querySelector('[data-state="open"]'); // DialogContent visible
-
-    if (configOpen && dialogContent) {
-      dialogContent.style.overflow = "hidden";
-    } else if (dialogContent) {
-      dialogContent.style.overflow = "";
+    if (configOpen && dialogRef.current) {
+      dialogRef.current.style.overflow = "hidden";
+    } else if (dialogRef.current) {
+      dialogRef.current.style.overflow = "auto";
     }
 
     return () => {
-      if (dialogContent) dialogContent.style.overflow = "";
+      if (dialogRef.current) dialogRef.current.style.overflow = "auto";
     };
   }, [configOpen]);
 
@@ -140,7 +140,10 @@ export default function ProductsPageAdmin() {
             <DialogTrigger asChild>
               <Button>Ver Catálogo</Button>
             </DialogTrigger>
-            <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+            <DialogContent
+              ref={dialogRef}
+              className="max-w-6xl max-h-[90vh] overflow-y-auto"
+            >
               <div className="flex justify-between items-center mb-4">
                 <DialogTitle>Catálogo de Productos</DialogTitle>
                 <div className="space-x-2 pr-10">
@@ -151,7 +154,7 @@ export default function ProductsPageAdmin() {
 
               {/* Configuración */}
               {configOpen && (
-                <div className="fixed inset-0 z-50 flex justify-center items-center">
+                <div className="fixed inset-0 z-50 flex justify-center items-center bg-black/40 backdrop-blur-sm">
                   <div className="bg-white p-6 rounded-lg shadow-6xl w-full max-w-md relative">
                     <button
                       onClick={() => setConfigOpen(false)}
