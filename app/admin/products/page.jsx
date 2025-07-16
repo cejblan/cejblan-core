@@ -9,10 +9,8 @@ import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "@/app/admin/c
 import { Button } from "@/app/admin/components/ui/button"
 import PrecioProducto from "@/components/editable/PrecioProducto"
 import ImageNotSupported from "@/public/ImageNotSupported.webp"
-
-// librerías para generar PDF
 import html2canvas from "html2canvas"
-import jsPDF from "jspdf"
+import { jsPDF } from "jspdf"
 
 export default function ProductsPageAdmin() {
   const [products, setProducts] = useState([])
@@ -20,24 +18,16 @@ export default function ProductsPageAdmin() {
   const [currentPage, setCurrentPage] = useState(1)
   const [catalogOpen, setCatalogOpen] = useState(false)
   const [showBs, setShowBs] = useState(false)
-  const [format, setFormat] = useState("tabla") // tabla | cuadricula
+  const [format, setFormat] = useState("tabla")
   const [configOpen, setConfigOpen] = useState(false)
   const itemsPerPage = 12
   const dialogRef = useRef(null)
 
+  useEffect(() => { LoadProducts(setProducts) }, [])
   useEffect(() => {
-    LoadProducts(setProducts)
-  }, [])
-
-  useEffect(() => {
-    if (configOpen && dialogRef.current) {
-      dialogRef.current.style.overflow = "hidden"
-    } else if (dialogRef.current) {
-      dialogRef.current.style.overflow = "auto"
-    }
-    return () => {
-      if (dialogRef.current) dialogRef.current.style.overflow = "auto"
-    }
+    if (configOpen && dialogRef.current) dialogRef.current.style.overflow = "hidden"
+    else if (dialogRef.current) dialogRef.current.style.overflow = "auto"
+    return () => { if (dialogRef.current) dialogRef.current.style.overflow = "auto" }
   }, [configOpen])
 
   const handleProductSelect = (product) => {
@@ -61,41 +51,33 @@ export default function ProductsPageAdmin() {
     if (endIndex < productosFiltrados.length) setCurrentPage((prev) => prev + 1)
   }
 
-  // Generar PDF con html2canvas + jsPDF
   const handlePrintCatalogPDF = async () => {
     const element = document.getElementById("print-catalog")
     if (!element) return
+    const clone = element.cloneNode(true)
+    clone.style.display = "block"
+    clone.style.position = "absolute"
+    clone.style.top = "-10000px"
+    document.body.appendChild(clone)
 
-    const canvas = await html2canvas(element, { scale: 2 })
-    const imgData = canvas.toDataURL("image/png")
+    const canvas = await html2canvas(clone, { scale: 2 })
+    document.body.removeChild(clone)
 
-    const pdf = new jsPDF({
-      orientation: "portrait",
-      unit: "mm",
-      format: "a4",
-    })
-
+    const imgData = canvas.toDataURL("image/jpeg", 1.0)
+    const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" })
     const pdfWidth = pdf.internal.pageSize.getWidth()
-    const imgProps = pdf.getImageProperties(imgData)
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width
-
-    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight)
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width
+    pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight)
     pdf.save("catalogo-productos.pdf")
   }
 
   return (
     <>
       <Titulos texto="Lista de Productos" />
-
       <div className="flex gap-1 pb-4">
         <div className="max-w-md ml-auto my-auto">
-          <SearchProduct
-            onSelectProduct={handleProductSelect}
-            onSearchQueryChange={(value) => setSearchQuery(value)}
-          />
+          <SearchProduct onSelectProduct={handleProductSelect} onSearchQueryChange={setSearchQuery} />
         </div>
-
-        {/* Botón Ver Catálogo */}
         <div className="flex justify-center mr-auto">
           <Dialog open={catalogOpen} onOpenChange={setCatalogOpen}>
             <DialogTrigger asChild>
@@ -105,135 +87,85 @@ export default function ProductsPageAdmin() {
               <div className="flex justify-between items-center mb-4">
                 <DialogTitle>Catálogo de Productos</DialogTitle>
                 <div className="space-x-2 pr-10">
-                  <Button variant="outline" onClick={() => setConfigOpen(true)}>
-                    Configuración
-                  </Button>
-                  <Button onClick={handlePrintCatalogPDF}>
-                    Descargar PDF
-                  </Button>
+                  <Button variant="outline" onClick={() => setConfigOpen(true)}>Configuración</Button>
+                  <Button onClick={handlePrintCatalogPDF}>Descargar PDF</Button>
                 </div>
               </div>
 
-              {/* Configuración */}
               {configOpen && (
                 <div className="fixed inset-0 z-50 flex justify-center items-center bg-black/40 backdrop-blur-sm">
                   <div className="bg-white p-6 rounded-lg shadow-6xl w-full max-w-md relative">
-                    <button
-                      onClick={() => setConfigOpen(false)}
-                      className="absolute top-2 right-4 text-gray-500 hover:text-black"
-                    >
-                      ✕
-                    </button>
+                    <button onClick={() => setConfigOpen(false)} className="absolute top-2 right-4 text-gray-500 hover:text-black">✕</button>
                     <h2 className="text-lg font-semibold mb-4">Configuración de Catálogo</h2>
-
-                    <div className="mb-4">
-                      <label className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          checked={showBs}
-                          onChange={(e) => setShowBs(e.target.checked)}
-                        />
-                        Mostrar precios en bolívares (tasa BCV)
-                      </label>
-                    </div>
-
-                    <div className="mb-2">
-                      <label className="block mb-1 font-medium">Formato de impresión</label>
-                      <select
-                        value={format}
-                        onChange={(e) => setFormat(e.target.value)}
-                        className="w-full border rounded px-3 py-2"
-                      >
-                        <option value="tabla">Tabla</option>
-                        <option value="cuadricula">Cuadrícula</option>
-                      </select>
-                    </div>
+                    <label className="flex items-center gap-2 mb-4">
+                      <input type="checkbox" checked={showBs} onChange={(e) => setShowBs(e.target.checked)} />
+                      Mostrar precios en bolívares (tasa BCV)
+                    </label>
+                    <label className="block mb-2 font-medium">Formato de impresión</label>
+                    <select value={format} onChange={(e) => setFormat(e.target.value)} className="w-full border rounded px-3 py-2">
+                      <option value="tabla">Tabla</option>
+                      <option value="cuadricula">Cuadrícula</option>
+                    </select>
                   </div>
                 </div>
               )}
 
               {format === "tabla" ? (
-                <table className="table-auto w-full text-left border border-gray-400">
+                <table className="w-full border border-gray-500 border-collapse text-sm">
                   <thead className="bg-gray-100">
                     <tr>
-                      <th className="border px-2 py-1">Código</th>
-                      <th className="border px-2 py-1">Nombre</th>
-                      <th className="border px-2 py-1">Precio</th>
-                      <th className="border px-2 py-1">Cantidad</th>
+                      <th className="border border-gray-400 px-2 py-1">Código</th>
+                      <th className="border border-gray-400 px-2 py-1">Nombre</th>
+                      <th className="border border-gray-400 px-2 py-1">Precio</th>
+                      <th className="border border-gray-400 px-2 py-1">Cantidad</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {products.map((product) => (
-                      <tr key={product.id || product._id || product.name}>
-                        <td className="border px-2 py-1">{product.id || "-"}</td>
-                        <td className="border px-2 py-1">{product.name}</td>
-                        <td className="border px-2 py-1">
-                          {showBs ? (
-                            <PrecioProducto precio={parseFloat(product.price)} format={0} />
-                          ) : (
-                            `${product.price} $`
-                          )}
-                        </td>
-                        <td className="border px-2 py-1">{product.quantity ?? "-"}</td>
+                    {products.map((p) => (
+                      <tr key={p.id || p._id || p.name}>
+                        <td className="border border-gray-400 px-2 py-1">{p.id || "-"}</td>
+                        <td className="border border-gray-400 px-2 py-1">{p.name}</td>
+                        <td className="border border-gray-400 px-2 py-1">{showBs ? <PrecioProducto precio={parseFloat(p.price)} format={0} /> : `${p.price} $`}</td>
+                        <td className="border border-gray-400 px-2 py-1">{p.quantity ?? "-"}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                  {products.map((product) => (
-                    <div
-                      key={product.id || product._id || product.name}
-                      className="border p-2 rounded shadow text-center bg-white"
-                    >
-                      <img
-                        src={product.image || ImageNotSupported.src}
-                        alt={product.name}
-                        className="w-full aspect-square object-cover mb-2"
-                      />
-                      <h3 className="font-semibold">{product.name}</h3>
-                      <p className="text-sm text-gray-700">
-                        {showBs ? (
-                          <PrecioProducto precio={parseFloat(product.price)} format={0} />
-                        ) : (
-                          `${product.price} $`
-                        )}
+                <div className="p-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                  {products.map((p) => (
+                    <div key={p.id || p._id || p.name} className="border p-2 rounded shadow text-center bg-white">
+                      <img src={p.image || ImageNotSupported.src} alt={p.name} className="w-full aspect-square object-cover mb-2" />
+                      <h3 className="font-semibold text-sm">{p.name}</h3>
+                      <p className="text-xs text-gray-700">
+                        {showBs ? <PrecioProducto precio={parseFloat(p.price)} format={0} /> : `${p.price} $`}
                       </p>
-                      <p className="text-xs text-gray-600 mt-1">
-                        Cantidad: {product.quantity ?? "-"}
-                      </p>
+                      <p className="text-xs text-gray-600 mt-1">Cantidad: {p.quantity ?? "-"}</p>
                     </div>
                   ))}
                 </div>
               )}
 
-              {/* Área oculta para imprimir */}
-              <div id="print-catalog" className="hidden">
+              <div id="print-catalog" className="hidden p-6 bg-white text-black">
                 {format === "tabla" ? (
                   <div>
                     <h2>Catálogo de Productos</h2>
-                    <table>
-                      <thead>
+                    <table className="w-full border border-gray-500 border-collapse text-sm">
+                      <thead className="bg-gray-100">
                         <tr>
-                          <th>Código</th>
-                          <th>Nombre</th>
-                          <th>Precio</th>
-                          <th>Cantidad</th>
+                          <th className="border border-gray-400 px-2 py-1">Código</th>
+                          <th className="border border-gray-400 px-2 py-1">Nombre</th>
+                          <th className="border border-gray-400 px-2 py-1">Precio</th>
+                          <th className="border border-gray-400 px-2 py-1">Cantidad</th>
                         </tr>
                       </thead>
                       <tbody>
                         {products.map((p) => (
                           <tr key={p.id || p._id || p.name}>
-                            <td>{p.id || "-"}</td>
-                            <td>{p.name}</td>
-                            <td>
-                              {showBs ? (
-                                <PrecioProducto precio={parseFloat(p.price)} format={0} />
-                              ) : (
-                                `${p.price} $`
-                              )}
-                            </td>
-                            <td>{p.quantity ?? "-"}</td>
+                            <td className="border border-gray-400 px-2 py-1">{p.id || "-"}</td>
+                            <td className="border border-gray-400 px-2 py-1">{p.name}</td>
+                            <td className="border border-gray-400 px-2 py-1">{showBs ? <PrecioProducto precio={parseFloat(p.price)} format={0} /> : `${p.price} $`}</td>
+                            <td className="border border-gray-400 px-2 py-1">{p.quantity ?? "-"}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -244,26 +176,13 @@ export default function ProductsPageAdmin() {
                     <h2>Catálogo de Productos</h2>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                       {products.map((p) => (
-                        <div
-                          key={p.id || p._id || p.name}
-                          className="card border p-2 rounded shadow text-center bg-white"
-                        >
-                          <img
-                            src={p.image || ImageNotSupported.src}
-                            alt={p.name}
-                            className="w-full aspect-square object-cover mb-2"
-                          />
-                          <h4 className="font-semibold">{p.name}</h4>
-                          <p className="text-sm text-gray-700">
-                            {showBs ? (
-                              <PrecioProducto precio={parseFloat(p.price)} format={0} />
-                            ) : (
-                              `${p.price} $`
-                            )}
+                        <div key={p.id || p._id || p.name} className="border p-2 rounded shadow text-center bg-white">
+                          <img src={p.image || ImageNotSupported.src} alt={p.name} className="w-full aspect-square object-cover mb-2" />
+                          <h4 className="font-semibold text-sm">{p.name}</h4>
+                          <p className="text-xs">
+                            {showBs ? <PrecioProducto precio={parseFloat(p.price)} format={0} /> : `${p.price} $`}
                           </p>
-                          <p className="text-sm">
-                            Cantidad: {p.quantity ?? "-"}
-                          </p>
+                          <p className="text-xs">Cantidad: {p.quantity ?? "-"}</p>
                         </div>
                       ))}
                     </div>
@@ -275,41 +194,16 @@ export default function ProductsPageAdmin() {
         </div>
       </div>
 
-      {/* Lista con paginación (fuera del modal) */}
       <div className="grid max-[420px]:grid-cols-1 grid-cols-4 gap-1 justify-center items-center pb-4">
-        {currentProducts.length > 0 ? (
-          currentProducts.map((product) => (
-            <ProductCardAdmin product={product} key={product.id || product._id || product.name} />
-          ))
-        ) : (
-          <div className="text-center col-start-1 max-[420px]:col-end-2 col-end-5 mx-auto">
-            <p className="bg-white text-xl py-1 px-2 rounded-xl mx-auto">
-              No hay productos disponibles...
-            </p>
-          </div>
-        )}
+        {currentProducts.map((product) => (<ProductCardAdmin key={product.id || product.__id || product.name} product={product} />))}
       </div>
 
       <div className="flex justify-center gap-4 mt-4">
-        <button
-          onClick={handlePrevPage}
-          disabled={currentPage === 1}
-          className="px-2 py-1 bg-white rounded hover:bg-gray-300 disabled:opacity-50"
-        >
-          Anterior
-        </button>
-        <button
-          onClick={handleNextPage}
-          disabled={endIndex >= productosFiltrados.length}
-          className="px-2 py-1 bg-white rounded hover:bg-gray-300 disabled:opacity-50"
-        >
-          Siguiente
-        </button>
+        <button onClick={handlePrevPage} disabled={currentPage === 1} className="px-2 py-1 bg-white rounded hover:bg-gray-300 disabled:opacity-50">Anterior</button>
+        <button onClick={handleNextPage} disabled={endIndex >= productosFiltrados.length} className="px-2 py-1 bg-white rounded hover:bg-gray-300 disabled:opacity-50">Siguiente</button>
       </div>
 
-      <p className="text-center font-bold mt-1 mx-auto w-fit">
-        Página {currentPage} de {Math.ceil(productosFiltrados.length / itemsPerPage)}
-      </p>
+      <p className="text-center font-bold mt-1 mx-auto w-fit">Página {currentPage} de {Math.ceil(productosFiltrados.length / itemsPerPage)}</p>
     </>
   )
 }
