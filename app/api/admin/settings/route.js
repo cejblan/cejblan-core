@@ -49,3 +49,21 @@ export async function PUT(request) {
     return NextResponse.json({ message: error.message }, { status: 500 });
   }
 }
+
+// Eliminar setting por id
+export async function DELETE(request) {
+  const { searchParams } = new URL(request.url)
+  const id = searchParams.get("id")
+
+  if (!id) {
+    return NextResponse.json({ message: "Falta parámetro id" }, { status: 400 })
+  }
+
+  try {
+    await conexion.query("DELETE FROM settings WHERE id = ?", [id])
+    return NextResponse.json({ success: true }, { status: 200 })
+  } catch (error) {
+    console.error(error)
+    return NextResponse.json({ message: error.message }, { status: 500 })
+  }
+}
