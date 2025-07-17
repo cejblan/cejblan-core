@@ -27,9 +27,7 @@ export default function PayForm() {
       try {
         if (params.id) {
           const res = await fetch(`/api/admin/payments/${params.id}`);
-          if (!res.ok) {
-            throw new Error(`Error: ${res.status} ${res.statusText}`);
-          }
+          if (!res.ok) throw new Error(`Error: ${res.status} ${res.statusText}`);
           const data = await res.json();
           setPay({
             id: data.id,
@@ -37,14 +35,21 @@ export default function PayForm() {
             data: data.data,
             status: data.status,
           });
+        } else {
+          const res = await fetch("/api/admin/payments");
+          if (!res.ok) throw new Error(`Error: ${res.status} ${res.statusText}`);
+          const data = await res.json();
+          const maxId = Math.max(...data.map((p) => p.id ?? 0), 0);
+          const nextId = maxId + 1;
+          setPay((prev) => ({ ...prev, id: nextId }));
         }
       } catch (error) {
         console.error("Error al cargar el pago:", error);
       }
     };
-  
+
     fetchPayment();
-  }, [params.id]);  
+  }, [params.id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -61,22 +66,23 @@ export default function PayForm() {
           body: formData,
         }
       );
-    
+
       if (!res.ok) {
         throw new Error("Error en la solicitud de pago");
       }
-    
+
       alert("El pago se guardó correctamente.");
     } catch (error) {
       console.error("Error al guardar el pago:", error);
       alert("Ocurrió un error al guardar el pago. Por favor, inténtalo nuevamente.");
-    }    
+    }
 
     alert("Forma de pago registrada");
     form.current.reset();
     router.push("/admin/payments");
     router.refresh(); // Solo actualiza los componentes del servidor
   };
+
   return (
     <>
       <Link href={params.id ? `/admin/payments/${params.id}` : "/admin/payments"} className=" bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl">

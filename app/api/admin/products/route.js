@@ -30,18 +30,22 @@ export async function POST(request) {
     // Si NO hay imagen, se guarda sin campo `image`
     if (!image || !(image instanceof Blob)) {
       const [result] = await conexion.query("INSERT INTO products SET ?", {
+        code_bill: data.get("code_bill"),
         name: data.get("name"),
         description: data.get("description"),
         price: data.get("price"),
+        wholesale_price: data.get("wholesale_price"),
         category: data.get("category"),
         quantity: data.get("quantity"),
       });
 
       return NextResponse.json({
         id: result.insertId,
+        code_bill: data.get("code_bill"),
         name: data.get("name"),
         description: data.get("description"),
         price: data.get("price"),
+        wholesale_price: data.get("wholesale_price"),
         category: data.get("category"),
         quantity: data.get("quantity"),
       });
@@ -54,9 +58,11 @@ export async function POST(request) {
 
     // Guardar producto con URL de imagen
     const [result] = await conexion.query("INSERT INTO products SET ?", {
+      code_bill: data.get("code_bill"),
       name: data.get("name"),
       description: data.get("description"),
       price: data.get("price"),
+      wholesale_price: data.get("wholesale_price"),
       category: data.get("category"),
       quantity: data.get("quantity"),
       image: blob.url,
@@ -64,9 +70,11 @@ export async function POST(request) {
 
     return NextResponse.json({
       id: result.insertId,
+      code_bill: data.get("code_bill"),
       name: data.get("name"),
       description: data.get("description"),
       price: data.get("price"),
+      wholesale_price: data.get("wholesale_price"),
       category: data.get("category"),
       quantity: data.get("quantity"),
       image: blob.url,

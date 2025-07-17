@@ -53,8 +53,10 @@ export async function PUT(req, { params: { id } }) {
     const data = await req.formData();
 
     const updateData = {
+      code_bill: data.get("code_bill"),
       name: data.get("name"),
       price: data.get("price"),
+      wholesale_price: data.get("wholesale_price"),
       description: data.get("description"),
       category: data.get("category"),
       quantity: data.get("quantity"),

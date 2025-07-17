@@ -13,8 +13,10 @@ import GaleriaModal from "@/app/admin/components/GaleriaModal";
 export default function ProductForm() {
   const [product, setProduct] = useState({
     id: "",
+    code_bill: "",
     name: "",
     price: "",
+    wholesale_price: "",
     description: "",
     category: "",
     quantity: "",
@@ -42,8 +44,10 @@ export default function ProductForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
+    formData.append("code_bill", product.code_bill);
     formData.append("name", product.name);
     formData.append("price", product.price);
+    formData.append("wholesale_price", product.wholesale_price);
     formData.append("description", product.description || "Descripción no disponible");
     formData.append("category", product.category);
     formData.append("quantity", product.quantity || 0);
@@ -98,11 +102,13 @@ export default function ProductForm() {
           const data = await res.json();
           setProduct({
             id: String(data[0].id ?? "").padStart(4, "0"),
-            name: data[0].name ?? "",
-            price: data[0].price ?? "",
-            description: data[0].description ?? "",
-            category: data[0].category ?? "",
-            quantity: data[0].quantity ?? "",
+            code_bill: String(data[0].code_bill ?? ""),
+            name: String(data[0].name ?? ""),
+            price: String(data[0].price ?? ""),
+            wholesale_price: String(data[0].wholesale_price ?? ""),
+            description: String(data[0].description ?? ""),
+            category: String(data[0].category ?? ""),
+            quantity: String(data[0].quantity ?? ""),
             image: data[0].image ?? "",
           });
         } else {
@@ -127,8 +133,12 @@ export default function ProductForm() {
         <div className="grid max-[420px]:grid-cols-1 grid-cols-2 gap-2 justify-center mb-4">
           <div className="max-[420px]:text-center text-left max-[420px]:pt-4 max-[420px]:mx-auto ml-4 max-[420px]:w-full">
             <div className="mb-1 flex gap-1 justify-center items-center">
-              <label htmlFor="price" className="text-lg font-semibold pr-1 block">ID:</label>
+              <label htmlFor="id" className="text-lg font-semibold pr-1 block">ID:</label>
               <input name="id" id="id" type="text" placeholder="id" inputMode="numeric" pattern="\d*" maxLength={4} onChange={(e) => { const value = e.target.value; if (/^\d{0,4}$/.test(value)) setProduct((prev) => ({ ...prev, id: value })); }} value={product.id} className="bg-white max-[420px]:text-center py-1 px-2 rounded-md w-full" />
+            </div>
+            <div className="mb-1 flex gap-1 justify-center items-center">
+              <label htmlFor="code_bill" className="text-lg font-semibold pr-1 block">Código en factura del proveedor:</label>
+              <input name="code_bill" id="code_bill" type="text" placeholder="Código en factura" inputMode="numeric" onChange={handleChange} value={product.code_bill} className="bg-white max-[420px]:text-center py-1 px-2 rounded-md w-full" />
             </div>
             <div className="mb-1">
               <label htmlFor="name" className="text-lg font-semibold pr-1 mb-1 block">Nombre:</label>
@@ -141,6 +151,10 @@ export default function ProductForm() {
             <div className="mb-1 flex gap-1 justify-center items-center">
               <label htmlFor="price" className="text-lg font-semibold pr-1 block">Precio:</label>
               <input name="price" id="price" type="number" placeholder="00.00$" onChange={handleChange} value={product.price} className="bg-white max-[420px]:text-center py-1 px-2 rounded-md w-full" required />
+            </div>
+            <div className="mb-1 flex gap-1 justify-center items-center">
+              <label htmlFor="wholesale_price" className="text-lg font-semibold pr-1 block">Precio Mayorista:</label>
+              <input name="wholesale_price" id="wholesale_price" type="number" placeholder="00.00$" onChange={handleChange} value={product.wholesale_price} className="bg-white max-[420px]:text-center py-1 px-2 rounded-md w-full" required />
             </div>
             <div className="mb-1 flex gap-1 justify-center items-center">
               <label htmlFor="quantity" className="text-lg font-semibold pr-1 block">Cantidad:</label>

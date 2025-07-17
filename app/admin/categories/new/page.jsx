@@ -23,13 +23,11 @@ export default function CategoryForm() {
   };
 
   useEffect(() => {
-    if (params.id) {
-      const fetchCategory = async () => {
-        try {
+    const fetchCategory = async () => {
+      try {
+        if (params.id) {
           const res = await fetch("/api/admin/categories/" + params.id);
-          if (!res.ok) {
-            throw new Error(`Error: ${res.status} ${res.statusText}`);
-          }
+          if (!res.ok) throw new Error(`Error: ${res.status} ${res.statusText}`);
           const data = await res.json();
           setCategory({
             id: data.id,
@@ -37,13 +35,20 @@ export default function CategoryForm() {
             data: data.data,
             status: data.status,
           });
-        } catch (error) {
-          console.error("Error al obtener la categoría:", error);
+        } else {
+          const res = await fetch("/api/admin/categories");
+          if (!res.ok) throw new Error(`Error: ${res.status} ${res.statusText}`);
+          const data = await res.json();
+          const maxId = Math.max(...data.map((c) => c.id ?? 0), 0);
+          const nextId = maxId + 1;
+          setCategory((prev) => ({ ...prev, id: nextId }));
         }
-      };
+      } catch (error) {
+        console.error("Error al obtener la categoría:", error);
+      }
+    };
 
-      fetchCategory(); // Llamada a la función asíncrona
-    }
+    fetchCategory();
   }, [params.id]);
 
   const handleSubmit = async (e) => {
@@ -83,6 +88,7 @@ export default function CategoryForm() {
     router.push("/admin/categories");
     router.refresh(); // Solo actualiza los componentes del servidor
   };
+
   return (
     <>
       <Link href={params.id ? `/admin/categories/${params.id}` : "/admin/categories"} className=" bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl">

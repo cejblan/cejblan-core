@@ -28,6 +28,7 @@ export default function DeliveryNote() {
   const [customRif, setCustomRif] = useState("J-000000000");
   const [showPhone, setShowPhone] = useState(true);
   const [showAddress, setShowAddress] = useState(true);
+  const [showIva, setShowIva] = useState(true);
 
   const handleAddProduct = () => {
     setProducts([
@@ -92,6 +93,11 @@ export default function DeliveryNote() {
             .footer {
               margin-top: 10px;
             }
+
+            .fecha-hora {
+              display: flex;
+              justify-content: space-between;
+            }
           </style>
         </head>
         <body>
@@ -138,23 +144,23 @@ export default function DeliveryNote() {
       try {
         const response = await fetch(`/api/admin/settings`);
         const data = await response.json();
-  
+
         const nombre = data.find(item => item.name === "nombre_tienda")?.value || "MI NEGOCIO, C.A.";
         const direccion = data.find(item => item.name === "direccion_tienda")?.value || "Dirección del negocio editable";
         const rif = data.find(item => item.name === "rif_tienda")?.value || "J-000000000";
-  
+
         setCustomHeader(nombre);
         setCustomAddress(direccion);
         setCustomRif(rif);
-  
+
       } catch (error) {
         console.error("Error al cargar ajustes:", error);
       }
     };
-  
+
     fetchSettings();
   }, []);
-  
+
   return (
     <>
       <Titulos texto="Notas de Entrega" />
@@ -234,11 +240,14 @@ export default function DeliveryNote() {
         </DialogTrigger>
         <DialogContent className="max-w-3xl">
           <div id="print-area" className="hidden">
-          <DialogTitle></DialogTitle>
+            <DialogTitle></DialogTitle>
             <p className="center">{customHeader}</p>
             <p className="center">{customAddress}</p>
             <p className="center">RIF: {customRif}</p>
-            <p>Fecha: {now.toLocaleDateString()}  Hora: {time}</p>
+            <div className="fecha-hora">
+              <span className="fecha">Fecha: ${now.toLocaleDateString()}</span>
+              <span className="hora">Hora: ${time}</span>
+            </div>
             <div className="line" />
             <p>Cliente: {clientName}</p>
             <p>Documento: {documentType}-{documentNumber}</p>
@@ -253,8 +262,12 @@ export default function DeliveryNote() {
                 <div className="line" />
               </div>
             ))}
-            <p className="total">SUBTOTAL: <PrecioProducto precio={baseAmount} format={0} /></p>
-            <p className="total">IVA (16%): <PrecioProducto precio={ivaAmount} format={0} /></p>
+            {showIva && (
+              <>
+                <p className="total">SUBTOTAL: <PrecioProducto precio={baseAmount} format={0} /></p>
+                <p className="total">IVA (16%): <PrecioProducto precio={ivaAmount} format={0} /></p>
+              </>
+            )}
             <p className="total">TOTAL: <PrecioProducto precio={total} format={0} /></p>
             <p className="footer">Forma de pago: {paymentMethod}</p>
           </div>
@@ -292,11 +305,12 @@ export default function DeliveryNote() {
             <select className="border rounded-md px-4 py-2 w-full" value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
               <option value="">Seleccione forma de pago</option>
               {
-                payments.map((payments, index) => {
-                  return (
-                    <option key={index} value={payments.name}>{payments.name}</option>
-                  )
-                })}
+                payments
+                  .filter(p => p.status === "Activado")
+                  .map((p, index) => (
+                    <option key={index} value={p.name}>{p.name}</option>
+                  ))
+              }
             </select>
           </div>
 
@@ -339,6 +353,10 @@ export default function DeliveryNote() {
                   <div className="flex items-center gap-2">
                     <input type="checkbox" checked={showAddress} onChange={(e) => setShowAddress(e.target.checked)} />
                     <label className="text-sm">Mostrar dirección del cliente</label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input type="checkbox" checked={showIva} onChange={(e) => setShowIva(e.target.checked)} />
+                    <label className="text-sm">Mostrar IVA en la impresión</label>
                   </div>
                 </div>
               </div>

@@ -142,12 +142,10 @@ export default function ProductsPageAdmin() {
               <Button>Ver Catálogo</Button>
             </DialogTrigger>
             <DialogContent ref={dialogRef} className="max-w-6xl max-h-[90vh] overflow-y-auto">
-              <div className="flex justify-between items-center mb-4">
-                <DialogTitle>Catálogo de Productos</DialogTitle>
-                <div className="md:space-x-2 pr-10">
-                  <Button variant="outline" onClick={() => setConfigOpen(true)}>Configuración</Button>
-                  <Button onClick={handlePrint}>Imprimir</Button>
-                </div>
+              <div className="flex gap-1 items-center">
+                <DialogTitle></DialogTitle>
+                <Button variant="outline" onClick={() => setConfigOpen(true)}>Configuración</Button>
+                <Button onClick={handlePrint}>Imprimir</Button>
               </div>
 
               {configOpen && (

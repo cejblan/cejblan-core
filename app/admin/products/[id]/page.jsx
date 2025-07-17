@@ -28,6 +28,10 @@ export default async function ProductPage({ params }) {
             <h2 className="text-lg font-semibold pr-1">ID:</h2>
             <h3 className="bg-white py-1 px-2 rounded-md w-full">{String(product.id ?? "").padStart(4, "0")}</h3>
           </div>
+          <div className="mb-1 flex gap-1 justify-center items-center">
+            <h2 className="text-lg font-semibold pr-1">Código en factura del proveedor:</h2>
+            <h3 className="bg-white py-1 px-2 rounded-md w-full">{product.code_bill ? product.code_bill : "Sin código"}</h3>
+          </div>
           <div className="mb-1">
             <h2 className="text-lg font-semibold pr-1 mb-1 w-full">Nombre:</h2>
             <h3 className="bg-white py-1 px-2 rounded-md">{product.name}</h3>
@@ -39,6 +43,10 @@ export default async function ProductPage({ params }) {
           <div className="mb-1 flex gap-1 justify-center items-center">
             <h2 className="text-lg font-semibold pr-1">Precio:</h2>
             <h3 className="bg-white py-1 px-2 rounded-md w-full">{product.price}$</h3>
+          </div>
+          <div className="mb-1 flex gap-1 justify-center items-center">
+            <h2 className="text-lg font-semibold pr-1">Precio Mayorista:</h2>
+            <h3 className="bg-white py-1 px-2 rounded-md w-full">{product.wholesale_price ? product.wholesale_price + "$" : "Sin precio"}</h3>
           </div>
           <div className="mb-1 flex gap-1 justify-center items-center">
             <h2 className="text-lg font-semibold pr-1">Cantidad:</h2>
