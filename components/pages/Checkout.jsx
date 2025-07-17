@@ -299,8 +299,8 @@ export default function Checkout() {
           )}
           <div className="mt-2 text-slate-700 text-lg font-semibold">
             <p>Total productos: {totalPrice.toFixed(2)}$</p>
-            {!isFreeDelivery && deliveryCost > 0 && (
-              <p>Costo de delivery: {deliveryCost.toFixed(2)}$</p>
+            {data[0]?.deliveryMethod && (
+              <p>Costo de delivery: {(isFreeDelivery ? 0 : deliveryCost).toFixed(2)}$</p>
             )}
             <p className="text-xl mt-1">Total a pagar: {finalTotal.toFixed(2)}$</p>
           </div>
