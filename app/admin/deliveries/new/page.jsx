@@ -117,6 +117,7 @@ export default function DeliveryForm() {
               <ul className="mb-1">
                 <li>Si el metodo es Delivery, en "Datos" se coloca el costo sin simbolos monetarios, y si es en decimal, no se utiliza coma, se utiliza punto. Ejemplo 2$ = 2 y 2,5$ = 2.5</li>
                 <li>Si el metodo es Retiro, en "Datos" se coloca la dirección a donde buscar el pedido</li>
+                <li>La configuracion "Delivery Gratis" está en el modulo "Configurar"</li>
               </ul>
               <input
                 name="data"
