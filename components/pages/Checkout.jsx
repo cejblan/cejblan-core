@@ -24,6 +24,8 @@ export default function Checkout() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedHour, setSelectedHour] = useState("");
 
+  const [showFreeDeliveryModal, setShowFreeDeliveryModal] = useState(false);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: session } = useSession(); // Obtener la sesión actual del usuario
   const [products, setProducts] = useState([]);
@@ -54,6 +56,32 @@ export default function Checkout() {
 
   const [allowedHours, setAllowedHours] = useState([]);
 
+  const selectedDelivery = dataCheckout?.[1]?.[0]?.find(opt => opt.name === data?.[0]?.deliveryMethod);
+
+  const [freeDeliveryLimit, setFreeDeliveryLimit] = useState(null);
+  const isFreeDelivery = freeDeliveryLimit !== null && totalPrice >= freeDeliveryLimit;
+
+  let deliveryCost = 0;
+  if (!isFreeDelivery && selectedDelivery && selectedDelivery.data?.length === 1 && !isNaN(selectedDelivery.data)) {
+    deliveryCost = parseFloat(selectedDelivery.data);
+  }
+
+  const finalTotal = totalPrice + deliveryCost;
+
+  useEffect(() => {
+    const fetchFreeDeliveryLimit = async () => {
+      try {
+        const res = await fetch("/api/admin/settings/free_delivery");
+        const json = await res.json();
+        const limit = parseFloat(json.value); // asumiendo que value tiene el monto
+        setFreeDeliveryLimit(limit);
+      } catch (error) {
+        console.error("Error cargando free delivery limit:", error);
+      }
+    };
+    fetchFreeDeliveryLimit();
+  }, []);
+
   useEffect(() => {
     const fetchDeliverySettings = async () => {
       try {
@@ -82,6 +110,15 @@ export default function Checkout() {
 
     fetchDeliverySettings();
   }, []);
+
+  useEffect(() => {
+    if (
+      isFreeDelivery &&
+      data[0]?.deliveryMethod?.includes("Delivery")
+    ) {
+      setShowFreeDeliveryModal(true);
+    }
+  }, [data[0]?.deliveryMethod, totalPrice]);
 
   const handleChange = (event) => {
     setData([
@@ -125,7 +162,10 @@ export default function Checkout() {
 
     const deliveryMethodData = dataCheckout[1][0].find(option => option.name === data[0]?.deliveryMethod);
 
-    if (deliveryMethodData) {
+    // Si es opción con "Delivery" y es gratis, guarda el texto especial
+    if (deliveryMethodData && isFreeDelivery && data[0]?.deliveryMethod?.includes("Delivery")) {
+      formData.append("deliveryMethodData", "Delivery Gratis");
+    } else if (deliveryMethodData) {
       formData.append("deliveryMethodData", deliveryMethodData.data);
     }
 
@@ -257,7 +297,13 @@ export default function Checkout() {
               ))}
             </div>
           )}
-          <p className="text-lg text-slate-700 font-semibold mt-1">Total: {totalPrice}$</p>
+          <div className="mt-2 text-slate-700 text-lg font-semibold">
+            <p>Total productos: {totalPrice.toFixed(2)}$</p>
+            {!isFreeDelivery && deliveryCost > 0 && (
+              <p>Costo de delivery: {deliveryCost.toFixed(2)}$</p>
+            )}
+            <p className="text-xl mt-1">Total a pagar: {finalTotal.toFixed(2)}$</p>
+          </div>
         </div>
         <div className="bg-white p-2 rounded-xl shadow-6xl max-[420px]:mb-2 h-fit w-full col-start-3 col-end-5">
           <div className="mb-1">
@@ -371,7 +417,9 @@ export default function Checkout() {
             {dataCheckout[1][0]?.map((option, index) => (
               data[0]?.deliveryMethod === option.name && (
                 <p key={index} className="block bg-slate-100 text-slate-500 text-center border border-slate-400 py-1 max-[420px]:px-1 px-2 mt-1 w-full rounded-xl">
-                  {option.data}
+                  {option.data?.length === 1 && !isNaN(option.data)
+                    ? `${option.data}$`
+                    : option.data}
                 </p>
               )
             ))}
@@ -473,6 +521,27 @@ export default function Checkout() {
           {isSubmitting ? "Enviando..." : "Enviar Pedido"}
         </button>
       </div>
+      {
+        isFreeDelivery && data[0]?.deliveryMethod?.includes("Delivery") && showFreeDeliveryModal && (
+          <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50">
+            <div className="bg-gradient-to-br from-pink-200 via-yellow-100 to-green-200 p-6 rounded-2xl shadow-2xl max-w-sm text-center border-4 border-yellow-300 animate-pulse">
+              <h2 className="text-2xl font-bold text-green-700 mb-2">¡Felicidades! 🎉</h2>
+              <p className="text-lg text-slate-800">
+                Tu pedido tiene <strong>Delivery Gratis</strong> por superar {freeDeliveryLimit}$.
+              </p>
+              <p className="mt-2 text-slate-600">
+                Solo elige la opción de entrega que desees para continuar.
+              </p>
+              <button
+                onClick={() => setShowFreeDeliveryModal(false)}
+                className="mt-4 bg-green-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-green-600 shadow-md"
+              >
+                ¡Entendido!
+              </button>
+            </div>
+          </div>
+        )
+      }
     </form >
     // ===END_RETURN===
   )
