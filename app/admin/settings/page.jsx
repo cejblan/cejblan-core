@@ -12,8 +12,11 @@ export default function Settings() {
   const [rifTienda, setRifTienda] = useState("")
   const [direccionTienda, setDireccionTienda] = useState("")
 
-  const [workingHours, setWorkingHours] = useState("") // NUEVO
-  const [deliveryHours, setDeliveryHours] = useState("") // NUEVO
+  const [workingHours, setWorkingHours] = useState("")
+  const [deliveryHours, setDeliveryHours] = useState("")
+
+  const [deliveryGratisActivo, setDeliveryGratisActivo] = useState(false)
+  const [limiteDeliveryGratis, setLimiteDeliveryGratis] = useState("")
 
   useEffect(() => {
     fetch("/api/admin/settings")
@@ -25,8 +28,14 @@ export default function Settings() {
         const nombre = data.find(s => s.name === "nombre_tienda")
         const rif = data.find(s => s.name === "rif_tienda")
         const direccion = data.find(s => s.name === "direccion_tienda")
-        const horario = data.find(s => s.name === "working_hours") // NUEVO
-        const entregas = data.find(s => s.name === "delivery_hours") // NUEVO
+        const horario = data.find(s => s.name === "working_hours")
+        const entregas = data.find(s => s.name === "delivery_hours")
+
+        const freeDeliveryActivated = data.find(s => s.name === "free_delivery_activated")
+        const freeDeliveryLimit = data.find(s => s.name === "free_delivery")
+
+        if (freeDeliveryActivated) setDeliveryGratisActivo(freeDeliveryActivated.value === "true")
+        if (freeDeliveryLimit) setLimiteDeliveryGratis(freeDeliveryLimit.value)
 
         if (activaConfig) setActiva(activaConfig.value === "true")
         if (monedaConfig) setMoneda(monedaConfig.value)
@@ -59,9 +68,11 @@ export default function Settings() {
       await actualizar("rif_tienda", rifTienda)
       await actualizar("direccion_tienda", direccionTienda)
 
-      // NUEVOS campos
       await actualizar("working_hours", workingHours)
       await actualizar("delivery_hours", deliveryHours)
+
+      await actualizar("free_delivery_activated", deliveryGratisActivo ? "true" : "false")
+      await actualizar("free_delivery", limiteDeliveryGratis)
 
       alert("Configuraciones guardadas correctamente")
     } catch (error) {
@@ -161,6 +172,34 @@ export default function Settings() {
             Si se deja vacío, se usarán los rangos del horario de trabajo.
           </p>
         </div>
+
+        {/* NUEVO: Activar Delivery Gratis */}
+        <div className="flex gap-2 items-center">
+          <label className="font-semibold ml-auto">¿Activar Delivery Gratis?</label>
+          <input
+            type="checkbox"
+            checked={deliveryGratisActivo}
+            onChange={(e) => setDeliveryGratisActivo(e.target.checked)}
+            className="mr-auto w-4 h-4"
+          />
+        </div>
+
+        {/* NUEVO: Límite para Delivery Gratis */}
+        {deliveryGratisActivo && (
+          <div>
+            <label className="block font-semibold mb-1">Límite para Delivery Gratis</label>
+            <input
+              type="text"
+              placeholder="Ejemplo: 50"
+              className="w-full p-2 border rounded"
+              value={limiteDeliveryGratis}
+              onChange={(e) => setLimiteDeliveryGratis(e.target.value)}
+            />
+            <p className="text-sm text-slate-500 mt-1">
+              Monto mínimo de compra para aplicar envío gratis (Sin símbolo monetario).
+            </p>
+          </div>
+        )}
 
         <button
           onClick={guardarCambios}
