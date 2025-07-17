@@ -10,33 +10,53 @@ export default function Developer() {
   const [nuevoValor, setNuevoValor] = useState("")
   const [nuevoDescription, setNuevoDescription] = useState("")
   const [configuraciones, setConfiguraciones] = useState([])
+  const [modoEdicion, setModoEdicion] = useState(false)
+  const [nombreEditando, setNombreEditando] = useState("")
 
   const registrarConfiguracion = async () => {
     if (!nuevoNombre || !nuevoValor) {
       return alert('Debes completar al menos "name" y "value"')
     }
 
-    const formDescription = new FormData()
-    formDescription.append("name", nuevoNombre)
-    formDescription.append("value", nuevoValor)
-    formDescription.append("description", nuevoDescription)
-
     try {
-      const res = await fetch("/api/admin/settings", {
-        method: "POST",
-        body: formDescription,
-      })
+      if (modoEdicion) {
+        // === MODO ACTUALIZACIÓN ===
+        const res = await fetch("/api/admin/settings", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: nombreEditando, value: nuevoValor }),
+        })
 
-      if (!res.ok) throw new Error("Error al registrar configuración")
-      alert("Configuración registrada")
+        if (!res.ok) throw new Error("Error al actualizar configuración")
+        alert("Configuración actualizada")
 
+      } else {
+        // === MODO NUEVO ===
+        const formDescription = new FormData()
+        formDescription.append("name", nuevoNombre)
+        formDescription.append("value", nuevoValor)
+        formDescription.append("description", nuevoDescription)
+
+        const res = await fetch("/api/admin/settings", {
+          method: "POST",
+          body: formDescription,
+        })
+
+        if (!res.ok) throw new Error("Error al registrar configuración")
+        alert("Configuración registrada")
+      }
+
+      // Reset y recarga
       setNuevoNombre("")
       setNuevoValor("")
       setNuevoDescription("")
-      obtenerConfiguraciones() // recarga la lista
+      setModoEdicion(false)
+      setNombreEditando("")
+      obtenerConfiguraciones()
+
     } catch (error) {
       console.error(error)
-      alert("Hubo un error al registrar la nueva configuración")
+      alert("Hubo un error al guardar la configuración")
     }
   }
 
@@ -71,7 +91,7 @@ export default function Developer() {
 
       {/* Formulario nueva configuración */}
       <div className="bg-gray-100 p-4 border rounded-xl shadow-6xl mt-6 space-y-4">
-        <h2 className="text-lg font-semibold">Registrar nueva configuración</h2>
+        <h2 className="text-lg font-semibold">{modoEdicion ? "Actualizar configuración" : "Registrar nueva configuración"}</h2>
         <input
           type="text"
           placeholder="Nombre (name)"
@@ -95,10 +115,25 @@ export default function Developer() {
         />
         <button
           onClick={registrarConfiguracion}
-          className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700"
+          className={`${modoEdicion ? "bg-yellow-600 hover:bg-yellow-700" : "bg-green-600 hover:bg-green-700"
+            } text-white py-2 px-4 rounded`}
         >
-          Registrar nueva configuración
+          {modoEdicion ? "Actualizar configuración" : "Registrar nueva configuración"}
         </button>
+        {modoEdicion && (
+          <button
+            onClick={() => {
+              setModoEdicion(false)
+              setNombreEditando("")
+              setNuevoNombre("")
+              setNuevoValor("")
+              setNuevoDescription("")
+            }}
+            className="ml-2 text-sm text-gray-600 hover:underline"
+          >
+            Cancelar edición
+          </button>
+        )}
       </div>
 
       {/* Tabla de configuraciones guardadas */}
@@ -125,8 +160,39 @@ export default function Developer() {
                     <td className="px-2 py-1 border">{item.description}</td>
                     <td className="px-2 py-1 border">
                       <div className="flex content-center gap-1">
-                        <button className="text-blue-600 hover:underline">Editar</button>
-                        <button className="text-red-600 hover:underline">Eliminar</button>
+                        <button
+                          className="text-blue-600 hover:underline mr-2"
+                          onClick={() => {
+                            setModoEdicion(true)
+                            setNombreEditando(item.name)
+                            setNuevoNombre(item.name)
+                            setNuevoValor(item.value)
+                            setNuevoDescription(item.description || "")
+                          }}
+                        >
+                          Editar
+                        </button>
+                        <button
+                          className="text-red-600 hover:underline"
+                          onClick={async () => {
+                            const confirmar = confirm(`¿Seguro que deseas eliminar "${item.name}"?`)
+                            if (!confirmar) return
+
+                            try {
+                              const res = await fetch(`/api/admin/settings?id=${item.id}`, {
+                                method: "DELETE",
+                              })
+                              if (!res.ok) throw new Error("Error al eliminar configuración")
+                              alert("Configuración eliminada correctamente")
+                              obtenerConfiguraciones()
+                            } catch (error) {
+                              console.error(error)
+                              alert("Hubo un error al eliminar la configuración")
+                            }
+                          }}
+                        >
+                          Eliminar
+                        </button>
                       </div>
                     </td>
                   </tr>
