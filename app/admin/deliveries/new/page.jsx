@@ -23,13 +23,11 @@ export default function DeliveryForm() {
   };
 
   useEffect(() => {
-    if (params.id) {
-      const fetchDelivery = async () => {
-        try {
+    const fetchDelivery = async () => {
+      try {
+        if (params.id) {
           const res = await fetch("/api/admin/deliveries/" + params.id);
-          if (!res.ok) {
-            throw new Error(`Error: ${res.status} ${res.statusText}`);
-          }
+          if (!res.ok) throw new Error(`Error: ${res.status} ${res.statusText}`);
           const data = await res.json();
           setDelivery({
             id: data.id,
@@ -37,13 +35,20 @@ export default function DeliveryForm() {
             data: data.data,
             status: data.status,
           });
-        } catch (error) {
-          console.error("Error al obtener la categoría:", error);
+        } else {
+          const res = await fetch("/api/admin/deliveries");
+          if (!res.ok) throw new Error(`Error: ${res.status} ${res.statusText}`);
+          const data = await res.json();
+          const maxId = Math.max(...data.map((d) => d.id ?? 0), 0);
+          const nextId = maxId + 1;
+          setDelivery((prev) => ({ ...prev, id: nextId }));
         }
-      };
-  
-      fetchDelivery(); // Llamada a la función asíncrona
-    }
+      } catch (error) {
+        console.error("Error al obtener el delivery:", error);
+      }
+    };
+
+    fetchDelivery();
   }, [params.id]);
 
   const handleSubmit = async (e) => {
@@ -61,21 +66,22 @@ export default function DeliveryForm() {
           body: formData,
         }
       );
-    
+
       if (!res.ok) {
         throw new Error("Error en la solicitud de entrega");
       }
-    
+
       alert("La entrega se guardó correctamente.");
     } catch (error) {
       console.error("Error al guardar la entrega:", error);
       alert("Ocurrió un error al guardar la entrega. Por favor, inténtalo nuevamente.");
-    }    
+    }
 
     form.current.reset();
     router.push("/admin/deliveries");
     router.refresh(); // Solo actualiza los componentes del servidor
   };
+
   return (
     <>
       <Link href={params.id ? `/admin/deliveries/${params.id}` : "/admin/deliveries"} className=" bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl">

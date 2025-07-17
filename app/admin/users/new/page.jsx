@@ -43,11 +43,19 @@ export default function UserForm() {
             rol: data.rol,
             image: data.image,
           });
+        } else {
+          const res = await fetch("/api/admin/users");
+          if (!res.ok) throw new Error(`Error: ${res.status} ${res.statusText}`);
+          const data = await res.json();
+          const maxId = Math.max(...data.map((u) => u.id ?? 0), 0);
+          const nextId = maxId + 1;
+          setUser((prev) => ({ ...prev, id: nextId }));
         }
       } catch (error) {
         console.error("Error al cargar el usuario:", error);
       }
     };
+
     fetchUser();
   }, [params.id]);
 
