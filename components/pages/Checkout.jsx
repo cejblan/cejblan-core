@@ -12,6 +12,7 @@ import Image from "next/image";
 import Loading from "../editable/Loading";
 import ProductCardAdmin from "@/app/admin/components/ProductCardAdmin";
 import ImageNotSupported from "@/public/ImageNotSupported.webp";
+import PrecioProducto from "@/components/editable/PrecioProducto";
 // Carga el componente Maps dinámicamente y desactiva SSR
 const Maps = dynamic(() => import("../Maps"), { ssr: false });
 import moment from "moment";
@@ -298,11 +299,11 @@ export default function Checkout() {
             </div>
           )}
           <div className="mt-2 text-slate-700 text-lg font-semibold">
-            <p>Total productos: {totalPrice.toFixed(2)}$</p>
+            <p>Total productos: <PrecioProducto precio={totalPrice.toFixed(2)} format={0} /></p>
             {data[0]?.deliveryMethod && (
-              <p>Costo de delivery: {(isFreeDelivery ? 0 : deliveryCost).toFixed(2)}$</p>
+              <p>Costo de delivery: <PrecioProducto precio={(isFreeDelivery ? 0 : deliveryCost).toFixed(2)} format={0} /></p>
             )}
-            <p className="text-xl mt-1">Total a pagar: {finalTotal.toFixed(2)}$</p>
+            <p className="text-xl mt-1">Total a pagar: <PrecioProducto precio={finalTotal.toFixed(2)} format={0} /></p>
           </div>
         </div>
         <div className="bg-white p-2 rounded-xl shadow-6xl max-[420px]:mb-2 h-fit w-full col-start-3 col-end-5">
