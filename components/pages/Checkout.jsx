@@ -485,6 +485,7 @@ export default function Checkout() {
                     setSelectedDate(e.target.value);
                     setSelectedHour("");
                   }}
+                  required
                 />
                 {selectedDate && (
                   <select
@@ -496,6 +497,7 @@ export default function Checkout() {
                       setDeliveryDate(combined.toISOString());
                       setShowDatePicker(false);
                     }}
+                    required
                   >
                     <option value="">Selecciona la hora</option>
                     {allowedHours.map((hour) => {
