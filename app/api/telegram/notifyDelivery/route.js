@@ -20,7 +20,7 @@ export async function POST(request) {
 
 👤 Cliente: ${name}
 📞 Teléfono: ${phoneNumber}
-📍 Dirección: ${deliveryInfo.deliveryMethod === "Delivery" ? deliveryInfo.address : deliveryInfo.deliveryMethodData}
+${deliveryInfo.deliveryMethod?.includes("Delivery") ? "💱 Costo: " + deliveryInfo.address + "$\s📍 Dirección: " : "📍 Dirección: " + deliveryInfo.deliveryMethodData}
 📅 Fecha y hora: ${formattedDate}
 `;
 

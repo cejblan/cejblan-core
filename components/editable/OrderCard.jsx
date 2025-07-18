@@ -47,8 +47,12 @@ export default function OrderCard({ order }) {
         )}
         <p><strong>Entrega:</strong> {order.deliveryMethod}</p>
         <p>
-          <strong>{order.deliveryMethodData?.length <= 2 ? "Costo:" : "Ubicación:"}</strong>
-              {order.deliveryMethodData}
+          <strong>
+            {order.deliveryMethodData === "Gratis" || order.deliveryMethodData?.length <= 2
+              ? "Costo: "
+              : "Ubicación: "}
+          </strong>
+          {order.deliveryMethodData}
         </p>
         {order.deliveryMethod?.includes("Delivery") && order.deliveryName && (
           <p><strong>Repartidor:</strong> {order.deliveryName}</p>

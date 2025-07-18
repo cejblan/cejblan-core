@@ -241,7 +241,11 @@ export default function OrderForm() {
               <strong>Método:</strong> {order.deliveryMethod}
             </p>
             <p>
-              <strong>{order.deliveryMethodData?.length <= 2 ? "Costo:" : "Ubicación:"}</strong>
+              <strong>
+                {order.deliveryMethodData === "Gratis" || order.deliveryMethodData?.length <= 2
+                  ? "Costo: "
+                  : "Ubicación: "}
+              </strong>
               {order.deliveryMethodData}
             </p>
             {/* ✅ Mostrar fecha y hora de entrega si existe */}
@@ -258,7 +262,7 @@ export default function OrderForm() {
               </div>
             )}
             {/* ✅ Mostrar select solo si es Delivery */}
-            {order.deliveryMethod === "Delivery" && (
+            {order.deliveryMethod?.includes("Delivery") && (
               <div className="mt-2">
                 <label className="font-semibold text-slate-600 block mb-1">Asignar Repartidor:</label>
                 <select
