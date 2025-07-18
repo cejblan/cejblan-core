@@ -30,6 +30,9 @@ export default function DeliveryNote() {
   const [showAddress, setShowAddress] = useState(true);
   const [showIva, setShowIva] = useState(true);
 
+  const [showDelivery, setShowDelivery] = useState(false);
+  const [deliveryAmount, setDeliveryAmount] = useState("");
+
   const handleAddProduct = () => {
     setProducts([
       ...products,
@@ -137,18 +140,20 @@ export default function DeliveryNote() {
   };
 
 
-  const total = products.reduce((acc, product) => {
+  const parsedDelivery = showDelivery ? parseFloat(deliveryAmount || "0") : 0;
+
+  const subtotal = products.reduce((acc, product) => {
     const price = parseFloat(product.price);
     const quantity = parseInt(product.quantity);
     if (!isNaN(price) && !isNaN(quantity)) {
       return acc + price * quantity;
     }
     return acc;
-  }, 0);
+  }, 0) + parsedDelivery;
 
   const taxRate = 0.16;
-  const baseAmount = total / (1 + taxRate);
-  const ivaAmount = total - baseAmount;
+  const baseAmount = subtotal / (1 + taxRate);
+  const ivaAmount = subtotal - baseAmount;
 
   const removeProduct = (id) => {
     setProducts(products.filter((p) => p.id !== id));
@@ -288,13 +293,19 @@ export default function DeliveryNote() {
                 <div className="line" />
               </div>
             ))}
+            {showDelivery && (
+              <>
+                <p>Servicio de Delivery: <PrecioProducto precio={parsedDelivery} format={0} /></p>
+                <div className="line" />
+              </>
+            )}
             {showIva && (
               <>
                 <p className="total">SUBTOTAL: <PrecioProducto precio={baseAmount} format={0} /></p>
                 <p className="total">IVA (16%): <PrecioProducto precio={ivaAmount} format={0} /></p>
               </>
             )}
-            <p className="total">TOTAL: <PrecioProducto precio={total} format={0} /></p>
+            <p className="total">TOTAL: <PrecioProducto precio={subtotal} format={0} /></p>
             <p className="footer">Forma de pago: {paymentMethod}</p>
           </div>
 
@@ -383,6 +394,19 @@ export default function DeliveryNote() {
                   <div className="flex items-center gap-2">
                     <input type="checkbox" checked={showIva} onChange={(e) => setShowIva(e.target.checked)} />
                     <label className="text-sm">Mostrar IVA en la impresión</label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input type="checkbox" checked={showDelivery} onChange={(e) => setShowDelivery(e.target.checked)} />
+                    <label className="text-sm">Agregar servicio de Delivery</label>
+                    {showDelivery && (
+                      <input
+                        type="number"
+                        placeholder="Monto del delivery"
+                        value={deliveryAmount}
+                        onChange={(e) => setDeliveryAmount(e.target.value)}
+                        className="border rounded-md px-2 py-1 w-32"
+                      />
+                    )}
                   </div>
                 </div>
               </div>
