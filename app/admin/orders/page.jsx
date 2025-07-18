@@ -59,7 +59,11 @@ export default function OrdersPageAdmin() {
                 <p><span className="font-semibold">Pago:</span> {order.paymentMethod}</p>
                 <p><span className="font-semibold">Entrega:</span> {order.deliveryMethod}</p>
                 <p>
-                  <span className="font-semibold">{order.deliveryMethodData?.length <= 2 ? "Costo:" : "Ubicación:"}</span>
+                  <span className="font-semibold">
+                    {order.deliveryMethodData === "Delivery Gratis" || order.deliveryMethodData?.length <= 2
+                      ? "Costo: "
+                      : "Ubicación: "}
+                  </span>
                   {order.deliveryMethodData}
                 </p>
                 {order.deliveryMethod?.includes("Delivery") && order.deliveryDate && (

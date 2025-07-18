@@ -241,7 +241,11 @@ export default function OrderForm() {
               <strong>Método:</strong> {order.deliveryMethod}
             </p>
             <p>
-              <strong>{order.deliveryMethodData?.length <= 2 ? "Costo:" : "Ubicación:"}</strong>
+              <strong>
+                {order.deliveryMethodData === "Delivery Gratis" || order.deliveryMethodData?.length <= 2
+                  ? "Costo: "
+                  : "Ubicación: "}
+              </strong>
               {order.deliveryMethodData}
             </p>
             {/* ✅ Mostrar fecha y hora de entrega si existe */}

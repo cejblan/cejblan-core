@@ -165,7 +165,7 @@ export default function Checkout() {
 
     // Si es opción con "Delivery" y es gratis, guarda el texto especial
     if (deliveryMethodData && isFreeDelivery && data[0]?.deliveryMethod?.includes("Delivery")) {
-      formData.append("deliveryMethodData", "Delivery Gratis");
+      formData.append("deliveryMethodData", "Gratis");
     } else if (deliveryMethodData) {
       formData.append("deliveryMethodData", deliveryMethodData.data);
     }
@@ -425,7 +425,7 @@ export default function Checkout() {
               )
             ))}
           </div>
-          {data[0]?.deliveryMethod === "Delivery" && (
+          {data[0]?.deliveryMethod?.includes("Delivery") && (
             <>
               <div className="mb-1">
                 <p className="block text-slate-700 font-medium mb-1">
@@ -460,7 +460,7 @@ export default function Checkout() {
           )}
         </div>
 
-        {data[0]?.deliveryMethod === "Delivery" && (
+        {data[0]?.deliveryMethod?.includes("Delivery") && (
           <div className="bg-white p-2 rounded-xl shadow-6xl h-fit w-full col-start-3 col-end-7 mb-2">
             <label className="block text-slate-700 font-medium mb-1">
               Fecha de Entrega:
