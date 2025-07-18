@@ -30,6 +30,9 @@ export default function DeliveryNote() {
   const [showAddress, setShowAddress] = useState(true);
   const [showIva, setShowIva] = useState(true);
 
+  const [showDelivery, setShowDelivery] = useState(false);
+  const [deliveryAmount, setDeliveryAmount] = useState("");
+
   const handleAddProduct = () => {
     setProducts([
       ...products,
@@ -49,80 +52,108 @@ export default function DeliveryNote() {
   });
 
   const handlePrint = () => {
-    const content = document.getElementById("print-area")?.innerHTML;
-    const printWindow = window.open("", "_blank");
-    printWindow?.document.write(`
+    const printContent = document.getElementById("print-area");
+    if (!printContent) return;
+
+    const clonedContent = printContent.cloneNode(true);
+
+    const iframe = document.createElement("iframe");
+    iframe.style.position = "fixed";
+    iframe.style.right = "0";
+    iframe.style.bottom = "0";
+    iframe.style.width = "0";
+    iframe.style.height = "0";
+    iframe.style.border = "0";
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+
+    const styles = `
+      <style>
+        @media print {
+          @page {
+            size: 80mm auto;
+            margin: 0;
+          }
+          body {
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+            background: white;
+          }
+        }
+  
+        body {
+          font-family: sans-serif;
+          font-size: 11px;
+          width: 80mm;
+          padding: 10px;
+          margin: auto;
+          white-space: pre-wrap;
+        }
+  
+        .center {
+          text-align: center;
+        }
+  
+        .line {
+          border-top: 1px dashed #000;
+          margin: 4px 0;
+        }
+  
+        .total {
+          font-weight: bold;
+          text-align: right;
+        }
+  
+        .footer {
+          margin-top: 10px;
+        }
+  
+        .fecha-hora {
+          display: flex;
+          justify-content: space-between;
+        }
+      </style>
+    `;
+
+    doc.open();
+    doc.write(`
       <html>
         <head>
           <title>Nota de Entrega</title>
-          <style>
-            @media print {
-              @page {
-                size: 80mm auto;
-                margin: 0;
-              }
-              body {
-                margin: 0;
-                padding: 0;
-              }
-            }
-  
-            body {
-              font-family: sans-serif;
-              font-size: 11px;
-              width: 80mm;
-              padding: 10px;
-              margin: auto;
-              white-space: pre-wrap;
-            }
-  
-            .center {
-              text-align: center;
-            }
-  
-            .line {
-              border-top: 1px dashed #000;
-              margin: 4px 0;
-            }
-  
-            .total {
-              font-weight: bold;
-              text-align: right;
-            }
-  
-            .footer {
-              margin-top: 10px;
-            }
-
-            .fecha-hora {
-              display: flex;
-              justify-content: space-between;
-            }
-          </style>
+          ${styles}
         </head>
-        <body>
-          ${content}
-        </body>
+        <body>${clonedContent.innerHTML}</body>
       </html>
     `);
-    printWindow?.document.close();
-    printWindow?.focus();
-    printWindow?.print();
-    printWindow?.close();
+    doc.close();
+
+    iframe.onload = () => {
+      iframe.contentWindow.focus();
+      iframe.contentWindow.print();
+
+      setTimeout(() => {
+        document.body.removeChild(iframe);
+      }, 1000);
+    };
   };
 
-  const total = products.reduce((acc, product) => {
+
+  const parsedDelivery = showDelivery ? parseFloat(deliveryAmount || "0") : 0;
+
+  const subtotal = products.reduce((acc, product) => {
     const price = parseFloat(product.price);
     const quantity = parseInt(product.quantity);
     if (!isNaN(price) && !isNaN(quantity)) {
       return acc + price * quantity;
     }
     return acc;
-  }, 0);
+  }, 0) + parsedDelivery;
 
   const taxRate = 0.16;
-  const baseAmount = total / (1 + taxRate);
-  const ivaAmount = total - baseAmount;
+  const baseAmount = subtotal / (1 + taxRate);
+  const ivaAmount = subtotal - baseAmount;
 
   const removeProduct = (id) => {
     setProducts(products.filter((p) => p.id !== id));
@@ -245,8 +276,8 @@ export default function DeliveryNote() {
             <p className="center">{customAddress}</p>
             <p className="center">RIF: {customRif}</p>
             <div className="fecha-hora">
-              <span className="fecha">Fecha: ${now.toLocaleDateString()}</span>
-              <span className="hora">Hora: ${time}</span>
+              <span className="fecha">Fecha: {now.toLocaleDateString()}</span>
+              <span className="hora">Hora: {time}</span>
             </div>
             <div className="line" />
             <p>Cliente: {clientName}</p>
@@ -262,13 +293,19 @@ export default function DeliveryNote() {
                 <div className="line" />
               </div>
             ))}
+            {showDelivery && (
+              <>
+                <p>Servicio de Delivery: <PrecioProducto precio={parsedDelivery} format={0} /></p>
+                <div className="line" />
+              </>
+            )}
             {showIva && (
               <>
                 <p className="total">SUBTOTAL: <PrecioProducto precio={baseAmount} format={0} /></p>
                 <p className="total">IVA (16%): <PrecioProducto precio={ivaAmount} format={0} /></p>
               </>
             )}
-            <p className="total">TOTAL: <PrecioProducto precio={total} format={0} /></p>
+            <p className="total">TOTAL: <PrecioProducto precio={subtotal} format={0} /></p>
             <p className="footer">Forma de pago: {paymentMethod}</p>
           </div>
 
@@ -357,6 +394,19 @@ export default function DeliveryNote() {
                   <div className="flex items-center gap-2">
                     <input type="checkbox" checked={showIva} onChange={(e) => setShowIva(e.target.checked)} />
                     <label className="text-sm">Mostrar IVA en la impresión</label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input type="checkbox" checked={showDelivery} onChange={(e) => setShowDelivery(e.target.checked)} />
+                    <label className="text-sm">Agregar servicio de Delivery</label>
+                    {showDelivery && (
+                      <input
+                        type="number"
+                        placeholder="Monto del delivery"
+                        value={deliveryAmount}
+                        onChange={(e) => setDeliveryAmount(e.target.value)}
+                        className="border rounded-md px-2 py-1 w-32"
+                      />
+                    )}
                   </div>
                 </div>
               </div>
