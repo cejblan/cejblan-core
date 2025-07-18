@@ -59,12 +59,20 @@ export default function OrdersPageAdmin() {
                 <p><span className="font-semibold">Pago:</span> {order.paymentMethod}</p>
                 <p><span className="font-semibold">Entrega:</span> {order.deliveryMethod}</p>
                 <p>
-                  <span className="font-semibold">
-                    {order.deliveryMethodData === "Gratis" || order.deliveryMethodData?.length <= 2
-                      ? "Costo: "
-                      : "Ubicación: "}
-                  </span>
-                  {order.deliveryMethodData}
+                  <>
+                    {order.deliveryMethodData === "Gratis" || order.deliveryMethodData?.length <= 2 ? (
+                      <>
+                        <span className="font-semibold">Costo:</span> {order.deliveryMethodData}
+                        {order.deliveryMethodData !== "Gratis" && "$"}
+                        <br />
+                        <span className="font-semibold">Ubicación:</span> {order.address}
+                      </>
+                    ) : (
+                      <>
+                        <span className="font-semibold">Ubicación:</span> {order.deliveryMethodData}
+                      </>
+                    )}
+                  </>
                 </p>
                 {order.deliveryMethod?.includes("Delivery") && order.deliveryDate && (
                   <p className="col-span-2">

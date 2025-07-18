@@ -47,12 +47,20 @@ export default function OrderCard({ order }) {
         )}
         <p><strong>Entrega:</strong> {order.deliveryMethod}</p>
         <p>
-          <strong>
-            {order.deliveryMethodData === "Gratis" || order.deliveryMethodData?.length <= 2
-              ? "Costo: "
-              : "Ubicación: "}
-          </strong>
-          {order.deliveryMethodData}
+          <>
+            {order.deliveryMethodData === "Gratis" || order.deliveryMethodData?.length <= 2 ? (
+              <>
+                <span className="font-semibold">Costo:</span> {order.deliveryMethodData}
+                {order.deliveryMethodData !== "Gratis" && "$"}
+                <br />
+                <span className="font-semibold">Ubicación:</span> {order.address}
+              </>
+            ) : (
+              <>
+                <span className="font-semibold">Ubicación:</span> {order.deliveryMethodData}
+              </>
+            )}
+          </>
         </p>
         {order.deliveryMethod?.includes("Delivery") && order.deliveryName && (
           <p><strong>Repartidor:</strong> {order.deliveryName}</p>

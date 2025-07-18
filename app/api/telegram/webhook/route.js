@@ -6,8 +6,17 @@ export async function POST(request) {
 
   if (update.message && update.message.text) {
     const chatId = update.message.chat.id;
-    // Limpiar y convertir a minúsculas
-    const messageText = update.message.text.trim().toLowerCase();
+
+    // 🔠 Normalizar mensaje
+    const normalize = (str) =>
+      str
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "") // quitar acentos
+        .replace(/[^\w\s]/gi, "") // quitar signos
+        .toLowerCase()
+        .trim();
+
+    const messageText = normalize(update.message.text);
     const userName = update.message.from?.first_name || "Usuario";
     const userLastName = update.message.from?.last_name || "";
     const fullName = `${userName} ${userLastName}`.trim();
@@ -26,15 +35,17 @@ export async function POST(request) {
 
     // 2️⃣ Determinar respuesta automática
     const responses = {
-      start: () => `¡Hola, ${userName}! Has comenzado un chat con el bot de ${process.env.NEXT_PUBLIC_SITE_NAME}. Para recibir notificaciones sobre tus pedidos, debes enviar por aquí el código de 6 dígitos.\n\nSi no sabes a qué código nos referimos, puedes ingresar a www.cejblan-cms.vercel.app, registrarte e ir a tu perfil.`,
+      start: () =>
+        `¡Hola, ${userName}! Has comenzado un chat con el bot de ${process.env.NEXT_PUBLIC_SITE_NAME}. Para recibir notificaciones sobre tus pedidos, debes enviar por aquí el código de 6 dígitos.\n\nSi no sabes a qué código nos referimos, puedes ingresar a www.cejblan-cms.vercel.app, registrarte e ir a tu perfil.`,
       hola: () => `¡Hola, ${userName}! ¿Cómo puedo ayudarte hoy?`,
-      ayuda: () => `Claro, ${userName}, dime qué necesitas y trataré de asistirte`,
-      adiós: () => `¡Hasta luego, ${userName}! Espero verte pronto 🤗`,
+      ayuda: () => `Claro, ${userName}, dime qué necesitas y trataré de asistirte.`,
+      adios: () => `¡Hasta luego, ${userName}! Espero verte pronto 🤗`,
       bye: () => `¡Hasta luego, ${userName}! Espero verte pronto 🤗`,
     };
+
     const defaultResponse = () =>
       `Lo siento, ${userName}, no entendí tu mensaje. ¿Podrías reformularlo?`;
-    // Verificar si el mensaje contiene una secuencia de 6 dígitos
+
     const codeRegex = /^\d{6}$/;
 
     try {
@@ -45,11 +56,19 @@ export async function POST(request) {
           "SELECT verified, chatId, code FROM users WHERE code = ?",
           code
         );
+
         if (data[0]) {
           if (data[0].verified === verifiedTrue && data[0].chatId !== chatId) {
-            await conexion.query("UPDATE users SET chatId = ? WHERE code = ?", [chatId, code]);
+            await conexion.query(
+              "UPDATE users SET chatId = ? WHERE code = ?",
+              [chatId, code]
+            );
             responseMessage = `<b>Hola, ${userName}</b>. Tu chat ha sido actualizado correctamente 😉`;
-          } else if (!data[0].verified && !data[0].chatId && data[0].code == code) {
+          } else if (
+            !data[0].verified &&
+            !data[0].chatId &&
+            data[0].code == code
+          ) {
             await conexion.query(
               "UPDATE users SET verified = ?, chatId = ? WHERE code = ?",
               [verifiedTrue, chatId, code]
@@ -62,10 +81,13 @@ export async function POST(request) {
           responseMessage = `<b>Hola, ${userName}</b>. El código ingresado no es válido o no coincide con tu cuenta 🤷🏻‍♂️`;
         }
       } else {
-        responseMessage =
-          Object.keys(responses).find((key) => messageText.includes(key))
-            /*?*/ responses[Object.keys(responses).find((key) => messageText.includes(key))]();
-            //: defaultResponse();
+        const matchedKey = Object.keys(responses).find(
+          (key) => messageText === key || messageText.includes(key)
+        );
+
+        responseMessage = matchedKey
+          ? responses[matchedKey]()
+          : defaultResponse();
       }
     } catch (error) {
       console.error("Error al procesar el mensaje:", error);
@@ -106,7 +128,6 @@ export async function POST(request) {
         "INSERT INTO telegram_messages (chat_id, text, from_bot) VALUES (?, ?, ?)",
         [chatId, responseMessage, 1]
       );
-
     } catch (err) {
       console.error("Error en la solicitud a Telegram:", err);
       return NextResponse.json({
