@@ -262,7 +262,7 @@ export default function OrderForm() {
               </div>
             )}
             {/* ✅ Mostrar select solo si es Delivery */}
-            {order.deliveryMethod === "Delivery" && (
+            {order.deliveryMethod?.includes("Delivery") && (
               <div className="mt-2">
                 <label className="font-semibold text-slate-600 block mb-1">Asignar Repartidor:</label>
                 <select
