@@ -58,8 +58,11 @@ export default function OrdersPageAdmin() {
                 <p><span className="font-semibold">Monto:</span> {order.totalPrice}$</p>
                 <p><span className="font-semibold">Pago:</span> {order.paymentMethod}</p>
                 <p><span className="font-semibold">Entrega:</span> {order.deliveryMethod}</p>
-                <p><span className="font-semibold">Método:</span> {order.deliveryMethodData}</p>
-                {order.deliveryMethod === "Delivery" && order.deliveryDate && (
+                <p>
+                  <span className="font-semibold">{order.deliveryMethodData?.length <= 2 ? "Costo:" : "Ubicación:"}</span>
+                  {order.deliveryMethodData}
+                </p>
+                {order.deliveryMethod?.includes("Delivery") && order.deliveryDate && (
                   <p className="col-span-2">
                     <span className="font-semibold">Hora de Entrega:</span>{" "}
                     {moment(order.deliveryDate).format("DD/MM/YYYY HH:mm")}
@@ -87,10 +90,10 @@ export default function OrdersPageAdmin() {
             </div>
           </Link>
         ))}
-      </div>
+      </div >
 
       {/* Controles de paginación */}
-      <div className="flex justify-center items-center gap-4 mt-4">
+      < div className="flex justify-center items-center gap-4 mt-4" >
         <button
           onClick={handlePrevPage}
           disabled={currentPage === 1}
@@ -105,12 +108,12 @@ export default function OrdersPageAdmin() {
         >
           Siguiente
         </button>
-      </div>
+      </div >
 
       {/* Indicador de página */}
-      <p className="text-center text-sm text-gray-500 mt-2 mb-6">
+      < p className="text-center text-sm text-gray-500 mt-2 mb-6" >
         Página {currentPage} de {Math.ceil(orders.length / itemsPerPage)}
-      </p>
+      </p >
     </>
   );
 }
