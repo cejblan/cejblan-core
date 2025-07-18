@@ -60,7 +60,7 @@ export default function OrdersPageAdmin() {
                 <p><span className="font-semibold">Entrega:</span> {order.deliveryMethod}</p>
                 <p>
                   <span className="font-semibold">
-                    {order.deliveryMethodData === "Delivery Gratis" || order.deliveryMethodData?.length <= 2
+                    {order.deliveryMethodData === "Gratis" || order.deliveryMethodData?.length <= 2
                       ? "Costo: "
                       : "Ubicación: "}
                   </span>

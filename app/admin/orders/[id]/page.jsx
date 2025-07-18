@@ -242,7 +242,7 @@ export default function OrderForm() {
             </p>
             <p>
               <strong>
-                {order.deliveryMethodData === "Delivery Gratis" || order.deliveryMethodData?.length <= 2
+                {order.deliveryMethodData === "Gratis" || order.deliveryMethodData?.length <= 2
                   ? "Costo: "
                   : "Ubicación: "}
               </strong>
