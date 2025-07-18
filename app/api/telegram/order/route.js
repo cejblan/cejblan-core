@@ -52,7 +52,7 @@ ${quantity}
 💰 Total: ${data.dataOrder.totalPrice}$
 💳 Pago: ${data.dataOrder.paymentMethod}
 📦 Entrega: ${data.dataOrder.deliveryMethod}
-📍 Dirección: ${data.dataOrder.deliveryMethod === "Delivery" ? data.dataOrder.address : data.dataOrder.deliveryMethodData}
+${data.dataOrder.deliveryMethod?.includes("Delivery") ? "💱 Costo: " + data.dataOrder.address + "$\s📍 Dirección: " : "📍 Dirección: " + data.dataOrder.deliveryMethodData}
 
 📆 Fecha: ${date}
 ⏳ Estado: ${data.dataOrder.status}
