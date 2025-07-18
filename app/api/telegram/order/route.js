@@ -52,7 +52,9 @@ ${quantity}
 💰 Total: ${data.dataOrder.totalPrice}$
 💳 Pago: ${data.dataOrder.paymentMethod}
 📦 Entrega: ${data.dataOrder.deliveryMethod}
-${data.dataOrder.deliveryMethod?.includes("Delivery") ? "💱 Costo: " + data.dataOrder.address + "$\s📍 Dirección: " : "📍 Dirección: " + data.dataOrder.deliveryMethodData}
+${data.dataOrder.deliveryMethod?.includes("Delivery")
+  ? `💱 Costo: ${data.dataOrder.deliveryMethodData}${data.dataOrder.deliveryMethodData !== "Gratis" ? "$" : ""}\n📍 Dirección: ${data.dataOrder.address}`
+  : `📍 Dirección: ${data.dataOrder.deliveryMethodData}`}
 
 📆 Fecha: ${date}
 ⏳ Estado: ${data.dataOrder.status}
@@ -92,7 +94,7 @@ ${data.dataOrder.deliveryMethod?.includes("Delivery") ? "💱 Costo: " + data.da
   let vendedores = [];
   try {
     const [rows] = await conexion.query(
-      "SELECT chatId FROM users WHERE role = 'Vendedor' AND chatId IS NOT NULL"
+      "SELECT chatId FROM users WHERE rol = 'Vendedor' AND chatId IS NOT NULL"
     );
     vendedores = rows.map((v) => v.chatId);
   } catch (error) {
@@ -114,7 +116,9 @@ ${quantity}
 💰 Total: ${data.dataOrder.totalPrice}$
 💳 Pago: ${data.dataOrder.paymentMethod}
 📦 Entrega: ${data.dataOrder.deliveryMethod}
-${data.dataOrder.deliveryMethod?.includes("Delivery") ? "💱 Costo: " + data.dataOrder.address + "$\s📍 Dirección: " : "📍 Dirección: " + data.dataOrder.deliveryMethodData}
+${data.dataOrder.deliveryMethod?.includes("Delivery")
+  ? `💱 Costo: ${data.dataOrder.deliveryMethodData}${data.dataOrder.deliveryMethodData !== "Gratis" ? "$" : ""}\n📍 Dirección: ${data.dataOrder.address}`
+  : `📍 Dirección: ${data.dataOrder.deliveryMethodData}`}
 
 📆 Fecha: ${date}
 ⏳ Estado: ${data.dataOrder.status}
