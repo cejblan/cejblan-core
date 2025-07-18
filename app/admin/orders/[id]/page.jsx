@@ -34,6 +34,8 @@ export default function OrderForm() {
   const router = useRouter();
   const params = useParams();
   const moment = require("moment");
+  require("moment/locale/es");
+  moment.locale("es"); // Establecer idioma a español
 
   const handleChange = (e) => {
     setOrder({ ...order, [e.target.name]: e.target.value });
