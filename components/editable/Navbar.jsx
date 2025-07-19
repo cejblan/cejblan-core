@@ -64,7 +64,7 @@ export default function Navbar() {
   return (
     // ===START_RETURN===
     <DoNotShowAdmin>
-      <nav id="navCejblan" className="bg-gradient-to-b from-[#0A192F] to-[#6ed8bf] text-[#F8F8F8] text-xl font-bold justify-center items-center grid max-[420px]:grid-cols-6 grid-cols-12 gap-1 py-1 px-2 shadow-8xl h-9 w-full z-30 fixed">
+      <nav id="navAdmin" className="bg-gradient-to-b from-[#0A192F] to-[#6ed8bf] text-[#F8F8F8] text-xl font-bold justify-center items-center grid max-[420px]:grid-cols-6 grid-cols-12 gap-1 py-1 px-2 shadow-8xl h-9 w-full z-30 fixed">
         {session?.user ?
           <>
             <div className="burger max-[420px]:m-auto col-start-1 col-end-1 justify-center items-center" onClick={handleClick}>
@@ -141,7 +141,7 @@ export default function Navbar() {
         }
         <Link href="/" className="max-[420px]:col-start-2 max-[420px]:col-end-6 col-start-5 col-end-9 z-10">
           <div className="flex">
-            <Image className="m-auto max-[420px]:w-full w-3/5 h-3/5" src={Logo} alt="Logo Cejblan" width={200} height={200} />
+            <Image className="m-auto max-[420px]:w-full w-3/5 h-3/5" src={Logo} alt={`Logo ${process.env.NEXT_PUBLIC_SITE_NAME}`} width={200} height={200} />
           </div>
         </Link>
         {session?.user ? (

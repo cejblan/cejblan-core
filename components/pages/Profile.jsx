@@ -175,7 +175,7 @@ export default function Profile() {
                     <span className="text-blue-500 font-bold">Telegram</span>
                     <FaTelegram className="text-blue-500 h-4 w-4" />
                   </span>
-                  <Link href="https://t.me/CejblanBot" className="text-xl text-blue-500 hover:text-blue-600 underline" target="_blank">@CejblanBot</Link>
+                  <Link href={`https://t.me/${process.env.BOT_NAME}`} className="text-xl text-blue-500 hover:text-blue-600 underline" target="_blank">@{process.env.BOT_NAME}</Link>
                 </div>
                 {
                   code ?

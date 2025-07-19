@@ -24,17 +24,17 @@ export default function Login() {
     // ===START_RETURN===
     <div className="py-8">
       <div className="bg-white shadow-md rounded-xl pt-4 pb-3 px-4 mx-auto grid grid-cols-1 w-fit">
-        <Link href="https://cejblan-cms.vercel.app/" className="mb-2">
+        <Link href={process.env.NEXT_PUBLIC_SITE_URL} className="mb-2">
           <Image
             className="rounded-full shadow-6xl m-auto"
             src={Logo}
-            alt="Desarrollado por Cejblan"
+            alt={`Desarrollado por ${process.env.NEXT_PUBLIC_SITE_NAME}`}
             width={81}
             height={81} />
           <Image
             className="rounded-full drop-shadow-6xl m-auto"
             src={Logo2}
-            alt="Desarrollado por Cejblan"
+            alt={`Desarrollado por ${process.env.NEXT_PUBLIC_SITE_NAME}`}
             width={100}
             height={100} />
         </Link>

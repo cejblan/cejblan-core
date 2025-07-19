@@ -3,6 +3,9 @@ import fetch from "node-fetch";
 import { conexion } from "@/libs/mysql"; // Asegúrate de tener esto configurado correctamente
 
 export async function POST(request) {
+  const siteName = process.env.NEXT_PUBLIC_SITE_NAME;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
   const data = await request.json();
   // Verificar que los datos necesarios estén presentes
   if (!data.dataOrder.chatId || !data.dataOrder.id || !data.dataOrder.status) {
@@ -14,10 +17,10 @@ export async function POST(request) {
   // Construir enlaces a los productos
   const products = data.dataOrder.productsIds
     .split(",") // Convertir la cadena en un array
-    .map((id) => ` ✅ <a href="https://www.cejblan-cms.vercel.app/products/${id}/qualification">👉🏻${id}👈🏻</a>`)
+    .map((id) => ` ✅ <a href="${siteUrl}/products/${id}/qualification">👉🏻${id}👈🏻</a>`)
     .join("\n");
   const chatId = data.dataOrder.chatId;
-  const message = `<b>Hemos actualizado el estado de tu pedido <a href="https://www.cejblan-cms.vercel.app/orders">#${data.dataOrder.id}</a> como:</b>
+  const message = `<b>Hemos actualizado el estado de tu pedido <a href="${siteUrl}/orders">#${data.dataOrder.id}</a> como:</b>
 
 ⏳ Estado: ${data.dataOrder.status}
 

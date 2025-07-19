@@ -44,12 +44,12 @@ export async function generateMetadata({ params }) {
   const product = await loadProduct(id);
 
   return {
-    title: `${product.name} - Cejblan`,
+    title: `${product.name} - ${process.env.NEXT_PUBLIC_SITE_NAME}`,
     description: product.description || "Descubre este producto increíble en nuestra tienda.",
     openGraph: {
-      title: `${product.name} - Cejblan`,
+      title: `${product.name} - ${process.env.NEXT_PUBLIC_SITE_NAME}`,
       description: product.description,
-      url: `https://www.cejblan-cms.vercel.app/products/${id}`,
+      url: `${process.env.NEXT_PUBLIC_SITE_URL}/products/${id}`,
       images: [
         {
           url: product.image,
@@ -59,7 +59,7 @@ export async function generateMetadata({ params }) {
     },
     twitter: {
       card: "summary_large_image",
-      title: `${product.name} - Cejblan`,
+      title: `${product.name} - ${process.env.NEXT_PUBLIC_SITE_NAME}`,
       description: product.description,
       images: [product.image],
     },
