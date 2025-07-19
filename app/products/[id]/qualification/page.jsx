@@ -1,55 +1,45 @@
+import Qualification from "@/components/pages/Qualification";
 import { conexion } from "@/libs/mysql";
-import Titulos from "@/components/editable/Titulos";
-import Buttons from "./Buttons";
 
-async function loadProduct(productId) {
+async function loadProduct(id) {
   const [productData] = await conexion.query(
     "SELECT name FROM products WHERE id = ?",
-    [productId]
+    [id]
   );
   const [users] = await conexion.query(
     "SELECT user FROM qualification WHERE product = ?",
-    [productId]
+    [id]
   );
 
-  const userList = users.map((item) => item.user);
-  const combinedData = {
-    name: productData?.name,
-    users: userList,
+  return {
+    name: productData[0]?.name,
+    users: users.map((u) => u.user),
   };
-
-  return combinedData;
 }
 
-// Generar metadatos dinámicos
 export async function generateMetadata({ params }) {
   const { id } = await params;
-  const product = await loadProduct(id);
 
   return {
-    title: `${product.name} - ${process.env.NEXT_PUBLIC_SITE_NAME}`,
-    description: `Califica la calidad de ${product.name}.`,
+    title: `Calificación del producto - ${process.env.NEXT_PUBLIC_SITE_NAME}`,
+    description: "Página para calificar el producto",
     openGraph: {
-      title: `${product.name} - ${process.env.NEXT_PUBLIC_SITE_NAME}`,
-      description: `Califica la calidad de ${product.name}.`,
+      title: `Calificación del producto - ${process.env.NEXT_PUBLIC_SITE_NAME}`,
+      description: "Página para calificar el producto",
       url: `${process.env.NEXT_PUBLIC_SITE_URL}/products/${id}/qualification`,
     },
   };
 }
 
-export default async function Qualification({ params }) {
+export default async function QualificationPage({ params }) {
   const { id } = await params;
   const product = await loadProduct(id);
 
   return (
-    <div className="py-6">
-      <Titulos texto="Califica tu apreciación del producto:" />
-      <div className="bg-white p-4 rounded-xl mx-auto w-fit">
-        <div className="bg-blue-500 text-2xl text-white font-bold py-1 px-2 rounded-xl mx-auto w-fit">
-          {product.name}
-        </div>
-        <Buttons params={params} users={product.users} />
-      </div>
-    </div>
+    <Qualification
+      id={id}
+      name={product.name}
+      users={product.users}
+    />
   );
 }
