@@ -8,6 +8,9 @@ import ImageNotSupported from "@/public/ImageNotSupported.webp";
 import GaleriaModal from "@/app/admin/components/GaleriaModal";
 
 export default function UserForm() {
+  const [bloqueado, setBloqueado] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+
   const [galeriaAbierta, setGaleriaAbierta] = useState(false);
 
   const [user, setUser] = useState({
@@ -43,6 +46,10 @@ export default function UserForm() {
             rol: data.rol,
             image: data.image,
           });
+          if (["0001", "1", 1].includes(data.id)) {
+            setBloqueado(true);
+            setShowModal(true);
+          }
         } else {
           const res = await fetch("/api/admin/users");
           if (!res.ok) throw new Error(`Error: ${res.status} ${res.statusText}`);
@@ -60,6 +67,11 @@ export default function UserForm() {
   }, [params.id]);
 
   const handleSubmit = async (e) => {
+    if (bloqueado) {
+      alert("Este usuario no puede ser editado. Contacte a un desarrollador.");
+      return;
+    }
+
     e.preventDefault();
 
     const formData = new FormData();
@@ -118,6 +130,7 @@ export default function UserForm() {
                 className="bg-white max-[420px]:text-center py-1 px-2 rounded-md w-full"
                 autoFocus
                 required
+                disabled={bloqueado}
               />
             </div>
             <div className="mb-1">
@@ -133,6 +146,7 @@ export default function UserForm() {
                 value={user.email}
                 className="bg-white max-[420px]:text-center py-1 px-2 rounded-md w-full"
                 required
+                disabled={bloqueado}
               />
             </div>
             <div className="mb-1">
@@ -146,6 +160,7 @@ export default function UserForm() {
                 value={user.rol}
                 className="hover:bg-blue-200 max-[420px]:text-center py-1 px-2 rounded-md w-full"
                 required
+                disabled={bloqueado}
               >
                 <option value="">Selecciona una categoría</option>
                 <option value="Cliente">Cliente</option>
@@ -171,7 +186,8 @@ export default function UserForm() {
                   <button
                     type="button"
                     onClick={() => setGaleriaAbierta(true)}
-                    className="bg-blue-500 hover:bg-blue-500 text-white py-1 px-3 rounded-xl shadow-6xl mx-auto"
+                    className="bg-[#6ed8bf] hover:bg-[#4bb199] text-white py-1 px-3 rounded-xl shadow-6xl mx-auto"
+                    disabled={bloqueado}
                   >
                     Seleccionar
                   </button>
@@ -181,7 +197,10 @@ export default function UserForm() {
           </div>
         </div>
 
-        <button className="text-white bg-blue-500 hover:bg-blue-600 font-bold py-1 px-2 rounded-xl shadow-6xl mx-auto w-fit">
+        <button
+          className="text-white bg-[#6ed8bf] hover:bg-[#4bb199] font-bold py-1 px-2 rounded-xl shadow-6xl mx-auto w-fit"
+          disabled={bloqueado}
+        >
           {params.id ? "Actualizar Usuario" : "Crear Usuario"}
         </button>
       </form>
@@ -191,6 +210,25 @@ export default function UserForm() {
         onClose={() => setGaleriaAbierta(false)}
         onSelect={(url) => setUser(prev => ({ ...prev, image: url }))}
       />
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-2xl max-w-sm text-center">
+            <h2 className="text-xl font-bold mb-4 text-red-600">Usuario Protegido</h2>
+            <p className="mb-4">
+              Este usuario no puede ser editado. Consulte con un desarrollador si necesita realizar cambios.
+            </p>
+            <button
+              onClick={() => {
+                setShowModal(false);
+                router.push("/admin/users");
+              }}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
+              Volver
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }
