@@ -29,7 +29,7 @@ export default function Cart() {
               <th className="border-r border-b border-slate-900">Sub Total</th>
               */}
               <th className="border-r border-b border-slate-900">Total</th>
-              <th className="bg-blue-500 text-white border-b border-slate-900 rounded-tr-xl">Acción</th>
+              <th className="bg-[#6ed8bf] text-white border-b border-slate-900 rounded-tr-xl">Acción</th>
             </tr>
           </thead>
           <tbody>
@@ -41,7 +41,7 @@ export default function Cart() {
       {/* Mostrar el botón de realizar pedido solo si hay productos */}
       {
         hasProducts && (
-          <Link href="./checkout" className="bg-blue-600 hover:bg-blue-600 text-xl font-bold text-white py-1 px-2 rounded-xl shadow-6xl mt-2 mx-auto w-fit block">
+          <Link href="./checkout" className="bg-[#6ed8bf] hover:bg-[#4bb199] text-xl font-bold text-white py-1 px-2 rounded-xl shadow-6xl mt-2 mx-auto w-fit block">
             Realizar Pedido
           </Link>
         )

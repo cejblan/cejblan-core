@@ -29,13 +29,13 @@ const TAILWIND_MAP = {
     mr: ['mr-0', 'mr-2', 'mr-4', 'mr-6', 'mr-8']
   },
   border: ['border', 'border-2', 'border-4', 'border-8', 'border-none'],
-  borderColor: ['border-black', 'border-white', 'border-gray-500', 'border-red-500', 'border-green-500', 'border-blue-500'],
+  borderColor: ['border-black', 'border-white', 'border-gray-500', 'border-red-500', 'border-green-500', 'border-[#6ed8bf]'],
   borderRadius: ['rounded-none', 'rounded-sm', 'rounded', 'rounded-md', 'rounded-lg', 'rounded-xl', 'rounded-full'],
   borderStyle: ['border-solid', 'border-dashed', 'border-dotted', 'border-double'],
   fontSize: ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl', 'text-2xl'],
   fontWeight: ['font-thin', 'font-light', 'font-normal', 'font-medium', 'font-bold', 'font-extrabold'],
   textAlign: ['text-left', 'text-center', 'text-right', 'text-justify'],
-  color: ['text-black', 'text-white', 'text-gray-700', 'text-red-500', 'text-green-500', 'text-blue-500'],
+  color: ['text-black', 'text-white', 'text-gray-700', 'text-red-500', 'text-green-500', 'text-[#6ed8bf]'],
   backgroundColor: ['bg-white', 'bg-gray-100', 'bg-gray-200', 'bg-blue-200', 'bg-yellow-100', 'bg-red-100'],
   width: ['w-auto', 'w-full', 'w-1/2', 'w-1/3', 'w-1/4', 'w-1/5'],
   height: ['h-auto', 'h-full', 'h-32', 'h-64', 'h-96'],
@@ -499,7 +499,7 @@ export default function Editor({ file, contenido }) {
     }
   };
 
-  const btnSmall = "bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-500 transition h-fit";
+  const btnSmall = "bg-[#6ed8bf] text-white px-2 py-1 rounded hover:bg-[#6ed8bf] transition h-fit";
   const btnSmall2 = "bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 transition";
   const btnSmall3 = "bg-red-600 text-white px-2 py-1 rounded mr-1 hover:bg-red-700 transition";
 

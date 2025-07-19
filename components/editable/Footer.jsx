@@ -7,7 +7,7 @@ export default function Footer() {
     <DoNotShowAdmin>
       <footer id="footer" className="bg-gradient-to-b from-[#6ed8bf] to-[#0A192F] text-[#F8F8F8] relative shadow-8xl p-1 w-full z-30" role="contentinfo">
         <p className="text-md">{process.env.NEXT_PUBLIC_SITE_NAME} - © Copyright 2024 - Desarrollado por
-          <Link href="www.linkedin.com/in/cejblan" className="font-semibold hover:text-blue-500"> Francisco González</Link>
+          <Link href="www.linkedin.com/in/cejblan" className="font-semibold hover:text-[#6ed8bf]"> Francisco González</Link>
         </p>
       </footer>
     </DoNotShowAdmin>

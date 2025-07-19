@@ -47,7 +47,7 @@ export default function SearchProduct({ onSelectProduct, onSearchQueryChange }) 
         value={query}
         onChange={handleSearch}
         placeholder="Buscar producto..."
-        className="w-full px-2 py-1 border border-slate-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        className="w-full px-2 py-1 border border-slate-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#6ed8bf] focus:border-[#6ed8bf]"
       />
       {loading && (
         <div className="absolute top-6 w-full bg-white border border-slate-300 rounded-lg shadow-lg z-50">

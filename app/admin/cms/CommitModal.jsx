@@ -47,7 +47,7 @@ export default function CommitModal({ isOpen, onClose, onEnviar }) {
 
           <button
             onClick={() => onEnviar({ titulo, descripcion })}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
+            className="px-4 py-2 bg-[#6ed8bf] text-white rounded hover:bg-[#6ed8bf]"
           >
             Enviar
           </button>

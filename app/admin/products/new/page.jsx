@@ -126,7 +126,7 @@ export default function ProductForm() {
 
   return (
     <>
-      <Link href={params.id ? `/admin/products/${params.id}` : "/admin/products"} className=" bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl">
+      <Link href={params.id ? `/admin/products/${params.id}` : "/admin/products"} className=" bg-slate-600 text-white hover:text-[#6ed8bf] text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl">
         <FaArrowLeft />
       </Link>
       <form onSubmit={handleSubmit} ref={form} className="md:pl-3" >
@@ -175,12 +175,12 @@ export default function ProductForm() {
             <div className="relative">
               <Image src={product.image || ImageNotSupported} className="rounded-md drop-shadow-6xl m-auto" alt={product.name} width={200} height={200} />
               <div className="text-xs absolute max-[420px]:top-1/3 top-2/3 left-0 w-full flex justify-center">
-                <button type="button" onClick={() => setGaleriaAbierta(true)} className="bg-blue-500 hover:bg-blue-500 text-white py-1 px-3 rounded-xl shadow-6xl mx-auto">Seleccionar</button>
+                <button type="button" onClick={() => setGaleriaAbierta(true)} className="bg-[#6ed8bf] hover:bg-[#4bb199] text-white py-1 px-3 rounded-xl shadow-6xl mx-auto">Seleccionar</button>
               </div>
             </div>
           </div>
         </div>
-        <button className="text-white bg-blue-500 hover:bg-blue-600 font-bold py-1 px-2 rounded-xl shadow-6xl mx-auto w-fit">
+        <button className="text-white bg-[#6ed8bf] hover:bg-[#4bb199] font-bold py-1 px-2 rounded-xl shadow-6xl mx-auto w-fit">
           {params.id ? "Actualizar Producto" : "Crear Producto"}
         </button>
       </form>

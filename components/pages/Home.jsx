@@ -19,7 +19,7 @@ export default function Home() {
         </Link>
         <Link
           href={`https://t.me/${process.env.BOT_NAME}`}
-          className="bg-blue-600 hover:bg-blue-500 text-slate-200 hover:text-white text-3xl font-bold whitespace-nowrap flex content-center justify-center rounded-3xl py-1 pl-2 pr-1 max-[420px]:mt-2 max-[420px]:mx-auto w-min">
+          className="bg-[#6ed8bf] hover:bg-blue-500 text-slate-200 hover:text-white text-3xl font-bold whitespace-nowrap flex content-center justify-center rounded-3xl py-1 pl-2 pr-1 max-[420px]:mt-2 max-[420px]:mx-auto w-min">
           Bot Telegram<FaTelegram />
         </Link>
       </div>

@@ -23,7 +23,7 @@ export default function OrderCard({ order }) {
         <p><strong>Productos:</strong> {order.productsIds}</p>
         <p><strong>Cantidad:</strong> {order.productsQuantity}</p>
         <p><strong>Total:</strong>{" "}
-          <span className="text-blue-600 font-bold">
+          <span className="text-[#6ed8bf] font-bold">
             <PrecioProducto precio={order.totalPrice} format={0} />
           </span>
         </p>
@@ -39,7 +39,7 @@ export default function OrderCard({ order }) {
             <Link
               href={order.image}
               target="_blank"
-              className="text-blue-500 underline hover:text-blue-600"
+              className="text-[#6ed8bf] underline hover:text-[#4bb199]"
             >
               Ver
             </Link>
@@ -85,7 +85,7 @@ export default function OrderCard({ order }) {
         <p className={`text-lg font-bold ${order.status === "COMPLETADO"
           ? "text-green-600"
           : order.status === "PROCESANDO"
-            ? "text-blue-600"
+            ? "text-[#6ed8bf]"
             : "text-red-600"
           }`}>{order.status}</p>
       </div>

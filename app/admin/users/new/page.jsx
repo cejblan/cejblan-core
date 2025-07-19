@@ -104,7 +104,7 @@ export default function UserForm() {
     <>
       <Link
         href={params.id ? `/admin/users/${params.id}` : "/admin/users"}
-        className="bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl"
+        className="bg-slate-600 text-white hover:text-[#6ed8bf] text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl"
       >
         <FaArrowLeft />
       </Link>
@@ -222,7 +222,7 @@ export default function UserForm() {
                 setShowModal(false);
                 router.push("/admin/users");
               }}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-[#4bb199]"
             >
               Volver
             </button>

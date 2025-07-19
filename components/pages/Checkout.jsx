@@ -379,7 +379,7 @@ export default function Checkout() {
                       width={200} height={200}
                     />
                     <label className="text-xs absolute max-[420px]:top-1/3 top-2/3 left-0 w-full">
-                      <span className="bg-blue-500 hover:bg-blue-500 text-white py-1 px-3 rounded-xl shadow-6xl mx-auto w-fit cursor-pointer block">Subir</span>
+                      <span className="bg-[#6ed8bf] hover:bg-[#4bb199] text-white py-1 px-3 rounded-xl shadow-6xl mx-auto w-fit cursor-pointer block">Subir</span>
                       <input
                         ref={fileInputRef}
                         type="file"
@@ -468,7 +468,7 @@ export default function Checkout() {
             <button
               type="button"
               onClick={() => setShowDatePicker(!showDatePicker)}
-              className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-3 rounded"
+              className="bg-[#6ed8bf] hover:bg-[#4bb199] text-white font-semibold py-1 px-3 rounded"
             >
               {deliveryDate
                 ? moment(deliveryDate).format("dddd, D [de] MMMM [a las] HH:mm")
@@ -518,7 +518,7 @@ export default function Checkout() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className={`bg-blue-600 hover:bg-blue-600 text-xl font-bold text-white py-1 px-2 rounded-xl shadow-6xl mb-2 mx-auto w-fit col-start-1 col-end-9 block ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+          className={`bg-[#6ed8bf] hover:bg-[#4bb199] text-xl font-bold text-white py-1 px-2 rounded-xl shadow-6xl mb-2 mx-auto w-fit col-start-1 col-end-9 block ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
             }`}
         >
           {isSubmitting ? "Enviando..." : "Enviar Pedido"}

@@ -143,7 +143,7 @@ export default function OrderForm() {
     <>
       <Link
         href="/admin/orders"
-        className="absolute top-2 left-2 bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md shadow-6xl"
+        className="absolute top-2 left-2 bg-slate-600 text-white hover:text-[#6ed8bf] text-xl p-1 rounded-md shadow-6xl"
       >
         <FaArrowLeft />
       </Link>
@@ -170,7 +170,7 @@ export default function OrderForm() {
               className={`w-full border rounded-md p-2 ${order.status === "COMPLETADO"
                 ? "text-green-600"
                 : order.status === "PROCESANDO"
-                  ? "text-blue-600"
+                  ? "text-[#6ed8bf]"
                   : "text-red-600"
                 }`}
             >
@@ -190,13 +190,13 @@ export default function OrderForm() {
                   <Link
                     key={i}
                     href={`/admin/products/${id}`}
-                    className="text-blue-600 hover:underline mr-1"
+                    className="text-[#6ed8bf] hover:underline mr-1"
                   >
                     {String(id).padStart(4, "0")}
                   </Link>
                 ))
               ) : (
-                <Link href={`/admin/products/${order.productsIds}`} className="text-blue-600 hover:underline">
+                <Link href={`/admin/products/${order.productsIds}`} className="text-[#6ed8bf] hover:underline">
                   {String(order.productsIds).padStart(4, "0")}
                 </Link>
               )}
@@ -211,7 +211,7 @@ export default function OrderForm() {
               <strong>Comprobante:</strong>
             </p>
             {order.image ? (
-              <Link href={order.image} target="_blank" className="text-blue-500 hover:underline">
+              <Link href={order.image} target="_blank" className="text-[#6ed8bf] hover:underline">
                 Ver Imagen
               </Link>
             ) : (
@@ -295,7 +295,7 @@ export default function OrderForm() {
         <div className="text-center mt-6">
           <button
             type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-xl shadow-md"
+            className="bg-[#6ed8bf] hover:bg-[#4bb199] text-white font-semibold py-2 px-6 rounded-xl shadow-md"
           >
             Actualizar Pedido
           </button>

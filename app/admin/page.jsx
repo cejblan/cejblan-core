@@ -45,19 +45,19 @@ export default function AdminPage() {
         <div className="text-center mt-4 grid grid-cols-1 gap-3 justify-center items-center">
           <div>
             <p className="text-xl font-medium flex justify-center items-center gap-2">
-              Bot de <span className="text-blue-500 font-bold">Telegram</span> <FaTelegram className="text-blue-500 h-5 w-5" />
+              Bot de <span className="text-[#6ed8bf] font-bold">Telegram</span> <FaTelegram className="text-[#6ed8bf] h-5 w-5" />
             </p>
             <Link
               href={`https://t.me/${process.env.BOT_NAME}`}
               target="_blank"
-              className="text-xl text-blue-500 hover:text-blue-600 underline"
+              className="text-xl text-[#6ed8bf] hover:text-[#4bb199] underline"
             >
               @{process.env.BOT_NAME}
             </Link>
           </div>
           {code ? (
             <div>
-              <p className="bg-blue-500 text-3xl text-white text-center font-bold px-4 py-1 rounded-xl shadow-lg mx-auto w-fit">
+              <p className="bg-[#6ed8bf] text-3xl text-white text-center font-bold px-4 py-1 rounded-xl shadow-lg mx-auto w-fit">
                 {code}
               </p>
               {initialTime && (
@@ -70,7 +70,7 @@ export default function AdminPage() {
           ) : (
             <button
               onClick={codeVerified}
-              className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-xl shadow-lg mx-auto block"
+              className="bg-[#6ed8bf] hover:bg-[#4bb199] text-white py-2 px-4 rounded-xl shadow-lg mx-auto block"
             >
               Generar Código
             </button>

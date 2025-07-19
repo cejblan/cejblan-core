@@ -89,7 +89,7 @@ export default function OrdersPageAdmin() {
                 <span className={`font-bold ${order.status === "COMPLETADO"
                   ? "text-green-600"
                   : order.status === "PROCESANDO"
-                    ? "text-blue-600"
+                    ? "text-[#6ed8bf]"
                     : "text-red-600"
                   }`}>{order.status}</span>
               </p>

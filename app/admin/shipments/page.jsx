@@ -135,7 +135,7 @@ export default function DeliveryCalendar() {
                       ${order.status === "COMPLETADO"
                         ? "bg-green-100 hover:bg-green-200 text-green-600"
                         : order.status === "PROCESANDO"
-                          ? "bg-blue-100 hover:bg-blue-200 text-blue-600"
+                          ? "bg-blue-100 hover:bg-blue-200 text-[#6ed8bf]"
                           : "bg-red-100 hover:bg-red-200 text-red-600"}`}
                     onClick={() => setSelectedOrder(order)}
                     title={`Pedido #${order.id} - ${moment(order.deliveryDate).format("HH:mm")}`}

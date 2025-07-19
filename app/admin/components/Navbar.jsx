@@ -92,25 +92,25 @@ export default function NavbarAdmin({ children }) {
               setIsOpen((prev) => !prev);
               if (isOpenTwo) setIsOpenTwo(false);
             }}
-            className="hover:bg-slate-700 hover:text-blue-300 p-1 flex items-center"
+            className="hover:bg-slate-700 hover:text-[#6ed8bf] p-1 flex items-center"
           >
             <TiThMenu />
           </button>
-          <Link href="/" className="hover:bg-slate-700 hover:text-blue-300 p-1 flex items-center">
+          <Link href="/" className="hover:bg-slate-700 hover:text-[#6ed8bf] p-1 flex items-center">
             <FaHome className="w-3 h-3" />
             <h1 className="font-bold ml-1 max-[420px]:hidden">{process.env.NEXT_PUBLIC_SITE_NAME}</h1>
           </Link>
 
           {role !== "vendedor" && (
             <div onClick={handleNewMenuClick} className="p-1 relative">
-              <FaPlus className={`hover:fill-blue-300 w-3 h-3 ${isOpenTwo ? "rotate-45" : ""}`} />
+              <FaPlus className={`hover:fill-[#6ed8bf] w-3 h-3 ${isOpenTwo ? "rotate-45" : ""}`} />
               {isOpenTwo && (
                 <div className="menu bg-slate-700 rounded-xl absolute top-6 left-[-3rem] text-sm">
                   {NEW_ITEMS.map(({ href, label, icon: Icon }) => (
                     <Link
                       key={href}
                       href={href}
-                      className={`${isActive(href) ? "bg-slate-700" : ""} hover:bg-slate-600 hover:text-blue-300 p-1 flex items-center`}
+                      className={`${isActive(href) ? "bg-slate-700" : ""} hover:bg-slate-600 hover:text-[#6ed8bf] p-1 flex items-center`}
                     >
                       <Icon className="mr-1 w-2 h-2" />
                       <h2 className="w-max">{label}</h2>
@@ -121,7 +121,7 @@ export default function NavbarAdmin({ children }) {
             </div>
           )}
 
-          <div className="hover:bg-slate-700 hover:text-blue-300 p-1 border-l border-slate-600 ml-auto flex justify-end items-center relative" onClick={() => setIsOpenThree(!isOpenThree)}>
+          <div className="hover:bg-slate-700 hover:text-[#6ed8bf] p-1 border-l border-slate-600 ml-auto flex justify-end items-center relative" onClick={() => setIsOpenThree(!isOpenThree)}>
             <h2 className="text-xs mr-1">{session?.user.name}</h2>
             <Image
               src={session?.user.image}
@@ -150,7 +150,7 @@ export default function NavbarAdmin({ children }) {
             <Link
               key={href}
               href={href}
-              className={`${isActive(href, match) ? "bg-slate-700" : ""} hover:bg-slate-600 hover:text-blue-300 py-1 pl-1 border-t border-slate-600 flex items-center`}
+              className={`${isActive(href, match) ? "bg-slate-700" : ""} hover:bg-slate-600 hover:text-[#6ed8bf] py-1 pl-1 border-t border-slate-600 flex items-center`}
             >
               <Icon className="mr-1 w-2 h-2" />
               <h3>{label}</h3>

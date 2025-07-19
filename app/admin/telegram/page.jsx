@@ -80,7 +80,7 @@ export default function TelegramPanel() {
             <div className="flex items-center p-2 border-b border-slate-300">
               <button
                 onClick={() => setSelectedChat(null)}
-                className="mr-2 text-blue-500"
+                className="mr-2 text-[#6ed8bf]"
               >
                 Atrás
               </button>
@@ -119,7 +119,7 @@ export default function TelegramPanel() {
               />
               <button
                 onClick={handleSend}
-                className="bg-blue-500 text-white px-3 py-1 rounded"
+                className="bg-[#6ed8bf] text-white px-3 py-1 rounded"
               >
                 Enviar
               </button>
@@ -199,7 +199,7 @@ export default function TelegramPanel() {
           />
           <button
             onClick={handleSend}
-            className="bg-blue-500 text-white px-3 py-1 rounded"
+            className="bg-[#6ed8bf] text-white px-3 py-1 rounded"
           >
             Enviar
           </button>
