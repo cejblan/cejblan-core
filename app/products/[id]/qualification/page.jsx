@@ -27,12 +27,12 @@ export async function generateMetadata({ params }) {
   const product = await loadProduct(id);
 
   return {
-    title: `${product.name} - Cejblan`,
+    title: `${product.name} - ${process.env.NEXT_PUBLIC_SITE_NAME}`,
     description: `Califica la calidad de ${product.name}.`,
     openGraph: {
-      title: `${product.name} - Cejblan`,
+      title: `${product.name} - ${process.env.NEXT_PUBLIC_SITE_NAME}`,
       description: `Califica la calidad de ${product.name}.`,
-      url: `https://www.cejblan-cms.vercel.app/products/${id}/qualification`,
+      url: `${process.env.NEXT_PUBLIC_SITE_URL}/products/${id}/qualification`,
     },
   };
 }

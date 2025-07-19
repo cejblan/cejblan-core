@@ -3,6 +3,9 @@ import fetch from "node-fetch";
 import { conexion } from "@/libs/mysql";
 
 export async function POST(request) {
+  const siteName = process.env.NEXT_PUBLIC_SITE_NAME;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
   const data = await request.json();
   const moment = require("moment");
 
@@ -17,7 +20,7 @@ export async function POST(request) {
 
   const products = data.dataOrder.productsIds
     .split(",")
-    .map((id) => `   ✅ <a href="https://www.cejblan-cms.vercel.app/products/${id}">${id}</a>`)
+    .map((id) => `   ✅ <a href="${siteUrl}/products/${id}">${id}</a>`)
     .join("\n");
 
   const quantity = data.dataOrder.productsQuantity
@@ -53,8 +56,8 @@ ${quantity}
 💳 Pago: ${data.dataOrder.paymentMethod}
 📦 Entrega: ${data.dataOrder.deliveryMethod}
 ${data.dataOrder.deliveryMethod?.includes("Delivery")
-  ? `💱 Costo: ${data.dataOrder.deliveryMethodData}${data.dataOrder.deliveryMethodData !== "Gratis" ? "$" : ""}\n📍 Dirección: ${data.dataOrder.address}`
-  : `📍 Dirección: ${data.dataOrder.deliveryMethodData}`}
+      ? `💱 Costo: ${data.dataOrder.deliveryMethodData}${data.dataOrder.deliveryMethodData !== "Gratis" ? "$" : ""}\n📍 Dirección: ${data.dataOrder.address}`
+      : `📍 Dirección: ${data.dataOrder.deliveryMethodData}`}
 
 📆 Fecha: ${date}
 ⏳ Estado: ${data.dataOrder.status}
@@ -117,8 +120,8 @@ ${quantity}
 💳 Pago: ${data.dataOrder.paymentMethod}
 📦 Entrega: ${data.dataOrder.deliveryMethod}
 ${data.dataOrder.deliveryMethod?.includes("Delivery")
-  ? `💱 Costo: ${data.dataOrder.deliveryMethodData}${data.dataOrder.deliveryMethodData !== "Gratis" ? "$" : ""}\n📍 Dirección: ${data.dataOrder.address}`
-  : `📍 Dirección: ${data.dataOrder.deliveryMethodData}`}
+      ? `💱 Costo: ${data.dataOrder.deliveryMethodData}${data.dataOrder.deliveryMethodData !== "Gratis" ? "$" : ""}\n📍 Dirección: ${data.dataOrder.address}`
+      : `📍 Dirección: ${data.dataOrder.deliveryMethodData}`}
 
 📆 Fecha: ${date}
 ⏳ Estado: ${data.dataOrder.status}

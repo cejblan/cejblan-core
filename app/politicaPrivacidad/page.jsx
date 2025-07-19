@@ -1,10 +1,10 @@
 export const metadata = {
-    title: "Política de Privacidad - " + process.env.NEXT_PUBLIC_SITE_NAME,
+    title: `Política de Privacidad - ${process.env.NEXT_PUBLIC_SITE_NAME}`,
     description: "Página de Políticas de Privacidad.",
     openGraph: {
-        title: "Política de Privacidad - " + process.env.NEXT_PUBLIC_SITE_NAME,
+        title: `Política de Privacidad - ${process.env.NEXT_PUBLIC_SITE_NAME}`,
         description: "Página de Políticas de Privacidad.",
-        url: "https://www.cejblan-cms.vercel.app/politicaPrivacidad",
+        url: `${process.env.NEXT_PUBLIC_SITE_URL}/politicaPrivacidad`,
     },
 };
 

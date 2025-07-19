@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { conexion } from "@/libs/mysql";
 
 export async function POST(request) {
+  const siteName = process.env.NEXT_PUBLIC_SITE_NAME;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  
   const update = await request.json();
 
   if (update.message && update.message.text) {
@@ -36,7 +39,7 @@ export async function POST(request) {
     // 2️⃣ Determinar respuesta automática
     const responses = {
       start: () =>
-        `¡Hola, ${userName}! Has comenzado un chat con el bot de ${process.env.NEXT_PUBLIC_SITE_NAME}. Para recibir notificaciones sobre tus pedidos, debes enviar por aquí el código de 6 dígitos.\n\nSi no sabes a qué código nos referimos, puedes ingresar a www.cejblan-cms.vercel.app, registrarte e ir a tu perfil.`,
+        `¡Hola, ${userName}! Has comenzado un chat con el bot de ${siteName}. Para recibir notificaciones sobre tus pedidos, debes enviar por aquí el código de 6 dígitos.\n\nSi no sabes a qué código nos referimos, puedes ingresar a ${siteUrl}, registrarte e ir a tu perfil.`,
       hola: () => `¡Hola, ${userName}! ¿Cómo puedo ayudarte hoy?`,
       ayuda: () => `Claro, ${userName}, dime qué necesitas y trataré de asistirte.`,
       adios: () => `¡Hasta luego, ${userName}! Espero verte pronto 🤗`,

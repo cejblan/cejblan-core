@@ -48,11 +48,11 @@ export default function AdminPage() {
               Bot de <span className="text-blue-500 font-bold">Telegram</span> <FaTelegram className="text-blue-500 h-5 w-5" />
             </p>
             <Link
-              href="https://t.me/CejblanBot"
+              href={`https://t.me/${process.env.BOT_NAME}`}
               target="_blank"
               className="text-xl text-blue-500 hover:text-blue-600 underline"
             >
-              @CejblanBot
+              @{process.env.BOT_NAME}
             </Link>
           </div>
           {code ? (
