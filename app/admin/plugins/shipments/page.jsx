@@ -23,7 +23,7 @@ export default function DeliveryCalendar() {
           const user = await resUser.json()
 
           let ordersData = []
-          if (["admin", "vendedor", "developer"].includes(user.rol)) {
+          if (["admin", "vendedor", "desarrollador"].includes(user.rol)) {
             setIsAdminView(true)
             const res = await fetch("/api/admin/orders/all")
             if (!res.ok) throw new Error("No se pudieron obtener pedidos")
