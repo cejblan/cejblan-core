@@ -112,7 +112,7 @@ export default function NavbarAdmin({ children, plugins = [] }) {
       console.warn("Plugin sin icono válido:", plugin);
       return { ...plugin, Icon: null };
     }
-  
+
     const Icon = await loadIcon({ lib: plugin.iconLib, name: plugin.icon });
     return { ...plugin, Icon };
   });
@@ -201,17 +201,27 @@ export default function NavbarAdmin({ children, plugins = [] }) {
           {plugins.length > 0 && (
             <>
               {/*<h3 className="text-xs text-center text-gray-400 p-1 uppercase border-t border-slate-600">Plugins</h3>*/}
-              {loadedPlugins.map(plugin => (
-                <Link
-                  key={plugin.slug}
-                  href={`/admin/${plugin.slug}`}
-                  className={`hover:bg-slate-600 hover:text-[#6ed8bf] py-1 pl-1 border-t border-slate-600 flex items-center ${pathname.startsWith(`/admin/plugins/${plugin.slug}`) ? "bg-slate-700" : ""
-                    }`}
-                >
-                  {plugin.Icon && <plugin.Icon className="mr-1 w-2 h-2" />}
-                  <h3>{plugin.name}</h3>
-                </Link>
-              ))}
+              {loadedPlugins
+                .filter(plugin => {
+                  if (!plugin.role) return true; // Sin restricción, mostrar a todos
+
+                  // Convertir a array si es string, limpiando espacios y pasando a minúsculas
+                  const allowedRoles = Array.isArray(plugin.role)
+                    ? plugin.role.map(r => r.toLowerCase())
+                    : plugin.role.split(",").map(r => r.trim().toLowerCase());
+
+                  return allowedRoles.includes(role); // 'role' es minúscula del usuario
+                })
+                .map(plugin => (
+                  <Link
+                    key={plugin.slug}
+                    href={`/admin/${plugin.slug}`}
+                    className={`hover:bg-slate-600 hover:text-[#6ed8bf] py-1 pl-1 border-t border-slate-600 flex items-center ${pathname.startsWith(`/admin/plugins/${plugin.slug}`) ? "bg-slate-700" : ""}`}
+                  >
+                    {plugin.Icon && <plugin.Icon className="mr-1 w-2 h-2" />}
+                    <h3>{plugin.name}</h3>
+                  </Link>
+                ))}
             </>
           )}
         </div>
