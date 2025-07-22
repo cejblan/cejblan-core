@@ -200,7 +200,7 @@ export default function NavbarAdmin({ children, plugins = [] }) {
 
           {plugins.length > 0 && (
             <>
-              <h3 className="text-xs text-center text-gray-400 p-1 uppercase border-t border-slate-600">Plugins</h3>
+              {/*<h3 className="text-xs text-center text-gray-400 p-1 uppercase border-t border-slate-600">Plugins</h3>*/}
               {loadedPlugins.map(plugin => (
                 <Link
                   key={plugin.slug}
