@@ -1,0 +1,8 @@
+{
+  "name": "Notas",
+  "version": "1.0.0",
+  "description": "Permite generar e imprimir notas de entregas",
+  "icon": "PiBlueprintFill",
+  "iconLib": "pi",
+  "role": "Desarrollador"
+}
