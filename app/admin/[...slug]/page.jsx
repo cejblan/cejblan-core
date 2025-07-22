@@ -28,8 +28,8 @@ export default function PluginPage() {
   );
 
   return (
-    <div className="p-4">
+    <>
       <PluginComponent />
-    </div>
+    </>
   );
 }
