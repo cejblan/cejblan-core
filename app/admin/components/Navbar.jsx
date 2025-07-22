@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+import { loadIcon } from "@/utils/loadIcon";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
@@ -35,7 +37,6 @@ const MAIN_ITEMS = [
   { href: "/admin/deliveries", label: "Entregas", icon: LuPackageOpen, match: /^\/admin\/deliveries/ },
   { href: "/admin/shipments", label: "Envios", icon: MdDeliveryDining, match: /^\/admin\/shipments/ },
   { href: "/admin/orders", label: "Pedidos", icon: MdBorderColor, match: /^\/admin\/orders/ },
-  { href: "/admin/deliveryNote", label: "Notas", icon: PiBlueprintFill, match: /^\/admin\/deliveryNote/ },
   { href: "/admin/coins", label: "Monedas", icon: PiCoinsFill, match: /^\/admin\/coins/ },
   { href: "/admin/telegram", label: "Telegram", icon: FaTelegram, match: /^\/admin\/telegram/ },
   { href: "/admin/gallery", label: "Galeria", icon: GrGallery, match: /^\/admin\/gallery/ },
@@ -48,6 +49,25 @@ export default function NavbarAdmin({ children, plugins = [] }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenTwo, setIsOpenTwo] = useState(false);
   const [isOpenThree, setIsOpenThree] = useState(false);
+
+  const [loadedPlugins, setLoadedPlugins] = useState([]);
+
+  useEffect(() => {
+    async function fetchPluginIcons() {
+      const pluginsWithIcons = await Promise.all(
+        plugins.map(async plugin => {
+          const Icon = await loadIcon({ lib: plugin.iconLib, name: plugin.icon });
+          return {
+            ...plugin,
+            Icon,
+          };
+        })
+      );
+      setLoadedPlugins(pluginsWithIcons);
+    }
+
+    fetchPluginIcons();
+  }, [plugins]);
 
   const { data: session, status } = useSession();
   const pathname = usePathname();
@@ -88,6 +108,16 @@ export default function NavbarAdmin({ children, plugins = [] }) {
       return false;
     });
   };
+
+  plugins.map(async plugin => {
+    if (!plugin.iconLib || !plugin.icon) {
+      console.warn("Plugin sin icono válido:", plugin);
+      return { ...plugin, Icon: null };
+    }
+  
+    const Icon = await loadIcon({ lib: plugin.iconLib, name: plugin.icon });
+    return { ...plugin, Icon };
+  });
 
   return (
     <>
@@ -173,14 +203,14 @@ export default function NavbarAdmin({ children, plugins = [] }) {
           {plugins.length > 0 && (
             <>
               <h3 className="text-xs text-center text-gray-400 p-1 uppercase border-t border-slate-600">Plugins</h3>
-              {plugins.map(plugin => (
+              {loadedPlugins.map(plugin => (
                 <Link
                   key={plugin.slug}
                   href={`/admin/plugins/${plugin.slug}`}
                   className={`hover:bg-slate-600 hover:text-[#6ed8bf] py-1 pl-1 border-t border-slate-600 flex items-center ${pathname.startsWith(`/admin/plugins/${plugin.slug}`) ? "bg-slate-700" : ""
                     }`}
                 >
-                  {plugin.icon && <span className="mr-1">{plugin.icon}</span>}
+                  {plugin.Icon && <plugin.Icon className="mr-1 w-2 h-2" />}
                   <h3>{plugin.name}</h3>
                 </Link>
               ))}
