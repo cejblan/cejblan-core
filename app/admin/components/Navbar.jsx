@@ -35,10 +35,8 @@ const MAIN_ITEMS = [
   { href: "/admin/categories", label: "Categorías", icon: MdCategory, match: /^\/admin\/categories/ },
   { href: "/admin/payments", label: "Pagos", icon: PiCurrencyDollarSimpleFill, match: /^\/admin\/payments/ },
   { href: "/admin/deliveries", label: "Entregas", icon: LuPackageOpen, match: /^\/admin\/deliveries/ },
-  { href: "/admin/shipments", label: "Envios", icon: MdDeliveryDining, match: /^\/admin\/shipments/ },
   { href: "/admin/orders", label: "Pedidos", icon: MdBorderColor, match: /^\/admin\/orders/ },
   { href: "/admin/coins", label: "Monedas", icon: PiCoinsFill, match: /^\/admin\/coins/ },
-  { href: "/admin/telegram", label: "Telegram", icon: FaTelegram, match: /^\/admin\/telegram/ },
   { href: "/admin/gallery", label: "Galeria", icon: GrGallery, match: /^\/admin\/gallery/ },
   { href: "/admin/cms", label: "CMS", icon: RiPaintBrushFill, match: /^\/admin\/cms/ },
   { href: "/admin/settings", label: "Configurar", icon: VscSettings, match: /^\/admin\/settings/ },
@@ -206,7 +204,7 @@ export default function NavbarAdmin({ children, plugins = [] }) {
               {loadedPlugins.map(plugin => (
                 <Link
                   key={plugin.slug}
-                  href={`/admin/plugins/${plugin.slug}`}
+                  href={`/admin/${plugin.slug}`}
                   className={`hover:bg-slate-600 hover:text-[#6ed8bf] py-1 pl-1 border-t border-slate-600 flex items-center ${pathname.startsWith(`/admin/plugins/${plugin.slug}`) ? "bg-slate-700" : ""
                     }`}
                 >
