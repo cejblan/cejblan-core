@@ -4,5 +4,5 @@
   "description": "Permite generar e imprimir notas de entregas",
   "icon": "PiBlueprintFill",
   "iconLib": "pi",
-  "role": "Desarrollador"
+  "role": ["Admin", "Vendedor", "Desarrollador"]
 }

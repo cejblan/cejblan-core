@@ -3,6 +3,5 @@
   "version": "1.0.0",
   "description": "Muestra un calendario de los pedidos con metodo de entrega delivery. Filtra los mmismos por usuario Delivery y Admin. Los Delivery solo pueden ver sus pedidos asignados y los admin pueden ver todos. Se muestra en verde los completados, azul los porcesando y rojo los cancelados.",
   "icon": "MdDeliveryDining",
-  "iconLib": "md",
-  "role": "Vendedor"
+  "iconLib": "md"
 }
