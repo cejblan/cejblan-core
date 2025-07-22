@@ -1,5 +1,5 @@
-import fs from "fs";
-import path from "path";
+const fs = require("fs");
+const path = require("path");
 
 const pluginsDir = path.join(process.cwd(), "app", "admin", "plugins");
 const outputPath = path.join(process.cwd(), "middleware.plugins.json");
