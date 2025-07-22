@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -44,20 +44,22 @@ const MAIN_ITEMS = [
   { href: "/admin/developer", label: "Desarrollar", icon: LiaConnectdevelop, match: /^\/admin\/developer/ },
 ];
 
-export default function NavbarAdmin({ children }) {
+export default function NavbarAdmin({ children, plugins = [] }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenTwo, setIsOpenTwo] = useState(false);
   const [isOpenThree, setIsOpenThree] = useState(false);
+
   const { data: session, status } = useSession();
   const pathname = usePathname();
+  const role = session?.user?.role?.toLowerCase();
 
-  const isActive = (href, match) => match ? match.test(pathname) : pathname === href;
-  const role = session?.user?.role?.toLowerCase(); // Ej: "vendedor"
+  const isActive = (href, match) =>
+    match ? match.test(pathname) : pathname === href;
 
   if (status === "loading") return <Loading zIndex={50} />;
 
   const handleNewMenuClick = () => {
-    setIsOpenTwo((prev) => {
+    setIsOpenTwo(prev => {
       if (!prev) setIsOpen(false);
       return !prev;
     });
@@ -65,13 +67,17 @@ export default function NavbarAdmin({ children }) {
 
   const getVisibleItems = () => {
     if (!role) return [];
-
     return MAIN_ITEMS.filter(({ label }) => {
       if (role === "delivery") {
-        return !["Usuarios", "Productos", "Categorías", "Pagos", "Entregas", "Pedidos", "Notas", "Monedas", "Galeria", "CMS", "Configurar", "Desarrollar"].includes(label);
+        return ![
+          "Usuarios", "Productos", "Categorías", "Pagos", "Entregas",
+          "Pedidos", "Notas", "Monedas", "Telegram", "Galeria", "CMS", "Configurar", "Desarrollar"
+        ].includes(label);
       }
       if (role === "vendedor") {
-        return !["Usuarios", "Productos", "Categorías", "Galeria", "CMS", "Configurar", "Desarrollar"].includes(label);
+        return ![
+          "Usuarios", "Productos", "Categorías", "Galeria", "CMS", "Configurar", "Desarrollar"
+        ].includes(label);
       }
       if (role === "admin") {
         return label !== "Desarrollar";
@@ -89,7 +95,7 @@ export default function NavbarAdmin({ children }) {
         <div className="bg-slate-800 w-full flex items-center pl-1">
           <button
             onClick={() => {
-              setIsOpen((prev) => !prev);
+              setIsOpen(prev => !prev);
               if (isOpenTwo) setIsOpenTwo(false);
             }}
             className="hover:bg-slate-700 hover:text-[#6ed8bf] p-1 flex items-center"
@@ -98,7 +104,9 @@ export default function NavbarAdmin({ children }) {
           </button>
           <Link href="/" className="hover:bg-slate-700 hover:text-[#6ed8bf] p-1 flex items-center">
             <FaHome className="w-3 h-3" />
-            <h1 className="font-bold ml-1 max-[420px]:hidden">{process.env.NEXT_PUBLIC_SITE_NAME}</h1>
+            <h1 className="font-bold ml-1 max-[420px]:hidden">
+              {process.env.NEXT_PUBLIC_SITE_NAME}
+            </h1>
           </Link>
 
           {role !== "vendedor" && (
@@ -121,7 +129,10 @@ export default function NavbarAdmin({ children }) {
             </div>
           )}
 
-          <div className="hover:bg-slate-700 hover:text-[#6ed8bf] p-1 border-l border-slate-600 ml-auto flex justify-end items-center relative" onClick={() => setIsOpenThree(!isOpenThree)}>
+          <div
+            onClick={() => setIsOpenThree(prev => !prev)}
+            className="hover:bg-slate-700 hover:text-[#6ed8bf] p-1 border-l border-slate-600 ml-auto flex justify-end items-center relative"
+          >
             <h2 className="text-xs mr-1">{session?.user.name}</h2>
             <Image
               src={session?.user.image}
@@ -144,7 +155,8 @@ export default function NavbarAdmin({ children }) {
 
       <div className="pt-5 flex transition-all duration-300">
         <div
-          className={`bg-slate-800 text-white text-left text-sm transition-all duration-300 overflow-y-auto ${isOpen ? 'w-fit min-w-[7.8rem]' : 'w-0 min-w-0'}`}
+          className={`bg-slate-800 text-white text-left text-sm transition-all duration-300 overflow-y-auto ${isOpen ? "w-fit min-w-[7.8rem]" : "w-0 min-w-0"
+            }`}
         >
           {getVisibleItems().map(({ href, label, icon: Icon, match }) => (
             <Link
@@ -157,7 +169,25 @@ export default function NavbarAdmin({ children }) {
               {isActive(href, match) && <VscTriangleLeft className="text-slate-200 ml-auto w-3 h-3" />}
             </Link>
           ))}
+
+          {plugins.length > 0 && (
+            <>
+              <h3 className="text-xs text-center text-gray-400 p-1 uppercase border-t border-slate-600">Plugins</h3>
+              {plugins.map(plugin => (
+                <Link
+                  key={plugin.slug}
+                  href={`/admin/plugins/${plugin.slug}`}
+                  className={`hover:bg-slate-600 hover:text-[#6ed8bf] py-1 pl-1 border-t border-slate-600 flex items-center ${pathname.startsWith(`/admin/plugins/${plugin.slug}`) ? "bg-slate-700" : ""
+                    }`}
+                >
+                  {plugin.icon && <span className="mr-1">{plugin.icon}</span>}
+                  <h3>{plugin.name}</h3>
+                </Link>
+              ))}
+            </>
+          )}
         </div>
+
         <section className="bg-slate-200 p-2 w-full min-h-[calc(100vh-2.5rem)] overflow-y-auto relative transition-all duration-300">
           {children}
         </section>
