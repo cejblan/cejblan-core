@@ -1,13 +1,13 @@
 {
   "/admin/delivery-note": [
-    "Admin",
-    "Vendedor",
-    "Desarrollador"
+    "admin",
+    "vendedor",
+    "desarrollador"
   ],
   "/admin/shipments": [],
   "/admin/telegram": [
-    "Admin",
-    "Vendedor",
-    "Desarrollador"
+    "admin",
+    "vendedor",
+    "desarrollador"
   ]
 }
