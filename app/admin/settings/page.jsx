@@ -203,7 +203,7 @@ export default function Settings() {
 
         <button
           onClick={guardarCambios}
-          className="bg-[#6ed8bf] text-white py-2 px-4 rounded hover:bg-[#6ed8bf]"
+          className="bg-[#6ed8bf] text-white py-2 px-4 rounded hover:bg-[#4bb199]"
           disabled={guardando}
         >
           {guardando ? "Guardando..." : "Guardar configuración"}

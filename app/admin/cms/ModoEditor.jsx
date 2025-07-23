@@ -63,7 +63,7 @@ export default function ModoEditor({
             <div className="p-2 bg-gray-100 border rounded-xl flex flex-col items-center h-full">
               <button
                 onClick={() => setMostrandoEditorPaleta(!mostrandoEditorPaleta)}
-                className="m-auto px-3 py-1 bg-[#6ed8bf] text-white rounded hover:bg-[#6ed8bf]"
+                className="m-auto px-3 py-1 bg-[#6ed8bf] text-white rounded hover:bg-[#4bb199]"
               >
                 {mostrandoEditorPaleta ? 'Ocultar paleta del sitio' : 'Editar paleta del sitio'}
               </button>
@@ -140,7 +140,7 @@ export default function ModoEditor({
                     alert("Error");
                   }
                 }}
-                className="absolute bottom-1 right-1 z-10 bg-[#6ed8bf] text-white rounded px-1 py-0.5 text-xs hover:bg-[#6ed8bf]"
+                className="absolute bottom-1 right-1 z-10 bg-[#6ed8bf] text-white rounded px-1 py-0.5 text-xs hover:bg-[#4bb199]"
               >
                 Copiar URL
               </button>
@@ -415,7 +415,7 @@ export default function ModoEditor({
           <div className="flex justify-center mt-4">
             <button
               onClick={aplicarEstilosTailwind}
-              className="px-4 py-2 bg-[#6ed8bf] text-white rounded hover:bg-[#6ed8bf] transition"
+              className="px-4 py-2 bg-[#6ed8bf] text-white rounded hover:bg-[#4bb199] transition"
             >
               {tailwindMode ? 'Quitar TailwindCSS' : 'Usar TailwindCSS'}
             </button>

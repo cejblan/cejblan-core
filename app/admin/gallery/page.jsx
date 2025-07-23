@@ -248,7 +248,7 @@ export default function Gallery() {
                     Eliminar
                   </button>
                   <button onClick={() => setImagenSeleccionada(img)} className="absolute bottom-5 right-1 z-10 bg-green-600 text-white rounded px-1 py-0.5 text-xs hover:bg-green-500">Recortar</button>
-                  <button onClick={async () => { try { await navigator.clipboard.writeText(img.url); alert("URL copiada"); } catch { alert("Error"); } }} className="absolute bottom-1 right-1 z-10 bg-[#6ed8bf] text-white rounded px-1 py-0.5 text-xs hover:bg-[#6ed8bf]">Copiar URL</button>
+                  <button onClick={async () => { try { await navigator.clipboard.writeText(img.url); alert("URL copiada"); } catch { alert("Error"); } }} className="absolute bottom-1 right-1 z-10 bg-[#6ed8bf] text-white rounded px-1 py-0.5 text-xs hover:bg-[#4bb199]">Copiar URL</button>
                 </div>
               ))}
             </div>

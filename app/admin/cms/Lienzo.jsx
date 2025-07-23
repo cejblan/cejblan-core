@@ -499,7 +499,7 @@ export default function Editor({ file, contenido }) {
     }
   };
 
-  const btnSmall = "bg-[#6ed8bf] text-white px-2 py-1 rounded hover:bg-[#6ed8bf] transition h-fit";
+  const btnSmall = "bg-[#6ed8bf] text-white px-2 py-1 rounded hover:bg-[#4bb199] transition h-fit";
   const btnSmall2 = "bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 transition";
   const btnSmall3 = "bg-red-600 text-white px-2 py-1 rounded mr-1 hover:bg-red-700 transition";
 
