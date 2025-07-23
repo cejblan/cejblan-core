@@ -297,11 +297,11 @@ export default function Gallery() {
           </div>
         </div>
       )}
-      {/* Paginación */}
+
       <div className="mt-4 flex justify-center gap-2">
-        <button onClick={() => setPagina(p => Math.max(1, p - 1))} className="px-3 py-1 rounded bg-slate-300 hover:bg-slate-400" disabled={pagina === 1}>Anterior</button>
-        <span className="px-2 py-1">{pagina}/{totalPaginas}</span>
-        <button onClick={() => setPagina(p => Math.min(totalPaginas, p + 1))} className="px-3 py-1 rounded bg-slate-300 hover:bg-slate-400" disabled={pagina === totalPaginas}>Siguiente</button>
+        <button onClick={() => setPagina(p => Math.max(1, p - 1))} className="px-2 py-1 bg-white rounded hover:bg-gray-300 disabled:opacity-50" disabled={pagina === 1}>Anterior</button>
+        <span className="px-2 py-1">{pagina} de {totalPaginas}</span>
+        <button onClick={() => setPagina(p => Math.min(totalPaginas, p + 1))} className="px-2 py-1 bg-white rounded hover:bg-gray-300 disabled:opacity-50" disabled={pagina === totalPaginas}>Siguiente</button>
       </div>
     </div>
   );
