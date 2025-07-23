@@ -6,14 +6,15 @@ import pluginRoles from "@/middleware.plugins.json" assert { type: "json" };
 export default withAuth(async function middleware(req) {
   const { pathname } = req.nextUrl;
   const token = await getToken({ req });
-  const role = token?.role?.toLowerCase();
 
-  // Bloqueo general si no tiene sesión válida
+  const role = token?.role?.toLowerCase(); // Normalizar a minúscula
+
+  // ❌ Si no hay sesión o rol, redirige
   if (!role) {
     return NextResponse.redirect(new URL("/unauthorized", req.url));
   }
 
-  // Bloqueo por rutas específicas fijas
+  // ✅ Validaciones bajo /admin
   if (pathname.startsWith("/admin")) {
     const blockedByRole = {
       delivery: [
@@ -44,13 +45,14 @@ export default withAuth(async function middleware(req) {
     };
 
     const blockedPaths = blockedByRole[role] || [];
+
     for (const blocked of blockedPaths) {
       if (pathname === blocked || pathname.startsWith(`${blocked}/`)) {
         return NextResponse.redirect(new URL("/unauthorized", req.url));
       }
     }
 
-    // Bloqueo por roles definidos en plugins dinámicos
+    // 🔐 Validar roles permitidos para cada plugin dinámico
     for (const [pluginPath, allowedRoles] of Object.entries(pluginRoles)) {
       if (
         pathname.startsWith(pluginPath) &&
@@ -62,7 +64,7 @@ export default withAuth(async function middleware(req) {
     }
   }
 
-  // Validación del checkout solo desde /cart
+  // 🛒 Validación de acceso directo a /checkout
   if (pathname === "/checkout") {
     const referrer = req.headers.get("referer");
     if (!referrer || !referrer.includes("/cart")) {
@@ -83,5 +85,5 @@ export const config = {
     "/wishlist/:path*",
     "/unauthorized/:path*",
     "/orders/:path*",
-  ]
+  ],
 };
