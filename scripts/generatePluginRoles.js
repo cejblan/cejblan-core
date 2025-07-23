@@ -14,15 +14,15 @@ for (const folder of folders) {
     const raw = fs.readFileSync(configPath, "utf-8");
     const config = JSON.parse(raw);
     const roles = Array.isArray(config.role)
-      ? config.role
+      ? config.role.map(r => r.trim().toLowerCase()) // 👈 normaliza arrays también
       : (config.role || "")
           .split(",")
           .map(r => r.trim().toLowerCase())
-          .filter(Boolean); // quita vacíos
+          .filter(Boolean);
 
     pluginRoles[`/admin/${folder}`] = roles;
   } catch (err) {
-    console.warn(`Error leyendo plugin ${folder}: ${err.message}`);
+    console.warn(`⚠️ Error leyendo plugin ${folder}: ${err.message}`);
   }
 }
 
