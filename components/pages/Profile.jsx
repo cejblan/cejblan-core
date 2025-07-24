@@ -172,15 +172,15 @@ export default function Profile() {
                 <div className="my-3 mx-auto w-fit grid grid-cols-1 justify-center items-center">
                   <span className="flex justify-center items-center">
                     <span className="text-xl">Bot de&nbsp;</span>
-                    <span className="text-blue-500 font-bold">Telegram</span>
-                    <FaTelegram className="text-blue-500 h-4 w-4" />
+                    <span className="text-[#6ed8bf] font-bold">Telegram</span>
+                    <FaTelegram className="text-[#6ed8bf] h-4 w-4" />
                   </span>
-                  <Link href={`https://t.me/${process.env.BOT_NAME}`} className="text-xl text-blue-500 hover:text-blue-600 underline" target="_blank">@{process.env.BOT_NAME}</Link>
+                  <Link href={`https://t.me/${process.env.BOT_NAME}`} className="text-xl text-[#6ed8bf] hover:text-[#4bb199] underline" target="_blank">@{process.env.BOT_NAME}</Link>
                 </div>
                 {
                   code ?
                     <div className="mx-auto grid grid-cols-1">
-                      <p className="bg-blue-500 text-3xl text-white text-center font-bold tracking-wide px-1 rounded-xl shadow-6xl mx-auto h-fit w-fit block">
+                      <p className="bg-[#6ed8bf] text-3xl text-white text-center font-bold tracking-wide px-1 rounded-xl shadow-6xl mx-auto h-fit w-fit block">
                         {code}
                       </p>
                       <div className="text-xl my-1">
@@ -194,7 +194,7 @@ export default function Profile() {
                     </div>
                     :
                     <button
-                      className="bg-blue-500 hover:bg-blue-500 text-white py-1 px-2 rounded-xl shadow-6xl mx-auto h-fit w-fit block"
+                      className="bg-[#6ed8bf] hover:bg-[#4bb199] text-white py-1 px-2 rounded-xl shadow-6xl mx-auto h-fit w-fit block"
                       onClick={codeVerified}
                     >
                       Generar
@@ -280,7 +280,7 @@ export default function Profile() {
                   </tbody>
                 </table>
                 <button
-                  className="bg-[#6ed8bf] hover:bg-[#64ffda] text-white font-bold py-1 px-2 rounded-xl shadow-6xl mt-2 mx-auto block"
+                  className="bg-[#6ed8bf] hover:bg-[#4bb199] text-white font-bold py-1 px-2 rounded-xl shadow-6xl mt-2 mx-auto block"
                   onClick={editData}>
                   Editar Perfil
                 </button>
@@ -421,7 +421,7 @@ export default function Profile() {
                   <p className="text-center m-auto">Cargando ubicación...</p>
                 )}
                 <button
-                  className="bg-[#6ed8bf] hover:bg-[#64ffda] text-white font-bold py-1 px-2 rounded-xl shadow-6xl mt-2 mx-auto block"
+                  className="bg-[#6ed8bf] hover:bg-[#4bb199] text-white font-bold py-1 px-2 rounded-xl shadow-6xl mt-2 mx-auto block"
                   onClick={dataSubmit}>
                   Guardar Datos
                 </button>

@@ -87,7 +87,7 @@ export default function CMS() {
           <select
             value={archivoSeleccionado}
             onChange={(e) => setArchivoSeleccionado(e.target.value)}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6ed8bf]"
           >
             <option value="">Elegir...</option>
             {archivos.map((file) => (
@@ -164,7 +164,7 @@ export default function CMS() {
               </select>
               <button
                 onClick={retomarDesdeCommit}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                className="bg-[#6ed8bf] text-white px-4 py-2 rounded hover:bg-[#4bb199]"
               >
                 Retomar
               </button>
@@ -187,7 +187,7 @@ export default function CMS() {
               ⚠️ ¡Advertencia crítica!
             </h2>
             <p className="text-gray-800 mb-4">
-              Esta acción enviará los cambios de <strong className="text-blue-600">develop</strong> a <strong className="text-black">main</strong> y no se puede deshacer.
+              Esta acción enviará los cambios de <strong className="text-[#6ed8bf]">develop</strong> a <strong className="text-black">main</strong> y no se puede deshacer.
             </p>
             <p className="text-lg font-semibold text-red-600 mb-6">
               ¿Estás absolutamente seguro de que deseas continuar?

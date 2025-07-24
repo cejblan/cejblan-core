@@ -97,7 +97,7 @@ export default function Slider() {
           post.map((post, index) => {
             return (
               <Link key={index} href="#">
-                <div className="border-2 border-blue-600 rounded-xl max-[420px]:px-2 max-[420px]:py-4 md:px-4 m-auto w-11/12 h-90">
+                <div className="border-2 border-[#6ed8bf] rounded-xl max-[420px]:px-2 max-[420px]:py-4 md:px-4 m-auto w-11/12 h-90">
                   <div className="m-auto max-[420px]:w-20 md:w-28 max-[420px]:h-24 md:h-32 justify-center flex">
                     <Image className="m-auto w-full object-scale-down" src={post.imagen} alt={post.imagen} width={200} height={200} />
                   </div>

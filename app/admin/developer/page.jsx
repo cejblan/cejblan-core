@@ -79,7 +79,7 @@ export default function Developer() {
       <Titulos texto="Desarrollador" />
       <div className="mb-4 max-[420px]:text-xs">
         <div className="bg-white text-red p-2 rounded-xl shadow-6xl">
-          <h1 className="bg-blue-500 text-white text-lg font-bold py-1 max-[420px]:px-1 px-2 rounded-xl m-auto w-fit">
+          <h1 className="bg-[#6ed8bf] text-white text-lg font-bold py-1 max-[420px]:px-1 px-2 rounded-xl m-auto w-fit">
             Área de Mantenimiento
           </h1>
           <div className="bg-white py-1 flex gap-1 justify-center items-center">
@@ -161,7 +161,7 @@ export default function Developer() {
                     <td className="px-2 py-1 border">
                       <div className="flex content-center gap-1">
                         <button
-                          className="text-blue-600 hover:underline mr-2"
+                          className="text-[#6ed8bf] hover:underline mr-2"
                           onClick={() => {
                             setModoEdicion(true)
                             setNombreEditando(item.name)

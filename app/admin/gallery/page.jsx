@@ -221,7 +221,7 @@ export default function Gallery() {
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Galería Multimedia</h1>
       <div className="mb-4">
-        <label className="inline-flex items-center gap-2 cursor-pointer bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium shadow">
+        <label className="inline-flex items-center gap-2 cursor-pointer bg-[#6ed8bf] hover:bg-[#4bb199] text-white px-4 py-2 rounded-full text-sm font-medium shadow">
           Subir imagen
           <input type="file" accept="image/*" onChange={handleUpload} className="hidden" />
         </label>
@@ -248,7 +248,7 @@ export default function Gallery() {
                     Eliminar
                   </button>
                   <button onClick={() => setImagenSeleccionada(img)} className="absolute bottom-5 right-1 z-10 bg-green-600 text-white rounded px-1 py-0.5 text-xs hover:bg-green-500">Recortar</button>
-                  <button onClick={async () => { try { await navigator.clipboard.writeText(img.url); alert("URL copiada"); } catch { alert("Error"); } }} className="absolute bottom-1 right-1 z-10 bg-blue-600 text-white rounded px-1 py-0.5 text-xs hover:bg-blue-500">Copiar URL</button>
+                  <button onClick={async () => { try { await navigator.clipboard.writeText(img.url); alert("URL copiada"); } catch { alert("Error"); } }} className="absolute bottom-1 right-1 z-10 bg-[#6ed8bf] text-white rounded px-1 py-0.5 text-xs hover:bg-[#4bb199]">Copiar URL</button>
                 </div>
               ))}
             </div>
@@ -297,11 +297,11 @@ export default function Gallery() {
           </div>
         </div>
       )}
-      {/* Paginación */}
+
       <div className="mt-4 flex justify-center gap-2">
-        <button onClick={() => setPagina(p => Math.max(1, p - 1))} className="px-3 py-1 rounded bg-slate-300 hover:bg-slate-400" disabled={pagina === 1}>Anterior</button>
-        <span className="px-2 py-1">{pagina}/{totalPaginas}</span>
-        <button onClick={() => setPagina(p => Math.min(totalPaginas, p + 1))} className="px-3 py-1 rounded bg-slate-300 hover:bg-slate-400" disabled={pagina === totalPaginas}>Siguiente</button>
+        <button onClick={() => setPagina(p => Math.max(1, p - 1))} className="px-2 py-1 bg-white rounded hover:bg-gray-300 disabled:opacity-50" disabled={pagina === 1}>Anterior</button>
+        <span className="px-2 py-1">{pagina} de {totalPaginas}</span>
+        <button onClick={() => setPagina(p => Math.min(totalPaginas, p + 1))} className="px-2 py-1 bg-white rounded hover:bg-gray-300 disabled:opacity-50" disabled={pagina === totalPaginas}>Siguiente</button>
       </div>
     </div>
   );

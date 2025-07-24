@@ -5,7 +5,7 @@ function Buttons({ userId }) {
   const router = useRouter();
   let user0001;
 
-  if (userId === "0001") {
+  if (userId === "0001" || userId === 1 || userId === "1") {
     user0001 = true;
   } else {
     user0001 = false;
@@ -38,7 +38,7 @@ function Buttons({ userId }) {
         </button>
       }
       <button
-        className="text-white bg-blue-500 hover:bg-blue-600 font-bold py-1 px-2 rounded-xl shadow-6xl"
+        className="text-white bg-[#6ed8bf] hover:bg-[#4bb199] font-bold py-1 px-2 rounded-xl shadow-6xl"
         onClick={() => {
           router.push(`/admin/users/${userId}/edit`);
         }}

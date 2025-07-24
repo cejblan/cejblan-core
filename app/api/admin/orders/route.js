@@ -1,23 +1,28 @@
-import { NextResponse } from "next/server";
-import { conexion } from "@/libs/mysql";
+import { NextResponse } from "next/server"
+import { conexion } from "@/libs/mysql"
 
 export async function GET(req, res) {
   try {
-    const [results] = await conexion.query("SELECT * FROM orders");
-    // Devuelve la respuesta con los encabezados configurados dentro de NextResponse
-    return NextResponse.json(results, {
-      status: 200,
-    });
+    const [results] = await conexion.query(`
+      SELECT 
+        o.*, 
+        u.name AS assignedDeliveryName
+      FROM orders o
+      LEFT JOIN users u ON o.Delivery = u.id
+      ORDER BY o.DeliveryDate ASC
+    `)
+
+    const enrichedOrders = results.map(order => ({
+      ...order,
+      assignedDelivery: order.assignedDeliveryName
+        ? { name: order.assignedDeliveryName }
+        : null,
+    }))
+
+    return NextResponse.json(enrichedOrders, { status: 200 })
   } catch (error) {
-    console.log(error);
-    return NextResponse.json(
-      {
-        message: error.message,
-      },
-      {
-        status: 500,
-      }
-    );
+    console.log(error)
+    return NextResponse.json({ message: error.message }, { status: 500 })
   }
 }
 

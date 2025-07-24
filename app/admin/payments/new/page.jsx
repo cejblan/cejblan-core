@@ -85,7 +85,7 @@ export default function PayForm() {
 
   return (
     <>
-      <Link href={params.id ? `/admin/payments/${params.id}` : "/admin/payments"} className=" bg-slate-600 text-white hover:text-blue-300 text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl">
+      <Link href={params.id ? `/admin/payments/${params.id}` : "/admin/payments"} className=" bg-slate-600 text-white hover:text-[#6ed8bf] text-xl p-1 rounded-md w-fit block absolute top-2 left-2 shadow-6xl">
         <FaArrowLeft />
       </Link>
       <form onSubmit={handleSubmit} ref={form} className="md:pl-3">
@@ -155,7 +155,7 @@ export default function PayForm() {
             </div>
           </div>
         </div>
-        <button className="text-white bg-blue-500 hover:bg-blue-600 font-bold py-1 px-2 rounded-xl shadow-6xl mx-auto w-fit">
+        <button className="text-white bg-[#6ed8bf] hover:bg-[#4bb199] font-bold py-1 px-2 rounded-xl shadow-6xl mx-auto w-fit">
           {params.id ? "Actualizar forma de pago" : "Crear forma de pago"}
         </button>
       </form>

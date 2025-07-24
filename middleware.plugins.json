@@ -1,0 +1,13 @@
+{
+  "/admin/delivery-note": [
+    "admin",
+    "vendedor",
+    "desarrollador"
+  ],
+  "/admin/shipments": [],
+  "/admin/telegram": [
+    "admin",
+    "vendedor",
+    "desarrollador"
+  ]
+}

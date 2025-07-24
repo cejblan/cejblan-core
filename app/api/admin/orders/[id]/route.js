@@ -69,8 +69,13 @@ export async function PUT(request, context) {
     const updateData = {
       name: data.get("name"),
       status: data.get("status"),
-      delivery: data.get("delivery"),
     };
+
+    const delivery = data.get("delivery");
+    
+    if (delivery !== null) {
+      updateData.delivery = delivery;
+    }
 
     const [result] = await conexion.query("UPDATE orders SET ? WHERE id = ?", [
       updateData,

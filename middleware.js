@@ -1,20 +1,35 @@
 import { NextResponse } from "next/server";
 import { withAuth } from "next-auth/middleware";
 import { getToken } from "next-auth/jwt";
+import pluginRoles from "@/middleware.plugins.json" assert { type: "json" };
 
 export default withAuth(async function middleware(req) {
   const { pathname } = req.nextUrl;
   const token = await getToken({ req });
-  const role = token?.role?.toLowerCase();
 
-  // Bloqueo general si no tiene sesión válida
+  const role = token?.role?.toLowerCase(); // Normalizar a minúscula
+
+  // ❌ Si no hay sesión o rol, redirige
   if (!role) {
     return NextResponse.redirect(new URL("/unauthorized", req.url));
   }
 
-  // Bloqueo por rutas específicas
+  // ✅ Validaciones bajo /admin
   if (pathname.startsWith("/admin")) {
     const blockedByRole = {
+      delivery: [
+        "/admin/users",
+        "/admin/products",
+        "/admin/categories",
+        "/admin/payments",
+        "/admin/deliveries",
+        "/admin/orders",
+        "/admin/coins",
+        "/admin/gallery",
+        "/admin/cms",
+        "/admin/settings",
+        "/admin/developer",
+      ],
       vendedor: [
         "/admin/users",
         "/admin/products",
@@ -26,7 +41,7 @@ export default withAuth(async function middleware(req) {
       ],
       admin: [
         "/admin/developer"
-      ]
+      ],
     };
 
     const blockedPaths = blockedByRole[role] || [];
@@ -36,9 +51,20 @@ export default withAuth(async function middleware(req) {
         return NextResponse.redirect(new URL("/unauthorized", req.url));
       }
     }
+
+    // 🔐 Validar roles permitidos para cada plugin dinámico
+    for (const [pluginPath, allowedRoles] of Object.entries(pluginRoles)) {
+      if (
+        pathname.startsWith(pluginPath) &&
+        allowedRoles.length > 0 &&
+        !allowedRoles.includes(role)
+      ) {
+        return NextResponse.redirect(new URL("/unauthorized", req.url));
+      }
+    }
   }
 
-  // Validación del checkout solo desde /cart
+  // 🛒 Validación de acceso directo a /checkout
   if (pathname === "/checkout") {
     const referrer = req.headers.get("referer");
     if (!referrer || !referrer.includes("/cart")) {
@@ -59,5 +85,5 @@ export const config = {
     "/wishlist/:path*",
     "/unauthorized/:path*",
     "/orders/:path*",
-  ]
+  ],
 };

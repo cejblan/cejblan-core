@@ -13,6 +13,7 @@ export default function DeliveryCalendar() {
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [currentMonth, setCurrentMonth] = useState(moment().startOf("month"))
   const [isAdminView, setIsAdminView] = useState(false)
+  const [deliveryName, setDeliveryName] = useState("")
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -23,12 +24,14 @@ export default function DeliveryCalendar() {
           const user = await resUser.json()
 
           let ordersData = []
-          if (["admin", "vendedor", "developer"].includes(user.rol)) {
+
+          if (["Admin", "Vendedor", "Desarrollador"].includes(user.rol)) {
             setIsAdminView(true)
-            const res = await fetch("/api/admin/orders/all")
+            const res = await fetch("/api/admin/orders")
             if (!res.ok) throw new Error("No se pudieron obtener pedidos")
             ordersData = await res.json()
           } else {
+            setDeliveryName(user.name)
             const res = await fetch(`/api/admin/orders/by-delivery?id=${user.id}`)
             if (!res.ok) throw new Error("No se pudieron obtener pedidos")
             ordersData = await res.json()
@@ -103,7 +106,7 @@ export default function DeliveryCalendar() {
         </button>
       </div>
 
-      {/* Días de la semana (oculto en móvil) */}
+      {/* Días de la semana */}
       <div className="hidden sm:grid grid-cols-7 gap-px bg-gray-300 text-center font-semibold text-gray-700 border border-slate-400 text-xs sm:text-sm">
         {["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"].map((d) => (
           <div key={d} className="bg-white p-2 border border-slate-400 font-bold">
@@ -135,21 +138,18 @@ export default function DeliveryCalendar() {
                       ${order.status === "COMPLETADO"
                         ? "bg-green-100 hover:bg-green-200 text-green-600"
                         : order.status === "PROCESANDO"
-                          ? "bg-blue-100 hover:bg-blue-200 text-blue-600"
+                          ? "bg-blue-100 hover:bg-blue-200 text-[#6ed8bf]"
                           : "bg-red-100 hover:bg-red-200 text-red-600"}`}
                     onClick={() => setSelectedOrder(order)}
                     title={`Pedido #${order.id} - ${moment(order.deliveryDate).format("HH:mm")}`}
                   >
                     {moment(order.deliveryDate).format("HH:mm")} – #{order.id}
-                    {order.deliveryName && (
-                      <span className="block text-[10px] truncate text-gray-500">{order.deliveryName || "No asignado"}</span>
-                    )}
 
-                    {isAdminView && order.assignedDelivery && (
-                      <div className="text-[10px] text-gray-500 italic truncate">
-                        {order.assignedDelivery.name}
-                      </div>
-                    )}
+                    <div className="text-[10px] text-gray-500 italic truncate">
+                      {isAdminView
+                        ? order.assignedDelivery?.name || "No asignado"
+                        : deliveryName}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -173,10 +173,12 @@ export default function DeliveryCalendar() {
             <p><strong>Fecha:</strong> {moment(selectedOrder.deliveryDate).format("dddd, D [de] MMMM HH:mm")}</p>
             <p><strong>Dirección:</strong> {selectedOrder.address}</p>
             <p><strong>Teléfono:</strong> {selectedOrder.phoneNumber}</p>
-            <p><strong>Repartidor:</strong> {selectedOrder.deliveryName || "No asignado"}</p>
-            {isAdminView && selectedOrder.assignedDelivery && (
-              <p><strong>Repartidor:</strong> {selectedOrder.assignedDelivery.name}</p>
-            )}
+            <p>
+              <strong>Repartidor:</strong>{" "}
+              {isAdminView
+                ? selectedOrder.assignedDelivery?.name || "No asignado"
+                : deliveryName}
+            </p>
           </div>
         </div>
       )}

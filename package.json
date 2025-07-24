@@ -3,8 +3,9 @@
   "version": "1.1.1",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "prepare:middleware": "node scripts/generatePluginRoles.js",
+    "dev": "npm run prepare:middleware && next dev",
+    "build": "npm run prepare:middleware && next build",
     "start": "next start",
     "lint": "next lint"
   },
