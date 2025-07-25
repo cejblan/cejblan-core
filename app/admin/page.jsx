@@ -45,19 +45,19 @@ export default function AdminPage() {
         <div className="text-center mt-4 grid grid-cols-1 gap-3 justify-center items-center">
           <div>
             <p className="text-xl font-medium flex justify-center items-center gap-2">
-              Bot de <span className="text-[#6ed8bf] font-bold">Telegram</span> <FaTelegram className="text-[#6ed8bf] h-5 w-5" />
+              Bot de <span className="text-blue-600 font-bold">Telegram</span> <FaTelegram className="text-blue-600 h-5 w-5" />
             </p>
             <Link
-              href={`https://t.me/${process.env.BOT_NAME}`}
+              href={`https://t.me/${process.env.NEXT_PUBLIC_BOT_NAME}`}
               target="_blank"
-              className="text-xl text-[#6ed8bf] hover:text-[#4bb199] underline"
+              className="text-xl text-blue-600 hover:text-blue-500 underline"
             >
-              @{process.env.BOT_NAME}
+              @{process.env.NEXT_PUBLIC_BOT_NAME}
             </Link>
           </div>
           {code ? (
             <div>
-              <p className="bg-[#6ed8bf] text-3xl text-white text-center font-bold px-4 py-1 rounded-xl shadow-lg mx-auto w-fit">
+              <p className="bg-blue-600 text-3xl text-white text-center font-bold px-4 py-1 rounded-xl shadow-lg mx-auto w-fit">
                 {code}
               </p>
               {initialTime && (
