@@ -138,7 +138,7 @@ export default function ProductForm() {
             </div>
             <div className="mb-1 flex gap-1 justify-center items-center">
               <label htmlFor="code_bill" className="text-lg font-semibold pr-1 block">Código en factura del proveedor:</label>
-              <input name="code_bill" id="code_bill" type="text" placeholder="Código en factura" inputMode="numeric" onChange={handleChange} value={product.code_bill} className="bg-white max-[420px]:text-center py-1 px-2 rounded-md w-full" />
+              <input name="code_bill" id="code_bill" type="text" placeholder="Código en factura" onChange={handleChange} value={product.code_bill} className="bg-white max-[420px]:text-center py-1 px-2 rounded-md w-full" />
             </div>
             <div className="mb-1">
               <label htmlFor="name" className="text-lg font-semibold pr-1 mb-1 block">Nombre:</label>
