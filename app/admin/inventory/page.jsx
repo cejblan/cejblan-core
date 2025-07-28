@@ -62,7 +62,7 @@ export default function InventarioPage() {
   };
 
   // Detección de duplicados y similitudes
-  const runChecks = () => {
+  const runChecks = (showSimModal = true) => {
     // IDs duplicados
     const map = {};
     rows.forEach((r, i) => {
@@ -117,9 +117,20 @@ export default function InventarioPage() {
         groups.push(g);
       }
     });
-    if (groups.length) setSimAlert({ show: true, group: groups[0] });
+    if (groups.length) {
+      // Mostrar ícono, pero NO modal si no se pidió
+      setSimAlert((prev) => ({
+        ...prev,
+        group: groups[0],
+        show: showSimModal,
+      }));
+    }
   };
-  useEffect(runChecks, [rows]);
+
+  useEffect(() => {
+    runChecks(false); // Desactivamos el modal automático
+  }, [rows]);
+
 
   // Cerrar modales
   const closeDup = () => setDupAlert((a) => ({ ...a, show: false }));
@@ -290,9 +301,13 @@ export default function InventarioPage() {
                     <td className="p-1 border-r border-gray-200 relative">
                       <input type="text" className="w-full bg-transparent focus:outline-none"
                         value={r.nombre} onChange={(e) => onCellChange(i, 'nombre', e.target.value)} />
-                      {simAlert.show && simAlert.group.includes(i) && (
-                        <div className="absolute bottom-1 right-1 text-amber-500 cursor-pointer"
-                          onClick={closeSim}>⚠</div>
+                      {simAlert.group.includes(i) && (
+                        <div
+                          className="absolute bottom-1 right-1 text-amber-500 cursor-pointer"
+                          onClick={() => setSimAlert((s) => ({ ...s, show: true }))}
+                        >
+                          ⚠
+                        </div>
                       )}
                     </td>
                     {['cantidad', 'precio', 'precioMayorista'].map((f, idx2) => (
