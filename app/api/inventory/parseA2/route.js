@@ -28,33 +28,12 @@ export async function POST(req) {
       const match = line.match(/^(.*?)\s{2,}(-?\d+)\s{2,}([\d.,]+)\s{2,}([\d.,]+)/);
       if (!match) continue;
 
-      let [_, descripcion, cantidad, costo, inventario] = match;
-
-      // Buscar código en líneas anteriores
-      let codigo = null;
-      for (let j = i - 1; j >= 0 && j >= i - 3; j--) {
-        const codeMatch = lines[j].match(/^(\d{3,})\b/);
-        if (codeMatch) {
-          codigo = codeMatch[1];
-          break;
-        }
-      }
-
-      if (!codigo) {
-        // Último recurso: intenta buscar un número al final de la descripción
-        const codeFallback = descripcion.match(/(\d{3,})$/);
-        if (codeFallback) {
-          codigo = codeFallback[1];
-          descripcion = descripcion.replace(codeFallback[0], '').trim();
-        } else {
-          continue; // No se encontró código, descartar
-        }
-      }
+      let [index, codigo, descripcion, existencia, costo] = match;
 
       // Normalizar
-      const id = codigo.padStart(4, '0');
-      const nombre = descripcion;
-      const cantidadNorm = cantidad.replace(',', '.');
+      const id = (parseInt(existencia.split('.')[1] || existencia, 10).toString()).padStart(4, '0');
+      const nombre = codigo;
+      const cantidadNorm = descripcion.replace(',', '.');
       const precioNorm = costo.replace(',', '.');
 
       rows.push({
