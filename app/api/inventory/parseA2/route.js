@@ -24,14 +24,16 @@ export async function POST(req) {
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
 
-      // Buscar líneas con estructura numérica similar a: código, cantidad, costo
       const match = line.match(/^(.*?)\s{2,}(-?\d+)\s{2,}([\d.,]+)\s{2,}([\d.,]+)/);
       if (!match) continue;
 
-      let [index, codigo, descripcion, existencia, costo] = match;
+      let [_, codigo, descripcion, existencia, costo] = match;
 
-      // Normalizar
-      const id = (parseInt(existencia.split('.')[1] || existencia, 10).toString()).padStart(4, '0');
+      // Extraer valorInventario y código desde existencia
+      const decimalPart = existencia.split('.')[1] || '00000';
+      const id = decimalPart.slice(-5);
+      const valorInventario = existencia.split('.')[0] + '.' + decimalPart.slice(0, decimalPart.length - 5);
+
       const nombre = codigo;
       const cantidadNorm = descripcion.replace(',', '.');
       const precioNorm = costo.replace(',', '.');
@@ -40,14 +42,15 @@ export async function POST(req) {
         id,
         nombre,
         cantidad: cantidadNorm,
-        precio: precioNorm
+        precio: precioNorm,
+        valorInventario
       });
     }
 
     return NextResponse.json({ rows });
 
   } catch (err) {
-    console.error('Error al procesar PDF A2:', err);
+    console.error('Error al procesar PDF A2:', err.message, err.stack);
     return NextResponse.json({ error: 'No se pudo procesar el archivo PDF' }, { status: 500 });
   }
 }
