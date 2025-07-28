@@ -2,6 +2,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import Script from 'next/script';
+import { TbAlertTriangleFilled } from "react-icons/tb";
 
 export default function InventarioPage() {
   const [rows, setRows] = useState([]);
@@ -266,7 +267,9 @@ export default function InventarioPage() {
                         value={r.id} onChange={e => onCellChange(i, 'id', e.target.value)} />
                       {dupIndices.includes(i) && (
                         <div className="absolute bottom-1 right-1 text-red-500 cursor-pointer"
-                          onClick={() => handleDupClick(r.id)}>⚠️</div>
+                          onClick={() => handleDupClick(r.id)}>
+                          <TbAlertTriangleFilled />
+                        </div>
                       )}
                     </td>
                     {/* Nombre */}
@@ -275,7 +278,9 @@ export default function InventarioPage() {
                         value={r.nombre} onChange={e => onCellChange(i, 'nombre', e.target.value)} />
                       {simIndices.includes(i) && (
                         <div className="absolute bottom-1 right-1 text-amber-500 cursor-pointer"
-                          onClick={handleSimClick}>⚠</div>
+                          onClick={handleSimClick}>
+                          <TbAlertTriangleFilled />
+                        </div>
                       )}
                     </td>
                     {/* Cantidad / Precio / Precio Mayorista */}
