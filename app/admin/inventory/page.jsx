@@ -164,7 +164,11 @@ export default function InventarioPage() {
       const res = await fetch('/api/inventory/parseA2', { method: 'POST', body: fd });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || res.statusText);
-      setRows(json.rows.map(r => ({ ...r, precioMayorista: '' })));
+      setRows(
+        json.rows
+          .filter(r => !r.nombre?.toLowerCase().includes('eliminar'))
+          .map(r => ({ ...r, precioMayorista: '' }))
+      );
       runChecks();
     } catch (err) {
       console.error(err);
@@ -203,7 +207,9 @@ export default function InventarioPage() {
         precio: idx.precio > -1 ? r[idx.precio] : '',
         precioMayorista: idx.precioMayorista > -1 ? r[idx.precioMayorista] : ''
       }));
-      setRows(newRows);
+      setRows(
+        newRows.filter(r => !r.nombre?.toLowerCase().includes('eliminar'))
+      );
       runChecks();
     } catch (err) {
       console.error(err);
@@ -316,8 +322,8 @@ export default function InventarioPage() {
             <table className="w-full min-w-[800px]">
               <thead className="bg-gray-100">
                 <tr>
-                  {['ID', 'Nombre', 'Cantidad', 'Precio', 'Precio Mayorista'].map((h, i) =>
-                    <th key={i} className="p-1 font-semibold text-left text-sm text-gray-600 uppercase tracking-wider border-b border-r border-gray-200 last:border-r-0">{h}</th>
+                  {['ID', 'Nombre', 'Cantidad', 'Precio', 'Precio Mayorista', 'Total'].map((h, i) =>
+                    <th key={i} className="p-1 font-semibold text-center text-sm text-gray-600 uppercase tracking-wider border-b border-r border-gray-200 last:border-r-0">{h}</th>
                   )}
                 </tr>
               </thead>
@@ -348,6 +354,9 @@ export default function InventarioPage() {
                           value={r[f]} onChange={e => onCellChange(i, f, e.target.value)} />
                       </td>
                     )}
+                    <td className="p-1 border-l text-center text-sm text-gray-700">
+                      {r.valorInventario ?? ''}
+                    </td>
                   </tr>
                 ))}
               </tbody>
