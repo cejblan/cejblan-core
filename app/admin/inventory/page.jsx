@@ -213,7 +213,7 @@ export default function InventarioPage() {
   return (
     <>
       <Script src="https://cdn.tailwindcss.com" strategy="beforeInteractive" />
-      <main className="bg-gray-50 text-gray-800 min-h-screen">
+      <main className="text-gray-800 min-h-screen">
         <div className="container mx-auto p-2 sm:p-3 lg:p-4">
           <header className="text-center mb-6">
             <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">
