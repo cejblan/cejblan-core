@@ -1,8 +1,87 @@
-// app/inventario/page.jsx
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import Script from 'next/script';
 import { TbAlertTriangleFilled } from "react-icons/tb";
+
+const sinonimos = {
+  batidora: ["mezcladora", "amasadora"],
+  licuadora: ["juguera", "sacajugos", "extractor de jugos"],
+  camisa: ["camiseta", "franela", "playera"],
+  pantalon: ["jean", "vaquero", "pantalón"],
+  nevera: ["refrigerador", "frigorífico"],
+  coche: ["auto", "automóvil", "vehículo", "carro"],
+  libro: ["tomo", "volumen", "obra", "texto"],
+  feliz: ["contento", "alegre", "dichoso", "gozoso"],
+  triste: ["apenado", "melancólico", "decaído", "afligido"],
+  grande: ["enorme", "gigante", "inmenso", "colosal"],
+  pequeño: ["diminuto", "minúsculo", "chico", "breve"],
+  rápido: ["veloz", "ágil", "ligero"],
+  lento: ["pausado", "tardío", "torpe"],
+  fuerte: ["robusto", "vigoroso", "resistente", "potente"],
+  débil: ["frágil", "endeble", "flaco", "escaso"],
+  oscuro: ["tenebroso", "sombrío", "lúgubre", "opaco"],
+  claro: ["luminoso", "iluminado", "brillante"],
+  nuevo: ["reciente", "moderno", "inédito"],
+  viejo: ["antiguo", "ancestral", "vetusto"],
+  limpio: ["aseado", "pulcro", "inmaculado"],
+  sucio: ["ensuciado", "manchado", "contaminado"],
+  rico: ["sabroso", "delicioso", "gustoso"],
+  barato: ["económico", "asequible", "accesible"],
+  caro: ["costoso", "onerosO", "lujoso"],
+  suave: ["blando", "mansO", "terciopelo"],
+  duro: ["firme", "rígido", "resistente"],
+  caliente: ["tibio", "árido", "candente"],
+  frío: ["gélido", "helado", "glacial"],
+  seco: ["árido", "deshidratado", "reseco"],
+  húmedo: ["mojado", "empapado", "encharcado"],
+  pesado: ["denso", "masivo", "ponderoso"],
+  ligero: ["liviano", "sutil", "etéreo"]
+};
+
+// Función que devuelve un conjunto de sinónimos para una palabra dada
+function getSinonimosSet(word) {
+  const base = word.toLowerCase();
+  const set = new Set([base]);
+  for (const [clave, vals] of Object.entries(sinonimos)) {
+    if (clave === base || vals.includes(base)) {
+      set.add(clave);
+      vals.forEach(v => set.add(v.toLowerCase()));
+    }
+  }
+  return set;
+}
+
+// Normaliza nombre a arreglo de palabras, sin espacios ni signos
+function normalizeName(name) {
+  return name
+    .toLowerCase()
+    .replace(/[^a-záéíóúüñ0-9\s]/g, '') // quita signos de puntuación
+    .split(/\s+/)
+    .filter(Boolean);
+}
+
+// Compara dos nombres considerando sinónimos y palabras en distinto orden
+function sonNombresSimilares(nameA, nameB) {
+  const wordsA = normalizeName(nameA);
+  const wordsB = normalizeName(nameB);
+  if (wordsA.length === 0 || wordsB.length === 0) return false;
+
+  // Para cada palabra en A, comprobar si existe palabra en B que sea igual o sinónimo
+  const allMatch = wordsA.every(wordA => {
+    const setA = getSinonimosSet(wordA);
+    return wordsB.some(wordB => getSinonimosSet(wordB).has(wordA) || setA.has(wordB));
+  });
+
+  if (!allMatch) return false;
+
+  // También comprobar viceversa (para que ambos contengan sinónimos entre sí)
+  const allMatchReverse = wordsB.every(wordB => {
+    const setB = getSinonimosSet(wordB);
+    return wordsA.some(wordA => getSinonimosSet(wordA).has(wordB) || setB.has(wordA));
+  });
+
+  return allMatchReverse;
+}
 
 export default function InventarioPage() {
   const [rows, setRows] = useState([]);
@@ -14,7 +93,6 @@ export default function InventarioPage() {
   const fileInputRef = useRef(null);
   const filePDFRef = useRef(null);
 
-  // Inicializar 5 filas vacías
   useEffect(() => {
     const empty = () => ({ id: '', nombre: '', cantidad: '', precio: '', precioMayorista: '' });
     setRows(Array.from({ length: 5 }, empty));
@@ -36,9 +114,8 @@ export default function InventarioPage() {
     });
   };
 
-  // Detección de duplicados y similitudes
   const runChecks = () => {
-    // IDs duplicados
+    // Detectar IDs duplicados
     const map = {};
     rows.forEach((r, i) => {
       if (r.id && r.id !== '0000') {
@@ -49,51 +126,35 @@ export default function InventarioPage() {
     const dups = Object.values(map).filter(arr => arr.length > 1).flat();
     setDupIndices(dups);
 
-    // Nombres similares (Levenshtein simple)
-    const normalized = rows.map((r, i) => ({
-      norm: r.nombre.trim().toLowerCase().replace(/[\s_-]/g, ''), idx: i
-    }));
+    // Detectar nombres similares considerando sinónimos
     const used = new Set();
     let simGroup = [];
-    normalized.forEach((n, i) => {
-      if (!n.norm || used.has(i)) return;
+    for (let i = 0; i < rows.length; i++) {
+      if (!rows[i].nombre.trim() || used.has(i)) continue;
       const group = [i];
-      normalized.slice(i + 1).forEach((m, j) => {
-        if (!m.norm || used.has(i + 1 + j)) return;
-        const a = n.norm, b = m.norm, costs = [];
-        for (let x = 0; x <= a.length; x++) {
-          let last = x;
-          for (let y = 0; y <= b.length; y++) {
-            if (x === 0) costs[y] = y;
-            else if (y > 0) {
-              let nw = costs[y - 1];
-              if (a[x - 1] !== b[y - 1]) nw = Math.min(nw, last, costs[y]) + 1;
-              costs[y - 1] = last;
-              last = nw;
-            }
-          }
-          if (x > 0) costs[b.length] = last;
+      for (let j = i + 1; j < rows.length; j++) {
+        if (!rows[j].nombre.trim() || used.has(j)) continue;
+        if (sonNombresSimilares(rows[i].nombre, rows[j].nombre)) {
+          group.push(j);
         }
-        if (costs[b.length] <= Math.min(a.length, b.length) / 2) group.push(i + 1 + j);
-      });
+      }
       if (group.length > 1) {
         group.forEach(idx => used.add(idx));
         simGroup = group;
+        break; // solo un grupo por ahora, igual que antes
       }
-    });
+    }
     setSimIndices(simGroup);
   };
+
   useEffect(runChecks, [rows]);
 
-  // cerrar modales
   const closeDup = () => setDupAlert(a => ({ ...a, show: false }));
   const closeSim = () => setSimAlert(s => ({ ...s, show: false }));
 
-  // clics en iconos
   const handleDupClick = id => setDupAlert({ show: true, id });
   const handleSimClick = () => setSimAlert({ show: true, group: simIndices });
 
-  // ---------- PDF vía API A2 ----------
   const onPDFChange = async e => {
     const file = e.target.files?.[0];
     if (!file) return alert('Selecciona un PDF A2');
@@ -111,7 +172,6 @@ export default function InventarioPage() {
     }
   };
 
-  // ---------- Excel Client-Side ----------
   const loadExcel = () => fileInputRef.current.click();
   const onFileChange = async e => {
     const f = e.target.files?.[0];
@@ -151,33 +211,44 @@ export default function InventarioPage() {
     }
   };
 
-  // ---------- Exportar Excel ----------
-  const saveExcel = async () => {
-    try {
-      const res = await fetch('/api/inventory/export', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rows })
-      });
-      if (!res.ok) throw new Error('Error al generar Excel');
-      const blob = await res.blob();
-      const handle = await window.showSaveFilePicker({
-        suggestedName: `inventario_${new Date().toISOString().slice(0, 10)}.xlsx`,
-        types: [{
-          description: 'Excel',
-          accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] }
-        }]
-      });
-      const w = await handle.createWritable();
-      await w.write(blob);
-      await w.close();
-    } catch (e) {
-      console.error(e);
-      alert('No se pudo descargar Excel');
-    }
+  const handleSaveClick = () => {
+    window.showSaveFilePicker({
+      suggestedName: `inventario_${new Date().toISOString().slice(0, 10)}.xlsx`,
+      types: [{
+        description: 'Excel',
+        accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] }
+      }]
+    }).then(async handle => {
+      try {
+        const cleanRows = rows.map(r => ({
+          id: r.id ?? '',
+          nombre: r.nombre ?? '',
+          cantidad: r.cantidad ?? '',
+          precio: r.precio ?? '',
+          precioMayorista: r.precioMayorista ?? ''
+        }));
+
+        const res = await fetch('/api/inventory/export', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ rows: cleanRows })
+        });
+
+        if (!res.ok) throw new Error('Error al generar Excel');
+
+        const blob = await res.blob();
+        const writable = await handle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+      } catch (e) {
+        console.error(e);
+        alert('No se pudo descargar Excel');
+      }
+    }).catch(e => {
+      console.error('Guardado cancelado o bloqueado:', e);
+    });
   };
 
-  // ---------- Calcular % ----------
   const calcWholesale = () => {
     const p = parseFloat(pct);
     if (isNaN(p) || p < 0) {
@@ -203,7 +274,6 @@ export default function InventarioPage() {
             <p className="text-gray-600">Carga, edita y guarda. Avisos de IDs y nombres similares.</p>
           </header>
 
-          {/* Barra de acciones */}
           <div className="sticky-nav bg-gray-50/80 backdrop-blur-sm p-2 rounded-lg shadow-md mb-4">
             <div className="flex flex-wrap gap-2 items-center">
               <button onClick={() => setRows(rs => [...rs, { id: '', nombre: '', cantidad: '', precio: '', precioMayorista: '' }])}
@@ -215,25 +285,21 @@ export default function InventarioPage() {
                 className="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded-lg shadow-md">
                 Cargar Inventario A2
               </button>
-              <input type="file" accept="application/pdf"
-                ref={filePDFRef} className="hidden" onChange={onPDFChange} />
+              <input type="file" accept="application/pdf" ref={filePDFRef} className="hidden" onChange={onPDFChange} />
 
               <button onClick={loadExcel}
                 className="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-2 rounded-lg shadow-md">
                 Cargar Excel
               </button>
-              <input type="file" accept=".xlsx,.xls,.csv"
-                ref={fileInputRef} className="hidden" onChange={onFileChange} />
+              <input type="file" accept=".xlsx,.xls,.csv" ref={fileInputRef} className="hidden" onChange={onFileChange} />
 
-              <button onClick={saveExcel}
+              <button onClick={handleSaveClick}
                 className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-1 px-2 rounded-lg shadow-md">
                 Guardar como Excel
               </button>
 
               <div className="ml-auto flex items-center gap-2">
-                <label htmlFor="wholesalePercent" className="text-sm font-medium text-gray-700">
-                  Precio Mayorista (%):
-                </label>
+                <label htmlFor="wholesalePercent" className="text-sm font-medium text-gray-700">Precio Mayorista (%):</label>
                 <input id="wholesalePercent" type="number" placeholder="Ej: 80"
                   className="w-24 p-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   value={pct} onChange={e => setPct(e.target.value)} />
@@ -245,45 +311,37 @@ export default function InventarioPage() {
             </div>
           </div>
 
-          {/* Tabla */}
+          {/* Tabla de productos */}
           <div className="overflow-x-auto bg-white rounded-lg shadow-lg border border-gray-200">
             <table className="w-full min-w-[800px]">
               <thead className="bg-gray-100">
                 <tr>
                   {['ID', 'Nombre', 'Cantidad', 'Precio', 'Precio Mayorista'].map((h, i) =>
-                    <th key={i}
-                      className="p-1 font-semibold text-left text-sm text-gray-600 uppercase tracking-wider border-b border-r border-gray-200 last:border-r-0">
-                      {h}
-                    </th>
+                    <th key={i} className="p-1 font-semibold text-left text-sm text-gray-600 uppercase tracking-wider border-b border-r border-gray-200 last:border-r-0">{h}</th>
                   )}
                 </tr>
               </thead>
               <tbody>
                 {rows.map((r, i) => (
                   <tr key={i} className="border-b border-gray-200 hover:bg-gray-50">
-                    {/* ID */}
                     <td className="p-1 border-r relative">
                       <input type="text" className="w-full bg-transparent focus:outline-none"
                         value={r.id} onChange={e => onCellChange(i, 'id', e.target.value)} />
                       {dupIndices.includes(i) && (
-                        <div className="absolute bottom-1 right-1 text-red-500 cursor-pointer"
-                          onClick={() => handleDupClick(r.id)}>
+                        <div className="absolute bottom-1 right-1 text-red-500 cursor-pointer" onClick={() => handleDupClick(r.id)}>
                           <TbAlertTriangleFilled />
                         </div>
                       )}
                     </td>
-                    {/* Nombre */}
                     <td className="p-1 relative">
                       <input type="text" className="w-full bg-transparent focus:outline-none"
                         value={r.nombre} onChange={e => onCellChange(i, 'nombre', e.target.value)} />
                       {simIndices.includes(i) && (
-                        <div className="absolute bottom-1 right-1 text-amber-500 cursor-pointer"
-                          onClick={handleSimClick}>
+                        <div className="absolute bottom-1 right-1 text-amber-500 cursor-pointer" onClick={handleSimClick}>
                           <TbAlertTriangleFilled />
                         </div>
                       )}
                     </td>
-                    {/* Cantidad / Precio / Precio Mayorista */}
                     {['cantidad', 'precio', 'precioMayorista'].map((f, j) =>
                       <td key={j} className="p-1 border-l">
                         <input type="number" className="w-full bg-transparent focus:outline-none"
@@ -296,23 +354,16 @@ export default function InventarioPage() {
             </table>
           </div>
 
-          {/* Modal Duplicados */}
+          {/* Modales */}
           {dupAlert.show && (
             <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
               <div className="bg-white rounded-xl shadow-2xl p-4 max-w-md text-center">
                 <h3 className="text-xl font-bold mb-2">ID Duplicado</h3>
-                <p className="text-gray-600">
-                  El ID “{dupAlert.id}” está repetido en filas {dupIndices.map(i => i + 1).join(', ')}.
-                </p>
-                <button onClick={closeDup}
-                  className="mt-4 bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded-lg">
-                  Entendido
-                </button>
+                <p className="text-gray-600">El ID “{dupAlert.id}” está repetido en filas {dupIndices.map(i => i + 1).join(', ')}.</p>
+                <button onClick={closeDup} className="mt-4 bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded-lg">Entendido</button>
               </div>
             </div>
           )}
-
-          {/* Modal Similitudes */}
           {simAlert.show && (
             <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
               <div className="bg-white rounded-xl shadow-2xl p-4 max-w-lg">
@@ -322,10 +373,7 @@ export default function InventarioPage() {
                     <li key={i}>Fila {i + 1}: "{rows[i].nombre}"</li>
                   )}
                 </ul>
-                <button onClick={closeSim}
-                  className="mt-4 bg-amber-600 hover:bg-amber-700 text-white py-1 px-3 rounded-lg">
-                  Entendido
-                </button>
+                <button onClick={closeSim} className="mt-4 bg-amber-600 hover:bg-amber-700 text-white py-1 px-3 rounded-lg">Entendido</button>
               </div>
             </div>
           )}
