@@ -358,8 +358,8 @@ export default function InventarioPage() {
           {/* Sticky navbar que se pega al llegar arriba */}
           <div
             ref={barRef}
-            className={`z-50 shadow-md ${isFixed ? 'fixed top-5' : 'relative'
-              } backdrop-blur-md bg-white/60 rounded-xl`}
+            className={`z-50 shadow-6xl transition-all duration-30 ${isFixed ? 'fixed bottom-0' : 'relative'
+              } backdrop-blur-md bg-gray-200/70 rounded-xl`}
             style={
               isFixed
                 ? {
@@ -423,9 +423,9 @@ export default function InventarioPage() {
             </div>
           </div>
 
-          <div className="pt-4">
+          <div className="py-4">
             {/* Tabla de productos */}
-            <div className="overflow-x-auto bg-white rounded-lg shadow-lg border border-gray-200">
+            <div className="overflow-x-auto bg-white rounded-lg shadow-6xl border border-gray-200">
               <table className="w-full min-w-[800px]">
                 <thead className="bg-gray-100">
                   <tr>
