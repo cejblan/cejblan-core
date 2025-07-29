@@ -358,7 +358,7 @@ export default function InventarioPage() {
           {/* Sticky navbar que se pega al llegar arriba */}
           <div
             ref={barRef}
-            className={`z-50 shadow-md transition-all duration-30 ${isFixed ? 'fixed top-5' : 'relative'
+            className={`z-50 shadow-md ${isFixed ? 'fixed top-5' : 'relative'
               } backdrop-blur-md bg-white/60 rounded-xl`}
             style={
               isFixed
@@ -384,29 +384,29 @@ export default function InventarioPage() {
                     calculated: false
                   }
                 ])}
-                className="bg-blue-600 text-white font-bold p-1 rounded-lg shadow-md"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold p-1 rounded-lg shadow-md"
               >
                 + Añadir Fila
               </button>
               <button onClick={() => filePDFRef.current.click()}
-                className="bg-yellow-600 text-white font-bold p-1 rounded-lg shadow-md">
+                className="bg-yellow-600 hover:bg-yellow-700 text-white font-bold p-1 rounded-lg shadow-md">
                 Cargar Inventario A2
               </button>
               <input type="file" accept="application/pdf" ref={filePDFRef} className="hidden" onChange={onPDFChange} />
 
               <button onClick={loadExcel}
-                className="bg-green-600 text-white font-bold p-1 rounded-lg shadow-md">
+                className="bg-green-600 hover:bg-green-700 text-white font-bold p-1 rounded-lg shadow-md">
                 Cargar Excel
               </button>
               <input type="file" accept=".xlsx,.xls,.csv" ref={fileInputRef} className="hidden" onChange={onFileChange} />
 
               <button onClick={handleSaveClick}
-                className="bg-teal-600 text-white font-bold p-1 rounded-lg shadow-md">
+                className="bg-teal-600  hover:bg-teal-700 text-white font-bold p-1 rounded-lg shadow-md">
                 Guardar como Excel
               </button>
               <button
                 onClick={runChecks}
-                className="bg-purple-600 text-white font-bold p-1 rounded-lg shadow-md"
+                className="bg-purple-600  hover:bg-purple-700 text-white font-bold p-1 rounded-lg shadow-md"
               >
                 Analizar
               </button>
@@ -416,7 +416,7 @@ export default function InventarioPage() {
                   className="w-24 p-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   value={pct} onChange={e => setPct(e.target.value)} />
                 <button onClick={calcWholesale}
-                  className="bg-indigo-600 text-white font-bold p-1 rounded-lg shadow-md">
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold p-1 rounded-lg shadow-md">
                   Calcular %
                 </button>
               </div>
