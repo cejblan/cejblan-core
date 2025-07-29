@@ -552,13 +552,32 @@ export default function InventarioPage() {
             )}
             {showInfoModal && (
               <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-                <div className="bg-white rounded-xl shadow-2xl p-4 max-w-md text-center">
+                <div className="bg-white rounded-xl shadow-2xl p-4 max-w-4xl text-center">
                   <h3 className="text-xl font-bold mb-2">Información</h3>
-                  <p className="text-gray-600 text-sm">
+                  <p className="text-gray-600 text-sm mb-4">
                     Esta herramienta permite cargar, editar y guardar productos. Puedes usar archivos Excel o PDF generados por A2.
-                    El análisis detecta productos similares y duplicados usando IA básica con sinónimos.
+                    El análisis detecta productos duplicados o con nombres similares usando una IA básica con sinónimos.
                   </p>
-                  <button onClick={() => setShowInfoModal(false)} className="mt-4 bg-gray-700 hover:bg-gray-800 text-white py-1 px-3 rounded-lg">
+
+                  <div className="text-left text-sm text-gray-700 mb-2">
+                    <p className="font-semibold mb-1">Botones disponibles:</p>
+                    <ul className="list-disc list-inside space-y-1">
+                      <li><b>➕ Agregar fila:</b> Agrega una nueva fila vacía a la tabla para que puedas escribir manualmente un producto.</li>
+                      <li><b>📤 Cargar Excel:</b> Sube un archivo Excel con productos para analizar e importar.</li>
+                      <li><b>📄 Cargar Inventario A2:</b> Sube un archivo PDF generado por A2 para convertirlo en productos.</li>
+                      <li><b>⚠️ Ver productos duplicados:</b> Abre un modal que muestra productos con el mismo ID.</li>
+                      <li><b>🤖 Ver productos similares:</b> Abre un modal con productos que tienen nombres parecidos o sinónimos.</li>
+                      <li><b>🧠 Información (i):</b> Abre este mensaje con la explicación del sistema.</li>
+                      <li><b>💾 Guardar en BD:</b> Guarda los productos cargados en la base de datos.</li>
+                      <li><b>📁 Guardar como Excel:</b> Descarga los productos actuales como un archivo Excel.</li>
+                      <li><b>📝 Reemplazar productos:</b> En el modal de conflictos, este botón permite sobrescribir productos existentes.</li>
+                    </ul>
+                  </div>
+
+                  <button
+                    onClick={() => setShowInfoModal(false)}
+                    className="mt-2 bg-gray-700 hover:bg-gray-800 text-white py-1 px-3 rounded-lg"
+                  >
                     Cerrar
                   </button>
                 </div>
