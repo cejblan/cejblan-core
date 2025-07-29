@@ -97,6 +97,7 @@ export default function InventarioPage() {
 
   const [conflictos, setConflictos] = useState([]);
   const [mostrarModal, setMostrarModal] = useState(false);
+  const [showEmptyModal, setShowEmptyModal] = useState(false);
 
   useEffect(() => {
     const empty = () => ({
@@ -331,33 +332,64 @@ export default function InventarioPage() {
   };
 
   const handleSaveToDatabase = async () => {
+    // 1️⃣ Preparamos el array con el shape que espera la API
+    const productosValidos = rows
+      .filter(r =>
+        r.id.trim() &&
+        r.nombre.trim() &&
+        r.cantidad.trim() &&
+        r.precio.trim() &&
+        r.precioMayorista.trim()
+      )
+      .map(r => ({
+        // parseInt elimina ceros a la izquierda
+        id: parseInt(r.id, 10),
+        name: r.nombre,
+        quantity: parseInt(r.cantidad, 10),
+        price: parseFloat(r.precio),
+        wholesale_price: parseFloat(r.precioMayorista)
+      }));
+
+    // 2️⃣ Si no hay nada válido, mostramos el modal “Sin datos”
+    if (productosValidos.length === 0) {
+      setShowEmptyModal(true);
+      return;
+    }
+
     try {
-      // Deshabilita botón aquí si quieres...
-      const res = await fetch("/api/inventario/registrar", {
+      const res = await fetch("/api/inventory/registrar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productos: rows }),  // <-- rows en vez de data
+        body: JSON.stringify({ productos: productosValidos }),
       });
 
+      // 3️⃣ Si no es 2xx, leemos el error y lo mostramos
+      if (!res.ok) {
+        const err = await res.text();  // puede ser JSON o HTML
+        console.error("Error en API registrar:", err);
+        alert("Error al guardar en BD: " + err);
+        return;
+      }
+
+      // 4️⃣ Parseamos JSON ya que sabemos que es correcto
       const result = await res.json();
 
-      if (result.conflictos && result.conflictos.length > 0) {
+      if (result.conflictos?.length > 0) {
         setConflictos(result.conflictos);
         setMostrarModal(true);
       } else {
-        alert("Productos guardados exitosamente"); // o toast.success
-        // aquí recarga la tabla o limpia estados si quieres
+        alert("Productos guardados exitosamente");
+        // aquí puedes recargar la tabla o limpiar filas
       }
     } catch (err) {
       console.error(err);
-      alert("Error guardando en BD: " + err.message);
-    } finally {
-      // Vuelve a habilitar el botón
+      alert("Error de red al guardar en BD: " + err.message);
     }
   };
 
+
   const reemplazarProductos = async (productosAReemplazar) => {
-    const res = await fetch("/api/inventario/reemplazar", {
+    const res = await fetch("/api/inventory/reemplazar", {
       method: "POST",
       body: JSON.stringify({ productos: productosAReemplazar }),
       headers: { "Content-Type": "application/json" },
@@ -589,6 +621,22 @@ export default function InventarioPage() {
                 onReemplazar={reemplazarProductos}
                 onCerrar={() => setMostrarModal(false)}
               />
+            )}
+            {showEmptyModal && (
+              <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+                <div className="bg-white rounded-xl shadow-2xl p-4 max-w-md text-center">
+                  <h3 className="text-xl font-bold mb-2">Sin datos</h3>
+                  <p className="text-gray-600 text-sm">
+                    No hay productos cargados para guardar. Importa o añade al menos un producto antes de guardar.
+                  </p>
+                  <button
+                    onClick={() => setShowEmptyModal(false)}
+                    className="mt-4 bg-gray-700 hover:bg-gray-800 text-white py-1 px-3 rounded-lg"
+                  >
+                    Cerrar
+                  </button>
+                </div>
+              </div>
             )}
           </div>
         </div>
