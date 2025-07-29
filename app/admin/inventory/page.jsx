@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import Script from 'next/script';
-import { TbAlertTriangleFilled } from "react-icons/tb";
+import { TbAlertTriangleFilled, TbInfoCircle, TbDatabase } from "react-icons/tb";
 
 const sinonimos = {
   batidora: ["mezcladora", "amasadora"],
@@ -92,8 +92,7 @@ export default function InventarioPage() {
   const [pct, setPct] = useState('');
   const fileInputRef = useRef(null);
   const filePDFRef = useRef(null);
-
-  const navbarRef = useRef(null);
+  const [showInfoModal, setShowInfoModal] = useState(false);
 
   useEffect(() => {
     const empty = () => ({
@@ -327,6 +326,23 @@ export default function InventarioPage() {
     });
   };
 
+  const handleSaveToDatabase = async () => {
+    try {
+      const productosValidos = rows.filter(r => r.id && r.nombre && r.cantidad && r.precio);
+      const res = await fetch('/api/inventory/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productos: productosValidos }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.message || 'Error al guardar');
+      alert('Productos guardados correctamente');
+    } catch (err) {
+      console.error(err);
+      alert('Error al guardar productos: ' + err.message);
+    }
+  };
+
   const calcWholesale = () => {
     const p = parseFloat(pct);
     if (isNaN(p) || p < 0) {
@@ -404,11 +420,21 @@ export default function InventarioPage() {
                 className="bg-teal-600  hover:bg-teal-700 text-white font-bold p-1 rounded-lg shadow-md">
                 Guardar como Excel
               </button>
+              <button onClick={handleSaveToDatabase}
+                className="bg-pink-600 hover:bg-pink-700 text-white font-bold p-1 rounded-lg shadow-md flex items-center gap-1">
+                <TbDatabase className="text-lg" />
+                Guardar BD
+              </button>
               <button
                 onClick={runChecks}
                 className="bg-purple-600  hover:bg-purple-700 text-white font-bold p-1 rounded-lg shadow-md"
               >
                 Analizar
+              </button>
+              <button onClick={() => setShowInfoModal(true)}
+                className="bg-gray-500 hover:bg-gray-600 text-white font-bold p-1 rounded-lg shadow-md flex items-center gap-1">
+                <TbInfoCircle className="text-lg" />
+                Info
               </button>
               <div className="ml-auto flex items-center gap-1">
                 <label htmlFor="wholesalePercent" className="text-sm font-medium text-gray-700">Precio Mayorista (%):</label>
@@ -495,6 +521,20 @@ export default function InventarioPage() {
                     )}
                   </ul>
                   <button onClick={closeSim} className="mt-4 bg-amber-600 hover:bg-amber-700 text-white py-1 px-3 rounded-lg">Entendido</button>
+                </div>
+              </div>
+            )}
+            {showInfoModal && (
+              <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+                <div className="bg-white rounded-xl shadow-2xl p-4 max-w-md text-center">
+                  <h3 className="text-xl font-bold mb-2">Información</h3>
+                  <p className="text-gray-600 text-sm">
+                    Esta herramienta permite cargar, editar y guardar productos. Puedes usar archivos Excel o PDF generados por A2.
+                    El análisis detecta productos similares y duplicados usando IA básica con sinónimos.
+                  </p>
+                  <button onClick={() => setShowInfoModal(false)} className="mt-4 bg-gray-700 hover:bg-gray-800 text-white py-1 px-3 rounded-lg">
+                    Cerrar
+                  </button>
                 </div>
               </div>
             )}
