@@ -39,6 +39,33 @@ const sinonimos = {
   ligero: ["liviano", "sutil", "etéreo"]
 };
 
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  if (m === 0) return n;
+  if (n === 0) return m;
+  const dp = Array.from({ length: m + 1 }, (_, i) =>
+    Array.from({ length: n + 1 }, (_, j) => (i === 0 ? j : j === 0 ? i : 0))
+  );
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      if (a[i - 1] === b[j - 1]) {
+        dp[i][j] = dp[i - 1][j - 1];
+      } else {
+        dp[i][j] = Math.min(
+          dp[i - 1][j - 1] + 1, // sustitución
+          dp[i][j - 1] + 1,     // inserción
+          dp[i - 1][j] + 1      // eliminación
+        );
+      }
+    }
+  }
+  return dp[m][n];
+}
+
+function sonPalabrasParecidas(a, b) {
+  return levenshtein(a, b) <= 2;
+}
+
 // Función que devuelve un conjunto de sinónimos para una palabra dada
 function getSinonimosSet(word) {
   const base = word.toLowerCase();
@@ -67,21 +94,31 @@ function sonNombresSimilares(nameA, nameB) {
   const wordsB = normalizeName(nameB);
   if (wordsA.length === 0 || wordsB.length === 0) return false;
 
-  // Para cada palabra en A, comprobar si existe palabra en B que sea igual o sinónimo
-  const allMatch = wordsA.every(wordA => {
+  const matchAll = wordsA.every(wordA => {
     const setA = getSinonimosSet(wordA);
-    return wordsB.some(wordB => getSinonimosSet(wordB).has(wordA) || setA.has(wordB));
+    return wordsB.some(wordB => {
+      const setB = getSinonimosSet(wordB);
+      return (
+        setA.has(wordB) ||
+        setB.has(wordA) ||
+        sonPalabrasParecidas(wordA, wordB)
+      );
+    });
   });
 
-  if (!allMatch) return false;
-
-  // También comprobar viceversa (para que ambos contengan sinónimos entre sí)
-  const allMatchReverse = wordsB.every(wordB => {
+  const matchReverse = wordsB.every(wordB => {
     const setB = getSinonimosSet(wordB);
-    return wordsA.some(wordA => getSinonimosSet(wordA).has(wordB) || setB.has(wordA));
+    return wordsA.some(wordA => {
+      const setA = getSinonimosSet(wordA);
+      return (
+        setA.has(wordB) ||
+        setB.has(wordA) ||
+        sonPalabrasParecidas(wordA, wordB)
+      );
+    });
   });
 
-  return allMatchReverse;
+  return matchAll && matchReverse;
 }
 
 export default function InventarioPage() {
