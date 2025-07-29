@@ -138,6 +138,16 @@ export default function InventarioPage() {
   const [showEmptyModal, setShowEmptyModal] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
+  const [totalInventario, setTotalInventario] = useState(0);
+
+  useEffect(() => {
+    const total = rows.reduce((sum, r) => {
+      const v = parseFloat(r.valorInventario);
+      return sum + (isNaN(v) ? 0 : v);
+    }, 0);
+    setTotalInventario(total.toFixed(2));
+  }, [rows]);
+
   useEffect(() => {
     const empty = () => ({
       id: '',
@@ -714,6 +724,11 @@ export default function InventarioPage() {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+        <div className="fixed top-7 right-2 z-10">
+          <div className="bg-gray-100 border border-gray-300 text-gray-600 text-xs rounded-full px-2 py-1 shadow-sm">
+            Total: {totalInventario || '0.00'}$
           </div>
         </div>
       </main>
