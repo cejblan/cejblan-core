@@ -9,7 +9,8 @@ export async function POST(req) {
     const productosEnConflicto = [];
 
     for (const prod of productos) {
-      const { id, name, quantity, price, wholesale_price } = prod;
+      const id = parseInt(prod.id); // <-- convierte el ID para ignorar ceros a la izquierda
+      const { name, quantity, price, wholesale_price } = prod;
 
       const [existente] = await conexion.query(
         'SELECT * FROM products WHERE id = ?',
@@ -27,7 +28,7 @@ export async function POST(req) {
         if (!esIgual) {
           productosEnConflicto.push({
             original: p,
-            nuevo: prod,
+            nuevo: { ...prod, id }, // actualiza el ID convertido
           });
         }
 
@@ -42,7 +43,7 @@ export async function POST(req) {
         wholesale_price,
       });
 
-      productosRegistrados.push(prod);
+      productosRegistrados.push({ ...prod, id }); // actualiza el ID convertido
     }
 
     return NextResponse.json({
