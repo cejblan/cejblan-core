@@ -598,7 +598,7 @@ export default function InventarioPage() {
             )}
             {showInfoModal && (
               <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-                <div className="bg-white rounded-xl shadow-2xl p-4 max-w-4xl text-center">
+                <div className="bg-white rounded-xl shadow-2xl p-4 max-w-4xl w-full max-h-screen overflow-y-auto text-center">
                   <h3 className="text-xl font-bold mb-2">Información</h3>
                   <p className="text-gray-600 text-sm mb-4">
                     Esta herramienta permite cargar, editar y guardar productos. Puedes usar archivos Excel o PDF generados por A2.
