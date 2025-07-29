@@ -197,7 +197,8 @@ export default function InventarioPage() {
         nombre: hdr.indexOf('nombre'),
         cantidad: hdr.indexOf('cantidad'),
         precio: hdr.indexOf('precio'),
-        precioMayorista: hdr.findIndex(h => h.includes('mayorista'))
+        precioMayorista: hdr.findIndex(h => h.includes('mayorista')),
+        valorInventario: hdr.findIndex(h => h.includes('total') || h.includes('valorinventario'))
       };
       const dr = arr.slice(hi + 1).filter(r => r.some(c => c !== ''));
       const newRows = dr.map(r => ({
@@ -205,7 +206,8 @@ export default function InventarioPage() {
         nombre: idx.nombre > -1 ? r[idx.nombre] : '',
         cantidad: idx.cantidad > -1 ? r[idx.cantidad] : '',
         precio: idx.precio > -1 ? r[idx.precio] : '',
-        precioMayorista: idx.precioMayorista > -1 ? r[idx.precioMayorista] : ''
+        precioMayorista: idx.precioMayorista > -1 ? r[idx.precioMayorista] : '',
+        valorInventario: idx.valorInventario > -1 ? r[idx.valorInventario] : ''
       }));
       setRows(
         newRows.filter(r => !r.nombre?.toLowerCase().includes('eliminar'))

@@ -10,7 +10,7 @@ export async function POST(req) {
   const sheet = workbook.addWorksheet('Inventario');
 
   // 2️⃣ Título
-  sheet.mergeCells('A1:E1');
+  sheet.mergeCells('A1:F1');
   const titleCell = sheet.getCell('A1');
   titleCell.value = 'Inventario de Productos';
   titleCell.font = { size: 16, bold: true };
@@ -41,7 +41,7 @@ export async function POST(req) {
         left: { style: 'thin' },
         right: { style: 'thin' }
       };
-      cell.alignment = { vertical: 'middle' };
+      cell.alignment = { horizontal: 'center', vertical: 'middle' };
     });
   });
 
