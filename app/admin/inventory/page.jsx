@@ -106,10 +106,15 @@ export default function InventarioPage() {
   const onCellChange = (i, field, v) => {
     setRows(rs => {
       const copy = [...rs];
-      copy[i] = {
-        ...copy[i],
-        [field]: field === 'id' ? formatId(v) : v
-      };
+      const row = { ...copy[i], [field]: field === 'id' ? formatId(v) : v };
+
+      if (field === 'cantidad' || field === 'precio') {
+        const c = parseFloat(field === 'cantidad' ? v : row.cantidad);
+        const p = parseFloat(field === 'precio' ? v : row.precio);
+        row.valorInventario = (!isNaN(c) && !isNaN(p)) ? (c * p).toFixed(2) : '';
+      }
+
+      copy[i] = row;
       return copy;
     });
   };
@@ -147,7 +152,8 @@ export default function InventarioPage() {
     setSimIndices(simGroup);
   };
 
-  useEffect(runChecks, [rows]);
+  // Ya no automático
+  // useEffect(runChecks, [rows]);
 
   const closeDup = () => setDupAlert(a => ({ ...a, show: false }));
   const closeSim = () => setSimAlert(s => ({ ...s, show: false }));
@@ -169,7 +175,8 @@ export default function InventarioPage() {
           .filter(r => !r.nombre?.toLowerCase().includes('eliminar'))
           .map(r => ({ ...r, precioMayorista: '' }))
       );
-      runChecks();
+      setRows(filas);
+      setTimeout(runChecks, 50);
     } catch (err) {
       console.error(err);
       alert('Error procesando PDF: ' + err.message);
@@ -226,7 +233,8 @@ export default function InventarioPage() {
       setRows(
         newRows.filter(r => !r.nombre?.toLowerCase().includes('eliminar'))
       );
-      runChecks();
+      setRows(newRows);
+      setTimeout(runChecks, 50);
     } catch (err) {
       console.error(err);
       alert('Error leyendo Excel');
@@ -373,8 +381,13 @@ export default function InventarioPage() {
                           value={r[f]} onChange={e => onCellChange(i, f, e.target.value)} />
                       </td>
                     )}
-                    <td className="p-1 border-l text-center text-sm text-gray-700">
+                    <td className="p-1 border-l text-center text-sm text-gray-700 relative">
                       {r.valorInventario ?? ''}
+                      {r.valorInventario && (
+                        <span className="absolute top-1 right-1 text-gray-400" title="Calculado">
+                          <TbAlertTriangleFilled className="inline text-[12px]" />
+                        </span>
+                      )}
                     </td>
                   </tr>
                 ))}
