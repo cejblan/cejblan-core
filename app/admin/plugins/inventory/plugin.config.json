@@ -1,0 +1,8 @@
+{
+  "name": "Inventario",
+  "version": "1.0.0",
+  "description": "Permite cargar, editar y guardar productos",
+  "icon": "MdOutlineInventory",
+  "iconLib": "md",
+  "role": ["Admin", "Desarrollador"]
+}

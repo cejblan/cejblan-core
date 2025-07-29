@@ -1,7 +1,8 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import Script from 'next/script';
-import { TbAlertTriangleFilled } from "react-icons/tb";
+import { TbAlertTriangleFilled, TbInfoCircle, TbDatabase } from "react-icons/tb";
+import ModalProductosDuplicados from "./ModalProductosDuplicados";
 
 const sinonimos = {
   batidora: ["mezcladora", "amasadora"],
@@ -92,8 +93,12 @@ export default function InventarioPage() {
   const [pct, setPct] = useState('');
   const fileInputRef = useRef(null);
   const filePDFRef = useRef(null);
+  const [showInfoModal, setShowInfoModal] = useState(false);
 
-  const navbarRef = useRef(null);
+  const [conflictos, setConflictos] = useState([]);
+  const [mostrarModal, setMostrarModal] = useState(false);
+  const [showEmptyModal, setShowEmptyModal] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const empty = () => ({
@@ -327,6 +332,85 @@ export default function InventarioPage() {
     });
   };
 
+  const handleSaveToDatabase = async () => {
+    // 1️⃣ Prepara productosValidos (mapea campos y elimina ceros a la izquierda)
+    const productosValidos = rows
+      .filter(r => r.nombre.trim() !== '')
+      .map(r => ({
+        id: parseInt(r.id, 10),
+        name: r.nombre,
+        quantity: parseInt(r.cantidad, 10),
+        price: parseFloat(r.precio),
+        wholesale_price: parseFloat(r.precioMayorista)
+      }));
+
+    // 2️⃣ Si no hay nada que guardar, muestra modal y sale
+    if (productosValidos.length === 0) {
+      setShowEmptyModal(true);
+      return;
+    }
+
+    // 3️⃣ Deshabilita el botón
+    setIsSaving(true);
+
+    try {
+      const res = await fetch("/api/inventory/registrar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productos: productosValidos }),
+      });
+
+      if (!res.ok) {
+        const err = await res.text();
+        alert("Error al guardar en BD: " + err);
+        return;
+      }
+
+      const result = await res.json();
+      if (result.conflictos?.length > 0) {
+        setConflictos(result.conflictos);
+        setMostrarModal(true);
+      } else {
+        alert("Productos guardados exitosamente");
+      }
+    } catch (err) {
+      alert("Error de red al guardar en BD: " + err.message);
+    } finally {
+      // 4️⃣ Vuelve a habilitar el botón
+      setIsSaving(false);
+    }
+  };
+
+  // Dentro de InventarioPage, junto a los otros useState y funciones:
+
+  const reemplazarProductos = async (productosAReemplazar) => {
+    setIsSaving(true); // si quieres reutilizar isSaving o crea uno nuevo isUpdating
+    try {
+      const res = await fetch("/api/inventory/reemplazar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productos: productosAReemplazar }),
+      });
+
+      if (!res.ok) {
+        const errText = await res.text();
+        alert("Error al reemplazar productos: " + errText);
+        return;
+      }
+
+      const json = await res.json();
+      alert("Productos reemplazados correctamente");
+      setMostrarModal(false);
+      // aquí refrescas la tabla o limpias conflictos si hace falta
+
+    } catch (err) {
+      console.error(err);
+      alert("Error de red al reemplazar: " + err.message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const calcWholesale = () => {
     const p = parseFloat(pct);
     if (isNaN(p) || p < 0) {
@@ -370,7 +454,7 @@ export default function InventarioPage() {
                 : {}
             }
           >
-            <div className="text-sm flex flex-wrap gap-1 items-center justify-start p-1">
+            <div className="text-sm flex flex-wrap gap-1 items-center justify-center p-1">
               <button
                 onClick={() => setRows(rs => [
                   ...rs,
@@ -405,19 +489,33 @@ export default function InventarioPage() {
                 Guardar como Excel
               </button>
               <button
+                onClick={handleSaveToDatabase}
+                disabled={isSaving}
+                className={`bg-pink-600 hover:bg-pink-700 text-white font-bold p-1 rounded-lg shadow-md flex items-center gap-1
+                            ${isSaving ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                <TbDatabase className="text-lg" />
+                {isSaving ? 'Guardando...' : 'Guardar BD'}
+              </button>
+              <button
                 onClick={runChecks}
                 className="bg-purple-600  hover:bg-purple-700 text-white font-bold p-1 rounded-lg shadow-md"
               >
                 Analizar
               </button>
+              <button onClick={() => setShowInfoModal(true)}
+                className="bg-gray-500 hover:bg-gray-600 text-white font-bold p-1 rounded-lg shadow-md flex items-center gap-1">
+                <TbInfoCircle className="text-lg" />
+                Info
+              </button>
               <div className="ml-auto flex items-center gap-1">
                 <label htmlFor="wholesalePercent" className="text-sm font-medium text-gray-700">Precio Mayorista (%):</label>
-                <input id="wholesalePercent" type="number" placeholder="Ej: 80"
-                  className="w-24 p-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                <input id="wholesalePercent" type="number" placeholder="Ej:80"
+                  className="w-8 p-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   value={pct} onChange={e => setPct(e.target.value)} />
                 <button onClick={calcWholesale}
                   className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold p-1 rounded-lg shadow-md">
-                  Calcular %
+                  Calcular
                 </button>
               </div>
             </div>
@@ -495,6 +593,62 @@ export default function InventarioPage() {
                     )}
                   </ul>
                   <button onClick={closeSim} className="mt-4 bg-amber-600 hover:bg-amber-700 text-white py-1 px-3 rounded-lg">Entendido</button>
+                </div>
+              </div>
+            )}
+            {showInfoModal && (
+              <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+                <div className="bg-white rounded-xl shadow-2xl p-4 max-w-4xl text-center">
+                  <h3 className="text-xl font-bold mb-2">Información</h3>
+                  <p className="text-gray-600 text-sm mb-4">
+                    Esta herramienta permite cargar, editar y guardar productos. Puedes usar archivos Excel o PDF generados por A2.
+                    El análisis detecta productos duplicados o con nombres similares usando una IA básica con sinónimos.
+                  </p>
+
+                  <div className="text-left text-sm text-gray-700 mb-2">
+                    <p className="font-semibold mb-1">Botones disponibles:</p>
+                    <ul className="list-disc list-inside space-y-1">
+                      <li><b>➕ Agregar fila:</b> Agrega una nueva fila vacía a la tabla para que puedas escribir manualmente un producto.</li>
+                      <li><b>📤 Cargar Excel:</b> Sube un archivo Excel con productos para analizar e importar.</li>
+                      <li><b>📄 Cargar Inventario A2:</b> Sube un archivo PDF generado por A2 para convertirlo en productos.</li>
+                      <li><b>⚠️ Ver productos duplicados:</b> Abre un modal que muestra productos con el mismo ID.</li>
+                      <li><b>🤖 Ver productos similares:</b> Abre un modal con productos que tienen nombres parecidos o sinónimos.</li>
+                      <li><b>🧠 Información (i):</b> Abre este mensaje con la explicación del sistema.</li>
+                      <li><b>💾 Guardar en BD:</b> Guarda los productos cargados en la base de datos.</li>
+                      <li><b>📁 Guardar como Excel:</b> Descarga los productos actuales como un archivo Excel.</li>
+                      <li><b>📝 Reemplazar productos:</b> En el modal de conflictos, este botón permite sobrescribir productos existentes.</li>
+                    </ul>
+                  </div>
+
+                  <button
+                    onClick={() => setShowInfoModal(false)}
+                    className="mt-2 bg-gray-700 hover:bg-gray-800 text-white py-1 px-3 rounded-lg"
+                  >
+                    Cerrar
+                  </button>
+                </div>
+              </div>
+            )}
+            {mostrarModal && (
+              <ModalProductosDuplicados
+                conflictos={conflictos}
+                onReemplazar={reemplazarProductos}
+                onCerrar={() => setMostrarModal(false)}
+              />
+            )}
+            {showEmptyModal && (
+              <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+                <div className="bg-white rounded-xl shadow-2xl p-4 max-w-md text-center">
+                  <h3 className="text-xl font-bold mb-2">Sin datos</h3>
+                  <p className="text-gray-600 text-sm">
+                    No hay productos cargados para guardar. Importa o añade al menos un producto antes de guardar.
+                  </p>
+                  <button
+                    onClick={() => setShowEmptyModal(false)}
+                    className="mt-4 bg-gray-700 hover:bg-gray-800 text-white py-1 px-3 rounded-lg"
+                  >
+                    Cerrar
+                  </button>
                 </div>
               </div>
             )}
