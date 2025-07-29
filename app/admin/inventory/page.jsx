@@ -98,6 +98,7 @@ export default function InventarioPage() {
   const [conflictos, setConflictos] = useState([]);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [showEmptyModal, setShowEmptyModal] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const empty = () => ({
@@ -332,17 +333,10 @@ export default function InventarioPage() {
   };
 
   const handleSaveToDatabase = async () => {
-    // 1️⃣ Preparamos el array con el shape que espera la API
+    // 1️⃣ Prepara productosValidos (mapea campos y elimina ceros a la izquierda)
     const productosValidos = rows
-      .filter(r =>
-        r.id.trim() &&
-        r.nombre.trim() &&
-        r.cantidad.trim() &&
-        r.precio.trim() &&
-        r.precioMayorista.trim()
-      )
+      .filter(r => r.nombre.trim() !== '')
       .map(r => ({
-        // parseInt elimina ceros a la izquierda
         id: parseInt(r.id, 10),
         name: r.nombre,
         quantity: parseInt(r.cantidad, 10),
@@ -350,11 +344,14 @@ export default function InventarioPage() {
         wholesale_price: parseFloat(r.precioMayorista)
       }));
 
-    // 2️⃣ Si no hay nada válido, mostramos el modal “Sin datos”
+    // 2️⃣ Si no hay nada que guardar, muestra modal y sale
     if (productosValidos.length === 0) {
       setShowEmptyModal(true);
       return;
     }
+
+    // 3️⃣ Deshabilita el botón
+    setIsSaving(true);
 
     try {
       const res = await fetch("/api/inventory/registrar", {
@@ -363,40 +360,55 @@ export default function InventarioPage() {
         body: JSON.stringify({ productos: productosValidos }),
       });
 
-      // 3️⃣ Si no es 2xx, leemos el error y lo mostramos
       if (!res.ok) {
-        const err = await res.text();  // puede ser JSON o HTML
-        console.error("Error en API registrar:", err);
+        const err = await res.text();
         alert("Error al guardar en BD: " + err);
         return;
       }
 
-      // 4️⃣ Parseamos JSON ya que sabemos que es correcto
       const result = await res.json();
-
       if (result.conflictos?.length > 0) {
         setConflictos(result.conflictos);
         setMostrarModal(true);
       } else {
         alert("Productos guardados exitosamente");
-        // aquí puedes recargar la tabla o limpiar filas
       }
     } catch (err) {
-      console.error(err);
       alert("Error de red al guardar en BD: " + err.message);
+    } finally {
+      // 4️⃣ Vuelve a habilitar el botón
+      setIsSaving(false);
     }
   };
 
+  // Dentro de InventarioPage, junto a los otros useState y funciones:
 
   const reemplazarProductos = async (productosAReemplazar) => {
-    const res = await fetch("/api/inventory/reemplazar", {
-      method: "POST",
-      body: JSON.stringify({ productos: productosAReemplazar }),
-      headers: { "Content-Type": "application/json" },
-    });
+    setIsSaving(true); // si quieres reutilizar isSaving o crea uno nuevo isUpdating
+    try {
+      const res = await fetch("/api/inventory/reemplazar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productos: productosAReemplazar }),
+      });
 
-    setMostrarModal(false);
-    // Aquí puedes mostrar un toast de éxito, recargar tabla, etc.
+      if (!res.ok) {
+        const errText = await res.text();
+        alert("Error al reemplazar productos: " + errText);
+        return;
+      }
+
+      const json = await res.json();
+      alert("Productos reemplazados correctamente");
+      setMostrarModal(false);
+      // aquí refrescas la tabla o limpias conflictos si hace falta
+
+    } catch (err) {
+      console.error(err);
+      alert("Error de red al reemplazar: " + err.message);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const calcWholesale = () => {
@@ -478,10 +490,12 @@ export default function InventarioPage() {
               </button>
               <button
                 onClick={handleSaveToDatabase}
-                className="bg-pink-600 hover:bg-pink-700 text-white font-bold p-1 rounded-lg shadow-md flex items-center gap-1"
+                disabled={isSaving}
+                className={`bg-pink-600 hover:bg-pink-700 text-white font-bold p-1 rounded-lg shadow-md flex items-center gap-1
+                            ${isSaving ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <TbDatabase className="text-lg" />
-                Guardar BD
+                {isSaving ? 'Guardando...' : 'Guardar BD'}
               </button>
               <button
                 onClick={runChecks}
