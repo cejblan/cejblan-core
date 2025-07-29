@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Script from 'next/script';
 import { TbAlertTriangleFilled, TbInfoCircle, TbDatabase } from "react-icons/tb";
+import ModalProductosDuplicados from "./ModalProductosDuplicados";
 
 const sinonimos = {
   batidora: ["mezcladora", "amasadora"],
@@ -93,6 +94,9 @@ export default function InventarioPage() {
   const fileInputRef = useRef(null);
   const filePDFRef = useRef(null);
   const [showInfoModal, setShowInfoModal] = useState(false);
+
+  const [conflictos, setConflictos] = useState([]);
+  const [mostrarModal, setMostrarModal] = useState(false);
 
   useEffect(() => {
     const empty = () => ({
@@ -328,19 +332,39 @@ export default function InventarioPage() {
 
   const handleSaveToDatabase = async () => {
     try {
-      const productosValidos = rows.filter(r => r.id && r.nombre && r.cantidad && r.precio);
-      const res = await fetch('/api/inventory/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productos: productosValidos }),
+      // Deshabilita botón aquí si quieres...
+      const res = await fetch("/api/inventario/registrar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productos: rows }),  // <-- rows en vez de data
       });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.message || 'Error al guardar');
-      alert('Productos guardados correctamente');
+
+      const result = await res.json();
+
+      if (result.conflictos && result.conflictos.length > 0) {
+        setConflictos(result.conflictos);
+        setMostrarModal(true);
+      } else {
+        alert("Productos guardados exitosamente"); // o toast.success
+        // aquí recarga la tabla o limpia estados si quieres
+      }
     } catch (err) {
       console.error(err);
-      alert('Error al guardar productos: ' + err.message);
+      alert("Error guardando en BD: " + err.message);
+    } finally {
+      // Vuelve a habilitar el botón
     }
+  };
+
+  const reemplazarProductos = async (productosAReemplazar) => {
+    const res = await fetch("/api/inventario/reemplazar", {
+      method: "POST",
+      body: JSON.stringify({ productos: productosAReemplazar }),
+      headers: { "Content-Type": "application/json" },
+    });
+
+    setMostrarModal(false);
+    // Aquí puedes mostrar un toast de éxito, recargar tabla, etc.
   };
 
   const calcWholesale = () => {
@@ -420,8 +444,10 @@ export default function InventarioPage() {
                 className="bg-teal-600  hover:bg-teal-700 text-white font-bold p-1 rounded-lg shadow-md">
                 Guardar como Excel
               </button>
-              <button onClick={handleSaveToDatabase}
-                className="bg-pink-600 hover:bg-pink-700 text-white font-bold p-1 rounded-lg shadow-md flex items-center gap-1">
+              <button
+                onClick={handleSaveToDatabase}
+                className="bg-pink-600 hover:bg-pink-700 text-white font-bold p-1 rounded-lg shadow-md flex items-center gap-1"
+              >
                 <TbDatabase className="text-lg" />
                 Guardar BD
               </button>
@@ -537,6 +563,13 @@ export default function InventarioPage() {
                   </button>
                 </div>
               </div>
+            )}
+            {mostrarModal && (
+              <ModalProductosDuplicados
+                conflictos={conflictos}
+                onReemplazar={reemplazarProductos}
+                onCerrar={() => setMostrarModal(false)}
+              />
             )}
           </div>
         </div>
