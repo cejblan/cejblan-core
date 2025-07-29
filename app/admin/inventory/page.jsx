@@ -93,6 +93,8 @@ export default function InventarioPage() {
   const fileInputRef = useRef(null);
   const filePDFRef = useRef(null);
 
+  const navbarRef = useRef(null);
+
   useEffect(() => {
     const empty = () => ({
       id: '',
@@ -106,6 +108,36 @@ export default function InventarioPage() {
 
     setRows(Array.from({ length: 5 }, empty));
   }, []);
+
+  const barRef = useRef(null);
+  const [isFixed, setIsFixed] = useState(false);
+  const [initialOffset, setInitialOffset] = useState(0);
+  const [width, setWidth] = useState(null);
+  const [height, setHeight] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!barRef.current) return;
+
+      const currentY = window.scrollY;
+
+      if (initialOffset === 0) {
+        const rect = barRef.current.getBoundingClientRect();
+        setInitialOffset(barRef.current.offsetTop);
+        setWidth(rect.width);
+        setHeight(rect.height);
+      }
+
+      if (currentY >= initialOffset) {
+        setIsFixed(true);
+      } else {
+        setIsFixed(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [initialOffset]);
 
   const formatId = val => {
     const s = (val || '').toString().replace(/\D/g, '');
@@ -313,16 +345,32 @@ export default function InventarioPage() {
   return (
     <>
       <Script src="https://cdn.tailwindcss.com" strategy="beforeInteractive" />
-      <main className="text-gray-800 min-h-screen">
+      <main className="text-gray-800 min-h-screen relative">
         <div className="container mx-auto p-4">
           <header className="text-center mb-6">
             <h1 className="text-3xl font-bold">Inventario de Productos</h1>
             <p className="text-gray-600">Carga, edita y guarda. Avisos de IDs y nombres similares.</p>
           </header>
 
+          {/* Placeholder para evitar salto */}
+          {isFixed && <div style={{ height: height }}></div>}
+
           {/* Sticky navbar que se pega al llegar arriba */}
-          <div className="sticky top-0 w-full z-10 bg-gray-50/80 backdrop-blur-sm p-4 rounded-lg shadow-md mb-4 transition-all">
-            <div className="flex flex-wrap gap-3 items-center justify-start">
+          <div
+            ref={barRef}
+            className={`z-50 shadow-md transition-all duration-30 ${isFixed ? 'fixed top-5' : 'relative'
+              } backdrop-blur-md bg-white/60 rounded-xl`}
+            style={
+              isFixed
+                ? {
+                  width: `${width}px`,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                }
+                : {}
+            }
+          >
+            <div className="text-sm flex flex-wrap gap-1 items-center justify-start p-1">
               <button
                 onClick={() => setRows(rs => [
                   ...rs,
@@ -336,39 +384,39 @@ export default function InventarioPage() {
                     calculated: false
                   }
                 ])}
-                className="bg-blue-600 text-white font-bold py-1 px-2 rounded-lg shadow-md"
+                className="bg-blue-600 text-white font-bold p-1 rounded-lg shadow-md"
               >
                 + Añadir Fila
               </button>
               <button onClick={() => filePDFRef.current.click()}
-                className="bg-yellow-600 text-white font-bold py-1 px-2 rounded-lg shadow-md">
+                className="bg-yellow-600 text-white font-bold p-1 rounded-lg shadow-md">
                 Cargar Inventario A2
               </button>
               <input type="file" accept="application/pdf" ref={filePDFRef} className="hidden" onChange={onPDFChange} />
 
               <button onClick={loadExcel}
-                className="bg-green-600 text-white font-bold py-1 px-2 rounded-lg shadow-md">
+                className="bg-green-600 text-white font-bold p-1 rounded-lg shadow-md">
                 Cargar Excel
               </button>
               <input type="file" accept=".xlsx,.xls,.csv" ref={fileInputRef} className="hidden" onChange={onFileChange} />
 
               <button onClick={handleSaveClick}
-                className="bg-teal-600 text-white font-bold py-1 px-2 rounded-lg shadow-md">
+                className="bg-teal-600 text-white font-bold p-1 rounded-lg shadow-md">
                 Guardar como Excel
               </button>
               <button
                 onClick={runChecks}
-                className="bg-purple-600 text-white font-bold py-1 px-2 rounded-lg shadow-md"
+                className="bg-purple-600 text-white font-bold p-1 rounded-lg shadow-md"
               >
                 Analizar
               </button>
-              <div className="ml-auto flex items-center gap-2">
+              <div className="ml-auto flex items-center gap-1">
                 <label htmlFor="wholesalePercent" className="text-sm font-medium text-gray-700">Precio Mayorista (%):</label>
                 <input id="wholesalePercent" type="number" placeholder="Ej: 80"
                   className="w-24 p-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   value={pct} onChange={e => setPct(e.target.value)} />
                 <button onClick={calcWholesale}
-                  className="bg-indigo-600 text-white font-bold py-1 px-2 rounded-lg shadow-md">
+                  className="bg-indigo-600 text-white font-bold p-1 rounded-lg shadow-md">
                   Calcular %
                 </button>
               </div>
