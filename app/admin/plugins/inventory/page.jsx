@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import Script from 'next/script';
 import { TbAlertTriangleFilled, TbInfoCircle, TbDatabase } from "react-icons/tb";
 import ModalProductosDuplicados from "./ModalProductosDuplicados";
+import { TbTrash } from 'react-icons/tb';
 
 const sinonimos = {
   batidora: ["mezcladora", "amasadora"],
@@ -242,6 +243,14 @@ export default function InventarioPage() {
     if (mostrarModal) {
       setSimAlert({ show: true, group: simGroup });
     }
+  };
+
+  const deleteRow = (index) => {
+    // 1️⃣ Filtra la fila por índice
+    setRows(old => old.filter((_, i) => i !== index));
+    // 2️⃣ (Opcional) Limpia los índices de alertas
+    setDupIndices(ids => ids.filter(i => i !== index));
+    setSimIndices(ids => ids.filter(i => i !== index));
   };
 
   const closeDup = () => setDupAlert(a => ({ ...a, show: false }));
@@ -571,7 +580,7 @@ export default function InventarioPage() {
               <table className="w-full min-w-[800px]">
                 <thead className="bg-gray-100">
                   <tr>
-                    {['ID', 'Nombre', 'Cantidad', 'Precio', 'Precio Mayorista', 'Total'].map((h, i) =>
+                    {['ID', 'Nombre', 'Cantidad', 'Precio', 'Precio Mayorista', 'Total', 'Acción'].map((h, i) =>
                       <th key={i} className="p-1 font-semibold text-center text-sm text-gray-600 uppercase tracking-wider border-b border-r border-gray-200 last:border-r-0">{h}</th>
                     )}
                   </tr>
@@ -610,6 +619,15 @@ export default function InventarioPage() {
                             <TbAlertTriangleFilled className="inline text-[12px]" />
                           </span>
                         )}
+                      </td>
+                      <td className="p-1 border-l text-center">
+                        <button
+                          onClick={() => deleteRow(i)}
+                          className="text-red-600 hover:text-red-800 p-1 rounded"
+                          title="Eliminar fila"
+                        >
+                          <TbTrash />
+                        </button>
                       </td>
                     </tr>
                   ))}
