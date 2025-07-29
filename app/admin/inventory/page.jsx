@@ -201,14 +201,28 @@ export default function InventarioPage() {
         valorInventario: hdr.findIndex(h => h.includes('total') || h.includes('valorinventario'))
       };
       const dr = arr.slice(hi + 1).filter(r => r.some(c => c !== ''));
-      const newRows = dr.map(r => ({
-        id: idx.id > -1 ? formatId(r[idx.id]) : '',
-        nombre: idx.nombre > -1 ? r[idx.nombre] : '',
-        cantidad: idx.cantidad > -1 ? r[idx.cantidad] : '',
-        precio: idx.precio > -1 ? r[idx.precio] : '',
-        precioMayorista: idx.precioMayorista > -1 ? r[idx.precioMayorista] : '',
-        valorInventario: idx.valorInventario > -1 ? r[idx.valorInventario] : ''
-      }));
+      const newRows = dr.map(r => {
+        const cantidad = idx.cantidad > -1 ? r[idx.cantidad] : '';
+        const precio = idx.precio > -1 ? r[idx.precio] : '';
+        const valorRaw = idx.valorInventario > -1 ? r[idx.valorInventario] : '';
+        let valorInventario = valorRaw;
+
+        // Calcular si está vacío o no numérico
+        if (!valorInventario || isNaN(Number(valorInventario))) {
+          const c = parseFloat(cantidad);
+          const p = parseFloat(precio);
+          valorInventario = (!isNaN(c) && !isNaN(p)) ? (c * p).toFixed(2) : '';
+        }
+
+        return {
+          id: idx.id > -1 ? formatId(r[idx.id]) : '',
+          nombre: idx.nombre > -1 ? r[idx.nombre] : '',
+          cantidad,
+          precio,
+          precioMayorista: idx.precioMayorista > -1 ? r[idx.precioMayorista] : '',
+          valorInventario
+        };
+      });
       setRows(
         newRows.filter(r => !r.nombre?.toLowerCase().includes('eliminar'))
       );
