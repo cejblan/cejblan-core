@@ -204,7 +204,7 @@ export default function InventarioPage() {
     });
   };
 
-  const runChecks = () => {
+  const runChecks = (mostrarModal = false) => {
     // Detectar IDs duplicados
     const map = {};
     rows.forEach((r, i) => {
@@ -234,7 +234,14 @@ export default function InventarioPage() {
         break; // solo un grupo por ahora, igual que antes
       }
     }
+
+    // Guardar el grupo de similares
     setSimIndices(simGroup);
+
+    // Mostrar modal si se pidió
+    if (mostrarModal) {
+      setSimAlert({ show: true, group: simGroup });
+    }
   };
 
   const closeDup = () => setDupAlert(a => ({ ...a, show: false }));
@@ -535,7 +542,7 @@ export default function InventarioPage() {
                 {isSaving ? 'Guardando...' : 'Guardar BD'}
               </button>
               <button
-                onClick={runChecks}
+                onClick={() => runChecks(true)}
                 className="bg-purple-600  hover:bg-purple-700 text-white font-bold p-1 rounded-lg shadow-md"
               >
                 Analizar
