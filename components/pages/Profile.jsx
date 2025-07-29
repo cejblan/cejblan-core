@@ -172,15 +172,17 @@ export default function Profile() {
                 <div className="my-3 mx-auto w-fit grid grid-cols-1 justify-center items-center">
                   <span className="flex justify-center items-center">
                     <span className="text-xl">Bot de&nbsp;</span>
-                    <span className="text-[#6ed8bf] font-bold">Telegram</span>
-                    <FaTelegram className="text-[#6ed8bf] h-4 w-4" />
+                    <span className="text-blue-600 font-bold">Telegram</span>
+                    <FaTelegram className="text-blue-600 h-4 w-4" />
                   </span>
-                  <Link href={`https://t.me/${process.env.BOT_NAME}`} className="text-xl text-[#6ed8bf] hover:text-[#4bb199] underline" target="_blank">@{process.env.BOT_NAME}</Link>
+                  <Link href={`https://t.me/${process.env.NEXT_PUBLIC_BOT_NAME}`} className="text-xl text-blue-600 hover:text-blue-500 underline" target="_blank">
+                    @{process.env.NEXT_PUBLIC_BOT_NAME}
+                  </Link>
                 </div>
                 {
                   code ?
                     <div className="mx-auto grid grid-cols-1">
-                      <p className="bg-[#6ed8bf] text-3xl text-white text-center font-bold tracking-wide px-1 rounded-xl shadow-6xl mx-auto h-fit w-fit block">
+                      <p className="bg-blue-600 text-3xl text-white text-center font-bold tracking-wide px-1 rounded-xl shadow-6xl mx-auto h-fit w-fit block">
                         {code}
                       </p>
                       <div className="text-xl my-1">
