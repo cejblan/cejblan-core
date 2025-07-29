@@ -94,7 +94,16 @@ export default function InventarioPage() {
   const filePDFRef = useRef(null);
 
   useEffect(() => {
-    const empty = () => ({ id: '', nombre: '', cantidad: '', precio: '', precioMayorista: '' });
+    const empty = () => ({
+      id: '',
+      nombre: '',
+      cantidad: '',
+      precio: '',
+      precioMayorista: '',
+      valorInventario: '',
+      calculated: false
+    });
+
     setRows(Array.from({ length: 5 }, empty));
   }, []);
 
@@ -111,7 +120,9 @@ export default function InventarioPage() {
       if (field === 'cantidad' || field === 'precio') {
         const c = parseFloat(field === 'cantidad' ? v : row.cantidad);
         const p = parseFloat(field === 'precio' ? v : row.precio);
-        row.valorInventario = (!isNaN(c) && !isNaN(p)) ? (c * p).toFixed(2) : '';
+        const inv = (!isNaN(c) && !isNaN(p)) ? (c * p).toFixed(2) : '';
+        row.valorInventario = inv;
+        row.calculated = !!inv;
       }
 
       copy[i] = row;
@@ -152,9 +163,6 @@ export default function InventarioPage() {
     setSimIndices(simGroup);
   };
 
-  // Ya no automático
-  // useEffect(runChecks, [rows]);
-
   const closeDup = () => setDupAlert(a => ({ ...a, show: false }));
   const closeSim = () => setSimAlert(s => ({ ...s, show: false }));
 
@@ -173,9 +181,13 @@ export default function InventarioPage() {
       setRows(
         json.rows
           .filter(r => !r.nombre?.toLowerCase().includes('eliminar'))
-          .map(r => ({ ...r, precioMayorista: '' }))
+          .map(r => ({
+            ...r,
+            precioMayorista: '',
+            valorInventario: r.valorInventario || '',
+            calculated: false
+          }))
       );
-      setRows(filas);
       setTimeout(runChecks, 50);
     } catch (err) {
       console.error(err);
@@ -227,7 +239,8 @@ export default function InventarioPage() {
           cantidad,
           precio,
           precioMayorista: idx.precioMayorista > -1 ? r[idx.precioMayorista] : '',
-          valorInventario
+          valorInventario,
+          calculated: false
         };
       });
       setRows(
@@ -307,118 +320,137 @@ export default function InventarioPage() {
             <p className="text-gray-600">Carga, edita y guarda. Avisos de IDs y nombres similares.</p>
           </header>
 
-          <div className="sticky-nav bg-gray-50/80 backdrop-blur-sm p-2 rounded-lg shadow-md mb-4">
-            <div className="flex flex-wrap gap-2 items-center">
-              <button onClick={() => setRows(rs => [...rs, { id: '', nombre: '', cantidad: '', precio: '', precioMayorista: '' }])}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded-lg shadow-md">
+          {/* Sticky navbar que se pega al llegar arriba */}
+          <div className="sticky top-0 w-full z-10 bg-gray-50/80 backdrop-blur-sm p-4 rounded-lg shadow-md mb-4 transition-all">
+            <div className="flex flex-wrap gap-3 items-center justify-start">
+              <button
+                onClick={() => setRows(rs => [
+                  ...rs,
+                  {
+                    id: '',
+                    nombre: '',
+                    cantidad: '',
+                    precio: '',
+                    precioMayorista: '',
+                    valorInventario: '',
+                    calculated: false
+                  }
+                ])}
+                className="bg-blue-600 text-white font-bold py-1 px-2 rounded-lg shadow-md"
+              >
                 + Añadir Fila
               </button>
-
               <button onClick={() => filePDFRef.current.click()}
-                className="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded-lg shadow-md">
+                className="bg-yellow-600 text-white font-bold py-1 px-2 rounded-lg shadow-md">
                 Cargar Inventario A2
               </button>
               <input type="file" accept="application/pdf" ref={filePDFRef} className="hidden" onChange={onPDFChange} />
 
               <button onClick={loadExcel}
-                className="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-2 rounded-lg shadow-md">
+                className="bg-green-600 text-white font-bold py-1 px-2 rounded-lg shadow-md">
                 Cargar Excel
               </button>
               <input type="file" accept=".xlsx,.xls,.csv" ref={fileInputRef} className="hidden" onChange={onFileChange} />
 
               <button onClick={handleSaveClick}
-                className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-1 px-2 rounded-lg shadow-md">
+                className="bg-teal-600 text-white font-bold py-1 px-2 rounded-lg shadow-md">
                 Guardar como Excel
               </button>
-
+              <button
+                onClick={runChecks}
+                className="bg-purple-600 text-white font-bold py-1 px-2 rounded-lg shadow-md"
+              >
+                Analizar
+              </button>
               <div className="ml-auto flex items-center gap-2">
                 <label htmlFor="wholesalePercent" className="text-sm font-medium text-gray-700">Precio Mayorista (%):</label>
                 <input id="wholesalePercent" type="number" placeholder="Ej: 80"
                   className="w-24 p-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   value={pct} onChange={e => setPct(e.target.value)} />
                 <button onClick={calcWholesale}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-1 px-2 rounded-lg shadow-md">
+                  className="bg-indigo-600 text-white font-bold py-1 px-2 rounded-lg shadow-md">
                   Calcular %
                 </button>
               </div>
             </div>
           </div>
 
-          {/* Tabla de productos */}
-          <div className="overflow-x-auto bg-white rounded-lg shadow-lg border border-gray-200">
-            <table className="w-full min-w-[800px]">
-              <thead className="bg-gray-100">
-                <tr>
-                  {['ID', 'Nombre', 'Cantidad', 'Precio', 'Precio Mayorista', 'Total'].map((h, i) =>
-                    <th key={i} className="p-1 font-semibold text-center text-sm text-gray-600 uppercase tracking-wider border-b border-r border-gray-200 last:border-r-0">{h}</th>
-                  )}
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((r, i) => (
-                  <tr key={i} className="border-b border-gray-200 hover:bg-gray-50">
-                    <td className="p-1 border-r relative">
-                      <input type="text" className="w-full bg-transparent focus:outline-none"
-                        value={r.id} onChange={e => onCellChange(i, 'id', e.target.value)} />
-                      {dupIndices.includes(i) && (
-                        <div className="absolute bottom-1 right-1 text-red-500 cursor-pointer" onClick={() => handleDupClick(r.id)}>
-                          <TbAlertTriangleFilled />
-                        </div>
-                      )}
-                    </td>
-                    <td className="p-1 relative">
-                      <input type="text" className="w-full bg-transparent focus:outline-none"
-                        value={r.nombre} onChange={e => onCellChange(i, 'nombre', e.target.value)} />
-                      {simIndices.includes(i) && (
-                        <div className="absolute bottom-1 right-1 text-amber-500 cursor-pointer" onClick={handleSimClick}>
-                          <TbAlertTriangleFilled />
-                        </div>
-                      )}
-                    </td>
-                    {['cantidad', 'precio', 'precioMayorista'].map((f, j) =>
-                      <td key={j} className="p-1 border-l">
-                        <input type="number" className="w-full bg-transparent focus:outline-none"
-                          value={r[f]} onChange={e => onCellChange(i, f, e.target.value)} />
-                      </td>
+          <div className="pt-4">
+            {/* Tabla de productos */}
+            <div className="overflow-x-auto bg-white rounded-lg shadow-lg border border-gray-200">
+              <table className="w-full min-w-[800px]">
+                <thead className="bg-gray-100">
+                  <tr>
+                    {['ID', 'Nombre', 'Cantidad', 'Precio', 'Precio Mayorista', 'Total'].map((h, i) =>
+                      <th key={i} className="p-1 font-semibold text-center text-sm text-gray-600 uppercase tracking-wider border-b border-r border-gray-200 last:border-r-0">{h}</th>
                     )}
-                    <td className="p-1 border-l text-center text-sm text-gray-700 relative">
-                      {r.valorInventario ?? ''}
-                      {r.valorInventario && (
-                        <span className="absolute top-1 right-1 text-gray-400" title="Calculado">
-                          <TbAlertTriangleFilled className="inline text-[12px]" />
-                        </span>
-                      )}
-                    </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {rows.map((r, i) => (
+                    <tr key={i} className="border-b border-gray-200 hover:bg-gray-50">
+                      <td className="p-1 border-r relative">
+                        <input type="text" className="w-full bg-transparent focus:outline-none"
+                          value={r.id} onChange={e => onCellChange(i, 'id', e.target.value)} />
+                        {dupIndices.includes(i) && (
+                          <div className="absolute bottom-1 right-1 text-red-500 cursor-pointer" onClick={() => handleDupClick(r.id)}>
+                            <TbAlertTriangleFilled />
+                          </div>
+                        )}
+                      </td>
+                      <td className="p-1 relative">
+                        <input type="text" className="w-full bg-transparent focus:outline-none"
+                          value={r.nombre} onChange={e => onCellChange(i, 'nombre', e.target.value)} />
+                        {simIndices.includes(i) && (
+                          <div className="absolute bottom-1 right-1 text-amber-500 cursor-pointer" onClick={handleSimClick}>
+                            <TbAlertTriangleFilled />
+                          </div>
+                        )}
+                      </td>
+                      {['cantidad', 'precio', 'precioMayorista'].map((f, j) =>
+                        <td key={j} className="p-1 border-l">
+                          <input type="number" className="w-full bg-transparent focus:outline-none"
+                            value={r[f]} onChange={e => onCellChange(i, f, e.target.value)} />
+                        </td>
+                      )}
+                      <td className="p-1 border-l text-center text-sm text-gray-700 relative">
+                        {r.valorInventario ?? ''}
+                        {r.valorInventario && r.calculated && (
+                          <span className="absolute top-1 right-1 text-gray-400" title="Calculado">
+                            <TbAlertTriangleFilled className="inline text-[12px]" />
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Modales */}
+            {dupAlert.show && (
+              <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+                <div className="bg-white rounded-xl shadow-2xl p-4 max-w-md text-center">
+                  <h3 className="text-xl font-bold mb-2">ID Duplicado</h3>
+                  <p className="text-gray-600">El ID “{dupAlert.id}” está repetido en filas {dupIndices.map(i => i + 1).join(', ')}.</p>
+                  <button onClick={closeDup} className="mt-4 bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded-lg">Entendido</button>
+                </div>
+              </div>
+            )}
+            {simAlert.show && (
+              <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+                <div className="bg-white rounded-xl shadow-2xl p-4 max-w-lg">
+                  <h3 className="text-xl font-bold mb-2">Nombres Similares</h3>
+                  <ul className="list-disc pl-5 text-gray-600">
+                    {simAlert.group.map(i =>
+                      <li key={i}>Fila {i + 1}: "{rows[i].nombre}"</li>
+                    )}
+                  </ul>
+                  <button onClick={closeSim} className="mt-4 bg-amber-600 hover:bg-amber-700 text-white py-1 px-3 rounded-lg">Entendido</button>
+                </div>
+              </div>
+            )}
           </div>
-
-          {/* Modales */}
-          {dupAlert.show && (
-            <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-              <div className="bg-white rounded-xl shadow-2xl p-4 max-w-md text-center">
-                <h3 className="text-xl font-bold mb-2">ID Duplicado</h3>
-                <p className="text-gray-600">El ID “{dupAlert.id}” está repetido en filas {dupIndices.map(i => i + 1).join(', ')}.</p>
-                <button onClick={closeDup} className="mt-4 bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded-lg">Entendido</button>
-              </div>
-            </div>
-          )}
-          {simAlert.show && (
-            <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-              <div className="bg-white rounded-xl shadow-2xl p-4 max-w-lg">
-                <h3 className="text-xl font-bold mb-2">Nombres Similares</h3>
-                <ul className="list-disc pl-5 text-gray-600">
-                  {simAlert.group.map(i =>
-                    <li key={i}>Fila {i + 1}: "{rows[i].nombre}"</li>
-                  )}
-                </ul>
-                <button onClick={closeSim} className="mt-4 bg-amber-600 hover:bg-amber-700 text-white py-1 px-3 rounded-lg">Entendido</button>
-              </div>
-            </div>
-          )}
-
         </div>
       </main>
     </>
