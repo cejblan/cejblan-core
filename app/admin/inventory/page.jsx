@@ -413,7 +413,7 @@ export default function InventarioPage() {
               <div className="ml-auto flex items-center gap-1">
                 <label htmlFor="wholesalePercent" className="text-sm font-medium text-gray-700">Precio Mayorista (%):</label>
                 <input id="wholesalePercent" type="number" placeholder="Ej: 80"
-                  className="w-24 p-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-10 p-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   value={pct} onChange={e => setPct(e.target.value)} />
                 <button onClick={calcWholesale}
                   className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold p-1 rounded-lg shadow-md">
