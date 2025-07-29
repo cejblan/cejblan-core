@@ -226,13 +226,16 @@ export default function InventarioPage() {
       }]
     }).then(async handle => {
       try {
-        const cleanRows = rows.map(r => ({
-          id: r.id ?? '',
-          nombre: r.nombre ?? '',
-          cantidad: r.cantidad ?? '',
-          precio: r.precio ?? '',
-          precioMayorista: r.precioMayorista ?? ''
-        }));
+        const cleanRows = rows
+          .filter(r => !r.nombre?.toLowerCase().includes('eliminar'))
+          .map(r => ({
+            id: r.id ?? '',
+            nombre: r.nombre ?? '',
+            cantidad: r.cantidad ?? '',
+            precio: r.precio ?? '',
+            precioMayorista: r.precioMayorista ?? '',
+            valorInventario: r.valorInventario ?? ''
+          }));
 
         const res = await fetch('/api/inventory/export', {
           method: 'POST',
