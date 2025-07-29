@@ -454,7 +454,7 @@ export default function InventarioPage() {
                 : {}
             }
           >
-            <div className="text-sm flex flex-wrap gap-1 items-center justify-start p-1">
+            <div className="text-sm flex flex-wrap gap-1 items-center justify-center p-1">
               <button
                 onClick={() => setRows(rs => [
                   ...rs,
@@ -510,12 +510,12 @@ export default function InventarioPage() {
               </button>
               <div className="ml-auto flex items-center gap-1">
                 <label htmlFor="wholesalePercent" className="text-sm font-medium text-gray-700">Precio Mayorista (%):</label>
-                <input id="wholesalePercent" type="number" placeholder="Ej: 80"
-                  className="w-10 p-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                <input id="wholesalePercent" type="number" placeholder="Ej:80"
+                  className="w-8 p-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   value={pct} onChange={e => setPct(e.target.value)} />
                 <button onClick={calcWholesale}
                   className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold p-1 rounded-lg shadow-md">
-                  Calcular %
+                  Calcular
                 </button>
               </div>
             </div>
