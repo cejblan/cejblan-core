@@ -648,7 +648,7 @@ export default function InventarioPage() {
             {/* Modales */}
             {dupAlert.show && (
               <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-                <div className="bg-white rounded-xl shadow-2xl p-4 max-w-md text-center">
+                <div className="bg-white rounded-xl shadow-2xl p-4 max-w-lg text-center">
                   <h3 className="text-xl font-bold mb-2">ID Duplicado</h3>
                   <p className="text-gray-600">El ID “{dupAlert.id}” está repetido en filas {dupIndices.map(i => i + 1).join(', ')}.</p>
                   <button onClick={closeDup} className="mt-4 bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded-lg">Entendido</button>
@@ -710,7 +710,7 @@ export default function InventarioPage() {
             )}
             {showEmptyModal && (
               <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-                <div className="bg-white rounded-xl shadow-2xl p-4 max-w-md text-center">
+                <div className="bg-white rounded-xl shadow-2xl p-4 max-w-lg text-center">
                   <h3 className="text-xl font-bold mb-2">Sin datos</h3>
                   <p className="text-gray-600 text-sm">
                     No hay productos cargados para guardar. Importa o añade al menos un producto antes de guardar.
