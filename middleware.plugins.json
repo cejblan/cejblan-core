@@ -4,6 +4,10 @@
     "vendedor",
     "desarrollador"
   ],
+  "/admin/inventory": [
+    "admin",
+    "desarrollador"
+  ],
   "/admin/shipments": [],
   "/admin/telegram": [
     "admin",
