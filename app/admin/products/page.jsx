@@ -18,6 +18,19 @@ export default function ProductsPageAdmin() {
   const [showBs, setShowBs] = useState(false)
   const [format, setFormat] = useState("tabla")
   const [configOpen, setConfigOpen] = useState(false)
+
+  // Estados para configuraciones adicionales
+  const [fontH2, setFontH2] = useState("15px")
+  const [fontTitle, setFontTitle] = useState("9px")
+  const [fontTextXS, setFontTextXS] = useState("9px")
+  const [fontTable, setFontTable] = useState("12px")
+  const [gridColumns, setGridColumns] = useState("grid4")
+  const [showQuantity, setShowQuantity] = useState(true)
+
+  // Secciones del modal
+  const sections = ["Generales", "Fuentes", "Tabla", "Cuadrícula"]
+  const [activeSection, setActiveSection] = useState("Generales")
+
   const itemsPerPage = 12
   const dialogRef = useRef(null)
 
@@ -26,9 +39,14 @@ export default function ProductsPageAdmin() {
   }, [])
 
   useEffect(() => {
-    if (configOpen && dialogRef.current) dialogRef.current.style.overflow = "hidden"
-    else if (dialogRef.current) dialogRef.current.style.overflow = "auto"
-    return () => { if (dialogRef.current) dialogRef.current.style.overflow = "auto" }
+    if (configOpen && dialogRef.current) {
+      dialogRef.current.style.overflow = "hidden"
+    } else if (dialogRef.current) {
+      dialogRef.current.style.overflow = "auto"
+    }
+    return () => {
+      if (dialogRef.current) dialogRef.current.style.overflow = "auto"
+    }
   }, [configOpen])
 
   const handleProductSelect = (product) => {
@@ -58,9 +76,8 @@ export default function ProductsPageAdmin() {
 
     const clonedContent = printContent.cloneNode(true)
     const images = clonedContent.querySelectorAll("img")
-
-    const preloadImages = Array.from(images).map((img) => {
-      return new Promise((resolve) => {
+    const preloadImages = Array.from(images).map((img) =>
+      new Promise((resolve) => {
         const src = img.getAttribute("src") || ImageNotSupported.src
         fetch(src)
           .then((res) => res.blob())
@@ -75,10 +92,9 @@ export default function ProductsPageAdmin() {
           })
           .catch(resolve)
       })
-    })
+    )
 
     Promise.all(preloadImages).then(() => {
-      // Crear iframe oculto
       const iframe = document.createElement("iframe")
       iframe.style.position = "fixed"
       iframe.style.right = "0"
@@ -89,22 +105,47 @@ export default function ProductsPageAdmin() {
       document.body.appendChild(iframe)
 
       const doc = iframe.contentDocument || iframe.contentWindow.document
-
       const styles = `
         <style>
           @media print {
             @page { margin: 20mm; }
             body { -webkit-print-color-adjust: exact; background: white; }
           }
-          table { border-collapse: collapse; width: 100%; font-size: 14px; }
-          th, td { border: 1px solid #d1d5db; padding: 3px; text-align: center; }
-          h2 { font-size: 20px; font-weight: bold; margin-bottom: 16px; text-align: center; }
-          .grid { display: grid; gap: 16px; }
+          table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: ${fontTable};
+          }
+          th, td {
+            border: 1px solid #d1d5db;
+            padding: 3px;
+            text-align: center;
+          }
+          h2 {
+            font-size: ${fontH2};
+            font-weight: bold;
+            margin-bottom: 9px;
+            text-align: center;
+            margin-top: -12px;
+          }
+          .grid { display: grid; gap: 9px; }
           .grid4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-          .card { border: 1px solid #e5e7eb; padding: 8px; border-radius: 8px; text-align: center; background-color: #ffffff; }
-          .img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; margin-bottom: 8px; }
-          .title { font-weight: 600; font-size: 14px; }
-          .text-xs { font-size: 12px; color: #374151; padding: 0px; margin: 0px; }
+          .grid5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+          .card {
+            border: 1px solid #e5e7eb;
+            padding: 6px;
+            border-radius: 6px;
+            text-align: center;
+            background-color: #ffffff;
+          }
+          .img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; margin-bottom: 3px; }
+          .title { font-weight: 600; font-size: ${fontTitle}; }
+          .text-xs {
+            font-size: ${fontTextXS};
+            color: #374151;
+            padding: 0;
+            margin: 0;
+          }
         </style>
       `
 
@@ -120,11 +161,7 @@ export default function ProductsPageAdmin() {
       iframe.onload = () => {
         iframe.contentWindow.focus()
         iframe.contentWindow.print()
-
-        // Eliminar iframe luego de imprimir
-        setTimeout(() => {
-          document.body.removeChild(iframe)
-        }, 1000)
+        setTimeout(() => document.body.removeChild(iframe), 1000)
       }
     })
   }
@@ -132,6 +169,7 @@ export default function ProductsPageAdmin() {
   return (
     <>
       <Titulos texto="Lista de Productos" />
+
       <div className="flex gap-1 pb-4">
         <div className="max-w-md ml-auto my-auto">
           <SearchProduct onSelectProduct={handleProductSelect} onSearchQueryChange={setSearchQuery} />
@@ -142,66 +180,213 @@ export default function ProductsPageAdmin() {
               <Button>Ver Catálogo</Button>
             </DialogTrigger>
             <DialogContent ref={dialogRef} className="max-w-6xl max-h-[90vh] overflow-y-auto">
-              <div className="flex gap-1 items-center">
-                <DialogTitle></DialogTitle>
+              <div className="flex gap-1 items-center mb-4">
+                <DialogTitle />
                 <Button variant="outline" onClick={() => setConfigOpen(true)}>Configuración</Button>
                 <Button onClick={handlePrint}>Imprimir</Button>
               </div>
 
               {configOpen && (
-                <div className="fixed inset-0 z-50 flex justify-center items-center bg-black/40 backdrop-blur-sm">
-                  <div className="bg-white p-6 rounded-lg shadow-6xl w-full max-w-md relative">
-                    <button onClick={() => setConfigOpen(false)} className="absolute top-2 right-4 text-gray-500 hover:text-black">✕</button>
-                    <h2 className="text-lg font-semibold mb-4">Configuración de Catálogo</h2>
-                    <label className="flex items-center gap-2 mb-4">
-                      <input type="checkbox" checked={showBs} onChange={(e) => setShowBs(e.target.checked)} />
-                      Mostrar precios en bolívares (tasa BCV)
-                    </label>
-                    <label className="block mb-2 font-medium">Formato de impresión</label>
-                    <select value={format} onChange={(e) => setFormat(e.target.value)} className="w-full border rounded px-3 py-2">
-                      <option value="tabla">Tabla</option>
-                      <option value="cuadricula">Cuadrícula</option>
-                    </select>
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+                  <div className="bg-white rounded-lg shadow-lg w-11/12 max-w-4xl h-4/5 flex overflow-hidden">
+                    {/* Sidebar de secciones */}
+                    <aside className="w-1/4 bg-gray-100 p-4 overflow-y-auto border-r">
+                      <h3 className="font-semibold mb-4">Secciones</h3>
+                      <div className="space-y-2 text-sm">
+                        {sections.map((sec) => (
+                          <div
+                            key={sec}
+                            onClick={() => setActiveSection(sec)}
+                            className={`cursor-pointer p-2 rounded ${activeSection === sec ? "bg-blue-200 font-semibold" : ""
+                              }`}
+                          >
+                            {sec}
+                          </div>
+                        ))}
+                      </div>
+                    </aside>
+
+                    {/* Contenido de sección */}
+                    <div className="w-3/4 p-6 overflow-y-auto relative">
+                      <button
+                        onClick={() => setConfigOpen(false)}
+                        className="absolute top-4 right-4 text-gray-500 hover:text-black"
+                      >
+                        ✕
+                      </button>
+                      <h2 className="text-xl font-semibold mb-6">Configuración de Catálogo</h2>
+
+                      {/* Generales */}
+                      {activeSection === "Generales" && (
+                        <div className="space-y-4">
+                          <label className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={showBs}
+                              onChange={(e) => setShowBs(e.target.checked)}
+                            />
+                            Mostrar precios en bolívares (tasa BCV)
+                          </label>
+                          <label className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={showQuantity}
+                              onChange={(e) => setShowQuantity(e.target.checked)}
+                            />
+                            Mostrar columna de cantidad
+                          </label>
+                          <label className="block font-medium">Formato de impresión</label>
+                          <select
+                            value={format}
+                            onChange={(e) => setFormat(e.target.value)}
+                            className="w-full border rounded px-3 py-2"
+                          >
+                            <option value="tabla">Tabla</option>
+                            <option value="cuadricula">Cuadrícula</option>
+                          </select>
+                        </div>
+                      )}
+
+                      {/* Fuentes */}
+                      {activeSection === "Fuentes" && (
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block font-medium">Tamaño de h2</label>
+                            <select
+                              value={fontH2}
+                              onChange={(e) => setFontH2(e.target.value)}
+                              className="w-full border rounded px-3 py-2"
+                            >
+                              <option value="9px">9px</option>
+                              <option value="12px">12px</option>
+                              <option value="15px">15px</option>
+                              <option value="18px">18px</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block font-medium">Tamaño de .title</label>
+                            <select
+                              value={fontTitle}
+                              onChange={(e) => setFontTitle(e.target.value)}
+                              className="w-full border rounded px-3 py-2"
+                            >
+                              <option value="9px">9px</option>
+                              <option value="12px">12px</option>
+                              <option value="15px">15px</option>
+                              <option value="18px">18px</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block font-medium">Tamaño de .text-xs</label>
+                            <select
+                              value={fontTextXS}
+                              onChange={(e) => setFontTextXS(e.target.value)}
+                              className="w-full border rounded px-3 py-2"
+                            >
+                              <option value="9px">9px</option>
+                              <option value="12px">12px</option>
+                              <option value="15px">15px</option>
+                              <option value="18px">18px</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block font-medium">Tamaño de texto de tabla</label>
+                            <select
+                              value={fontTable}
+                              onChange={(e) => setFontTable(e.target.value)}
+                              className="w-full border rounded px-3 py-2"
+                            >
+                              <option value="9px">9px</option>
+                              <option value="12px">12px</option>
+                              <option value="15px">15px</option>
+                              <option value="18px">18px</option>
+                            </select>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Tabla */}
+                      {activeSection === "Tabla" && (
+                        <div className="space-y-4">
+                          {/* Si en el futuro hay opciones propias de tabla, irían aquí */}
+                        </div>
+                      )}
+
+                      {/* Cuadrícula */}
+                      {activeSection === "Cuadrícula" && (
+                        <div>
+                          <label className="block font-medium">
+                            Columnas de la cuadrícula
+                          </label>
+                          <select
+                            value={gridColumns}
+                            onChange={(e) => setGridColumns(e.target.value)}
+                            className="w-full border rounded px-3 py-2"
+                          >
+                            <option value="grid4">4 columnas</option>
+                            <option value="grid5">5 columnas</option>
+                          </select>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
 
-              <div id="print-catalog" className="p-2 bg-white text-black text-sm leading-none">
+              {/* Catálogo para impresión */}
+              <div id="print-catalog" className="p-2 bg-white text-black">
                 <h2 className="text-xl font-bold mb-4">Catálogo de Productos</h2>
                 {format === "tabla" ? (
-                  <table className="w-full border border-collapse">
+                  <table className="w-full border-collapse text-center text-sm" style={{ fontSize: fontTable }}>
                     <thead>
                       <tr>
-                        <th className="border p-[3px]">Código</th>
-                        <th className="border p-[3px]">Nombre</th>
-                        <th className="border p-[3px]">Precio</th>
-                        <th className="border p-[3px]">Cantidad</th>
+                        <th className="border border-gray-300 p-[3px]">Código</th>
+                        <th className="border border-gray-300 p-[3px]">Nombre</th>
+                        <th className="border border-gray-300 p-[3px]">Precio</th>
+                        {showQuantity && <th className="border border-gray-300 p-[3px]">Cantidad</th>}
                       </tr>
                     </thead>
                     <tbody>
                       {products.map((p) => (
                         <tr key={p.id || p._id || p.name}>
-                          <td className="border p-[3px]">{p.id || "-"}</td>
-                          <td className="border p-[3px]">{p.name}</td>
-                          <td className="border p-[3px]">{showBs ? <PrecioProducto precio={parseFloat(p.price)} format={0} /> : `${p.price} $`}</td>
-                          <td className="border p-[3px]">{p.quantity ?? "-"}</td>
+                          <td className="border border-gray-300 p-[3px]">{p.id || "-"}</td>
+                          <td className="border border-gray-300 p-[3px]">{p.name}</td>
+                          <td className="border border-gray-300 p-[3px]">
+                            {showBs
+                              ? <PrecioProducto precio={parseFloat(p.price)} format={0} />
+                              : `${p.price} $`}
+                          </td>
+                          {showQuantity && <td className="border border-gray-300 p-[3px]">{p.quantity ?? "-"}</td>}
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 ) : (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 grid4">
+                  <div className={`grid grid-cols-2 md:grid-cols-4 gap-2 ${gridColumns}`}>
                     {products.map((p) => (
-                      <div key={p.id || p._id || p.name} className="card border p-2 rounded shadow text-center bg-white">
+                      <div
+                        key={p.id || p._id || p.name}
+                        className="card border p-2 rounded shadow text-center bg-white"
+                      >
                         <img
                           src={p.image || ImageNotSupported.src}
-                          onError={(e) => { e.target.src = ImageNotSupported.src }}
+                          onError={(e) => (e.target.src = ImageNotSupported.src)}
                           alt={p.name}
-                          className="img w-full aspect-square object-cover mb-2"
+                          className="img w-full aspect-square mb-2"
                         />
-                        <h4 className="title font-semibold text-sm">{p.name}</h4>
-                        <p className="text-xs">{showBs ? <PrecioProducto precio={parseFloat(p.price)} format={0} /> : `${p.price} $`}</p>
-                        <p className="text-xs">Cantidad: {p.quantity ?? "-"}</p>
+                        <h4 className="title font-semibold" style={{ fontSize: fontTitle }}>
+                          {p.name}
+                        </h4>
+                        <p className="text-xs" style={{ fontSize: fontTextXS }}>
+                          {showBs
+                            ? <PrecioProducto precio={parseFloat(p.price)} format={0} />
+                            : `${p.price} $`}
+                        </p>
+                        {showQuantity && (
+                          <p className="text-xs" style={{ fontSize: fontTextXS }}>
+                            Cantidad: {p.quantity ?? "-"}
+                          </p>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -212,16 +397,33 @@ export default function ProductsPageAdmin() {
         </div>
       </div>
 
-      <div className="grid max-[420px]:grid-cols-1 grid-cols-4 gap-1 justify-center items-center pb-4">
-        {currentProducts.map((product) => (<ProductCardAdmin key={product.id || product.__id || product.name} product={product} />))}
+      {/* Grid de productos */}
+      <div className="grid max-[420px]:grid-cols-1 grid-cols-4 gap-1 pb-4">
+        {currentProducts.map((product) => (
+          <ProductCardAdmin key={product.id || product._id || product.name} product={product} />
+        ))}
       </div>
 
+      {/* Paginación */}
       <div className="flex justify-center gap-4 mt-4">
-        <button onClick={handlePrevPage} disabled={currentPage === 1} className="px-2 py-1 bg-white rounded hover:bg-gray-300 disabled:opacity-50">Anterior</button>
-        <button onClick={handleNextPage} disabled={endIndex >= productosFiltrados.length} className="px-2 py-1 bg-white rounded hover:bg-gray-300 disabled:opacity-50">Siguiente</button>
+        <button
+          onClick={handlePrevPage}
+          disabled={currentPage === 1}
+          className="px-2 py-1 bg-white rounded hover:bg-gray-300 disabled:opacity-50"
+        >
+          Anterior
+        </button>
+        <button
+          onClick={handleNextPage}
+          disabled={endIndex >= productosFiltrados.length}
+          className="px-2 py-1 bg-white rounded hover:bg-gray-300 disabled:opacity-50"
+        >
+          Siguiente
+        </button>
       </div>
-
-      <p className="text-center font-bold mt-1 mx-auto w-fit">Página {currentPage} de {Math.ceil(productosFiltrados.length / itemsPerPage)}</p>
+      <p className="text-center font-bold mt-1">
+        Página {currentPage} de {Math.ceil(productosFiltrados.length / itemsPerPage)}
+      </p>
     </>
   )
 }
