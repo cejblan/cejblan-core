@@ -19,7 +19,6 @@ export default function ProductsPageAdmin() {
   const [format, setFormat] = useState("tabla")
   const [configOpen, setConfigOpen] = useState(false)
 
-  // Estados para configuraciones adicionales
   const [fontH2, setFontH2] = useState("15px")
   const [fontTitle, setFontTitle] = useState("9px")
   const [fontTextXS, setFontTextXS] = useState("9px")
@@ -27,23 +26,34 @@ export default function ProductsPageAdmin() {
   const [gridColumns, setGridColumns] = useState("grid4")
   const [showQuantity, setShowQuantity] = useState(true)
 
-  // Secciones del modal
-  const sections = ["Generales", "Fuentes", "Tabla", "Cuadrícula"]
-  const [activeSection, setActiveSection] = useState("Generales")
+  const [paddingCard, setPaddingCard] = useState("6px")
+  const [borderCard, setBorderCard] = useState("1px solid #e5e7eb")
+  const [radiusCard, setRadiusCard] = useState("6px")
+  const [gapGrid, setGapGrid] = useState("9px")
+
+  const [paddingTableCell, setPaddingTableCell] = useState("3px")
+  const [borderTableCell, setBorderTableCell] = useState("1px solid #d1d5db")
+
+  const [marginH2Top, setMarginH2Top] = useState("-12px")
+  const [marginH2Bottom, setMarginH2Bottom] = useState("9px")
+
+  const [paddingTextXs, setPaddingTextXs] = useState("0")
+  const [marginTextXs, setMarginTextXs] = useState("0")
 
   const itemsPerPage = 12
   const dialogRef = useRef(null)
+
+  const sections = ["Generales", "Fuentes", "Tabla", "Cuadrícula", "Tarjeta", "Encabezado", "Texto Secundario"]
+
+  const [activeSection, setActiveSection] = useState("Generales")
 
   useEffect(() => {
     LoadProducts(setProducts)
   }, [])
 
   useEffect(() => {
-    if (configOpen && dialogRef.current) {
-      dialogRef.current.style.overflow = "hidden"
-    } else if (dialogRef.current) {
-      dialogRef.current.style.overflow = "auto"
-    }
+    if (configOpen && dialogRef.current) dialogRef.current.style.overflow = "hidden"
+    else if (dialogRef.current) dialogRef.current.style.overflow = "auto"
     return () => {
       if (dialogRef.current) dialogRef.current.style.overflow = "auto"
     }
@@ -111,30 +121,22 @@ export default function ProductsPageAdmin() {
             @page { margin: 20mm; }
             body { -webkit-print-color-adjust: exact; background: white; }
           }
-          table {
-            border-collapse: collapse;
-            width: 100%;
-            font-size: ${fontTable};
-          }
-          th, td {
-            border: 1px solid #d1d5db;
-            padding: 3px;
-            text-align: center;
-          }
+          table { border-collapse: collapse; width: 100%; font-size: ${fontTable}; }
+          th, td { border: ${borderTableCell}; padding: ${paddingTableCell}; text-align: center; }
           h2 {
             font-size: ${fontH2};
             font-weight: bold;
-            margin-bottom: 9px;
+            margin-bottom: ${marginH2Bottom};
             text-align: center;
-            margin-top: -12px;
+            margin-top: ${marginH2Top};
           }
-          .grid { display: grid; gap: 9px; }
+          .grid { display: grid; gap: ${gapGrid}; }
           .grid4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
           .grid5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
           .card {
-            border: 1px solid #e5e7eb;
-            padding: 6px;
-            border-radius: 6px;
+            border: ${borderCard};
+            padding: ${paddingCard};
+            border-radius: ${radiusCard};
             text-align: center;
             background-color: #ffffff;
           }
@@ -143,8 +145,8 @@ export default function ProductsPageAdmin() {
           .text-xs {
             font-size: ${fontTextXS};
             color: #374151;
-            padding: 0;
-            margin: 0;
+            padding: ${paddingTextXs};
+            margin: ${marginTextXs};
           }
         </style>
       `
@@ -169,7 +171,6 @@ export default function ProductsPageAdmin() {
   return (
     <>
       <Titulos texto="Lista de Productos" />
-
       <div className="flex gap-1 pb-4">
         <div className="max-w-md ml-auto my-auto">
           <SearchProduct onSelectProduct={handleProductSelect} onSearchQueryChange={setSearchQuery} />
@@ -189,143 +190,115 @@ export default function ProductsPageAdmin() {
               {configOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
                   <div className="bg-white rounded-lg shadow-lg w-11/12 max-w-4xl h-4/5 flex overflow-hidden">
-                    {/* Sidebar de secciones */}
                     <aside className="w-1/4 bg-gray-100 p-4 overflow-y-auto border-r">
                       <h3 className="font-semibold mb-4">Secciones</h3>
                       <div className="space-y-2 text-sm">
-                        {sections.map((sec) => (
-                          <div
-                            key={sec}
-                            onClick={() => setActiveSection(sec)}
-                            className={`cursor-pointer p-2 rounded ${activeSection === sec ? "bg-blue-200 font-semibold" : ""
-                              }`}
-                          >
+                        {sections.map(sec => (
+                          <div key={sec} onClick={() => setActiveSection(sec)} className={`cursor-pointer p-2 rounded ${activeSection === sec ? 'bg-blue-200 font-semibold' : ''}`}>
                             {sec}
                           </div>
                         ))}
                       </div>
                     </aside>
-
-                    {/* Contenido de sección */}
                     <div className="w-3/4 p-6 overflow-y-auto relative">
-                      <button
-                        onClick={() => setConfigOpen(false)}
-                        className="absolute top-4 right-4 text-gray-500 hover:text-black"
-                      >
-                        ✕
-                      </button>
+                      <button onClick={() => setConfigOpen(false)} className="absolute top-4 right-4 text-gray-500 hover:text-black">✕</button>
                       <h2 className="text-xl font-semibold mb-6">Configuración de Catálogo</h2>
 
-                      {/* Generales */}
                       {activeSection === "Generales" && (
-                        <div className="space-y-4">
-                          <label className="flex items-center gap-2">
-                            <input
-                              type="checkbox"
-                              checked={showBs}
-                              onChange={(e) => setShowBs(e.target.checked)}
-                            />
-                            Mostrar precios en bolívares (tasa BCV)
+                        <div className="space-y-2">
+                          <label className="flex items-center gap-1">
+                            <input type="checkbox" checked={showBs} onChange={e => setShowBs(e.target.checked)} />
+                            Mostrar precios en bolívares
                           </label>
-                          <label className="flex items-center gap-2">
-                            <input
-                              type="checkbox"
-                              checked={showQuantity}
-                              onChange={(e) => setShowQuantity(e.target.checked)}
-                            />
+                          <label className="flex items-center gap-1">
+                            <input type="checkbox" checked={showQuantity} onChange={e => setShowQuantity(e.target.checked)} />
                             Mostrar columna de cantidad
                           </label>
-                          <label className="block font-medium">Formato de impresión</label>
-                          <select
-                            value={format}
-                            onChange={(e) => setFormat(e.target.value)}
-                            className="w-full border rounded px-3 py-2"
-                          >
+                          <label className="block font-medium">Formato</label>
+                          <select value={format} onChange={e => setFormat(e.target.value)} className="w-full border rounded px-2 py-1">
                             <option value="tabla">Tabla</option>
                             <option value="cuadricula">Cuadrícula</option>
                           </select>
                         </div>
                       )}
 
-                      {/* Fuentes */}
                       {activeSection === "Fuentes" && (
-                        <div className="space-y-4">
-                          <div>
-                            <label className="block font-medium">Tamaño de h2</label>
-                            <select
-                              value={fontH2}
-                              onChange={(e) => setFontH2(e.target.value)}
-                              className="w-full border rounded px-3 py-2"
-                            >
-                              <option value="9px">9px</option>
-                              <option value="12px">12px</option>
-                              <option value="15px">15px</option>
-                              <option value="18px">18px</option>
-                            </select>
-                          </div>
-                          <div>
-                            <label className="block font-medium">Tamaño de .title</label>
-                            <select
-                              value={fontTitle}
-                              onChange={(e) => setFontTitle(e.target.value)}
-                              className="w-full border rounded px-3 py-2"
-                            >
-                              <option value="9px">9px</option>
-                              <option value="12px">12px</option>
-                              <option value="15px">15px</option>
-                              <option value="18px">18px</option>
-                            </select>
-                          </div>
-                          <div>
-                            <label className="block font-medium">Tamaño de .text-xs</label>
-                            <select
-                              value={fontTextXS}
-                              onChange={(e) => setFontTextXS(e.target.value)}
-                              className="w-full border rounded px-3 py-2"
-                            >
-                              <option value="9px">9px</option>
-                              <option value="12px">12px</option>
-                              <option value="15px">15px</option>
-                              <option value="18px">18px</option>
-                            </select>
-                          </div>
-                          <div>
-                            <label className="block font-medium">Tamaño de texto de tabla</label>
-                            <select
-                              value={fontTable}
-                              onChange={(e) => setFontTable(e.target.value)}
-                              className="w-full border rounded px-3 py-2"
-                            >
-                              <option value="9px">9px</option>
-                              <option value="12px">12px</option>
-                              <option value="15px">15px</option>
-                              <option value="18px">18px</option>
-                            </select>
-                          </div>
+                        <div className="space-y-2">
+                          <label className="block font-medium">Tamaño de h2</label>
+                          <select value={fontH2} onChange={e => setFontH2(e.target.value)} className="w-full border rounded px-2 py-1">
+                            <option value="9px">9px</option>
+                            <option value="12px">12px</option>
+                            <option value="15px">15px</option>
+                            <option value="18px">18px</option>
+                          </select>
+                          <label className="block font-medium">.title</label>
+                          <select value={fontTitle} onChange={e => setFontTitle(e.target.value)} className="w-full border rounded px-2 py-1">
+                            <option value="9px">9px</option>
+                            <option value="12px">12px</option>
+                            <option value="15px">15px</option>
+                          </select>
+                          <label className="block font-medium">.text-xs</label>
+                          <select value={fontTextXS} onChange={e => setFontTextXS(e.target.value)} className="w-full border rounded px-2 py-1">
+                            <option value="9px">9px</option>
+                            <option value="12px">12px</option>
+                            <option value="15px">15px</option>
+                          </select>
+                          <label className="block font-medium">Tamaño de fuente</label>
+                          <select value={fontTable} onChange={e => setFontTable(e.target.value)} className="w-full border rounded px-2 py-1">
+                            <option value="9px">9px</option>
+                            <option value="12px">12px</option>
+                            <option value="15px">15px</option>
+                          </select>
                         </div>
                       )}
 
-                      {/* Tabla */}
                       {activeSection === "Tabla" && (
-                        <div className="space-y-4">
-                          {/* Si en el futuro hay opciones propias de tabla, irían aquí */}
+                        <div className="space-y-2">
+                          <label className="block font-medium">Padding</label>
+                          <input type="text" value={paddingTableCell} onChange={e => setPaddingTableCell(e.target.value)} className="w-full border rounded px-2 py-1" />
+                          <label className="block font-medium">Borde</label>
+                          <input type="text" value={borderTableCell} onChange={e => setBorderTableCell(e.target.value)} className="w-full border rounded px-2 py-1" />
                         </div>
                       )}
 
-                      {/* Cuadrícula */}
                       {activeSection === "Cuadrícula" && (
-                        <div>
-                          <label className="block font-medium">
-                            Columnas de la cuadrícula
-                          </label>
-                          <select
-                            value={gridColumns}
-                            onChange={(e) => setGridColumns(e.target.value)}
-                            className="w-full border rounded px-3 py-2"
-                          >
+                        <div className="space-y-2">
+                          <label className="block font-medium">Columnas</label>
+                          <select value={gridColumns} onChange={e => setGridColumns(e.target.value)} className="w-full border rounded px-2 py-1">
                             <option value="grid4">4 columnas</option>
                             <option value="grid5">5 columnas</option>
                           </select>
+                          <label className="block font-medium">Espaciado (gap)</label>
+                          <input type="text" value={gapGrid} onChange={e => setGapGrid(e.target.value)} className="w-full border rounded px-2 py-1" />
+                        </div>
+                      )}
+
+                      {activeSection === "Tarjeta" && (
+                        <div className="space-y-2">
+                          <label className="block font-medium">Padding</label>
+                          <input type="text" value={paddingCard} onChange={e => setPaddingCard(e.target.value)} className="w-full border rounded px-2 py-1" />
+                          <label className="block font-medium">Borde</label>
+                          <input type="text" value={borderCard} onChange={e => setBorderCard(e.target.value)} className="w-full border rounded px-2 py-1" />
+                          <label className="block font-medium">Radio del borde</label>
+                          <input type="text" value={radiusCard} onChange={e => setRadiusCard(e.target.value)} className="w-full border rounded px-2 py-1" />
+                        </div>
+                      )}
+
+                      {activeSection === "Encabezado" && (
+                        <div className="space-y-2">
+                          <label className="block font-medium">Margen superior</label>
+                          <input type="text" value={marginH2Top} onChange={e => setMarginH2Top(e.target.value)} className="w-full border rounded px-2 py-1" />
+                          <label className="block font-medium">Margen inferior</label>
+                          <input type="text" value={marginH2Bottom} onChange={e => setMarginH2Bottom(e.target.value)} className="w-full border rounded px-2 py-1" />
+                        </div>
+                      )}
+
+                      {activeSection === "Texto Secundario" && (
+                        <div className="space-y-2">
+                          <label className="block font-medium">Padding</label>
+                          <input type="text" value={paddingTextXs} onChange={e => setPaddingTextXs(e.target.value)} className="w-full border rounded px-2 py-1" />
+                          <label className="block font-medium">Margin</label>
+                          <input type="text" value={marginTextXs} onChange={e => setMarginTextXs(e.target.value)} className="w-full border rounded px-2 py-1" />
                         </div>
                       )}
                     </div>
@@ -362,7 +335,7 @@ export default function ProductsPageAdmin() {
                     </tbody>
                   </table>
                 ) : (
-                  <div className={`grid grid-cols-2 md:grid-cols-4 gap-2 ${gridColumns}`}>
+                  <div className={`grid grid-cols-2 md:grid-cols-4 gap-1 ${gridColumns}`}>
                     {products.map((p) => (
                       <div
                         key={p.id || p._id || p.name}
