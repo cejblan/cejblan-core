@@ -395,6 +395,41 @@ export default function InventarioPage() {
     });
   };
 
+  const handleLoadUsersFromDB = async () => {
+    try {
+      const res = await fetch("/api/admin/products?source=users");
+      if (!res.ok) throw new Error("Error al cargar productos");
+
+      const productos = await res.json();
+
+      if (!Array.isArray(productos)) throw new Error("Respuesta inválida");
+
+      const nuevos = productos.map((u, i) => {
+        const cantidad = parseFloat(u.quantity);
+        const precio = parseFloat(u.price);
+        const valorInventario = (!isNaN(cantidad) && !isNaN(precio))
+          ? (cantidad * precio).toFixed(2)
+          : '';
+
+        return {
+          id: formatId(u.id || i + 1),
+          nombre: u.name,
+          cantidad,
+          precio,
+          precioMayorista: parseFloat(u.wholesale_price) || 0,
+          valorInventario,
+          calculated: true,
+        };
+      });
+
+      setRows(nuevos);
+      setTimeout(() => runChecks(), 50);
+    } catch (e) {
+      console.error(e);
+      alert("Error cargando usuarios desde la base de datos: " + e.message);
+    }
+  };
+
   const handleSaveToDatabase = async () => {
     // 1️⃣ Prepara productosValidos (mapea campos y elimina ceros a la izquierda)
     const productosValidos = rows
@@ -537,7 +572,7 @@ export default function InventarioPage() {
               </button>
               <button onClick={() => filePDFRef.current.click()}
                 className="bg-yellow-600 hover:bg-yellow-700 text-white font-bold p-1 rounded-lg shadow-md">
-                Cargar Inventario A2
+                Cargar PDF A2
               </button>
               <input type="file" accept="application/pdf" ref={filePDFRef} className="hidden" onChange={onPDFChange} />
 
@@ -549,7 +584,13 @@ export default function InventarioPage() {
 
               <button onClick={handleSaveClick}
                 className="bg-teal-600  hover:bg-teal-700 text-white font-bold p-1 rounded-lg shadow-md">
-                Guardar como Excel
+                Guardar Excel
+              </button>
+              <button
+                onClick={handleLoadUsersFromDB}
+                className="bg-orange-600 hover:bg-orange-700 text-white font-bold p-1 rounded-lg shadow-md"
+              >
+                Cargar BD
               </button>
               <button
                 onClick={handleSaveToDatabase}
@@ -569,7 +610,6 @@ export default function InventarioPage() {
               <button onClick={() => setShowInfoModal(true)}
                 className="bg-gray-500 hover:bg-gray-600 text-white font-bold p-1 rounded-lg shadow-md flex items-center gap-1">
                 <TbInfoCircle className="text-lg" />
-                Info
               </button>
               <div className="ml-auto flex items-center gap-1">
                 <label htmlFor="wholesalePercent" className="text-sm font-medium text-gray-700">Precio Mayorista (%):</label>
@@ -648,7 +688,7 @@ export default function InventarioPage() {
             {/* Modales */}
             {dupAlert.show && (
               <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-                <div className="bg-white rounded-xl shadow-2xl p-4 max-w-md text-center">
+                <div className="bg-white rounded-xl shadow-2xl p-4 max-w-lg text-center">
                   <h3 className="text-xl font-bold mb-2">ID Duplicado</h3>
                   <p className="text-gray-600">El ID “{dupAlert.id}” está repetido en filas {dupIndices.map(i => i + 1).join(', ')}.</p>
                   <button onClick={closeDup} className="mt-4 bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded-lg">Entendido</button>
@@ -681,14 +721,17 @@ export default function InventarioPage() {
                     <p className="font-semibold mb-1">Botones disponibles:</p>
                     <ul className="list-disc list-inside space-y-1">
                       <li><b>➕ Agregar fila:</b> Agrega una nueva fila vacía a la tabla para que puedas escribir manualmente un producto.</li>
+                      <li><b>📄 Cargar PDF A2:</b> Sube un archivo PDF generado por A2 para convertirlo en productos.</li>
                       <li><b>📤 Cargar Excel:</b> Sube un archivo Excel con productos para analizar e importar.</li>
-                      <li><b>📄 Cargar Inventario A2:</b> Sube un archivo PDF generado por A2 para convertirlo en productos.</li>
+                      <li><b>📁 Guardar Excel:</b> Descarga los productos actuales como un archivo Excel.</li>
+                      <li><b>🧑‍💻 Cargar BD:</b> Consulta la base de datos para obtener la lista de usuarios y los carga como si fueran productos. Ideal para importar rápidamente datos de usuarios como inventario temporal.</li>
+                      <li><b>💾 Guardar BD:</b> Guarda los productos cargados en la base de datos.</li>
+                      <li><b>🔍 Analizar:</b> Revisa los productos cargados para detectar IDs duplicados o nombres similares (basado en sinónimos o errores comunes de escritura). Si encuentra problemas, mostrará un aviso.</li>
+                      <li><b>🧠 Información (i):</b> Abre este mensaje con la explicación del sistema.</li>
+                      <li><b>📊 Calcular:</b> A partir de un porcentaje definido, aplica ese valor sobre el precio de cada producto y lo guarda en la columna "Precio Mayorista". Por ejemplo, si pones 80%, cada precio se multiplica por 0.8.</li>
+                      <li><b>📝 Reemplazar productos:</b> En el modal de conflictos, este botón permite sobrescribir productos existentes.</li>
                       <li><b>⚠️ Ver productos duplicados:</b> Abre un modal que muestra productos con el mismo ID.</li>
                       <li><b>🤖 Ver productos similares:</b> Abre un modal con productos que tienen nombres parecidos o sinónimos.</li>
-                      <li><b>🧠 Información (i):</b> Abre este mensaje con la explicación del sistema.</li>
-                      <li><b>💾 Guardar en BD:</b> Guarda los productos cargados en la base de datos.</li>
-                      <li><b>📁 Guardar como Excel:</b> Descarga los productos actuales como un archivo Excel.</li>
-                      <li><b>📝 Reemplazar productos:</b> En el modal de conflictos, este botón permite sobrescribir productos existentes.</li>
                     </ul>
                   </div>
 
@@ -710,7 +753,7 @@ export default function InventarioPage() {
             )}
             {showEmptyModal && (
               <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-                <div className="bg-white rounded-xl shadow-2xl p-4 max-w-md text-center">
+                <div className="bg-white rounded-xl shadow-2xl p-4 max-w-lg text-center">
                   <h3 className="text-xl font-bold mb-2">Sin datos</h3>
                   <p className="text-gray-600 text-sm">
                     No hay productos cargados para guardar. Importa o añade al menos un producto antes de guardar.

@@ -147,7 +147,7 @@ export default function CMS() {
       {archivoSeleccionado && (<Editor file={archivoSeleccionado} contenido={contenidoArchivo} />)}
       {mostrandoHistorial && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
+          <div className="bg-white rounded-lg p-6 w-full max-w-lg shadow-lg">
             <h2 className="text-lg font-semibold mb-4">Historial de versiones</h2>
             <div className="flex gap-2 items-center">
               <select
@@ -231,7 +231,7 @@ export default function CMS() {
       )}
       {mostrandoErrorMerge && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-          <div className="bg-white border-4 border-red-800 p-6 rounded-lg w-full max-w-md shadow-2xl">
+          <div className="bg-white border-4 border-red-800 p-6 rounded-lg w-full max-w-lg shadow-2xl">
             <h2 className="text-xl font-bold text-red-800 mb-4">🛑 Error Grave</h2>
             <p className="text-sm text-gray-700 whitespace-pre-line mb-6">{errorMerge}</p>
             <div className="text-right">
