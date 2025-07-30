@@ -145,8 +145,8 @@ export default function ProductsPageAdmin() {
           .text-xs {
             font-size: ${fontTextXS};
             color: #374151;
-            padding: ${paddingTextXs};
-            margin: ${marginTextXs};
+            padding: ${paddingTextXs} !important;
+            margin: ${marginTextXs} !important;
           }
         </style>
       `
@@ -224,30 +224,33 @@ export default function ProductsPageAdmin() {
 
                       {activeSection === "Fuentes" && (
                         <div className="space-y-2">
-                          <label className="block font-medium">Tamaño de h2</label>
+                          <label className="block font-medium">Tamaño Titulo</label>
                           <select value={fontH2} onChange={e => setFontH2(e.target.value)} className="w-full border rounded px-2 py-1">
                             <option value="9px">9px</option>
                             <option value="12px">12px</option>
                             <option value="15px">15px</option>
                             <option value="18px">18px</option>
                           </select>
-                          <label className="block font-medium">.title</label>
+                          <label className="block font-medium">Tamaño Nombre</label>
                           <select value={fontTitle} onChange={e => setFontTitle(e.target.value)} className="w-full border rounded px-2 py-1">
                             <option value="9px">9px</option>
                             <option value="12px">12px</option>
                             <option value="15px">15px</option>
+                            <option value="18px">18px</option>
                           </select>
-                          <label className="block font-medium">.text-xs</label>
+                          <label className="block font-medium">Tamaño Cantidad y Precio</label>
                           <select value={fontTextXS} onChange={e => setFontTextXS(e.target.value)} className="w-full border rounded px-2 py-1">
                             <option value="9px">9px</option>
                             <option value="12px">12px</option>
                             <option value="15px">15px</option>
+                            <option value="18px">18px</option>
                           </select>
-                          <label className="block font-medium">Tamaño de fuente</label>
+                          <label className="block font-medium">Tamaño Tabla</label>
                           <select value={fontTable} onChange={e => setFontTable(e.target.value)} className="w-full border rounded px-2 py-1">
                             <option value="9px">9px</option>
                             <option value="12px">12px</option>
                             <option value="15px">15px</option>
+                            <option value="18px">18px</option>
                           </select>
                         </div>
                       )}
@@ -308,7 +311,16 @@ export default function ProductsPageAdmin() {
 
               {/* Catálogo para impresión */}
               <div id="print-catalog" className="p-2 bg-white text-black">
-                <h2 className="text-xl font-bold mb-4">Catálogo de Productos</h2>
+                <h2
+                  className="font-bold mb-4 text-center"
+                  style={{
+                    fontSize: fontH2,
+                    marginTop: marginH2Top,
+                    marginBottom: marginH2Bottom
+                  }}
+                >
+                  Catálogo de Productos
+                </h2>
                 {format === "tabla" ? (
                   <table className="w-full border-collapse text-center text-sm" style={{ fontSize: fontTable }}>
                     <thead>
@@ -335,7 +347,14 @@ export default function ProductsPageAdmin() {
                     </tbody>
                   </table>
                 ) : (
-                  <div className={`grid grid-cols-2 md:grid-cols-4 gap-1 ${gridColumns}`}>
+                  <div
+                    className="grid gap-1"
+                    style={{
+                      gridTemplateColumns: gridColumns === "grid5"
+                        ? "repeat(5, minmax(0, 1fr))"
+                        : "repeat(4, minmax(0, 1fr))"
+                    }}
+                  >
                     {products.map((p) => (
                       <div
                         key={p.id || p._id || p.name}
@@ -350,13 +369,27 @@ export default function ProductsPageAdmin() {
                         <h4 className="title font-semibold" style={{ fontSize: fontTitle }}>
                           {p.name}
                         </h4>
-                        <p className="text-xs" style={{ fontSize: fontTextXS }}>
+                        <p
+                          className="text-xs"
+                          style={{
+                            fontSize: fontTextXS,
+                            padding: paddingTextXs,
+                            margin: marginTextXs
+                          }}
+                        >
                           {showBs
                             ? <PrecioProducto precio={parseFloat(p.price)} format={0} />
                             : `${p.price} $`}
                         </p>
                         {showQuantity && (
-                          <p className="text-xs" style={{ fontSize: fontTextXS }}>
+                          <p
+                            className="text-xs"
+                            style={{
+                              fontSize: fontTextXS,
+                              padding: paddingTextXs,
+                              margin: marginTextXs
+                            }}
+                          >
                             Cantidad: {p.quantity ?? "-"}
                           </p>
                         )}
