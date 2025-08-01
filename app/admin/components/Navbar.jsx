@@ -16,6 +16,8 @@ import { VscTriangleLeft, VscSettings } from "react-icons/vsc";
 import { GrGallery } from "react-icons/gr";
 import { LiaConnectdevelop } from "react-icons/lia";
 import { LuPackageOpen } from "react-icons/lu";
+import { BsPlugin } from "react-icons/bs";
+import { IoIosArrowBack } from "react-icons/io";
 import Image from "next/image";
 import Loading from "@/components/editable/Loading";
 import Link from "next/link";
@@ -45,8 +47,9 @@ const MAIN_ITEMS = [
 
 export default function NavbarAdmin({ children, plugins = [] }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isOpenTwo, setIsOpenTwo] = useState(false);
-  const [isOpenThree, setIsOpenThree] = useState(false);
+  const [isOpenTwo, setIsOpenTwo] = useState(false); // "Nuevo"
+  const [isOpenThree, setIsOpenThree] = useState(false); // Sesión
+  const [isOpenPluginMenu, setIsOpenPluginMenu] = useState(false); // Plugins
 
   const [loadedPlugins, setLoadedPlugins] = useState([]);
 
@@ -137,7 +140,7 @@ export default function NavbarAdmin({ children, plugins = [] }) {
             </h1>
           </Link>
 
-          {role !== "vendedor" && (
+          {role !== "vendedor" && role !== "delivery" && (
             <div onClick={handleNewMenuClick} className="p-1 relative">
               <FaPlus className={`hover:fill-[#6ed8bf] w-3 h-3 ${isOpenTwo ? "rotate-45" : ""}`} />
               {isOpenTwo && (
@@ -197,26 +200,32 @@ export default function NavbarAdmin({ children, plugins = [] }) {
               {isActive(href, match) && <VscTriangleLeft className="text-slate-200 ml-auto w-3 h-3" />}
             </Link>
           ))}
-
-          {plugins.length > 0 && (
+          {(role !== "vendedor" && role !== "delivery") && loadedPlugins.length > 0 && (
             <>
-              {/*<h3 className="text-xs text-center text-gray-400 p-1 uppercase border-t border-slate-600">Plugins</h3>*/}
-              {loadedPlugins
-                .filter(plugin => {
-                  if (!plugin.role) return true; // Sin restricción, mostrar a todos
+              <button
+                onClick={() => setIsOpenPluginMenu(prev => !prev)}
+                className="hover:bg-slate-600 hover:text-[#6ed8bf] py-1 pl-1 border-t border-slate-600 flex items-center w-full"
+              >
+                <BsPlugin className="mr-1 w-2 h-2" />
+                <h3>Plugins</h3>
+                <IoIosArrowBack
+                  className={`text-slate-200 ml-auto w-3 h-3 transition-transform duration-200 ${isOpenPluginMenu ? "-rotate-90" : ""}`}
+                />
+              </button>
 
-                  // Convertir a array si es string, limpiando espacios y pasando a minúsculas
+              {isOpenPluginMenu && loadedPlugins
+                .filter(plugin => {
+                  if (!plugin.role) return true;
                   const allowedRoles = Array.isArray(plugin.role)
                     ? plugin.role.map(r => r.toLowerCase())
                     : plugin.role.split(",").map(r => r.trim().toLowerCase());
-
-                  return allowedRoles.includes(role); // 'role' es minúscula del usuario
+                  return allowedRoles.includes(role);
                 })
                 .map(plugin => (
                   <Link
                     key={plugin.slug}
                     href={`/admin/${plugin.slug}`}
-                    className={`hover:bg-slate-600 hover:text-[#6ed8bf] py-1 pl-1 border-t border-slate-600 flex items-center ${pathname.startsWith(`/admin/plugins/${plugin.slug}`) ? "bg-slate-700" : ""}`}
+                    className={`hover:bg-slate-600 hover:text-[#6ed8bf] py-1 pl-2 border-t border-slate-600 flex items-center ${pathname.startsWith(`/admin/${plugin.slug}`) ? "bg-slate-700" : ""}`}
                   >
                     {plugin.Icon && <plugin.Icon className="mr-1 w-2 h-2" />}
                     <h3>{plugin.name}</h3>
@@ -225,7 +234,6 @@ export default function NavbarAdmin({ children, plugins = [] }) {
             </>
           )}
         </div>
-
         <section className="bg-slate-200 p-2 w-full min-h-[calc(100vh-2.5rem)] overflow-y-auto relative transition-all duration-300">
           {children}
         </section>
