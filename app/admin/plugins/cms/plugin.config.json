@@ -1,0 +1,7 @@
+{
+  "name": "CMS",
+  "version": "1.0.0",
+  "description": "Editar páginas del sitio directamente desde el panel, con control de versiones en GitHub.",
+  "icon": "RiPaintBrushFill",
+  "iconLib": "ri"
+}
