@@ -1,0 +1,8 @@
+{
+  "name": "Monedas",
+  "version": "1.0.0",
+  "description": "Permite calcular los precios en base a una tasa de cambio",
+  "icon": "PiCoinsFill",
+  "iconLib": "pi",
+  "role": ["Admin", "Vendedor", "Desarrollador"]
+}

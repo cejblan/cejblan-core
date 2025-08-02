@@ -5,11 +5,11 @@ import { loadIcon } from "@/utils/loadIcon";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
-import { FaPlus, FaTelegram, FaSignOutAlt, FaHome } from "react-icons/fa";
+import { FaPlus, FaSignOutAlt, FaHome } from "react-icons/fa";
 import { AiFillDashboard, AiFillShopping } from "react-icons/ai";
 import { IoPersonSharp } from "react-icons/io5";
-import { MdCategory, MdDeliveryDining, MdBorderColor } from "react-icons/md";
-import { PiBlueprintFill, PiCoinsFill, PiCurrencyDollarSimpleFill } from "react-icons/pi";
+import { MdCategory, MdBorderColor } from "react-icons/md";
+import { PiCurrencyDollarSimpleFill } from "react-icons/pi";
 import { RiPaintBrushFill } from "react-icons/ri";
 import { TiThMenu } from "react-icons/ti";
 import { VscTriangleLeft, VscSettings } from "react-icons/vsc";
@@ -38,7 +38,6 @@ const MAIN_ITEMS = [
   { href: "/admin/payments", label: "Pagos", icon: PiCurrencyDollarSimpleFill, match: /^\/admin\/payments/ },
   { href: "/admin/deliveries", label: "Entregas", icon: LuPackageOpen, match: /^\/admin\/deliveries/ },
   { href: "/admin/orders", label: "Pedidos", icon: MdBorderColor, match: /^\/admin\/orders/ },
-  { href: "/admin/coins", label: "Monedas", icon: PiCoinsFill, match: /^\/admin\/coins/ },
   { href: "/admin/gallery", label: "Galeria", icon: GrGallery, match: /^\/admin\/gallery/ },
   { href: "/admin/cms", label: "CMS", icon: RiPaintBrushFill, match: /^\/admin\/cms/ },
   { href: "/admin/settings", label: "Configurar", icon: VscSettings, match: /^\/admin\/settings/ },
