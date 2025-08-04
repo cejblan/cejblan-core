@@ -51,9 +51,18 @@ export default function NavbarAdmin({ children, plugins = [] }) {
   const [loadedPlugins, setLoadedPlugins] = useState([]);
 
   useEffect(() => {
+    if (!plugins || plugins.length === 0) {
+      setLoadedPlugins([]);
+      return;
+    }
+
     async function fetchPluginIcons() {
       const pluginsWithIcons = await Promise.all(
         plugins.map(async plugin => {
+          if (!plugin.iconLib || !plugin.icon) {
+            console.warn("Plugin sin icono válido:", plugin);
+            return { ...plugin, Icon: null };
+          }
           const Icon = await loadIcon({ lib: plugin.iconLib, name: plugin.icon });
           return {
             ...plugin,
@@ -67,8 +76,21 @@ export default function NavbarAdmin({ children, plugins = [] }) {
     fetchPluginIcons();
   }, [plugins]);
 
-  const { data: session, status } = useSession();
   const pathname = usePathname();
+
+  useEffect(() => {
+    if (!loadedPlugins || loadedPlugins.length === 0) return;
+
+    const isPluginPath = loadedPlugins.some(plugin =>
+      pathname.startsWith(`/admin/${plugin.slug}`)
+    );
+
+    if (isPluginPath) {
+      setIsOpenPluginMenu(true);
+    }
+  }, [loadedPlugins, pathname]);
+
+  const { data: session, status } = useSession();
   const role = session?.user?.role?.toLowerCase();
 
   const isActive = (href, match) =>
@@ -106,16 +128,6 @@ export default function NavbarAdmin({ children, plugins = [] }) {
       return false;
     });
   };
-
-  plugins.map(async plugin => {
-    if (!plugin.iconLib || !plugin.icon) {
-      console.warn("Plugin sin icono válido:", plugin);
-      return { ...plugin, Icon: null };
-    }
-
-    const Icon = await loadIcon({ lib: plugin.iconLib, name: plugin.icon });
-    return { ...plugin, Icon };
-  });
 
   return (
     <>
@@ -183,7 +195,7 @@ export default function NavbarAdmin({ children, plugins = [] }) {
 
       <div className="pt-5 flex transition-all duration-300">
         <div
-          className={`bg-slate-800 text-white text-left text-sm transition-all duration-300 overflow-y-auto ${isOpen ? "w-fit min-w-[7.8rem]" : "w-0 min-w-0"
+          className={`bg-slate-800 text-white text-left text-sm transition-all duration-300 overflow-y-auto ${isOpen ? "w-20" : "w-0"
             }`}
         >
           {getVisibleItems().map(({ href, label, icon: Icon, match }) => (
@@ -201,7 +213,7 @@ export default function NavbarAdmin({ children, plugins = [] }) {
             <>
               <button
                 onClick={() => setIsOpenPluginMenu(prev => !prev)}
-                className="hover:bg-slate-600 hover:text-[#6ed8bf] py-1 pl-1 border-t border-slate-600 flex items-center w-full"
+                className="hover:bg-slate-600 hover:text-[#6ed8bf] py-[6px] pl-1 border-t border-slate-600 flex items-center w-full"
               >
                 <BsPlugin className="mr-1 w-2 h-2" />
                 <h3>Plugins</h3>
@@ -218,16 +230,21 @@ export default function NavbarAdmin({ children, plugins = [] }) {
                     : plugin.role.split(",").map(r => r.trim().toLowerCase());
                   return allowedRoles.includes(role);
                 })
-                .map(plugin => (
-                  <Link
-                    key={plugin.slug}
-                    href={`/admin/${plugin.slug}`}
-                    className={`text-xs hover:bg-slate-600 hover:text-[#6ed8bf] py-[6px] pl-3 border-t border-slate-600 flex items-center ${pathname.startsWith(`/admin/${plugin.slug}`) ? "bg-slate-700" : ""}`}
-                  >
-                    {plugin.Icon && <plugin.Icon className="mr-1 w-2 h-2" />}
-                    <h3>{plugin.name}</h3>
-                  </Link>
-                ))}
+                .map(plugin => {
+                  const isActive = pathname.startsWith(`/admin/${plugin.slug}`);
+                  return (
+                    <Link
+                      key={plugin.slug}
+                      href={`/admin/${plugin.slug}`}
+                      className={`text-xs hover:bg-slate-600 hover:text-[#6ed8bf] py-[6px] pl-3 border-t border-slate-600 flex items-center ${isActive ? "bg-slate-700" : ""
+                        }`}
+                    >
+                      {plugin.Icon && <plugin.Icon className="mr-1 w-2 h-2" />}
+                      <h3>{plugin.name}</h3>
+                      {isActive && <VscTriangleLeft className="text-slate-200 ml-auto w-2 h-2" />}
+                    </Link>
+                  );
+                })}
             </>
           )}
         </div>
