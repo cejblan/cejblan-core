@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import TruncateCart from "@/app/admin/components/TruncateCart";
 import TruncateWishlist from "@/app/admin/components/TruncateWishlist";
 import Titulos from "@/components/editable/Titulos";
@@ -13,6 +13,8 @@ export default function Developer() {
   const [modoEdicion, setModoEdicion] = useState(false)
   const [nombreEditando, setNombreEditando] = useState("")
 
+  const formularioRef = useRef(null) // 👈 referencia al formulario
+
   const registrarConfiguracion = async () => {
     if (!nuevoNombre || !nuevoValor) {
       return alert('Debes completar al menos "name" y "value"')
@@ -20,18 +22,20 @@ export default function Developer() {
 
     try {
       if (modoEdicion) {
-        // === MODO ACTUALIZACIÓN ===
         const res = await fetch("/api/admin/settings", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: nombreEditando, value: nuevoValor }),
+          body: JSON.stringify({
+            name: nombreEditando,
+            value: nuevoValor,
+            description: nuevoDescription,
+          }),
         })
 
         if (!res.ok) throw new Error("Error al actualizar configuración")
         alert("Configuración actualizada")
 
       } else {
-        // === MODO NUEVO ===
         const formDescription = new FormData()
         formDescription.append("name", nuevoNombre)
         formDescription.append("value", nuevoValor)
@@ -46,7 +50,6 @@ export default function Developer() {
         alert("Configuración registrada")
       }
 
-      // Reset y recarga
       setNuevoNombre("")
       setNuevoValor("")
       setNuevoDescription("")
@@ -90,7 +93,10 @@ export default function Developer() {
       </div>
 
       {/* Formulario nueva configuración */}
-      <div className="bg-gray-100 p-4 border rounded-xl shadow-6xl mt-6 space-y-4">
+      <div
+        ref={formularioRef} // 👈 referencia aplicada aquí
+        className="bg-gray-100 p-4 border rounded-xl shadow-6xl mt-6 space-y-4"
+      >
         <h2 className="text-lg font-semibold">{modoEdicion ? "Actualizar configuración" : "Registrar nueva configuración"}</h2>
         <input
           type="text"
@@ -98,6 +104,7 @@ export default function Developer() {
           className="w-full p-2 border rounded"
           value={nuevoNombre}
           onChange={(e) => setNuevoNombre(e.target.value)}
+          disabled={modoEdicion}
         />
         <input
           type="text"
@@ -168,6 +175,7 @@ export default function Developer() {
                             setNuevoNombre(item.name)
                             setNuevoValor(item.value)
                             setNuevoDescription(item.description || "")
+                            formularioRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }) // 👈 hace scroll al formulario
                           }}
                         >
                           Editar
