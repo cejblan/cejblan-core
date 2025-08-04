@@ -51,9 +51,18 @@ export default function NavbarAdmin({ children, plugins = [] }) {
   const [loadedPlugins, setLoadedPlugins] = useState([]);
 
   useEffect(() => {
+    if (!plugins || plugins.length === 0) {
+      setLoadedPlugins([]);
+      return;
+    }
+  
     async function fetchPluginIcons() {
       const pluginsWithIcons = await Promise.all(
         plugins.map(async plugin => {
+          if (!plugin.iconLib || !plugin.icon) {
+            console.warn("Plugin sin icono válido:", plugin);
+            return { ...plugin, Icon: null };
+          }
           const Icon = await loadIcon({ lib: plugin.iconLib, name: plugin.icon });
           return {
             ...plugin,
@@ -63,9 +72,9 @@ export default function NavbarAdmin({ children, plugins = [] }) {
       );
       setLoadedPlugins(pluginsWithIcons);
     }
-
+  
     fetchPluginIcons();
-  }, [plugins]);
+  }, [plugins]);  
 
   const { data: session, status } = useSession();
   const pathname = usePathname();
@@ -106,16 +115,6 @@ export default function NavbarAdmin({ children, plugins = [] }) {
       return false;
     });
   };
-
-  plugins.map(async plugin => {
-    if (!plugin.iconLib || !plugin.icon) {
-      console.warn("Plugin sin icono válido:", plugin);
-      return { ...plugin, Icon: null };
-    }
-
-    const Icon = await loadIcon({ lib: plugin.iconLib, name: plugin.icon });
-    return { ...plugin, Icon };
-  });
 
   return (
     <>
