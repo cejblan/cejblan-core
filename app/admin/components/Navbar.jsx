@@ -190,11 +190,11 @@ export default function NavbarAdmin({ children, plugins = [] }) {
             <Link
               key={href}
               href={href}
-              className={`${isActive(href, match) ? "bg-slate-700" : ""} hover:bg-slate-600 hover:text-[#6ed8bf] py-1 pl-1 border-t border-slate-600 flex items-center`}
+              className={`${isActive(href, match) ? "bg-slate-700" : ""} hover:bg-slate-600 hover:text-[#6ed8bf] py-[6px] pl-1 border-t border-slate-600 flex items-center`}
             >
               <Icon className="mr-1 w-2 h-2" />
               <h3>{label}</h3>
-              {isActive(href, match) && <VscTriangleLeft className="text-slate-200 ml-auto w-3 h-3" />}
+              {isActive(href, match) && <VscTriangleLeft className="text-slate-200 ml-auto w-2 h-2" />}
             </Link>
           ))}
           {(role !== "vendedor" && role !== "delivery") && loadedPlugins.length > 0 && (
@@ -206,7 +206,7 @@ export default function NavbarAdmin({ children, plugins = [] }) {
                 <BsPlugin className="mr-1 w-2 h-2" />
                 <h3>Plugins</h3>
                 <IoIosArrowBack
-                  className={`text-slate-200 ml-auto w-3 h-3 transition-transform duration-200 ${isOpenPluginMenu ? "-rotate-90" : ""}`}
+                  className={`text-slate-200 ml-auto w-2 h-2 transition-transform duration-200 ${isOpenPluginMenu ? "-rotate-90" : ""}`}
                 />
               </button>
 
@@ -222,7 +222,7 @@ export default function NavbarAdmin({ children, plugins = [] }) {
                   <Link
                     key={plugin.slug}
                     href={`/admin/${plugin.slug}`}
-                    className={`hover:bg-slate-600 hover:text-[#6ed8bf] py-1 pl-2 border-t border-slate-600 flex items-center ${pathname.startsWith(`/admin/${plugin.slug}`) ? "bg-slate-700" : ""}`}
+                    className={`text-xs hover:bg-slate-600 hover:text-[#6ed8bf] py-[6px] pl-3 border-t border-slate-600 flex items-center ${pathname.startsWith(`/admin/${plugin.slug}`) ? "bg-slate-700" : ""}`}
                   >
                     {plugin.Icon && <plugin.Icon className="mr-1 w-2 h-2" />}
                     <h3>{plugin.name}</h3>

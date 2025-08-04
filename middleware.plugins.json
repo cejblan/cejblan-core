@@ -1,4 +1,13 @@
 {
+  "/admin/cms": [
+    "admin",
+    "desarrollador"
+  ],
+  "/admin/coins": [
+    "admin",
+    "vendedor",
+    "desarrollador"
+  ],
   "/admin/delivery-note": [
     "admin",
     "vendedor",
@@ -8,7 +17,12 @@
     "admin",
     "desarrollador"
   ],
-  "/admin/shipments": [],
+  "/admin/shipments": [
+    "delivery",
+    "vendedor",
+    "admin",
+    "desarrollador"
+  ],
   "/admin/telegram": [
     "admin",
     "vendedor",
