@@ -5,7 +5,6 @@ import { signIn, useSession, signOut } from "next-auth/react";
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import Logo from "public/nuevo_logo_cejblan2.webp"
 import { TiThMenu, TiTimes } from "react-icons/ti";
 import { PiMagnifyingGlassBold } from "react-icons/pi";
 import { FaCartShopping, FaBookOpen } from "react-icons/fa6";
@@ -21,6 +20,21 @@ import SearchBar from "./SearchBar";
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { data: session, status } = useSession();
+  const logo_sitio = session?.user.logo_sitio;
+  let colores = [];
+
+  try {
+    const paleta_colores = session?.user?.paleta_colores;
+    if (paleta_colores) {
+      const parsed = JSON.parse(paleta_colores);
+      if (Array.isArray(parsed)) {
+        colores = parsed;
+      }
+    }
+  } catch (error) {
+    console.error("Error al parsear paleta_colores:", error);
+  }
+
   const pathname = usePathname();
   const [onClick, setOnClick] = useState(false);
   const handleClick = () => {
@@ -64,7 +78,14 @@ export default function Navbar() {
   return (
     // ===START_RETURN===
     <DoNotShowAdmin>
-      <nav id="navAdmin" className="bg-gradient-to-b from-[#0A192F] to-[#6ed8bf] text-[#F8F8F8] text-xl font-bold justify-center items-center grid max-[420px]:grid-cols-6 grid-cols-12 gap-1 py-1 px-2 shadow-8xl h-9 w-full z-30 fixed">
+      <nav
+        id="navAdmin"
+        style={{
+          backgroundImage: `linear-gradient(to bottom, ${colores[2] || '#1e293b'}, ${colores[0] || '#6ed8bf'})`,
+          color: colores[4] || '#f3f4f6',
+        }}
+        className="text-xl font-bold justify-center items-center grid max-[420px]:grid-cols-6 grid-cols-12 gap-1 py-1 px-2 shadow-8xl h-9 w-full z-30 fixed"
+      >
         {session?.user ?
           <>
             <div className="burger max-[420px]:m-auto col-start-1 col-end-1 justify-center items-center" onClick={handleClick}>
@@ -141,7 +162,7 @@ export default function Navbar() {
         }
         <Link href="/" className="max-[420px]:col-start-2 max-[420px]:col-end-6 col-start-5 col-end-9 z-10">
           <div className="flex">
-            <Image className="m-auto max-[420px]:w-full w-3/5 h-3/5" src={Logo} alt={`Logo ${process.env.NEXT_PUBLIC_SITE_NAME}`} width={200} height={200} />
+            <Image className="m-auto max-[420px]:w-full w-3/5 h-3/5" src={logo_sitio} alt={`Logo ${process.env.NEXT_PUBLIC_SITE_NAME}`} width={200} height={200} />
           </div>
         </Link>
         {session?.user ? (
