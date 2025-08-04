@@ -55,7 +55,7 @@ export default function NavbarAdmin({ children, plugins = [] }) {
       setLoadedPlugins([]);
       return;
     }
-  
+
     async function fetchPluginIcons() {
       const pluginsWithIcons = await Promise.all(
         plugins.map(async plugin => {
@@ -72,12 +72,25 @@ export default function NavbarAdmin({ children, plugins = [] }) {
       );
       setLoadedPlugins(pluginsWithIcons);
     }
-  
+
     fetchPluginIcons();
-  }, [plugins]);  
+  }, [plugins]);
+
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (!loadedPlugins || loadedPlugins.length === 0) return;
+
+    const isPluginPath = loadedPlugins.some(plugin =>
+      pathname.startsWith(`/admin/${plugin.slug}`)
+    );
+
+    if (isPluginPath) {
+      setIsOpenPluginMenu(true);
+    }
+  }, [loadedPlugins, pathname]);
 
   const { data: session, status } = useSession();
-  const pathname = usePathname();
   const role = session?.user?.role?.toLowerCase();
 
   const isActive = (href, match) =>
