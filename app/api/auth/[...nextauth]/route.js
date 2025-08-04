@@ -45,19 +45,23 @@ const handler = NextAuth({
 
           token.role = role[0]?.rol || null;
 
-          // Configuraciones
+          // Configuraciones generales
           const [settings] = await conexion.query(
-            "SELECT name, value FROM settings WHERE name IN (?, ?)",
-            ["conversion_activa", "conversion_moneda"]
+            "SELECT name, value FROM settings WHERE name IN (?, ?, ?, ?)",
+            ["conversion_activa", "conversion_moneda", "logo_sitio", "paleta_colores"]
           );
 
           const activa = settings.find(s => s.name === "conversion_activa");
           const moneda = settings.find(s => s.name === "conversion_moneda");
+          const logo = settings.find(s => s.name === "logo_sitio");
+          const paleta = settings.find(s => s.name === "paleta_colores");
 
           token.conversion_activa = activa?.value === "true";
           token.conversion_moneda = moneda?.value || "USD";
+          token.logo_sitio = logo?.value || null;
+          token.paleta_colores = paleta?.value || null;
 
-          // Tasa (moneda debe venir definida arriba)
+          // Tasa de conversión
           const [tasa] = await conexion.query(
             "SELECT valor FROM coins WHERE moneda = ? LIMIT 1",
             [token.conversion_moneda]
@@ -65,14 +69,13 @@ const handler = NextAuth({
 
           token.tasa_conversion = tasa[0]?.valor ?? null;
 
-          // Obtener los IDs favoritos
+          // Wishlist
           const [wishlistItems] = await conexion.query(
             "SELECT id FROM wishlist WHERE customer = ?",
             [token.email]
           );
           const productIds = wishlistItems.map(w => w.id);
 
-          // Obtener detalles de los productos
           let wishlist = [];
           if (productIds.length > 0) {
             const [products] = await conexion.query(
@@ -83,7 +86,6 @@ const handler = NextAuth({
           }
 
           token.wishlist = wishlist;
-
         }
       } catch (error) {
         console.error("Error en jwt callback:", error);
@@ -96,6 +98,8 @@ const handler = NextAuth({
       session.user.conversion_moneda = token.conversion_moneda;
       session.user.tasa_conversion = token.tasa_conversion;
       session.user.wishlist = token.wishlist;
+      session.user.logo_sitio = token.logo_sitio;
+      session.user.paleta_colores = token.paleta_colores;
 
       return session;
     },
