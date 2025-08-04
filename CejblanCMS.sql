@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.2
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: bbgcbcnrrmonslx6dtaj-mysql.services.clever-cloud.com:3306
--- Tiempo de generación: 24-06-2025 a las 18:17:37
+-- Tiempo de generación: 04-08-2025 a las 18:36:18
 -- Versión del servidor: 8.4.2-2
--- Versión de PHP: 8.2.28
+-- Versión de PHP: 8.2.29
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -72,8 +72,8 @@ CREATE TABLE `coins` (
 --
 
 INSERT INTO `coins` (`id`, `moneda`, `valor`, `fecha`) VALUES
-(1, 'USD', 101.08, '2025-06-13 17:08:35'),
-(2, 'EUR', 117.08, '2025-06-13 17:10:00');
+(1, 'USD', 108.18, '2025-07-01 12:40:20'),
+(2, 'EUR', 127.13, '2025-07-01 12:40:33');
 
 -- --------------------------------------------------------
 
@@ -93,9 +93,11 @@ CREATE TABLE `deliveries` (
 --
 
 INSERT INTO `deliveries` (`id`, `name`, `data`, `status`) VALUES
-(0001, 'Delivery', 'Gratis (Condicion)', 'Activado'),
-(0002, 'Retiro 1', 'Direccion', 'Activado'),
-(0003, 'Retiro 2', 'Direccion', 'Activado');
+(0001, 'Delivery Guatire', '2', 'Activado'),
+(0002, 'Delivery Araira', '5', 'Activado'),
+(0003, 'Delivery Guarenas', '5', 'Activado'),
+(0004, 'Retiro 1', 'Direccion', 'Activado'),
+(0005, 'Retiro 2', 'Direccion', 'Activado');
 
 -- --------------------------------------------------------
 
@@ -112,8 +114,10 @@ CREATE TABLE `orders` (
   `email` varchar(33) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `phoneNumber` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `paymentMethod` varchar(33) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `delivery` int UNSIGNED DEFAULT NULL,
   `deliveryMethod` varchar(33) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `deliveryMethodData` varchar(99) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `deliveryDate` datetime DEFAULT NULL,
   `address` varchar(99) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `latitude` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `longitude` varchar(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -144,7 +148,26 @@ INSERT INTO `payments` (`id`, `name`, `data`, `status`) VALUES
 (0001, 'Pago Móvil', 'Datos', 'Desactivado'),
 (0002, 'Transferencia', 'Datos', 'Activado'),
 (0003, 'Efectivo', 'Bolívares', 'Activado'),
-(0004, 'Dólares', 'Dólares', 'Activado');
+(0004, 'Dólares', 'Dólares', 'Activado'),
+(0005, 'Euros', 'Euros', 'Desactivado');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `plugins_marketplace`
+--
+
+CREATE TABLE `plugins_marketplace` (
+  `id` int NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `slug` varchar(100) NOT NULL,
+  `icon` varchar(10) DEFAULT NULL,
+  `author_id` int NOT NULL,
+  `description` text,
+  `file_path` varchar(255) DEFAULT NULL,
+  `approved` tinyint(1) DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -153,13 +176,15 @@ INSERT INTO `payments` (`id`, `name`, `data`, `status`) VALUES
 --
 
 CREATE TABLE `products` (
-  `id` int(4) UNSIGNED ZEROFILL NOT NULL,
+  `id` int NOT NULL,
+  `code_bill` varchar(18) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `name` varchar(201) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` varchar(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `price` decimal(4,2) NOT NULL,
+  `price` decimal(5,2) NOT NULL,
+  `wholesale_price` decimal(5,2) DEFAULT NULL,
   `iva` int DEFAULT NULL,
-  `category` varchar(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `quantity` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `category` varchar(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `quantity` int NOT NULL,
   `image` varchar(201) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -200,7 +225,27 @@ INSERT INTO `settings` (`id`, `name`, `description`, `value`) VALUES
 (2, 'conversion_moneda', 'Define cuál moneda base se usará para la conversión a Bs', 'USD'),
 (3, 'nombre_tienda', 'Registro para editar el nombre de la tienda en la factura', 'CejblanCMS'),
 (4, 'rif_tienda', 'Registro para editar el RIF de la tienda en la factura', 'RIF por defecto'),
-(5, 'direccion_tienda', 'Registro para editar la dirección de la tienda en la factura', 'Dirección por defecto');
+(5, 'direccion_tienda', 'Registro para editar la dirección de la tienda en la factura', 'Dirección por defecto'),
+(6, 'paleta_colores', 'Paleta de colores del sitio web elegida por el usuario', '[\"#6ed8bf\",\"#4bb199\",\"#1e293b\",\"#ffffff\",\"#f3f4f6\",\"#e2e8f0\"]'),
+(7, 'logo_sitio', 'Logo de la aplicación', 'https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/nuevo_logo_cejblan2.webp'),
+(8, 'working_hours', 'Horario de trabajo', '09:00-17:00'),
+(9, 'delivery_hours', 'Horas permitidas para el Delivery', '12:00,18:00'),
+(10, 'free_delivery', 'Limite de costo para aplicar el Delivery Gratis', '5'),
+(11, 'free_delivery_activated', 'Delivery Gratis Activado o Desactivado', 'Activado');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `telegram_messages`
+--
+
+CREATE TABLE `telegram_messages` (
+  `id` int NOT NULL,
+  `chat_id` bigint NOT NULL,
+  `text` text NOT NULL,
+  `from_bot` tinyint(1) NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -233,7 +278,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `image`, `rol`, `phoneCode`, `phoneNumber`, `phoneCodeDos`, `phoneNumberDos`, `address`, `latitude`, `longitude`, `code`, `expiresAt`, `chatId`, `verified`, `date`) VALUES
-(0001, 'cejblan', 'cejblan@gmail.com', NULL, 'Desarrollador', 414, 2245444, NULL, NULL, 'Guatire', '10.4722296', '-66.5419982', NULL, NULL, '6039953539', 1, '2024-11-20 00:09:57');
+(0001, 'cejblan', 'cejblan@gmail.com', '', 'Desarrollador', 414, NULL, NULL, NULL, 'Guatire', '10.4722296', '-66.5419982', NULL, NULL, NULL, 0, '2024-11-20 00:09:57'),
+(0002, 'Nanci Quintero Amaricua', 'namaricua35@gmail.com', '', 'Admin', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, '2025-07-09 13:06:16');
 
 -- --------------------------------------------------------
 
@@ -245,14 +291,6 @@ CREATE TABLE `wishlist` (
   `id` int(4) UNSIGNED ZEROFILL NOT NULL,
   `customer` varchar(33) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Volcado de datos para la tabla `wishlist`
---
-
-INSERT INTO `wishlist` (`id`, `customer`) VALUES
-(0002, 'cejblan@gmail.com'),
-(0001, 'cejblan@gmail.com');
 
 --
 -- Índices para tablas volcadas
@@ -290,6 +328,13 @@ ALTER TABLE `payments`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indices de la tabla `plugins_marketplace`
+--
+ALTER TABLE `plugins_marketplace`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `slug` (`slug`);
+
+--
 -- Indices de la tabla `products`
 --
 ALTER TABLE `products`
@@ -307,6 +352,12 @@ ALTER TABLE `qualification`
 ALTER TABLE `settings`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `name` (`name`);
+
+--
+-- Indices de la tabla `telegram_messages`
+--
+ALTER TABLE `telegram_messages`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indices de la tabla `users`
@@ -335,7 +386,7 @@ ALTER TABLE `coins`
 -- AUTO_INCREMENT de la tabla `deliveries`
 --
 ALTER TABLE `deliveries`
-  MODIFY `id` int(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `orders`
@@ -347,13 +398,19 @@ ALTER TABLE `orders`
 -- AUTO_INCREMENT de la tabla `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `id` int(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT de la tabla `plugins_marketplace`
+--
+ALTER TABLE `plugins_marketplace`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=432;
 
 --
 -- AUTO_INCREMENT de la tabla `qualification`
@@ -365,13 +422,19 @@ ALTER TABLE `qualification`
 -- AUTO_INCREMENT de la tabla `settings`
 --
 ALTER TABLE `settings`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT de la tabla `telegram_messages`
+--
+ALTER TABLE `telegram_messages`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
