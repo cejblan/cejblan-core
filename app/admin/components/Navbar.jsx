@@ -213,7 +213,7 @@ export default function NavbarAdmin({ children, plugins = [] }) {
             <>
               <button
                 onClick={() => setIsOpenPluginMenu(prev => !prev)}
-                className="hover:bg-slate-600 hover:text-[#6ed8bf] py-1 pl-1 border-t border-slate-600 flex items-center w-full"
+                className="hover:bg-slate-600 hover:text-[#6ed8bf] py-[6px] pl-1 border-t border-slate-600 flex items-center w-full"
               >
                 <BsPlugin className="mr-1 w-2 h-2" />
                 <h3>Plugins</h3>
