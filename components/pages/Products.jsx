@@ -56,7 +56,7 @@ export default function ProductsComponent() {
           Siguiente
         </button>
       </div>
-      <p className="text-white text-center font-bold mt-1 mx-auto w-fit">
+      <p className="text-white text-center font-bold pb-2 mt-1 mx-auto w-fit">
         Página {currentPage} de {Math.ceil(products.length / itemsPerPage)}
       </p>
     </div>
