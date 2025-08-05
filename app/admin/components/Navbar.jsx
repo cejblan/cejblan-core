@@ -5,7 +5,7 @@ import { loadIcon } from "@/utils/loadIcon";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
-import { FaPlus, FaSignOutAlt, FaHome } from "react-icons/fa";
+import { FaPlus, FaSignOutAlt, FaHome, FaPaintBrush } from "react-icons/fa";
 import { AiFillDashboard, AiFillShopping } from "react-icons/ai";
 import { IoPersonSharp } from "react-icons/io5";
 import { MdCategory, MdBorderColor } from "react-icons/md";
@@ -38,6 +38,7 @@ const MAIN_ITEMS = [
   { href: "/admin/deliveries", label: "Entregas", icon: LuPackageOpen, match: /^\/admin\/deliveries/ },
   { href: "/admin/orders", label: "Pedidos", icon: MdBorderColor, match: /^\/admin\/orders/ },
   { href: "/admin/gallery", label: "Galeria", icon: GrGallery, match: /^\/admin\/gallery/ },
+  { href: "/admin/themes", label: "Temas", icon: FaPaintBrush, match: /^\/admin\/themes/ },
   { href: "/admin/settings", label: "Configurar", icon: VscSettings, match: /^\/admin\/settings/ },
   { href: "/admin/developer", label: "Desarrollar", icon: LiaConnectdevelop, match: /^\/admin\/developer/ },
 ];
