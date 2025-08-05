@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import { usePathname } from "next/navigation";
 import { signIn, useSession, signOut } from "next-auth/react";
@@ -33,13 +33,13 @@ export default function Navbar() {
     return { backgroundColor: pathname === href ? palette[5] : palette[4] };
   }
   function urlStyleActive(href) {
-    return pathname === href ? { backgroundColor: "#1e293b" } : {}; // slate-800
+    return pathname === href ? { backgroundColor: palette[5] } : {};
   }
 
   if (status === "loading" || loading) return <Loading zIndex={50} />;
 
-  // ===START_RETURN===
   return (
+    // ===START_RETURN===
     <DoNotShowAdmin>
       <nav
         id="navAdmin"
@@ -59,13 +59,13 @@ export default function Navbar() {
               <Hoverable
                 as={TiThMenu}
                 className={`w-4 h-4 ${isOpen ? "hidden" : ""}`}
-                hoverStyle={{ fill: "#1e293b" }} // slate-800 original
+                hoverStyle={{ fill: palette[5] }}
                 cursor="pointer"
               />
               <Hoverable
                 as={TiTimes}
                 className={`w-4 h-4 ${isOpen ? "" : "hidden"}`}
-                hoverStyle={{ fill: "#1e293b" }}
+                hoverStyle={{ fill: palette[5] }}
                 cursor="pointer"
               />
 
@@ -88,9 +88,9 @@ export default function Navbar() {
                   >
                     <Hoverable
                       as="p"
-                      className="rounded-xl px-2 flex justify-center items-center hover:text-[#6ed8bf]"
+                      className="rounded-xl px-2 flex justify-center items-center"
                       style={urlStyle(item.href)}
-                      hoverStyle={{ color: "#6ed8bf" }} // verde turquesa original
+                      hoverStyle={{ color: palette[0] }}
                     >
                       {item.label} <span className="ml-1">{item.icon}</span>
                     </Hoverable>
@@ -101,7 +101,7 @@ export default function Navbar() {
                   as="button"
                   className="rounded-xl px-2 flex justify-center items-center"
                   style={urlStyle("/signout")}
-                  hoverStyle={{ color: "#6ed8bf" }}
+                  hoverStyle={{ color: palette[0] }}
                   onClick={() => signOut({ callbackUrl: "/" })}
                 >
                   Cerrar Sesión <FaSignOutAlt className="ml-1" />
@@ -115,7 +115,7 @@ export default function Navbar() {
                 as="p"
                 className="rounded-xl"
                 style={urlStyleActive("/wishlist")}
-                hoverStyle={{ borderColor: "#6ed8bf" }}
+                hoverStyle={{ borderColor: palette[0] }}
               >
                 Favoritos <IoIosHeart className="m-auto w-4 h-4" />
               </Hoverable>
@@ -127,7 +127,7 @@ export default function Navbar() {
                 as="p"
                 className="rounded-xl w-4/5"
                 style={urlStyleActive("/cart")}
-                hoverStyle={{ borderColor: "#6ed8bf" }}
+                hoverStyle={{ borderColor: palette[0] }}
               >
                 Carrito <FaCartShopping className="m-auto w-4 h-4" />
               </Hoverable>
@@ -137,7 +137,7 @@ export default function Navbar() {
           <Hoverable
             as="button"
             className="max-[420px]:text-sm text-2xl col-start-1 max-[420px]:col-end-2 col-end-3 flex justify-center items-center"
-            hoverStyle={{ color: "#6ed8bf", borderColor: "#6ed8bf" }}
+            hoverStyle={{ color: palette[0], borderColor: palette[0] }}
             onClick={() => signIn()}
           >
             <p className="max-[420px]:leading-3 leading-6 rounded-xl">Iniciar Sesión</p>
@@ -168,8 +168,8 @@ export default function Navbar() {
               <Hoverable
                 as="div"
                 className="text-4xl py-0.5 pl-1 pr-0.5 rounded-full shadow-6xl w-6 h-6"
-                style={{ backgroundColor: "#4b5563" }}            // slate-600
-                hoverStyle={{ backgroundColor: "#6b7280" }}          // slate-500
+                style={{ backgroundColor: palette[4] }}
+                hoverStyle={{ backgroundColor: palette[3] }}
               >
                 <Link href="/admin">
                   <MdAdminPanelSettings />
@@ -192,7 +192,7 @@ export default function Navbar() {
             {onClick && <SearchBar />}
             <Hoverable
               as="button"
-              hoverStyle={{ fill: "#6ed8bf" }}
+              hoverStyle={{ fill: palette[0] }}
               onClick={Open}
             >
               <PiMagnifyingGlassBold className="w-4 h-4" />
@@ -202,6 +202,6 @@ export default function Navbar() {
       </nav>
       <div className="h-9" />
     </DoNotShowAdmin>
+    // ===END_RETURN===
   );
-  // ===END_RETURN===
 }
