@@ -47,19 +47,15 @@ const handler = NextAuth({
 
           // Configuraciones generales
           const [settings] = await conexion.query(
-            "SELECT name, value FROM settings WHERE name IN (?, ?, ?, ?)",
-            ["conversion_activa", "conversion_moneda", "logo_sitio", "paleta_colores"]
+            "SELECT name, value FROM settings WHERE name IN (?, ?)",
+            ["conversion_activa", "conversion_moneda"]
           );
 
           const activa = settings.find(s => s.name === "conversion_activa");
           const moneda = settings.find(s => s.name === "conversion_moneda");
-          const logo = settings.find(s => s.name === "logo_sitio");
-          const paleta = settings.find(s => s.name === "paleta_colores");
 
           token.conversion_activa = activa?.value === "true";
           token.conversion_moneda = moneda?.value || "USD";
-          token.logo_sitio = logo?.value || null;
-          token.paleta_colores = paleta?.value || null;
 
           // Tasa de conversión
           const [tasa] = await conexion.query(
@@ -98,8 +94,6 @@ const handler = NextAuth({
       session.user.conversion_moneda = token.conversion_moneda;
       session.user.tasa_conversion = token.tasa_conversion;
       session.user.wishlist = token.wishlist;
-      session.user.logo_sitio = token.logo_sitio;
-      session.user.paleta_colores = token.paleta_colores;
 
       return session;
     },

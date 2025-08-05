@@ -60,24 +60,23 @@ export default function OrdersComponent() {
       </div>
 
       {/* Paginación */}
-      <div className="flex justify-center items-center gap-4 mt-6">
+      <div className="flex justify-center gap-4 mt-4">
         <button
           onClick={handlePrevPage}
           disabled={currentPage === 1}
-          className="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 disabled:opacity-50 transition"
+          className="px-2 py-1 bg-white rounded hover:bg-gray-300 disabled:opacity-50"
         >
           Anterior
         </button>
         <button
           onClick={handleNextPage}
           disabled={endIndex >= orders.length}
-          className="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 disabled:opacity-50 transition"
+          className="px-2 py-1 bg-white rounded hover:bg-gray-300 disabled:opacity-50"
         >
           Siguiente
         </button>
       </div>
-
-      <p className="text-center text-sm text-gray-500 mt-2">
+      <p className="text-center font-bold pb-2 mt-1">
         Página {currentPage} de {Math.ceil(orders.length / itemsPerPage)}
       </p>
     </div>

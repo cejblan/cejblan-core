@@ -69,8 +69,8 @@ export default function ModoEditor({
               </button>
 
               {mostrandoEditorPaleta && (
-                <div className="mt-1 grid grid-cols-3 sm:grid-cols-6 gap-1 w-full">
-                  {[0, 1, 2, 3, 4, 5].map((i) => (
+                <div className="mt-1 grid grid-cols-3 sm:grid-cols-9 gap-1 w-full">
+                  {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                     <input
                       key={i}
                       type="color"
@@ -95,7 +95,7 @@ export default function ModoEditor({
                       });
                       setMostrandoEditorPaleta(false);
                     }}
-                    className="col-span-3 sm:col-span-6 mt-2 bg-green-600 text-white py-1 rounded hover:bg-green-700"
+                    className="col-span-3 sm:col-span-9 mt-2 bg-green-600 text-white py-1 rounded hover:bg-green-700"
                   >
                     Guardar Paleta
                   </button>

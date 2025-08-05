@@ -427,7 +427,7 @@ export default function ProductsPageAdmin() {
           Siguiente
         </button>
       </div>
-      <p className="text-center font-bold mt-1">
+      <p className="text-center font-bold pb-2 mt-1">
         Página {currentPage} de {Math.ceil(productosFiltrados.length / itemsPerPage)}
       </p>
     </>
