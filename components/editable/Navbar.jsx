@@ -28,6 +28,7 @@ export default function Navbar() {
 
   const [logo, setLogo] = useState(null);
   const [domReady, setDomReady] = useState(false);
+  const [palette, setPalette] = useState([]);
 
   useEffect(() => {
     async function fetchBranding() {
@@ -35,6 +36,7 @@ export default function Navbar() {
         const res = await fetch("/api/branding");
         const data = await res.json();
         if (typeof data.logo === "string") setLogo(data.logo);
+        if (Array.isArray(data.palette)) setPalette(data.palette);
         setDomReady(true);
       } catch (error) {
         console.error("Error al cargar configuración de branding:", error);
@@ -80,7 +82,14 @@ export default function Navbar() {
   return (
     // ===START_RETURN===
     <DoNotShowAdmin>
-      <nav id="navAdmin" className="bg-gradient-to-b from-[#0A192F] to-[#6ed8bf] text-[#F8F8F8] text-xl font-bold justify-center items-center grid max-[420px]:grid-cols-6 grid-cols-12 gap-1 py-1 px-2 shadow-8xl h-9 w-full z-30 fixed">
+      <nav
+        id="navAdmin"
+        className="text-xl font-bold justify-center items-center grid max-[420px]:grid-cols-6 grid-cols-12 gap-1 py-1 px-2 shadow-8xl h-9 w-full z-30 fixed"
+        style={{
+          background: `linear-gradient(to bottom, ${palette[2]}, ${palette[0]})`,
+          color: palette[3]
+        }}
+      >
         {session?.user ?
           <>
             <div className="burger max-[420px]:m-auto col-start-1 col-end-1 justify-center items-center" onClick={handleClick}>
