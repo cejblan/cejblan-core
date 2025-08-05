@@ -1,44 +1,68 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import DoNotShowAdmin from "@/app/admin/components/DoNotShowAdmin"
 import { useBranding } from "@/hooks/useBranding"
 import { Hoverable } from "@/hooks/hoverable"
 
-export default function Footer() {
-  const { palette, loading } = useBranding()
+export default function Footer2() {
+  const { palette, logo, loading } = useBranding()
 
   if (loading) return null
 
   return (
     // ===START_RETURN===
     <DoNotShowAdmin>
-      <footer className="bg-blue-600 text-center text-lg w-full text-white py-3 shadow-4xl z-10 sm:mt-2 lg:mt-0" role="contentinfo">
-        <div className="flex justify-center items-center">
-          <div className="mx-auto flex">
-            <Image
-              className="rounded-full shadow-6xl m-auto"
-              src={Logo}
-              alt="Desarrollado por Cejblan"
-              width={81}
-              height={81}
-            />
-            <Image
-              className="rounded-full drop-shadow-6xl m-auto"
-              src={Logo2}
-              alt="Desarrollado por Cejblan"
-              width={200}
-              height={200}
-            />
+      <footer
+        className="w-full text-center text-lg py-4 shadow-4xl z-20"
+        role="contentinfo"
+        style={{
+          background: `linear-gradient(to bottom, ${palette[2]}, ${palette[0]})`,
+          color: palette[6],
+        }}
+      >
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-6 mb-3">
+          <div className="flex gap-6 justify-center">
+            {logo && (
+              <Image
+                className="drop-shadow-6xl"
+                src={logo}
+                alt="Logo"
+                width={200}
+                height={200}
+              />
+            )}
           </div>
-          <Link
-            className="font-bold bg-orange-500 hover:bg-orange-600 rounded-2xl px-2 m-auto h-5 shadow-6xl"
+
+          <Hoverable
+            as={Link}
             href="/politicaPrivacidad"
+            className="font-bold text-sm px-4 py-1 rounded-2xl shadow-md"
+            hoverStyle={{
+              backgroundColor: palette[5],
+              color: palette[0],
+            }}
+            style={{
+              backgroundColor: palette[3],
+              color: palette[6],
+            }}
           >
-            <p className="mt-1 sm:w-full">Políticas de Privacidad</p>
-          </Link>
+            Políticas de Privacidad
+          </Hoverable>
         </div>
-        <p className="px-2 sm:px-4">Desarrollado con Next.js, React y TailwindCSS - © Copyright 2024 - Francisco González</p>
+
+        <p className="text-sm px-4">
+          Desarrollado con <strong>Next.js</strong>, <strong>React</strong> y <strong>TailwindCSS</strong> — © Copyright 2025 —{" "}
+          <Hoverable
+            as={Link}
+            href="https://www.linkedin.com/in/cejblan"
+            className="underline"
+            hoverStyle={{ color: palette[0] }}
+          >
+            Francisco Ramon Gonzalez Portal
+          </Hoverable>
+        </p>
       </footer>
     </DoNotShowAdmin>
     // ===END_RETURN===

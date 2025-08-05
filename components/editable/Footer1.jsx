@@ -5,7 +5,7 @@ import DoNotShowAdmin from "@/app/admin/components/DoNotShowAdmin"
 import { useBranding } from "@/hooks/useBranding"
 import { Hoverable } from "@/hooks/hoverable"
 
-export default function Footer() {
+export default function Footer1() {
   const { palette, loading } = useBranding()
 
   if (loading) return null

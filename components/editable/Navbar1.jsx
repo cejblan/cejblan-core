@@ -19,7 +19,7 @@ import { useBranding } from "@/hooks/useBranding";
 import { Hoverable } from "@/hooks/hoverable";
 import { MdBorderColor } from "react-icons/md";
 
-export default function Navbar() {
+export default function Navbar1() {
   const [isOpen, setIsOpen] = useState(false);
   const { data: session, status } = useSession();
   const pathname = usePathname();

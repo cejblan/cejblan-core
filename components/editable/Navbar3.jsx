@@ -19,7 +19,7 @@ import { useBranding } from "@/hooks/useBranding";
 import { Hoverable } from "@/hooks/hoverable";
 import { MdBorderColor } from "react-icons/md";
 
-export default function Navbar() {
+export default function Navbar3() {
   const [isOpen, setIsOpen] = useState(false);
   const { data: session, status } = useSession();
   const pathname = usePathname();
@@ -202,7 +202,7 @@ export default function Navbar() {
           )}
         </div>
       </nav>
-      <div className="h-12" />
+      <div className="h-11" />
     </DoNotShowAdmin>
     // ===END_RETURN===
   );
