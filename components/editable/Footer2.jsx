@@ -15,10 +15,10 @@ export default function Footer2() {
     // ===START_RETURN===
     <DoNotShowAdmin>
       <footer
-        className="w-full text-center text-lg py-4 shadow-4xl z-20"
+        className="w-full text-center text-lg py-4 shadow-8xl z-20"
         role="contentinfo"
         style={{
-          background: `linear-gradient(to bottom, ${palette[2]}, ${palette[0]})`,
+          background: `linear-gradient(to bottom, ${palette[0]}, ${palette[5]})`,
           color: palette[6],
         }}
       >
@@ -29,8 +29,8 @@ export default function Footer2() {
                 className="drop-shadow-6xl"
                 src={logo}
                 alt="Logo"
-                width={200}
-                height={200}
+                width={300}
+                height={300}
               />
             )}
           </div>
@@ -53,12 +53,12 @@ export default function Footer2() {
         </div>
 
         <p className="text-sm px-4">
-          Desarrollado con <strong>Next.js</strong>, <strong>React</strong> y <strong>TailwindCSS</strong> — © Copyright 2025 —{" "}
+          Desarrollado con <strong>React</strong>, <strong>Next.js</strong> y <strong>TailwindCSS</strong> — © Copyright 2025 —{" "}
           <Hoverable
             as={Link}
             href="https://www.linkedin.com/in/cejblan"
             className="underline"
-            hoverStyle={{ color: palette[0] }}
+            hoverStyle={{ color: palette[2] }}
           >
             Francisco Ramon Gonzalez Portal
           </Hoverable>

@@ -32,7 +32,7 @@ export default function Navbar2() {
       <nav
         className="w-full fixed top-0 z-40 shadow-8xl h-12 px-4 grid grid-cols-3 items-center"
         style={{
-          background: `linear-gradient(to right, ${palette[0]}, ${palette[4]})`,
+          background: `linear-gradient(to right, ${palette[0]}, ${palette[5]})`,
           color: palette[6],
         }}
       >
@@ -45,7 +45,7 @@ export default function Navbar2() {
                 alt="Logo"
                 width={200}
                 height={200}
-                className="h-8 w-auto"
+                className="h-8 w-auto drop-shadow-6xl"
               />
             )}
           </Link>
