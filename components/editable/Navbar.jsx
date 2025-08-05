@@ -2,10 +2,9 @@
 
 import { usePathname } from "next/navigation";
 import { signIn, useSession, signOut } from "next-auth/react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import Logo from "public/nuevo_logo_cejblan2.webp"
 import { TiThMenu, TiTimes } from "react-icons/ti";
 import { PiMagnifyingGlassBold } from "react-icons/pi";
 import { FaCartShopping, FaBookOpen } from "react-icons/fa6";
@@ -26,6 +25,23 @@ export default function Navbar() {
   const handleClick = () => {
     setIsOpen(!isOpen);
   };
+
+  const [logo, setLogo] = useState(null);
+  const [domReady, setDomReady] = useState(false);
+
+  useEffect(() => {
+    async function fetchBranding() {
+      try {
+        const res = await fetch("/api/branding");
+        const data = await res.json();
+        if (typeof data.logo === "string") setLogo(data.logo);
+        setDomReady(true);
+      } catch (error) {
+        console.error("Error al cargar configuración de branding:", error);
+      }
+    }
+    fetchBranding();
+  }, []);
 
   function Open() {
     if (onClick) {
@@ -141,7 +157,15 @@ export default function Navbar() {
         }
         <Link href="/" className="max-[420px]:col-start-2 max-[420px]:col-end-6 col-start-5 col-end-9 z-10">
           <div className="flex">
-            <Image className="m-auto max-[420px]:w-full w-3/5 h-3/5" src={Logo} alt={`Logo ${process.env.NEXT_PUBLIC_SITE_NAME}`} width={200} height={200} />
+            {logo && (
+              <Image
+                className="m-auto max-[420px]:w-full w-3/5 h-3/5"
+                src={logo}
+                alt={`Logo ${process.env.NEXT_PUBLIC_SITE_NAME}`}
+                width={200}
+                height={200}
+              />
+            )}
           </div>
         </Link>
         {session?.user ? (
