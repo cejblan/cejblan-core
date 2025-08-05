@@ -8,7 +8,7 @@ export default function Error500({ reset }) {
     // ===START_RETURN===
     <section className="font-bold text-center max-[420px]:px-4 pb-8 px-8 grid grid-cols-1 justify-center items-center">
       <div className="rounded-xl shadow-5xl">
-        <div className="bg-gradient-to-b from-[#0A192F] to-[#6ed8bf] p-0.5 rounded-t-xl w-full flex justify-end">
+        <div className="bg-gradient-to-b from-[#1e293b] to-[#6ed8bf] p-0.5 rounded-t-xl w-full flex justify-end">
           <div className="w-fit flex gap-1">
             <FaRegWindowMinimize className="bg-white p-0.5 rounded h-3 w-3" />
             <FaRegWindowMaximize className="bg-white p-0.5 rounded h-3 w-3" />
@@ -21,7 +21,7 @@ export default function Error500({ reset }) {
             <p className="max-[420px]:text-2xl text-3xl mb-3">Intenta nuevamente más tarde.</p>
             <button
               onClick={() => reset()}
-              className="bg-[#6ed8bf] max-[420px]:text-xl text-2xl text-[#0A192F] hover:text-[#4bb199] py-1 px-2 rounded-xl shadow-6xl underline">
+              className="bg-[#6ed8bf] max-[420px]:text-xl text-2xl text-[#1e293b] hover:text-[#4bb199] py-1 px-2 rounded-xl shadow-6xl underline">
               Reintentar
             </button>
           </div>
