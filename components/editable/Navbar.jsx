@@ -14,74 +14,37 @@ import { MdAdminPanelSettings } from "react-icons/md";
 import { FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
 import Loading from "./Loading";
 import DoNotShowAdmin from "@/app/admin/components/DoNotShowAdmin";
-import { MdBorderColor } from "react-icons/md";
 import SearchBar from "./SearchBar";
 import { useBranding } from "@/hooks/useBranding";
+import { Hoverable } from "@/hooks/hoverable";
 
 export default function Navbar() {
+  // Hooks de Navbar (cantidad y orden fijos)
   const [isOpen, setIsOpen] = useState(false);
   const { data: session, status } = useSession();
   const pathname = usePathname();
   const [onClick, setOnClick] = useState(false);
   const { logo, palette, loading } = useBranding();
 
-  // Estado para manejar hover dinámico
-  const [hoveredItem, setHoveredItem] = useState(null);
-
   function handleClick() {
-    setIsOpen(!isOpen);
+    setIsOpen(prev => !prev);
   }
-
   function Open() {
     setOnClick(prev => !prev);
   }
-
-  // Estilos dinámicos para urlClass
   function urlStyle(href) {
     return { backgroundColor: pathname === href ? palette[5] : palette[4] };
   }
-
-  function urlStyle2(href) {
-    return pathname === href ? { backgroundColor: palette[4] } : {};
-  }
-
-  // Retorna estilo inline para color hover
-  function getHoverStyle(key) {
-    return hoveredItem === key ? { color: palette[0] } : {};
-  }
-
-  // Retorna estilo inline para border hover
-  function getHoverBorderStyle(key) {
-    return hoveredItem === key
-      ? { borderColor: palette[0], borderWidth: "1px", borderStyle: "solid" }
-      : {};
-  }
-
-  if (status === "loading" || loading) {
-    return <Loading zIndex={50} />;
-  }
-  function urlStyle2(href) {
+  function urlStyleActive(href) {
     return pathname === href ? { backgroundColor: 'rgb(51 65 85)' } : {};
   }
 
-  // Retorna estilo inline para color hover
-  function getHoverStyle(key) {
-    return hoveredItem === key ? { color: palette[0] } : {};
-  }
-
-  // Retorna estilo inline para border hover
-  function getHoverBorderStyle(key) {
-    return hoveredItem === key
-      ? { borderColor: palette[0], borderWidth: "1px", borderStyle: "solid" }
-      : {};
-  }
-
   if (status === "loading" || loading) {
     return <Loading zIndex={50} />;
   }
 
+  // ===START_RETURN===
   return (
-    // ===START_RETURN===
     <DoNotShowAdmin>
       <nav
         id="navAdmin"
@@ -97,165 +60,88 @@ export default function Navbar() {
               className="burger max-[420px]:m-auto col-start-1 col-end-1 justify-center items-center"
               onClick={handleClick}
             >
-              <TiThMenu
+              <Hoverable
+                as={TiThMenu}
+                hoverColor={palette[0]}
                 className={`w-4 h-4 ${isOpen ? "hidden" : ""}`}
                 cursor="pointer"
-                style={getHoverStyle("menuIcon")}
-                onMouseEnter={() => setHoveredItem("menuIcon")}
-                onMouseLeave={() => setHoveredItem(null)}
               />
-              <TiTimes
+              <Hoverable
+                as={TiTimes}
+                hoverColor={palette[0]}
                 className={`w-4 h-4 ${isOpen ? "" : "hidden"}`}
                 cursor="pointer"
-                style={getHoverStyle("menuIcon")}
-                onMouseEnter={() => setHoveredItem("menuIcon")}
-                onMouseLeave={() => setHoveredItem(null)}
               />
               <div
                 className={`menu bg-slate-500 text-2xl grid grid-cols-1 gap-1 absolute left-5 top-5 p-1 rounded-xl z-20 ${isOpen ? "" : "hidden"}`}
               >
-                <Link
-                  href="/"
-                  onMouseEnter={() => setHoveredItem("home")}
-                  onMouseLeave={() => setHoveredItem(null)}
-                >
-                  <p
-                    className="rounded-xl px-2 flex justify-center items-center"
-                    style={urlStyle("/")}
+                {[
+                  { href: "/", label: "Inicio", icon: <FaBookOpen /> },
+                  { href: "/products", label: "Productos", icon: <IoLogoOctocat /> },
+                  { href: "/wishlist", label: "Favoritos", icon: <IoIosHeart />, mobileOnly: true },
+                  { href: "/cart", label: "Carrito", icon: <FaCartShopping />, mobileOnly: true },
+                  { href: "/orders", label: "Pedidos", icon: null },
+                  { href: "/profile", label: "Perfil", icon: <IoPersonSharp /> },
+                ].map(item => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={item.mobileOnly ? "max-[420px]:block hidden" : ""}
                   >
-                    Inicio <FaBookOpen className="ml-1" />
-                  </p>
-                </Link>
-                <Link
-                  href="/products"
-                  onMouseEnter={() => setHoveredItem("products")}
-                  onMouseLeave={() => setHoveredItem(null)}
-                >
-                  <p
-                    className="rounded-xl px-2 flex justify-center items-center"
-                    style={urlStyle("/products")}
-                  >
-                    Productos <IoLogoOctocat className="ml-1" />
-                  </p>
-                </Link>
-                <Link
-                  href="/wishlist"
-                  className="max-[420px]:block hidden"
-                  onMouseEnter={() => setHoveredItem("wishlistMobile")}
-                  onMouseLeave={() => setHoveredItem(null)}
-                >
-                  <p
-                    className="rounded-xl px-2 flex justify-center items-center"
-                    style={urlStyle("/wishlist")}
-                  >
-                    Favoritos <IoIosHeart className="ml-1" />
-                  </p>
-                </Link>
-                <Link
-                  href="/cart"
-                  className="max-[420px]:block hidden"
-                  onMouseEnter={() => setHoveredItem("cartMobile")}
-                  onMouseLeave={() => setHoveredItem(null)}
-                >
-                  <p
-                    className="rounded-xl px-2 flex justice-center items-center"
-                    style={urlStyle("/cart")}
-                  >
-                    Carrito <FaCartShopping className="ml-1" />
-                  </p>
-                </Link>
-                <Link
-                  href="/orders"
-                  onMouseEnter={() => setHoveredItem("orders")}
-                  onMouseLeave={() => setHoveredItem(null)}
-                >
-                  <p
-                    className="rounded-xl px-2 flex justify-center items-center"
-                    style={urlStyle("/orders")}
-                  >
-                    Pedidos <MdBorderColor className="ml-1" />
-                  </p>
-                </Link>
-                <Link
-                  href="/profile"
-                  onMouseEnter={() => setHoveredItem("profile")}
-                  onMouseLeave={() => setHoveredItem(null)}
-                >
-                  <p
-                    className="rounded-xl px-2 flex justify-center items-center"
-                    style={urlStyle("/profile")}
-                  >
-                    Perfil <IoPersonSharp className="ml-1" />
-                  </p>
-                </Link>
-                <button
+                    <Hoverable
+                      as="p"
+                      hoverColor={palette[0]}
+                      className="rounded-xl px-2 flex justify-center items-center"
+                      style={urlStyle(item.href)}
+                    >
+                      {item.label} {item.icon && <span className="ml-1">{item.icon}</span>}
+                    </Hoverable>
+                  </Link>
+                ))}
+                <Hoverable
+                  as="button"
+                  hoverColor={palette[0]}
                   className="rounded-xl px-2 flex justify-center items-center"
-                  onClick={() =>
-                    signOut({
-                      callbackUrl: "/",
-                    })
-                  }
-                  onMouseEnter={() => setHoveredItem("logout")}
-                  onMouseLeave={() => setHoveredItem(null)}
-                  style={{ backgroundColor: 'rgb(51 65 85)', color: palette[0] }}
+                  onClick={() => signOut({ callbackUrl: "/" })}
+                  style={urlStyle("/signout")}
                 >
                   Cerrar Sesión <FaSignOutAlt className="ml-1" />
-                </button>
+                </Hoverable>
               </div>
             </div>
 
-            <Link
-              href="/wishlist"
-              className="text-sm max-[420px]:hidden col-start-2 col-end-3 block"
-            >
-              <p
+            <Link href="/wishlist" className="text-sm max-[420px]:hidden col-start-2 col-end-3 block">
+              <Hoverable
+                as="p"
+                hoverColor={palette[0]}
                 className="rounded-xl"
-                onMouseEnter={() => setHoveredItem("wishlist")}
-                onMouseLeave={() => setHoveredItem(null)}
-                style={{
-                  ...urlStyle2("/wishlist"),
-                  ...getHoverBorderStyle("wishlist"),
-                  ...getHoverStyle("wishlist"),
-                }}
+                style={urlStyleActive("/wishlist")}
               >
-                Favoritos <IoIosHeart className="m-auto w-4 h-4" />
-              </p>
+                Favoritos <IoIosHeart className="m-auto w-4 h-4"/>
+              </Hoverable>
             </Link>
 
-            <Link
-              href="/cart"
-              className="text-sm max-[420px]:hidden col-start-3 col-end-4 block"
-            >
-              <p
+            <Link href="/cart" className="text-sm max-[420px]:hidden col-start-3 col-end-4 block">
+              <Hoverable
+                as="p"
+                hoverColor={palette[0]}
                 className="rounded-xl w-4/5"
-                onMouseEnter={() => setHoveredItem("cart")}
-                onMouseLeave={() => setHoveredItem(null)}
-                style={{
-                  ...urlStyle2("/cart"),
-                  ...getHoverBorderStyle("cart"),
-                  ...getHoverStyle("cart"),
-                }}
+                style={urlStyleActive("/cart")}
               >
-                Carrito <FaCartShopping className="m-auto w-4 h-4" />
-              </p>
+                Carrito <FaCartShopping className="m-auto w-4 h-4"/>
+              </Hoverable>
             </Link>
           </>
         ) : (
-          <button
+          <Hoverable
+            as="button"
+            hoverColor={palette[0]}
             className="max-[420px]:text-sm text-2xl col-start-1 max-[420px]:col-end-2 col-end-3 flex justify-center items-center"
             onClick={() => signIn()}
-            onMouseEnter={() => setHoveredItem("signIn")}
-            onMouseLeave={() => setHoveredItem(null)}
-            style={getHoverStyle("signIn")}
           >
-            <p
-              className="max-[420px]:leading-3 leading-6 rounded-xl"
-              style={getHoverBorderStyle("signIn")}
-            >
-              Iniciar Sesión
-            </p>
-            <FaSignInAlt className="m-auto w-4 h-4 max-[420px]:hidden" />
-          </button>
+            <p className="max-[420px]:leading-3 leading-6 rounded-xl">Iniciar Sesión</p>
+            <FaSignInAlt className="m-auto w-4 h-4 max-[420px]:hidden"/>
+          </Hoverable>
         )}
 
         <Link href="/" className="max-[420px]:col-start-2 max-[420px]:col-end-6 col-start-5 col-end-9 z-10">
@@ -275,22 +161,14 @@ export default function Navbar() {
         {session?.user ? (
           <div className="max-[420px]:m-auto max-[420px]:col-start-6 max-[420px]:col-end-6 col-start-10 col-end-13 flex max-[420px]:justify-center justify-end items-center">
             <span className="text-lg max-[420px]:hidden mr-1">¡Hola, {session.user.name}!</span>
-            {[
-              "Admin",
-              "Desarrollador",
-              "Vendedor",
-              "Delivery",
-            ].includes(session.user.role) ? (
-              <div
+            {["Admin","Desarrollador","Vendedor","Delivery"].includes(session.user.role) ? (
+              <Hoverable
+                as="div"
+                hoverColor={palette[0]}
                 className="bg-slate-600 text-4xl py-0.5 pl-1 pr-0.5 rounded-full shadow-6xl w-6 h-6"
-                onMouseEnter={() => setHoveredItem("adminIcon")}
-                onMouseLeave={() => setHoveredItem(null)}
-                style={getHoverStyle("adminIcon")}
               >
-                <Link href="/admin">
-                  <MdAdminPanelSettings />
-                </Link>
-              </div>
+                <Link href="/admin"><MdAdminPanelSettings/></Link>
+              </Hoverable>
             ) : (
               <Link href="/profile">
                 <Image
@@ -306,19 +184,18 @@ export default function Navbar() {
         ) : (
           <div className="max-[420px]:m-auto max-[420px]:col-start-6 max-[420px]:col-end-6 col-start-10 col-end-13 flex max-[420px]:justify-center justify-end items-center">
             {onClick && <SearchBar />}
-            <button
+            <Hoverable
+              as="button"
+              hoverColor={palette[0]}
               onClick={Open}
-              onMouseEnter={() => setHoveredItem("search")}
-              onMouseLeave={() => setHoveredItem(null)}
-              style={getHoverStyle("search")}
             >
               <PiMagnifyingGlassBold className="w-4 h-4" />
-            </button>
+            </Hoverable>
           </div>
         )}
       </nav>
       <div className="h-9" />
     </DoNotShowAdmin>
-    // ===END_RETURN===
   );
+  // ===END_RETURN===
 }
