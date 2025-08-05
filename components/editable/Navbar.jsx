@@ -36,14 +36,32 @@ export default function Navbar() {
     setOnClick(prev => !prev);
   }
 
-  function urlClass(href) {
-    return pathname === href
-      ? `bg-[${palette[5]}]`
-      : "bg-slate-700";
+  // Estilos dinámicos para urlClass
+  function urlStyle(href) {
+    return { backgroundColor: pathname === href ? palette[5] : palette[4] };
   }
 
-  function urlClass2(href) {
-    return pathname === href ? "bg-slate-700" : "";
+  function urlStyle2(href) {
+    return pathname === href ? { backgroundColor: palette[4] } : {};
+  }
+
+  // Retorna estilo inline para color hover
+  function getHoverStyle(key) {
+    return hoveredItem === key ? { color: palette[0] } : {};
+  }
+
+  // Retorna estilo inline para border hover
+  function getHoverBorderStyle(key) {
+    return hoveredItem === key
+      ? { borderColor: palette[0], borderWidth: "1px", borderStyle: "solid" }
+      : {};
+  }
+
+  if (status === "loading" || loading) {
+    return <Loading zIndex={50} />;
+  }
+  function urlStyle2(href) {
+    return pathname === href ? { backgroundColor: 'rgb(51 65 85)' } : {};
   }
 
   // Retorna estilo inline para color hover
@@ -94,17 +112,17 @@ export default function Navbar() {
                 onMouseLeave={() => setHoveredItem(null)}
               />
               <div
-                className={`menu bg-slate-500 text-2xl grid grid-cols-1 gap-1 absolute left-5 top-5 p-1 rounded-xl z-20 ${
-                  isOpen ? "" : "hidden"
-                }`}
+                className={`menu bg-slate-500 text-2xl grid grid-cols-1 gap-1 absolute left-5 top-5 p-1 rounded-xl z-20 ${isOpen ? "" : "hidden"}`}
               >
                 <Link
                   href="/"
                   onMouseEnter={() => setHoveredItem("home")}
                   onMouseLeave={() => setHoveredItem(null)}
-                  style={getHoverStyle("home")}
                 >
-                  <p className={`${urlClass("/")} rounded-xl px-2 flex justify-center items-center`}>
+                  <p
+                    className="rounded-xl px-2 flex justify-center items-center"
+                    style={urlStyle("/")}
+                  >
                     Inicio <FaBookOpen className="ml-1" />
                   </p>
                 </Link>
@@ -112,9 +130,11 @@ export default function Navbar() {
                   href="/products"
                   onMouseEnter={() => setHoveredItem("products")}
                   onMouseLeave={() => setHoveredItem(null)}
-                  style={getHoverStyle("products")}
                 >
-                  <p className={`${urlClass("/products")} rounded-xl px-2 flex justify-center items-center`}>
+                  <p
+                    className="rounded-xl px-2 flex justify-center items-center"
+                    style={urlStyle("/products")}
+                  >
                     Productos <IoLogoOctocat className="ml-1" />
                   </p>
                 </Link>
@@ -123,9 +143,11 @@ export default function Navbar() {
                   className="max-[420px]:block hidden"
                   onMouseEnter={() => setHoveredItem("wishlistMobile")}
                   onMouseLeave={() => setHoveredItem(null)}
-                  style={getHoverStyle("wishlistMobile")}
                 >
-                  <p className={`${urlClass("/wishlist")} rounded-xl px-2 flex justify-center items-center`}>
+                  <p
+                    className="rounded-xl px-2 flex justify-center items-center"
+                    style={urlStyle("/wishlist")}
+                  >
                     Favoritos <IoIosHeart className="ml-1" />
                   </p>
                 </Link>
@@ -134,9 +156,11 @@ export default function Navbar() {
                   className="max-[420px]:block hidden"
                   onMouseEnter={() => setHoveredItem("cartMobile")}
                   onMouseLeave={() => setHoveredItem(null)}
-                  style={getHoverStyle("cartMobile")}
                 >
-                  <p className={`${urlClass("/cart")} rounded-xl px-2 flex justify-center items-center`}>
+                  <p
+                    className="rounded-xl px-2 flex justice-center items-center"
+                    style={urlStyle("/cart")}
+                  >
                     Carrito <FaCartShopping className="ml-1" />
                   </p>
                 </Link>
@@ -144,9 +168,11 @@ export default function Navbar() {
                   href="/orders"
                   onMouseEnter={() => setHoveredItem("orders")}
                   onMouseLeave={() => setHoveredItem(null)}
-                  style={getHoverStyle("orders")}
                 >
-                  <p className={`${urlClass("/orders")} rounded-xl px-2 flex justify-center items-center`}>
+                  <p
+                    className="rounded-xl px-2 flex justify-center items-center"
+                    style={urlStyle("/orders")}
+                  >
                     Pedidos <MdBorderColor className="ml-1" />
                   </p>
                 </Link>
@@ -154,14 +180,16 @@ export default function Navbar() {
                   href="/profile"
                   onMouseEnter={() => setHoveredItem("profile")}
                   onMouseLeave={() => setHoveredItem(null)}
-                  style={getHoverStyle("profile")}
                 >
-                  <p className={`${urlClass("/profile")} rounded-xl px-2 flex justify-center items-center`}>
+                  <p
+                    className="rounded-xl px-2 flex justify-center items-center"
+                    style={urlStyle("/profile")}
+                  >
                     Perfil <IoPersonSharp className="ml-1" />
                   </p>
                 </Link>
                 <button
-                  className="bg-slate-700 rounded-xl px-2 flex justify-center items-center"
+                  className="rounded-xl px-2 flex justify-center items-center"
                   onClick={() =>
                     signOut({
                       callbackUrl: "/",
@@ -169,7 +197,7 @@ export default function Navbar() {
                   }
                   onMouseEnter={() => setHoveredItem("logout")}
                   onMouseLeave={() => setHoveredItem(null)}
-                  style={getHoverStyle("logout")}
+                  style={{ backgroundColor: 'rgb(51 65 85)', color: palette[0] }}
                 >
                   Cerrar Sesión <FaSignOutAlt className="ml-1" />
                 </button>
@@ -181,12 +209,13 @@ export default function Navbar() {
               className="text-sm max-[420px]:hidden col-start-2 col-end-3 block"
             >
               <p
-                className={`${urlClass2("/wishlist")} rounded-xl`}
+                className="rounded-xl"
                 onMouseEnter={() => setHoveredItem("wishlist")}
                 onMouseLeave={() => setHoveredItem(null)}
                 style={{
-                  ...getHoverStyle("wishlist"),
+                  ...urlStyle2("/wishlist"),
                   ...getHoverBorderStyle("wishlist"),
+                  ...getHoverStyle("wishlist"),
                 }}
               >
                 Favoritos <IoIosHeart className="m-auto w-4 h-4" />
@@ -198,12 +227,13 @@ export default function Navbar() {
               className="text-sm max-[420px]:hidden col-start-3 col-end-4 block"
             >
               <p
-                className={`${urlClass2("/cart")} rounded-xl w-4/5`}
+                className="rounded-xl w-4/5"
                 onMouseEnter={() => setHoveredItem("cart")}
                 onMouseLeave={() => setHoveredItem(null)}
                 style={{
-                  ...getHoverStyle("cart"),
+                  ...urlStyle2("/cart"),
                   ...getHoverBorderStyle("cart"),
+                  ...getHoverStyle("cart"),
                 }}
               >
                 Carrito <FaCartShopping className="m-auto w-4 h-4" />
@@ -245,7 +275,12 @@ export default function Navbar() {
         {session?.user ? (
           <div className="max-[420px]:m-auto max-[420px]:col-start-6 max-[420px]:col-end-6 col-start-10 col-end-13 flex max-[420px]:justify-center justify-end items-center">
             <span className="text-lg max-[420px]:hidden mr-1">¡Hola, {session.user.name}!</span>
-            {["Admin", "Desarrollador", "Vendedor", "Delivery"].includes(session.user.role) ? (
+            {[
+              "Admin",
+              "Desarrollador",
+              "Vendedor",
+              "Delivery",
+            ].includes(session.user.role) ? (
               <div
                 className="bg-slate-600 text-4xl py-0.5 pl-1 pr-0.5 rounded-full shadow-6xl w-6 h-6"
                 onMouseEnter={() => setHoveredItem("adminIcon")}
