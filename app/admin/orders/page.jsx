@@ -103,14 +103,26 @@ export default function OrdersPageAdmin() {
           </Link>
         ))}
       </div >
-
+      {/* Paginación */}
       <div className="flex justify-center gap-4 mt-4">
-        <button onClick={handlePrevPage} disabled={currentPage === 1} className="px-2 py-1 bg-white rounded hover:bg-gray-300 disabled:opacity-50">Anterior</button>
-        <button onClick={handleNextPage} disabled={endIndex >= orders.length} className="px-2 py-1 bg-white rounded hover:bg-gray-300 disabled:opacity-50">Siguiente</button>
+        <button
+          onClick={handlePrevPage}
+          disabled={currentPage === 1}
+          className="px-2 py-1 bg-white rounded hover:bg-gray-300 disabled:opacity-50"
+        >
+          Anterior
+        </button>
+        <button
+          onClick={handleNextPage}
+          disabled={endIndex >= orders.length}
+          className="px-2 py-1 bg-white rounded hover:bg-gray-300 disabled:opacity-50"
+        >
+          Siguiente
+        </button>
       </div>
-
-      <p className="text-center font-bold mt-1 mx-auto w-fit">Página {currentPage} de {Math.ceil(orders.length / itemsPerPage)}</p>
-
+      <p className="text-center font-bold pb-2 mt-1">
+        Página {currentPage} de {Math.ceil(orders.length / itemsPerPage)}
+      </p>
     </>
   );
 }
