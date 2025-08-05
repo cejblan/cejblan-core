@@ -1,19 +1,22 @@
 "use client"
 
+import { useState } from "react"
 import { usePathname } from "next/navigation"
 import { signIn, signOut, useSession } from "next-auth/react"
 import Link from "next/link"
 import Image from "next/image"
 import { FaSignInAlt, FaSignOutAlt } from "react-icons/fa"
-import { FaCartShopping } from "react-icons/fa6";
+import { FaCartShopping } from "react-icons/fa6"
 import { IoPersonSharp } from "react-icons/io5"
 import { MdAdminPanelSettings } from "react-icons/md"
+import { TiThMenu, TiTimes } from "react-icons/ti" // Iconos hamburguesa
 import DoNotShowAdmin from "@/app/admin/components/DoNotShowAdmin"
 import Loading from "./Loading"
 import { useBranding } from "@/hooks/useBranding"
 import { Hoverable } from "@/hooks/hoverable"
 
 export default function Navbar2() {
+  const [isOpen, setIsOpen] = useState(false) // Estado para menú móvil abierto/cerrado
   const { data: session, status } = useSession()
   const pathname = usePathname()
   const { palette, logo, loading } = useBranding()
@@ -45,14 +48,24 @@ export default function Navbar2() {
                 alt="Logo"
                 width={200}
                 height={200}
-                className="h-8 w-auto drop-shadow-6xl"
+                className="sm:h-8 w-auto drop-shadow-6xl"
               />
             )}
           </Link>
         </div>
 
-        {/* Menú centrado estilo dock */}
-        <ul className="flex justify-center space-x-6 text-sm font-medium">
+        {/* Botón hamburguesa móvil (solo en sm hacia abajo) */}
+        <button
+          className="sm:hidden text-2xl absolute right-2"
+          onClick={() => setIsOpen(!isOpen)}
+          aria-label="Toggle menu"
+          style={{ color: palette[6] }}
+        >
+          {isOpen ? <TiTimes /> : <TiThMenu />}
+        </button>
+
+        {/* Menú centrado estilo dock - oculto en móvil */}
+        <ul className="hidden sm:flex justify-center space-x-6 text-sm font-medium">
           {[
             { label: "Inicio", href: "/" },
             { label: "Catálogo", href: "/products" },
@@ -77,7 +90,7 @@ export default function Navbar2() {
         </ul>
 
         {/* Acciones derecha */}
-        <div className="flex justify-end items-center space-x-4">
+        <div className="hidden sm:flex justify-end items-center space-x-4">
           {session?.user ? (
             <>
               <Hoverable
@@ -96,15 +109,17 @@ export default function Navbar2() {
                 <IoPersonSharp className="w-5 h-5" />
               </Hoverable>
 
-              {["Admin", "Desarrollador", "Vendedor", "Delivery"].includes(session.user.role) && (
-                <Hoverable
-                  as={Link}
-                  href="/admin"
-                  hoverStyle={{ color: palette[0] }}
-                >
-                  <MdAdminPanelSettings className="w-5 h-5" />
-                </Hoverable>
-              )}
+              {["Admin", "Desarrollador", "Vendedor", "Delivery"].includes(
+                session.user.role
+              ) && (
+                  <Hoverable
+                    as={Link}
+                    href="/admin"
+                    hoverStyle={{ color: palette[0] }}
+                  >
+                    <MdAdminPanelSettings className="w-5 h-5" />
+                  </Hoverable>
+                )}
 
               <Hoverable
                 as="button"
@@ -128,9 +143,139 @@ export default function Navbar2() {
         </div>
       </nav>
 
+      {/* Menú desplegable móvil */}
+      {isOpen && (
+        <div
+          className="fixed top-12 left-0 w-full bg-white z-40 shadow-lg sm:hidden"
+          style={{ backgroundColor: palette[3], color: palette[6] }}
+        >
+          <div className="flex flex-col p-2 space-y-1">
+            {[
+              { label: "Inicio", href: "/" },
+              { label: "Catálogo", href: "/products" },
+              { label: "Pedidos", href: "/orders" },
+            ].map(({ label, href }) => (
+              <div key={href}>
+                <Link href={href}>
+                  <Hoverable
+                    as="span"
+                    className="block px-4 py-2 rounded-md"
+                    style={isActive(href)}
+                    hoverStyle={{
+                      backgroundColor: palette[5],
+                      color: palette[0],
+                    }}
+                    onClick={() => setIsOpen(false)} // Cierra menú al click
+                  >
+                    {label}
+                  </Hoverable>
+                </Link>
+              </div>
+            ))}
+
+            {session?.user ? (
+              <>
+                <div>
+                  <Link href="/cart">
+                    <Hoverable
+                      as="div"
+                      className="flex justify-center items-center px-4 py-2 rounded-md space-x-2"
+                      hoverStyle={{
+                        backgroundColor: palette[5],
+                        color: palette[0],
+                      }}
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <FaCartShopping className="w-5 h-5" />
+                      <span>Carrito</span>
+                    </Hoverable>
+                  </Link>
+                </div>
+
+                <div>
+                  <Link href="/profile">
+                    <Hoverable
+                      as="div"
+                      className="flex justify-center items-center px-4 py-2 rounded-md space-x-2"
+                      hoverStyle={{
+                        backgroundColor: palette[5],
+                        color: palette[0],
+                      }}
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <IoPersonSharp className="w-5 h-5" />
+                      <span>Perfil</span>
+                    </Hoverable>
+                  </Link>
+                </div>
+
+                {["Admin", "Desarrollador", "Vendedor", "Delivery"].includes(
+                  session.user.role
+                ) && (
+                    <div>
+                      <Link href="/admin">
+                        <Hoverable
+                          as="div"
+                          className="flex justify-center items-center px-4 py-2 rounded-md space-x-2"
+                          hoverStyle={{
+                            backgroundColor: palette[5],
+                            color: palette[0],
+                          }}
+                          onClick={() => setIsOpen(false)}
+                        >
+                          <MdAdminPanelSettings className="w-5 h-5" />
+                          <span>Admin</span>
+                        </Hoverable>
+                      </Link>
+                    </div>
+                  )}
+
+                <div>
+
+                  <Hoverable
+                    as="button"
+                    onClick={() => {
+                      signOut({ callbackUrl: "/" })
+                      setIsOpen(false)
+                    }}
+                    className="flex justify-center items-center w-full text-left px-4 py-2 rounded-md space-x-2"
+                    hoverStyle={{
+                      backgroundColor: palette[5],
+                      color: palette[0],
+                    }}
+                  >
+                    <FaSignOutAlt className="inline w-5 h-5 mr-2" />
+                    Cerrar sesión
+                  </Hoverable>
+                </div>
+              </>
+            ) : (
+              <div>
+                <Hoverable
+                  as="button"
+                  onClick={() => {
+                    signIn()
+                    setIsOpen(false)
+                  }}
+                  className="flex justify-center items-center w-full text-left px-4 py-2 rounded-md space-x-2"
+                  hoverStyle={{
+                    backgroundColor: palette[5],
+                    color: palette[0],
+                  }}
+                >
+                  <FaSignInAlt className="inline w-5 h-5 mr-2" />
+                  Ingresar
+                </Hoverable>
+              </div>
+            )}
+          </div>
+        </div>
+      )
+      }
+
       {/* Espacio para evitar que el contenido quede oculto debajo del nav */}
       <div className="h-12" />
-    </DoNotShowAdmin>
+    </DoNotShowAdmin >
     // ===END_RETURN===
   )
 }
