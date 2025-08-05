@@ -22,7 +22,7 @@ export default function Footer2() {
           color: palette[6],
         }}
       >
-        <div className="flex flex-col sm:flex-row justify-center items-center gap-6 mb-3">
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-3 mb-3">
           <div className="flex gap-6 justify-center">
             {logo && (
               <Image
