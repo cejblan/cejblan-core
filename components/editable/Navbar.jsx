@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { usePathname } from "next/navigation";
 import { signIn, useSession, signOut } from "next-auth/react";
@@ -17,31 +17,26 @@ import DoNotShowAdmin from "@/app/admin/components/DoNotShowAdmin";
 import SearchBar from "./SearchBar";
 import { useBranding } from "@/hooks/useBranding";
 import { Hoverable } from "@/hooks/hoverable";
+import { MdBorderColor } from "react-icons/md";
 
 export default function Navbar() {
-  // Hooks de Navbar (cantidad y orden fijos)
   const [isOpen, setIsOpen] = useState(false);
   const { data: session, status } = useSession();
   const pathname = usePathname();
   const [onClick, setOnClick] = useState(false);
   const { logo, palette, loading } = useBranding();
 
-  function handleClick() {
-    setIsOpen(prev => !prev);
-  }
-  function Open() {
-    setOnClick(prev => !prev);
-  }
+  const handleClick = () => setIsOpen(prev => !prev);
+  const Open = () => setOnClick(prev => !prev);
+
   function urlStyle(href) {
     return { backgroundColor: pathname === href ? palette[5] : palette[4] };
   }
   function urlStyleActive(href) {
-    return pathname === href ? { backgroundColor: 'rgb(51 65 85)' } : {};
+    return pathname === href ? { backgroundColor: "#1e293b" } : {}; // slate-800
   }
 
-  if (status === "loading" || loading) {
-    return <Loading zIndex={50} />;
-  }
+  if (status === "loading" || loading) return <Loading zIndex={50} />;
 
   // ===START_RETURN===
   return (
@@ -60,18 +55,21 @@ export default function Navbar() {
               className="burger max-[420px]:m-auto col-start-1 col-end-1 justify-center items-center"
               onClick={handleClick}
             >
+              {/* Íconos burger */}
               <Hoverable
                 as={TiThMenu}
-                hoverColor={palette[0]}
                 className={`w-4 h-4 ${isOpen ? "hidden" : ""}`}
+                hoverStyle={{ fill: "#1e293b" }} // slate-800 original
                 cursor="pointer"
               />
               <Hoverable
                 as={TiTimes}
-                hoverColor={palette[0]}
                 className={`w-4 h-4 ${isOpen ? "" : "hidden"}`}
+                hoverStyle={{ fill: "#1e293b" }}
                 cursor="pointer"
               />
+
+              {/* Menú desplegable */}
               <div
                 className={`menu bg-slate-500 text-2xl grid grid-cols-1 gap-1 absolute left-5 top-5 p-1 rounded-xl z-20 ${isOpen ? "" : "hidden"}`}
               >
@@ -80,7 +78,7 @@ export default function Navbar() {
                   { href: "/products", label: "Productos", icon: <IoLogoOctocat /> },
                   { href: "/wishlist", label: "Favoritos", icon: <IoIosHeart />, mobileOnly: true },
                   { href: "/cart", label: "Carrito", icon: <FaCartShopping />, mobileOnly: true },
-                  { href: "/orders", label: "Pedidos", icon: null },
+                  { href: "/orders", label: "Pedidos", icon: <MdBorderColor /> },
                   { href: "/profile", label: "Perfil", icon: <IoPersonSharp /> },
                 ].map(item => (
                   <Link
@@ -90,60 +88,64 @@ export default function Navbar() {
                   >
                     <Hoverable
                       as="p"
-                      hoverColor={palette[0]}
-                      className="rounded-xl px-2 flex justify-center items-center"
+                      className="rounded-xl px-2 flex justify-center items-center hover:text-[#6ed8bf]"
                       style={urlStyle(item.href)}
+                      hoverStyle={{ color: "#6ed8bf" }} // verde turquesa original
                     >
-                      {item.label} {item.icon && <span className="ml-1">{item.icon}</span>}
+                      {item.label} <span className="ml-1">{item.icon}</span>
                     </Hoverable>
                   </Link>
                 ))}
+
                 <Hoverable
                   as="button"
-                  hoverColor={palette[0]}
                   className="rounded-xl px-2 flex justify-center items-center"
-                  onClick={() => signOut({ callbackUrl: "/" })}
                   style={urlStyle("/signout")}
+                  hoverStyle={{ color: "#6ed8bf" }}
+                  onClick={() => signOut({ callbackUrl: "/" })}
                 >
                   Cerrar Sesión <FaSignOutAlt className="ml-1" />
                 </Hoverable>
               </div>
             </div>
 
+            {/* Favoritos (desktop) */}
             <Link href="/wishlist" className="text-sm max-[420px]:hidden col-start-2 col-end-3 block">
               <Hoverable
                 as="p"
-                hoverColor={palette[0]}
                 className="rounded-xl"
                 style={urlStyleActive("/wishlist")}
+                hoverStyle={{ borderColor: "#6ed8bf" }}
               >
-                Favoritos <IoIosHeart className="m-auto w-4 h-4"/>
+                Favoritos <IoIosHeart className="m-auto w-4 h-4" />
               </Hoverable>
             </Link>
 
+            {/* Carrito (desktop) */}
             <Link href="/cart" className="text-sm max-[420px]:hidden col-start-3 col-end-4 block">
               <Hoverable
                 as="p"
-                hoverColor={palette[0]}
                 className="rounded-xl w-4/5"
                 style={urlStyleActive("/cart")}
+                hoverStyle={{ borderColor: "#6ed8bf" }}
               >
-                Carrito <FaCartShopping className="m-auto w-4 h-4"/>
+                Carrito <FaCartShopping className="m-auto w-4 h-4" />
               </Hoverable>
             </Link>
           </>
         ) : (
           <Hoverable
             as="button"
-            hoverColor={palette[0]}
             className="max-[420px]:text-sm text-2xl col-start-1 max-[420px]:col-end-2 col-end-3 flex justify-center items-center"
+            hoverStyle={{ color: "#6ed8bf", borderColor: "#6ed8bf" }}
             onClick={() => signIn()}
           >
             <p className="max-[420px]:leading-3 leading-6 rounded-xl">Iniciar Sesión</p>
-            <FaSignInAlt className="m-auto w-4 h-4 max-[420px]:hidden"/>
+            <FaSignInAlt className="m-auto w-4 h-4 max-[420px]:hidden" />
           </Hoverable>
         )}
 
+        {/* Logo */}
         <Link href="/" className="max-[420px]:col-start-2 max-[420px]:col-end-6 col-start-5 col-end-9 z-10">
           <div className="flex">
             {logo && (
@@ -159,15 +161,19 @@ export default function Navbar() {
         </Link>
 
         {session?.user ? (
-          <div className="max-[420px]:m-auto max-[420px]:col-start-6 max-[420px]:col-end-6 col-start-10 col-end-13 flex max-[420px]:justify-center justify-end items-center">
+          <div className="max-[420px]:m-auto max-[420px]:col-start-6 max-[420px]:col-end-6 col-start-10 col-end-13 flex justify-end items-center">
             <span className="text-lg max-[420px]:hidden mr-1">¡Hola, {session.user.name}!</span>
-            {["Admin","Desarrollador","Vendedor","Delivery"].includes(session.user.role) ? (
+
+            {["Admin", "Desarrollador", "Vendedor", "Delivery"].includes(session.user.role) ? (
               <Hoverable
                 as="div"
-                hoverColor={palette[0]}
-                className="bg-slate-600 text-4xl py-0.5 pl-1 pr-0.5 rounded-full shadow-6xl w-6 h-6"
+                className="text-4xl py-0.5 pl-1 pr-0.5 rounded-full shadow-6xl w-6 h-6"
+                style={{ backgroundColor: "#4b5563" }}            // slate-600
+                hoverStyle={{ backgroundColor: "#6b7280" }}          // slate-500
               >
-                <Link href="/admin"><MdAdminPanelSettings/></Link>
+                <Link href="/admin">
+                  <MdAdminPanelSettings />
+                </Link>
               </Hoverable>
             ) : (
               <Link href="/profile">
@@ -182,11 +188,11 @@ export default function Navbar() {
             )}
           </div>
         ) : (
-          <div className="max-[420px]:m-auto max-[420px]:col-start-6 max-[420px]:col-end-6 col-start-10 col-end-13 flex max-[420px]:justify-center justify-end items-center">
+          <div className="max-[420px]:m-auto max-[420px]:col-start-6 max-[420px]:col-end-6 col-start-10 col-end-13 flex justify-end items-center">
             {onClick && <SearchBar />}
             <Hoverable
               as="button"
-              hoverColor={palette[0]}
+              hoverStyle={{ fill: "#6ed8bf" }}
               onClick={Open}
             >
               <PiMagnifyingGlassBold className="w-4 h-4" />

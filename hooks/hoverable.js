@@ -1,29 +1,20 @@
-import React from "react";
-import { useState } from "react";
-
-function useHoverColor(hoverColor) {
-  const [isHovered, setIsHovered] = useState(false);
-  return {
-    onMouseEnter: () => setIsHovered(true),
-    onMouseLeave: () => setIsHovered(false),
-    style: isHovered ? { color: hoverColor } : {}
-  };
-}
+import React, { useState } from "react";
 
 export function Hoverable({
   as: Component = "span",
-  hoverColor,
+  hoverStyle = {},    // ahora recibimos un objeto de estilos
   className,
-  style,
+  style = {},
   children,
   ...props
 }) {
-  const hoverProps = useHoverColor(hoverColor);
+  const [isHovered, setIsHovered] = useState(false);
   return (
     <Component
       className={className}
-      style={{ ...style, ...hoverProps.style }}
-      {...hoverProps}
+      style={{ ...style, ...(isHovered ? hoverStyle : {}) }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       {...props}
     >
       {children}
