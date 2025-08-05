@@ -71,7 +71,11 @@ export default function Navbar() {
 
               {/* Menú desplegable */}
               <div
-                className={`menu bg-slate-500 text-2xl grid grid-cols-1 gap-1 absolute left-5 top-5 p-1 rounded-xl z-20 ${isOpen ? "" : "hidden"}`}
+                className="menu text-2xl grid grid-cols-1 gap-1 absolute left-5 top-5 p-1 rounded-xl z-20"
+                style={{
+                  backgroundColor: palette[3],
+                  ...(isOpen ? {} : { display: "none" })
+                }}
               >
                 {[
                   { href: "/", label: "Inicio", icon: <FaBookOpen /> },
@@ -115,7 +119,7 @@ export default function Navbar() {
                 as="p"
                 className="rounded-xl"
                 style={urlStyleActive("/wishlist")}
-                hoverStyle={{ borderColor: palette[0] }}
+                hoverStyle={{ color: palette[0], borderColor: palette[0] }}
               >
                 Favoritos <IoIosHeart className="m-auto w-4 h-4" />
               </Hoverable>
@@ -127,7 +131,7 @@ export default function Navbar() {
                 as="p"
                 className="rounded-xl w-4/5"
                 style={urlStyleActive("/cart")}
-                hoverStyle={{ borderColor: palette[0] }}
+                hoverStyle={{ color: palette[0], borderColor: palette[0] }}
               >
                 Carrito <FaCartShopping className="m-auto w-4 h-4" />
               </Hoverable>
