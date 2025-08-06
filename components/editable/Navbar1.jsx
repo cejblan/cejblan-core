@@ -12,7 +12,7 @@ import { IoIosHeart } from "react-icons/io";
 import { IoLogoOctocat, IoPersonSharp } from "react-icons/io5";
 import { MdAdminPanelSettings } from "react-icons/md";
 import { FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
-import Loading from "./Loading";
+import Loading from "./Loading1";
 import DoNotShowAdmin from "@/app/admin/components/DoNotShowAdmin";
 import SearchBar from "./SearchBar";
 import { useBranding } from "@/hooks/useBranding";

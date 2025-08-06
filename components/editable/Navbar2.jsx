@@ -11,7 +11,7 @@ import { IoPersonSharp } from "react-icons/io5"
 import { MdAdminPanelSettings } from "react-icons/md"
 import { TiThMenu, TiTimes } from "react-icons/ti" // Iconos hamburguesa
 import DoNotShowAdmin from "@/app/admin/components/DoNotShowAdmin"
-import Loading from "./Loading"
+import Loading from "./Loading1"
 import { useBranding } from "@/hooks/useBranding"
 import { Hoverable } from "@/hooks/hoverable"
 

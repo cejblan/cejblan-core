@@ -9,7 +9,7 @@ import { LoadProfileData } from "../LoadProfileData";
 import { CalculateTotalPrice, GroupedProducts } from "../GroupedProducts";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import Loading from "../editable/Loading";
+import Loading from "../editable/Loading1";
 import ProductCardAdmin from "@/app/admin/components/ProductCardAdmin";
 import ImageNotSupported from "@/public/ImageNotSupported.webp";
 import PrecioProducto from "@/components/editable/PrecioProducto";

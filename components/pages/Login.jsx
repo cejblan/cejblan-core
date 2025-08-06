@@ -7,7 +7,7 @@ import Link from "next/link"
 import React from "react"
 import Logo from "public/nuevo_logo_cejblan.webp"
 import Logo2 from "public/logo_cejblan_2.webp"
-import Loading from "../editable/Loading";
+import Loading from "../editable/Loading1";
 
 export default function Login() {
   const { data: session } = useSession();

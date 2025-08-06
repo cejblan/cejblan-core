@@ -7,7 +7,7 @@ import { RiUserFill } from "react-icons/ri";
 import { TfiEmail } from "react-icons/tfi";
 import { FaMobileAlt, FaTelegram } from "react-icons/fa";
 import { FaLocationDot, FaMapLocationDot, FaArrowRightArrowLeft } from "react-icons/fa6";
-import Loading from "@/components/editable/Loading";
+import Loading from "@/components/editable/Loading1";
 import Link from "next/link";
 import Countdown from "@/components/Countdown";
 import Geolocation from "@/components/Geolocation";

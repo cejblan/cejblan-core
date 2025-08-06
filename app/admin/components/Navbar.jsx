@@ -18,7 +18,7 @@ import { LuPackageOpen } from "react-icons/lu";
 import { BsPlugin } from "react-icons/bs";
 import { IoIosArrowBack } from "react-icons/io";
 import Image from "next/image";
-import Loading from "@/components/editable/Loading";
+import Loading from "@/components/editable/Loading1";
 import Link from "next/link";
 
 const NEW_ITEMS = [

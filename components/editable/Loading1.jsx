@@ -5,7 +5,7 @@ import Image from "next/image"
 import Logo from "public/nuevo_logo_cejblan.webp"
 import branding from "@/config/branding.json"
 
-export default function Loading({ zIndex }) {
+export default function Loading1({ zIndex }) {
   const { palette } = branding
 
   return (
