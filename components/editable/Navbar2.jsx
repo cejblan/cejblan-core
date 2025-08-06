@@ -197,7 +197,7 @@ export default function Navbar2() {
                   <Link href="/cart">
                     <Hoverable
                       as="div"
-                      className="flex justify-center items-center px-4 py-2 rounded-md space-x-2"
+                      className="flex justify-center items-center px-4 py-2 rounded-md space-x-2 transition-all duration-200"
                       hoverStyle={{
                         backgroundColor: palette[5],
                         color: palette[0],
@@ -214,7 +214,7 @@ export default function Navbar2() {
                   <Link href="/profile">
                     <Hoverable
                       as="div"
-                      className="flex justify-center items-center px-4 py-2 rounded-md space-x-2"
+                      className="flex justify-center items-center px-4 py-2 rounded-md space-x-2 transition-all duration-200"
                       hoverStyle={{
                         backgroundColor: palette[5],
                         color: palette[0],
@@ -234,7 +234,7 @@ export default function Navbar2() {
                       <Link href="/admin">
                         <Hoverable
                           as="div"
-                          className="flex justify-center items-center px-4 py-2 rounded-md space-x-2"
+                          className="flex justify-center items-center px-4 py-2 rounded-md space-x-2 transition-all duration-200"
                           hoverStyle={{
                             backgroundColor: palette[5],
                             color: palette[0],
@@ -256,7 +256,7 @@ export default function Navbar2() {
                       signOut({ callbackUrl: "/" })
                       setIsOpen(false)
                     }}
-                    className="flex justify-center items-center w-full text-left px-4 py-2 rounded-md space-x-2"
+                    className="flex justify-center items-center w-full text-left px-4 py-2 rounded-md space-x-2 transition-all duration-200"
                     hoverStyle={{
                       backgroundColor: palette[5],
                       color: palette[0],
@@ -275,7 +275,7 @@ export default function Navbar2() {
                     signIn()
                     setIsOpen(false)
                   }}
-                  className="flex justify-center items-center w-full text-left px-4 py-2 rounded-md space-x-2"
+                  className="flex justify-center items-center w-full text-left px-4 py-2 rounded-md space-x-2 transition-all duration-200"
                   hoverStyle={{
                     backgroundColor: palette[5],
                     color: palette[0],
