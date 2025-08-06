@@ -13,7 +13,7 @@ import { TiThMenu, TiTimes } from "react-icons/ti" // Iconos hamburguesa
 import DoNotShowAdmin from "@/app/admin/components/DoNotShowAdmin"
 import { useBranding } from "@/hooks/useBranding"
 import { Hoverable } from "@/hooks/hoverable"
-import branding from "@/config/branding.json";
+import branding from "@/config/themes.json";
 import Loading1 from "@/components/editable/Loading1";
 import Loading2 from "@/components/editable/Loading2";
 import Loading3 from "@/components/editable/Loading3";

@@ -7,7 +7,7 @@ import Link from "next/link"
 import React from "react"
 import Logo from "public/nuevo_logo_cejblan.webp"
 import Logo2 from "public/logo_cejblan_2.webp"
-import branding from "@/config/branding.json";
+import branding from "@/config/themes.json";
 import Loading1 from "@/components/editable/Loading1";
 import Loading2 from "@/components/editable/Loading2";
 import Loading3 from "@/components/editable/Loading3";

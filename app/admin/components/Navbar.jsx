@@ -19,7 +19,7 @@ import { BsPlugin } from "react-icons/bs";
 import { IoIosArrowBack } from "react-icons/io";
 import Image from "next/image";
 import Link from "next/link";
-import branding from "@/config/branding.json";
+import branding from "@/config/themes.json";
 import Loading1 from "@/components/editable/Loading1";
 import Loading2 from "@/components/editable/Loading2";
 import Loading3 from "@/components/editable/Loading3";

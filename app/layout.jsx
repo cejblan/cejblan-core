@@ -20,11 +20,11 @@ export const metadata = {
 
 function getBrandingConfig() {
   try {
-    const filePath = path.resolve(process.cwd(), "config/branding.json");
+    const filePath = path.resolve(process.cwd(), "config/themes.json");
     const content = fs.readFileSync(filePath, "utf-8");
     return JSON.parse(content);
   } catch (error) {
-    console.error("No se pudo leer branding.json:", error);
+    console.error("No se pudo leer themes.json:", error);
     return {};
   }
 }
