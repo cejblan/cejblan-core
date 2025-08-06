@@ -65,29 +65,30 @@ export default function Navbar2() {
         </button>
 
         {/* Menú centrado estilo dock - oculto en móvil */}
-        <ul className="hidden sm:flex justify-center space-x-6 text-sm font-medium">
+        <div className="hidden sm:flex justify-center space-x-6 text-sm font-medium">
           {[
             { label: "Inicio", href: "/" },
             { label: "Catálogo", href: "/products" },
             { label: "Pedidos", href: "/orders" },
           ].map(({ label, href }) => (
-            <li key={href}>
+            <div key={href}>
               <Link href={href}>
                 <Hoverable
                   as="span"
-                  className="px-3 py-1 rounded-full transition-all duration-200"
+                  className="px-3 py-1 rounded-full transition-all duration-200 border-[1px] border-solid"
                   style={isActive(href)}
                   hoverStyle={{
                     backgroundColor: palette[3],
                     color: palette[0],
+                    borderColor: palette[6],
                   }}
                 >
                   {label}
                 </Hoverable>
               </Link>
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
 
         {/* Acciones derecha */}
         <div className="hidden sm:flex justify-end items-center space-x-4">
@@ -133,7 +134,7 @@ export default function Navbar2() {
             <Hoverable
               as="button"
               onClick={() => signIn()}
-              className="flex items-center space-x-1"
+              className="flex items-center space-x-1 transition-all duration-200"
               hoverStyle={{ color: palette[0] }}
             >
               <span className="text-sm">Ingresar</span>

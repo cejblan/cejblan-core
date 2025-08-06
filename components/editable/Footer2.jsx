@@ -38,10 +38,11 @@ export default function Footer2() {
           <Hoverable
             as={Link}
             href="/politicaPrivacidad"
-            className="font-bold text-sm px-4 py-1 rounded-2xl shadow-md"
+            className="font-bold text-sm px-4 py-1 rounded-2xl transition-all duration-200 shadow-md border-[1px] border-solid"
             hoverStyle={{
               backgroundColor: palette[5],
               color: palette[0],
+              borderColor: palette[6],
             }}
             style={{
               backgroundColor: palette[3],

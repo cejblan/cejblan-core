@@ -41,7 +41,7 @@ export default function Login() {
         <p className="leading-tight mb-2">Por favor, inicia sesión con tu<br />cuenta de Google para continuar.</p>
         <button
           onClick={() => signIn("google", { callbackUrl: "/" })}
-          className="bg-slate-100 hover:bg-slate-300 text-xl text-center border border-slate-400 py-1 px-2 mb-2 w-full rounded-xl flex gap-1 justify-center items-center"
+          className="bg-slate-100 hover:bg-slate-300 text-xl text-center transition-all duration-200 border border-slate-400 py-1 px-2 mb-2 w-full rounded-xl flex gap-1 justify-center items-center"
         >
           <Image
             loading="lazy"
