@@ -11,16 +11,18 @@ import Link from "next/link";
 import Countdown from "@/components/Countdown";
 import Geolocation from "@/components/Geolocation";
 import dynamic from "next/dynamic";
-// Cargar Maps dinámicamente con un componente de carga y desactiva SSR
-const Maps = dynamic(() => import("@/components/Maps"), {
-  loading: () => <Loading zIndex={40} />,
-  ssr: false, // Solo si necesitas que se cargue solo en el lado del cliente
-});
 
 import branding from "@/config/branding.json";
 import Loading1 from "@/components/editable/Loading1";
 import Loading2 from "@/components/editable/Loading2";
 import Loading3 from "@/components/editable/Loading3";
+
+const Loading = getLoadingComponent(branding.loading);
+// Cargar Maps dinámicamente con un componente de carga y desactiva SSR
+const Maps = dynamic(() => import("@/components/Maps"), {
+  loading: () => <Loading zIndex={40} />,
+  ssr: false, // Solo si necesitas que se cargue solo en el lado del cliente
+});
 
 function getLoadingComponent(name) {
   switch (name) {
