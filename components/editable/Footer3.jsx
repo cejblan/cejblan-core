@@ -35,7 +35,7 @@ export default function Footer3() {
               className="font-semibold inline-flex items-center gap-1"
               hoverStyle={{ color: palette[0] }}
             >
-              <span>Francisco R. Gonzalez Portal</span>
+              <span>Francisco Ramon Gonzalez Portal</span>
               <span role="img" aria-label="LinkedIn">🔗</span>
             </Hoverable>
           </div>
