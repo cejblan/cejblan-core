@@ -115,6 +115,7 @@ export default function Navbar2() {
                 as={Link}
                 href="/cart"
                 hoverStyle={{ color: palette[0] }}
+                className="transition-all duration-200"
               >
                 <FaCartShopping className="w-5 h-5" />
               </Hoverable>
@@ -123,6 +124,7 @@ export default function Navbar2() {
                 as={Link}
                 href="/profile"
                 hoverStyle={{ color: palette[0] }}
+                className="transition-all duration-200"
               >
                 <IoPersonSharp className="w-5 h-5" />
               </Hoverable>
@@ -134,6 +136,7 @@ export default function Navbar2() {
                     as={Link}
                     href="/admin"
                     hoverStyle={{ color: palette[0] }}
+                    className="transition-all duration-200"
                   >
                     <MdAdminPanelSettings className="w-5 h-5" />
                   </Hoverable>
@@ -143,6 +146,7 @@ export default function Navbar2() {
                 as="button"
                 onClick={() => signOut({ callbackUrl: "/" })}
                 hoverStyle={{ color: palette[0] }}
+                className="transition-all duration-200"
               >
                 <FaSignOutAlt className="w-5 h-5" />
               </Hoverable>
