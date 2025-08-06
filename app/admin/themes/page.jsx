@@ -189,14 +189,14 @@ export default function ThemesPage() {
                 ¿Estás absolutamente seguro de que deseas continuar?
               </p>
               <div className="flex justify-end gap-4">
-                <button
-                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                <span
+                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 cursor-pointer"
                   onClick={() => setMostrarConfirmacionMerge(false)}
                 >
                   Cancelar
-                </button>
-                <button
-                  className="bg-red-700 text-white px-4 py-2 rounded hover:bg-red-800"
+                </span>
+                <span
+                  className="bg-red-700 text-white px-4 py-2 rounded hover:bg-red-800 cursor-pointer"
                   onClick={async () => {
                     try {
                       const res = await fetch('/api/github/merge', {
@@ -220,7 +220,7 @@ export default function ThemesPage() {
                   }}
                 >
                   Sí, publicar ahora
-                </button>
+                </span>
               </div>
             </div>
           </div>
@@ -231,12 +231,12 @@ export default function ThemesPage() {
               <h2 className="text-xl font-bold text-red-800 mb-4">🛑 Error Grave</h2>
               <p className="text-sm text-gray-700 whitespace-pre-line mb-6">{errorMerge}</p>
               <div className="text-right">
-                <button
-                  className="bg-red-700 text-white px-4 py-2 rounded hover:bg-red-800"
+                <span
+                  className="bg-red-700 text-white px-4 py-2 rounded hover:bg-red-800 cursor-pointer"
                   onClick={() => setMostrandoErrorMerge(false)}
                 >
                   Entendido
-                </button>
+                </span>
               </div>
             </div>
           </div>
