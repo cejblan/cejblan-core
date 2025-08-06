@@ -17,18 +17,22 @@ export async function GET() {
 
 export async function POST(req) {
   try {
-    const { palette, logo, navbar, footer } = await req.json();
+    const { palette, logo, navbar, footer, loading } = await req.json();
 
-    // Validaciones
+    // Validaciones básicas
     if (!Array.isArray(palette) || typeof logo !== "string") {
       return NextResponse.json({ error: "Datos inválidos (palette o logo)" }, { status: 400 });
     }
 
-    if (typeof navbar !== "string" || typeof footer !== "string") {
-      return NextResponse.json({ error: "Datos inválidos (navbar o footer)" }, { status: 400 });
+    if (
+      typeof navbar !== "string" ||
+      typeof footer !== "string" ||
+      typeof loading !== "string"
+    ) {
+      return NextResponse.json({ error: "Datos inválidos (navbar, footer o loading)" }, { status: 400 });
     }
 
-    const newData = { palette, logo, navbar, footer };
+    const newData = { palette, logo, navbar, footer, loading };
 
     await writeFile(filePath, JSON.stringify(newData, null, 2), "utf-8");
 
