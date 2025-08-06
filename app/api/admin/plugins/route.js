@@ -1,6 +1,6 @@
-import { getPlugins } from "@/libs/loadPlugins";
+import { loadPlugins } from "@/libs/loadPlugins";
 
 export async function GET() {
-  const plugins = await getPlugins();
+  const plugins = await loadPlugins();
   return Response.json(plugins);
 }
