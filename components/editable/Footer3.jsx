@@ -16,7 +16,7 @@ export default function Footer3() {
       <footer
         id="footer"
         role="contentinfo"
-        className="relative z-30 w-full px-6 py-4 shadow-8xl backdrop-blur-sm"
+        className="relative z-30 w-full px-6 py-4 backdrop-blur-sm"
         style={{
           background: `linear-gradient(to right, ${palette[0]}cc, ${palette[5]}cc)`, // con transparencia
           color: palette[6],
