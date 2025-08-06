@@ -23,7 +23,20 @@ export default function Footer1() {
         }}
       >
         <p className="text-md">
-          {process.env.NEXT_PUBLIC_SITE_NAME} - © Copyright 2025 - Desarrollado por{" "}
+          <Hoverable
+            as={Link}
+            href="/privacy"
+            className="font-bold text-sm p-1 transition-all duration-200"
+            hoverStyle={{
+              color: palette[0],
+            }}
+            style={{
+              color: palette[6],
+            }}
+          >
+            Políticas de Privacidad
+          </Hoverable>
+          - {process.env.NEXT_PUBLIC_SITE_NAME} - © Copyright 2025 - Desarrollado por{" "}
           <Hoverable
             as={Link}
             href="https://www.linkedin.com/in/cejblan"

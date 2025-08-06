@@ -24,7 +24,20 @@ export default function Footer3() {
       >
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2 text-sm">
           <div className="font-medium">
-            {process.env.NEXT_PUBLIC_SITE_NAME} &copy; 2025
+            {process.env.NEXT_PUBLIC_SITE_NAME} &copy; 2025 -
+            <Hoverable
+              as={Link}
+              href="/privacy"
+              className="font-bold text-sm p-1 transition-all duration-200"
+              hoverStyle={{
+                color: palette[0],
+              }}
+              style={{
+                color: palette[6],
+              }}
+            >
+              Políticas de Privacidad
+            </Hoverable>
           </div>
 
           <div className="flex items-center gap-1">
