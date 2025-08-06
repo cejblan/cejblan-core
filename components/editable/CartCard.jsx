@@ -8,37 +8,31 @@ import { CalculateTotalPrice, GroupedProducts } from "@/components/GroupedProduc
 import PrecioProducto from "@/components/editable/PrecioProducto";
 
 export default function CartCard({ onProductCountChange }) {
-  const { data: session } = useSession(); // Obtener la sesión actual del usuario
-  const [products, setProducts] = useState([]); // Estado para almacenar los productos del carrito
+  const { data: session } = useSession();
+  const [products, setProducts] = useState([]);
   const sessionUser = session?.user?.email;
 
-  // Cargar los productos cuando la sesión esté disponible
   useEffect(() => {
     if (session?.user?.email) {
       LoadProductsCart(sessionUser, setProducts);
     }
   }, [session, sessionUser]);
 
-  // Notificar al componente padre la cantidad de productos
   useEffect(() => {
-    onProductCountChange(products.length); // Notificar cuántos productos hay
+    onProductCountChange(products.length);
   }, [products, onProductCountChange]);
 
-  // Función para eliminar un producto específico
   const deleteProduct = async (id) => {
     try {
       const productsIds = [Number(id)];
       if (confirm("¿Seguro quieres eliminar este producto del carrito?")) {
-        const response = await fetch('/api/cart/deleteProduct', {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+        const response = await fetch("/api/cart/deleteProduct", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ productsIds }),
         });
         if (response.ok) {
-          // Actualizar la lista de productos eliminando el producto borrado
-          setProducts((prevProducts) => prevProducts.filter((product) => product.id !== id));
+          setProducts((prev) => prev.filter((p) => p.id !== id));
           alert("Producto eliminado con éxito");
         } else {
           const errorData = await response.json();
@@ -46,85 +40,58 @@ export default function CartCard({ onProductCountChange }) {
         }
       }
     } catch (error) {
-      console.error("Error eliminando el producto:", error);
+      console.error("Error eliminando producto:", error);
       alert("Error al intentar eliminar el producto");
     }
   };
 
-  // Agrupar productos por ID y calcular cantidad y subtotal
   const groupedProducts = GroupedProducts(products);
-
-  // Calcular el total de los productos usando el array agrupado
   const totalPrice = CalculateTotalPrice(groupedProducts);
 
   if (groupedProducts.length === 0) {
     return (
-      <tr className="max-[420px]:text-base text-2xl p-1">
-        <td>El carrito está vacío</td>
+      <tr>
+        <td className="px-4 py-3 text-slate-500 italic" colSpan={5}>
+          El carrito está vacío
+        </td>
       </tr>
     );
-  };
+  }
 
   return (
+    // ===START_RETURN===
     <>
-      {groupedProducts.map((product) => {
-        let priceIVA;
-        let subtotal;
-        /* Se comento codigo innecesario
-        // Cálculos de IVA y subtotal
-        if (product.iva === 16) {
-          priceIVA = ((product.subtotal / 1.16) * 0.16).toFixed(2);
-        } else if (product.iva === 8) {
-          priceIVA = ((product.subtotal / 1.08) * 0.08).toFixed(2);
-        } else if (product.iva === 0) {
-          priceIVA = "E";
-          subtotal = product.subtotal;
-        }
+      {groupedProducts.map((product) => (
+        <tr key={product.id} className="hover:bg-slate-50 transition">
+          <td className="px-4 py-3 border border-slate-200 text-emerald-600 hover:text-emerald-700 underline">
+            <Link href={`/products/${product.id}`}>{product.name}</Link>
+          </td>
+          <td className="px-4 py-3 border border-slate-200">{product.quantity}</td>
+          <td className="px-4 py-3 border border-slate-200">
+            <PrecioProducto precio={product.price} format={0} />
+          </td>
+          <td className="px-4 py-3 border border-slate-200">
+            <PrecioProducto precio={(product.quantity * product.price).toFixed(2)} format={0} />
+          </td>
+          <td className="px-4 py-3 border border-slate-200">
+            <button
+              onClick={() => deleteProduct(product.id)}
+              className="bg-red-500 hover:bg-red-400 text-white py-1 px-3 rounded-md text-sm font-medium shadow-sm"
+            >
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      ))}
 
-        // Calcular subtotal después de IVA (solo si no es exento)
-        if (priceIVA !== "E") {
-          subtotal = (product.subtotal - parseFloat(priceIVA)).toFixed(2);
-        }
-        */
-
-        {
-          /* Se comento codigo innecesario
-            <td className="border-r border-b border-slate-900">{priceIVA !== "E" ? `${priceIVA}$` : priceIVA}</td>
-            <td className="border-r border-b border-slate-900">{subtotal}$</td>
-          */
-        }
-
-        return (
-          // ===START_RETURN===
-          <tr key={product.id}>
-            <td className="border-r border-b border-slate-900 text-[#6ed8bf] hover:text-[#4bb199] underline">
-              <Link href={`/products/${product.id}`}>{product.name}</Link>
-            </td>
-            <td className="border-r border-b border-slate-900">{product.quantity}</td>
-            <td className="border-r border-b border-slate-900">
-              <PrecioProducto precio={product.price} format={0} />
-            </td>
-            <td className="border-r border-b border-slate-900">
-              <PrecioProducto precio={(product.quantity * product.price).toFixed(2)} format={0} />
-            </td>
-            <td className="py-1 border-b border-slate-900">
-              <button
-                onClick={() => deleteProduct(product.id)}
-                className="bg-red-600 hover:bg-red-500 text-white py-1 max-[420px]:px-1 px-2 rounded-md"
-              >
-                Eliminar
-              </button>
-            </td>
-          </tr>
-        );
-      })}
       <tr>
         <td></td>
         <td></td>
-        <th className="bg-slate-300 border-x border-slate-900">Total</th>
-        <th className="bg-slate-300 border-r max-[420px]:text-sm text-xl border-slate-900">
+        <th className="px-4 py-3 border border-slate-300 bg-slate-100 text-right">Total</th>
+        <th className="px-4 py-3 border border-slate-300 bg-slate-100">
           <PrecioProducto precio={totalPrice} format={0} />
         </th>
+        <td></td>
       </tr>
     </>
     // ===END_RETURN===

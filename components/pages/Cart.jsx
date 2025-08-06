@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import Link from "next/link";
 import { useState } from "react";
@@ -7,46 +7,43 @@ import CartCard from "@/components/editable/CartCard";
 export const forceDynamic = "force-dynamic";
 
 export default function Cart() {
-  const [hasProducts, setHasProducts] = useState(false); // Estado para saber si hay productos
+  const [hasProducts, setHasProducts] = useState(false);
 
-  // Función que se le pasará a CartCard para actualizar el estado
   const handleProducts = (productCount) => {
     setHasProducts(productCount > 0);
   };
 
   return (
     // ===START_RETURN===
-    <div>
-      <div className="max-[420px]:px-1 px-4">
-        <table className="table-auto bg-white text-slate-900 max-[420px]:text-xs text-lg tracking-tight rounded-xl shadow-6xl w-full">
-          <thead>
-            <tr className="bg-slate-300">
-              <th className="border-r border-b border-slate-900 rounded-tl-xl">Nombre</th>
-              <th className="border-r border-b border-slate-900">Cantidad</th>
-              <th className="border-r border-b border-slate-900">Precio</th>
-              {/* Se comento codigo innecesario
-              <th className="border-r border-b border-slate-900">IVA</th>
-              <th className="border-r border-b border-slate-900">Sub Total</th>
-              */}
-              <th className="border-r border-b border-slate-900">Total</th>
-              <th className="bg-[#6ed8bf] text-white border-b border-slate-900 rounded-tr-xl">Acción</th>
+    <div className="p-4 sm:p-6 max-w-6xl mx-auto">
+      <div className="overflow-x-auto">
+        <table className="min-w-full text-sm text-left border-collapse rounded-xl overflow-hidden shadow-md">
+          <thead className="bg-slate-100 text-slate-700 uppercase text-xs font-semibold">
+            <tr>
+              <th className="px-4 py-3 border border-slate-300">Nombre</th>
+              <th className="px-4 py-3 border border-slate-300">Cantidad</th>
+              <th className="px-4 py-3 border border-slate-300">Precio</th>
+              <th className="px-4 py-3 border border-slate-300">Total</th>
+              <th className="px-4 py-3 border border-slate-300 bg-emerald-400 text-white">Acción</th>
             </tr>
           </thead>
-          <tbody>
-            {/* Renderizar productos desde el componente cliente y pasar handleProducts */}
+          <tbody className="bg-white text-slate-900 divide-y divide-slate-200">
             <CartCard onProductCountChange={handleProducts} />
           </tbody>
         </table>
       </div>
-      {/* Mostrar el botón de realizar pedido solo si hay productos */}
-      {
-        hasProducts && (
-          <Link href="./checkout" className="bg-[#6ed8bf] hover:bg-[#4bb199] text-xl font-bold text-white py-1 px-2 rounded-xl shadow-6xl mt-2 mx-auto w-fit block">
+
+      {hasProducts && (
+        <div className="mt-6 flex justify-end">
+          <Link
+            href="./checkout"
+            className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all"
+          >
             Realizar Pedido
           </Link>
-        )
-      }
+        </div>
+      )}
     </div>
     // ===END_RETURN===
-  )
+  );
 }
