@@ -80,7 +80,8 @@ export const config = {
     "/admin/:path*",
     "/cart/:path*",
     "/checkout/:path*",
-    "/products/:path*",
+    // Esto bloquea SOLO subrutas de /products, NO la raíz /products
+    "/products/(.+)",
     "/profile/:path*",
     "/wishlist/:path*",
     "/unauthorized/:path*",
