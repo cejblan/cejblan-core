@@ -65,7 +65,7 @@ export default function Navbar2() {
                 alt="Logo"
                 width={200}
                 height={200}
-                className="sm:h-8 w-auto drop-shadow-6xl"
+                className="sm:h-8 w-auto"
               />
             )}
           </Link>

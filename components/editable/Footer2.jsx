@@ -26,7 +26,6 @@ export default function Footer2() {
           <div className="flex gap-6 justify-center">
             {logo && (
               <Image
-                className="drop-shadow-6xl"
                 src={logo}
                 alt="Logo"
                 width={300}
