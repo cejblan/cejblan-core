@@ -1,4 +1,8 @@
+import { readFile } from "fs/promises";
+import path from "path";
 import { NextResponse } from "next/server";
+
+const filePath = path.resolve(process.cwd(), "config/branding.json");
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPO = process.env.GITHUB_REPO;
@@ -20,14 +24,11 @@ async function getFileSHA() {
 
 export async function GET() {
   try {
-    const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}?ref=${GITHUB_BRANCH}`;
-    const res = await fetch(url, { headers });
-    const json = await res.json();
-
-    const content = Buffer.from(json.content, "base64").toString("utf-8");
-    return NextResponse.json(JSON.parse(content));
+    const content = await readFile(filePath, "utf-8");
+    const json = JSON.parse(content);
+    return NextResponse.json(json);
   } catch (error) {
-    console.error("Error al leer archivo desde GitHub:", error);
+    console.error("Error al leer branding.json:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
