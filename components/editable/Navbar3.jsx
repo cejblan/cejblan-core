@@ -76,7 +76,7 @@ export default function Navbar3() {
           >
             <Hoverable
               as={isOpen ? TiTimes : TiThMenu}
-              className="w-6 h-6 cursor-pointer transition-transform duration-200 hover:scale-110"
+              className="w-4 h-4 cursor-pointer transition-transform duration-200 hover:scale-110"
               hoverStyle={{ fill: palette[0] }}
             />
             {isOpen && (
@@ -183,7 +183,7 @@ export default function Navbar3() {
                     style={{ backgroundColor: palette[4] }}
                     hoverStyle={{ backgroundColor: palette[3] }}
                   >
-                    <MdAdminPanelSettings className="w-5 h-5" />
+                    <MdAdminPanelSettings className="w-4 h-4" />
                   </Hoverable>
                 </Link>
               ) : (
@@ -220,7 +220,7 @@ export default function Navbar3() {
           )}
         </div>
       </nav>
-      <div className="h-11" />
+      <div className="h-10" />
     </DoNotShowAdmin>
     // ===END_RETURN===
   );
