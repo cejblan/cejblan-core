@@ -4,12 +4,14 @@ import { useEffect, useState } from "react";
 
 const NAVBAR_OPTIONS = ["navbar1", "navbar2", "navbar3"];
 const FOOTER_OPTIONS = ["footer1", "footer2", "footer3"];
+const LOADING_OPTIONS = ["loading1", "loading2", "loading3"];
 
 export default function ThemesPage() {
   const [palette, setPalette] = useState([]);
   const [logo, setLogo] = useState("");
   const [navbar, setNavbar] = useState("");
   const [footer, setFooter] = useState("");
+  const [loadingStyle, setLoadingStyle] = useState(""); // <-- Nuevo estado
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
 
@@ -22,6 +24,7 @@ export default function ThemesPage() {
         setLogo(data.logo || "");
         setNavbar(data.navbar || "");
         setFooter(data.footer || "");
+        setLoadingStyle(data.loading || ""); // <-- Inicializar
       } catch (err) {
         console.error("Error al cargar branding:", err);
       } finally {
@@ -44,7 +47,7 @@ export default function ThemesPage() {
       const res = await fetch("/api/branding", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ palette, logo, navbar, footer }),
+        body: JSON.stringify({ palette, logo, navbar, footer, loading: loadingStyle }),
       });
       const result = await res.json();
       if (res.ok) {
@@ -82,6 +85,7 @@ export default function ThemesPage() {
           boxShadow: "0 4px 6px rgba(0, 0, 0, 0.05)",
         }}
       >
+        {/* Logo */}
         <div style={{ marginBottom: "1.5rem" }}>
           <label style={{ display: "block", fontWeight: "bold" }}>
             Logo del sitio:
@@ -102,6 +106,7 @@ export default function ThemesPage() {
           />
         </div>
 
+        {/* Navbar */}
         <div style={{ marginBottom: "1.5rem" }}>
           <label style={{ display: "block", fontWeight: "bold" }}>
             Navbar Seleccionado:
@@ -126,6 +131,7 @@ export default function ThemesPage() {
           </select>
         </div>
 
+        {/* Footer */}
         <div style={{ marginBottom: "1.5rem" }}>
           <label style={{ display: "block", fontWeight: "bold" }}>
             Footer Seleccionado:
@@ -150,6 +156,32 @@ export default function ThemesPage() {
           </select>
         </div>
 
+        {/* Loading */}
+        <div style={{ marginBottom: "1.5rem" }}>
+          <label style={{ display: "block", fontWeight: "bold" }}>
+            Loading Seleccionado:
+          </label>
+          <select
+            value={loadingStyle}
+            onChange={(e) => setLoadingStyle(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "0.5rem",
+              marginTop: 6,
+              borderRadius: 4,
+              border: "1px solid #ccc",
+            }}
+          >
+            <option value="">Selecciona uno</option>
+            {LOADING_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Colores */}
         <div style={{ marginBottom: "1.5rem" }}>
           <h3 style={{ fontSize: "1.1rem", marginBottom: 8 }}>
             Paleta de colores:
@@ -185,6 +217,7 @@ export default function ThemesPage() {
           ))}
         </div>
 
+        {/* Botón submit */}
         <button
           type="submit"
           style={{
