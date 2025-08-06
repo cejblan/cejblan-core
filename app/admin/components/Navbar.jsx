@@ -5,7 +5,7 @@ import { loadIcon } from "@/utils/loadIcon";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
-import { FaPlus, FaSignOutAlt, FaHome } from "react-icons/fa";
+import { FaPlus, FaSignOutAlt, FaHome, FaPaintBrush } from "react-icons/fa";
 import { AiFillDashboard, AiFillShopping } from "react-icons/ai";
 import { IoPersonSharp } from "react-icons/io5";
 import { MdCategory, MdBorderColor } from "react-icons/md";
@@ -18,8 +18,24 @@ import { LuPackageOpen } from "react-icons/lu";
 import { BsPlugin } from "react-icons/bs";
 import { IoIosArrowBack } from "react-icons/io";
 import Image from "next/image";
-import Loading from "@/components/editable/Loading";
 import Link from "next/link";
+import branding from "@/config/branding.json";
+import Loading1 from "@/components/editable/Loading1";
+import Loading2 from "@/components/editable/Loading2";
+import Loading3 from "@/components/editable/Loading3";
+
+function getLoadingComponent(name) {
+  switch (name) {
+    case "loading1":
+      return Loading1;
+    case "loading2":
+      return Loading2;
+    case "loading3":
+      return Loading3;
+    default:
+      return Loading1;
+  }
+}
 
 const NEW_ITEMS = [
   { href: "/admin/users/new", label: "Usuario", icon: FaPlus },
@@ -38,6 +54,7 @@ const MAIN_ITEMS = [
   { href: "/admin/deliveries", label: "Entregas", icon: LuPackageOpen, match: /^\/admin\/deliveries/ },
   { href: "/admin/orders", label: "Pedidos", icon: MdBorderColor, match: /^\/admin\/orders/ },
   { href: "/admin/gallery", label: "Galeria", icon: GrGallery, match: /^\/admin\/gallery/ },
+  { href: "/admin/themes", label: "Temas", icon: FaPaintBrush, match: /^\/admin\/themes/ },
   { href: "/admin/settings", label: "Configurar", icon: VscSettings, match: /^\/admin\/settings/ },
   { href: "/admin/developer", label: "Desarrollar", icon: LiaConnectdevelop, match: /^\/admin\/developer/ },
 ];
@@ -49,6 +66,8 @@ export default function NavbarAdmin({ children, plugins = [] }) {
   const [isOpenPluginMenu, setIsOpenPluginMenu] = useState(false); // Plugins
 
   const [loadedPlugins, setLoadedPlugins] = useState([]);
+
+  const Loading = getLoadingComponent(branding.loading);
 
   useEffect(() => {
     if (!plugins || plugins.length === 0) {

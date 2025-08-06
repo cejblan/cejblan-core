@@ -12,12 +12,28 @@ import { IoIosHeart } from "react-icons/io";
 import { IoLogoOctocat, IoPersonSharp } from "react-icons/io5";
 import { MdAdminPanelSettings } from "react-icons/md";
 import { FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
-import Loading from "./Loading";
 import DoNotShowAdmin from "@/app/admin/components/DoNotShowAdmin";
 import SearchBar from "./SearchBar";
 import { useBranding } from "@/hooks/useBranding";
 import { Hoverable } from "@/hooks/hoverable";
 import { MdBorderColor } from "react-icons/md";
+import branding from "@/config/branding.json";
+import Loading1 from "@/components/editable/Loading1";
+import Loading2 from "@/components/editable/Loading2";
+import Loading3 from "@/components/editable/Loading3";
+
+function getLoadingComponent(name) {
+  switch (name) {
+    case "loading1":
+      return Loading1;
+    case "loading2":
+      return Loading2;
+    case "loading3":
+      return Loading3;
+    default:
+      return Loading1;
+  }
+}
 
 export default function Navbar3() {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,6 +45,8 @@ export default function Navbar3() {
   const handleClick = () => setIsOpen(prev => !prev);
   const Open = () => setOnClick(prev => !prev);
 
+  const Loading = getLoadingComponent(branding.loading);
+  
   function urlStyle(href) {
     return { backgroundColor: pathname === href ? palette[5] : palette[4] };
   }
@@ -58,7 +76,7 @@ export default function Navbar3() {
           >
             <Hoverable
               as={isOpen ? TiTimes : TiThMenu}
-              className="w-6 h-6 cursor-pointer transition-transform duration-200 hover:scale-110"
+              className="w-4 h-4 cursor-pointer transition-transform duration-200 hover:scale-110"
               hoverStyle={{ fill: palette[0] }}
             />
             {isOpen && (
@@ -165,7 +183,7 @@ export default function Navbar3() {
                     style={{ backgroundColor: palette[4] }}
                     hoverStyle={{ backgroundColor: palette[3] }}
                   >
-                    <MdAdminPanelSettings className="w-5 h-5" />
+                    <MdAdminPanelSettings className="w-4 h-4" />
                   </Hoverable>
                 </Link>
               ) : (
@@ -202,7 +220,7 @@ export default function Navbar3() {
           )}
         </div>
       </nav>
-      <div className="h-11" />
+      <div className="h-10" />
     </DoNotShowAdmin>
     // ===END_RETURN===
   );

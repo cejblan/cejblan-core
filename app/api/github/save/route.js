@@ -14,14 +14,13 @@ export async function POST(req) {
     }
 
     const [owner, repo] = process.env.GITHUB_REPO.split("/");
-    const branch = "develop";
 
     // 1. Obtener el SHA actual del archivo
     const getRes = await octokit.rest.repos.getContent({
       owner,
       repo,
       path,
-      ref: branch,
+      ref: process.env.GITHUB_BRANCH,
     });
 
     const sha = getRes.data.sha;

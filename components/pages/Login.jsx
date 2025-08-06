@@ -7,11 +7,29 @@ import Link from "next/link"
 import React from "react"
 import Logo from "public/nuevo_logo_cejblan.webp"
 import Logo2 from "public/logo_cejblan_2.webp"
-import Loading from "../editable/Loading";
+import branding from "@/config/branding.json";
+import Loading1 from "@/components/editable/Loading1";
+import Loading2 from "@/components/editable/Loading2";
+import Loading3 from "@/components/editable/Loading3";
+
+function getLoadingComponent(name) {
+  switch (name) {
+    case "loading1":
+      return Loading1;
+    case "loading2":
+      return Loading2;
+    case "loading3":
+      return Loading3;
+    default:
+      return Loading1;
+  }
+}
 
 export default function Login() {
   const { data: session } = useSession();
   const router = useRouter();
+
+  const Loading = getLoadingComponent(branding.loading);
 
   if (session) {
     router.push("/");
@@ -41,7 +59,7 @@ export default function Login() {
         <p className="leading-tight mb-2">Por favor, inicia sesión con tu<br />cuenta de Google para continuar.</p>
         <button
           onClick={() => signIn("google", { callbackUrl: "/" })}
-          className="bg-slate-100 hover:bg-slate-300 text-xl text-center border border-slate-400 py-1 px-2 mb-2 w-full rounded-xl flex gap-1 justify-center items-center"
+          className="bg-slate-100 hover:bg-slate-300 text-xl text-center transition-all duration-200 border border-slate-400 py-1 px-2 mb-2 w-full rounded-xl flex gap-1 justify-center items-center"
         >
           <Image
             loading="lazy"

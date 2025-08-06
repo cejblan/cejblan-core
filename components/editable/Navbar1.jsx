@@ -12,18 +12,35 @@ import { IoIosHeart } from "react-icons/io";
 import { IoLogoOctocat, IoPersonSharp } from "react-icons/io5";
 import { MdAdminPanelSettings } from "react-icons/md";
 import { FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
-import Loading from "./Loading";
 import DoNotShowAdmin from "@/app/admin/components/DoNotShowAdmin";
 import SearchBar from "./SearchBar";
 import { useBranding } from "@/hooks/useBranding";
 import { Hoverable } from "@/hooks/hoverable";
 import { MdBorderColor } from "react-icons/md";
+import branding from "@/config/branding.json";
+import Loading1 from "@/components/editable/Loading1";
+import Loading2 from "@/components/editable/Loading2";
+import Loading3 from "@/components/editable/Loading3";
+
+function getLoadingComponent(name) {
+  switch (name) {
+    case "loading1":
+      return Loading1;
+    case "loading2":
+      return Loading2;
+    case "loading3":
+      return Loading3;
+    default:
+      return Loading1;
+  }
+}
 
 export default function Navbar1() {
   const [isOpen, setIsOpen] = useState(false);
   const { data: session, status } = useSession();
   const pathname = usePathname();
   const [onClick, setOnClick] = useState(false);
+  const Loading = getLoadingComponent(branding.loading);
   const { logo, palette, loading } = useBranding();
 
   const handleClick = () => setIsOpen(prev => !prev);

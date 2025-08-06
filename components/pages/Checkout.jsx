@@ -9,7 +9,6 @@ import { LoadProfileData } from "../LoadProfileData";
 import { CalculateTotalPrice, GroupedProducts } from "../GroupedProducts";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import Loading from "../editable/Loading";
 import ProductCardAdmin from "@/app/admin/components/ProductCardAdmin";
 import ImageNotSupported from "@/public/ImageNotSupported.webp";
 import PrecioProducto from "@/components/editable/PrecioProducto";
@@ -18,6 +17,24 @@ const Maps = dynamic(() => import("../Maps"), { ssr: false });
 import moment from "moment";
 import "moment/locale/es";
 moment.locale("es");
+
+import branding from "@/config/branding.json";
+import Loading1 from "@/components/editable/Loading1";
+import Loading2 from "@/components/editable/Loading2";
+import Loading3 from "@/components/editable/Loading3";
+
+function getLoadingComponent(name) {
+  switch (name) {
+    case "loading1":
+      return Loading1;
+    case "loading2":
+      return Loading2;
+    case "loading3":
+      return Loading3;
+    default:
+      return Loading1;
+  }
+}
 
 export default function Checkout() {
   const [deliveryDate, setDeliveryDate] = useState(null);
@@ -61,6 +78,8 @@ export default function Checkout() {
 
   const [freeDeliveryLimit, setFreeDeliveryLimit] = useState(null);
   const isFreeDelivery = freeDeliveryLimit !== null && totalPrice >= freeDeliveryLimit;
+
+  const Loading = getLoadingComponent(branding.loading);
 
   let deliveryCost = 0;
   if (!isFreeDelivery && selectedDelivery && selectedDelivery.data?.length === 1 && !isNaN(selectedDelivery.data)) {

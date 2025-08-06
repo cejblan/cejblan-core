@@ -9,7 +9,7 @@ export async function POST() {
       owner,
       repo,
       base: "main",
-      head: "develop",
+      head: process.env.GITHUB_BRANCH,
       commit_message: "Publicación automática desde develop a main",
     });
 

@@ -7,16 +7,35 @@ import { RiUserFill } from "react-icons/ri";
 import { TfiEmail } from "react-icons/tfi";
 import { FaMobileAlt, FaTelegram } from "react-icons/fa";
 import { FaLocationDot, FaMapLocationDot, FaArrowRightArrowLeft } from "react-icons/fa6";
-import Loading from "@/components/editable/Loading";
 import Link from "next/link";
 import Countdown from "@/components/Countdown";
 import Geolocation from "@/components/Geolocation";
 import dynamic from "next/dynamic";
+
+import branding from "@/config/branding.json";
+import Loading1 from "@/components/editable/Loading1";
+import Loading2 from "@/components/editable/Loading2";
+import Loading3 from "@/components/editable/Loading3";
+
+const Loading = getLoadingComponent(branding.loading);
 // Cargar Maps dinámicamente con un componente de carga y desactiva SSR
 const Maps = dynamic(() => import("@/components/Maps"), {
   loading: () => <Loading zIndex={40} />,
   ssr: false, // Solo si necesitas que se cargue solo en el lado del cliente
 });
+
+function getLoadingComponent(name) {
+  switch (name) {
+    case "loading1":
+      return Loading1;
+    case "loading2":
+      return Loading2;
+    case "loading3":
+      return Loading3;
+    default:
+      return Loading1;
+  }
+}
 
 export default function Profile() {
   const { data: session, status } = useSession();
@@ -54,6 +73,9 @@ export default function Profile() {
     setLatitude(latitudeTruncated);
     setLongitude(longitudeTruncated);
   };
+
+  const Loading = getLoadingComponent(branding.loading);
+
   // Agrega este useEffect para establecer valores iniciales de geolocalización
   useEffect(() => {
     if (latitude && longitude) {

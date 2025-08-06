@@ -11,14 +11,31 @@ import { IoPersonSharp } from "react-icons/io5"
 import { MdAdminPanelSettings } from "react-icons/md"
 import { TiThMenu, TiTimes } from "react-icons/ti" // Iconos hamburguesa
 import DoNotShowAdmin from "@/app/admin/components/DoNotShowAdmin"
-import Loading from "./Loading"
 import { useBranding } from "@/hooks/useBranding"
 import { Hoverable } from "@/hooks/hoverable"
+import branding from "@/config/branding.json";
+import Loading1 from "@/components/editable/Loading1";
+import Loading2 from "@/components/editable/Loading2";
+import Loading3 from "@/components/editable/Loading3";
+
+function getLoadingComponent(name) {
+  switch (name) {
+    case "loading1":
+      return Loading1;
+    case "loading2":
+      return Loading2;
+    case "loading3":
+      return Loading3;
+    default:
+      return Loading1;
+  }
+}
 
 export default function Navbar2() {
   const [isOpen, setIsOpen] = useState(false) // Estado para menú móvil abierto/cerrado
   const { data: session, status } = useSession()
   const pathname = usePathname()
+  const Loading = getLoadingComponent(branding.loading);
   const { palette, logo, loading } = useBranding()
 
   if (status === "loading" || loading) return <Loading zIndex={50} />
@@ -65,29 +82,30 @@ export default function Navbar2() {
         </button>
 
         {/* Menú centrado estilo dock - oculto en móvil */}
-        <ul className="hidden sm:flex justify-center space-x-6 text-sm font-medium">
+        <div className="hidden sm:flex justify-center space-x-6 text-sm font-medium">
           {[
             { label: "Inicio", href: "/" },
             { label: "Catálogo", href: "/products" },
             { label: "Pedidos", href: "/orders" },
           ].map(({ label, href }) => (
-            <li key={href}>
+            <div key={href}>
               <Link href={href}>
                 <Hoverable
                   as="span"
-                  className="px-3 py-1 rounded-full transition-all duration-200"
+                  className="px-3 py-1 rounded-full transition-all duration-200 border-[1px] border-solid"
                   style={isActive(href)}
                   hoverStyle={{
                     backgroundColor: palette[3],
                     color: palette[0],
+                    borderColor: palette[6],
                   }}
                 >
                   {label}
                 </Hoverable>
               </Link>
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
 
         {/* Acciones derecha */}
         <div className="hidden sm:flex justify-end items-center space-x-4">
@@ -133,7 +151,7 @@ export default function Navbar2() {
             <Hoverable
               as="button"
               onClick={() => signIn()}
-              className="flex items-center space-x-1"
+              className="flex items-center space-x-1 transition-all duration-200"
               hoverStyle={{ color: palette[0] }}
             >
               <span className="text-sm">Ingresar</span>
@@ -179,7 +197,7 @@ export default function Navbar2() {
                   <Link href="/cart">
                     <Hoverable
                       as="div"
-                      className="flex justify-center items-center px-4 py-2 rounded-md space-x-2"
+                      className="flex justify-center items-center px-4 py-2 rounded-md space-x-2 transition-all duration-200"
                       hoverStyle={{
                         backgroundColor: palette[5],
                         color: palette[0],
@@ -196,7 +214,7 @@ export default function Navbar2() {
                   <Link href="/profile">
                     <Hoverable
                       as="div"
-                      className="flex justify-center items-center px-4 py-2 rounded-md space-x-2"
+                      className="flex justify-center items-center px-4 py-2 rounded-md space-x-2 transition-all duration-200"
                       hoverStyle={{
                         backgroundColor: palette[5],
                         color: palette[0],
@@ -216,7 +234,7 @@ export default function Navbar2() {
                       <Link href="/admin">
                         <Hoverable
                           as="div"
-                          className="flex justify-center items-center px-4 py-2 rounded-md space-x-2"
+                          className="flex justify-center items-center px-4 py-2 rounded-md space-x-2 transition-all duration-200"
                           hoverStyle={{
                             backgroundColor: palette[5],
                             color: palette[0],
@@ -238,7 +256,7 @@ export default function Navbar2() {
                       signOut({ callbackUrl: "/" })
                       setIsOpen(false)
                     }}
-                    className="flex justify-center items-center w-full text-left px-4 py-2 rounded-md space-x-2"
+                    className="flex justify-center items-center w-full text-left px-4 py-2 rounded-md space-x-2 transition-all duration-200"
                     hoverStyle={{
                       backgroundColor: palette[5],
                       color: palette[0],
@@ -257,7 +275,7 @@ export default function Navbar2() {
                     signIn()
                     setIsOpen(false)
                   }}
-                  className="flex justify-center items-center w-full text-left px-4 py-2 rounded-md space-x-2"
+                  className="flex justify-center items-center w-full text-left px-4 py-2 rounded-md space-x-2 transition-all duration-200"
                   hoverStyle={{
                     backgroundColor: palette[5],
                     color: palette[0],

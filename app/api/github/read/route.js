@@ -13,14 +13,13 @@ export async function POST(req) {
 
   const ownerRepo = process.env.GITHUB_REPO;
   const [owner, repo] = ownerRepo.split("/");
-  const branch = "develop";
 
   try {
     const response = await octokit.rest.repos.getContent({
       owner,
       repo,
       path,
-      ref: branch,
+      ref: process.env.GITHUB_BRANCH,
     });
 
     if (!response.data.content) {
