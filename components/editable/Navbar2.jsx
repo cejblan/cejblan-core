@@ -11,14 +11,31 @@ import { IoPersonSharp } from "react-icons/io5"
 import { MdAdminPanelSettings } from "react-icons/md"
 import { TiThMenu, TiTimes } from "react-icons/ti" // Iconos hamburguesa
 import DoNotShowAdmin from "@/app/admin/components/DoNotShowAdmin"
-import Loading from "./Loading1"
 import { useBranding } from "@/hooks/useBranding"
 import { Hoverable } from "@/hooks/hoverable"
+import branding from "@/config/branding.json";
+import Loading1 from "@/components/editable/Loading1";
+import Loading2 from "@/components/editable/Loading2";
+import Loading3 from "@/components/editable/Loading3";
+
+function getLoadingComponent(name) {
+  switch (name) {
+    case "loading1":
+      return Loading1;
+    case "loading2":
+      return Loading2;
+    case "loading3":
+      return Loading3;
+    default:
+      return Loading1;
+  }
+}
 
 export default function Navbar2() {
   const [isOpen, setIsOpen] = useState(false) // Estado para menú móvil abierto/cerrado
   const { data: session, status } = useSession()
   const pathname = usePathname()
+  const Loading = getLoadingComponent(branding.loading);
   const { palette, logo, loading } = useBranding()
 
   if (status === "loading" || loading) return <Loading zIndex={50} />
