@@ -63,7 +63,7 @@ export default function CartCard({ onProductCountChange }) {
     <>
       {groupedProducts.map((product) => (
         <tr key={product.id} className="hover:bg-slate-50 transition">
-          <td className="px-4 py-3 border border-slate-200 text-emerald-600 hover:text-emerald-700 underline">
+          <td className="px-4 py-3 border border-slate-200 text-[#4bb199] hover:text-[#2e806c] underline">
             <Link href={`/products/${product.id}`}>{product.name}</Link>
           </td>
           <td className="px-4 py-3 border border-slate-200">{product.quantity}</td>

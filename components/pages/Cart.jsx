@@ -24,7 +24,7 @@ export default function Cart() {
               <th className="px-4 py-3 border border-slate-300">Cantidad</th>
               <th className="px-4 py-3 border border-slate-300">Precio</th>
               <th className="px-4 py-3 border border-slate-300">Total</th>
-              <th className="px-4 py-3 border border-slate-300 bg-emerald-400 text-white">Acción</th>
+              <th className="px-4 py-3 border border-slate-300 bg-[#6ed8bf] text-white">Acción</th>
             </tr>
           </thead>
           <tbody className="bg-white text-slate-900 divide-y divide-slate-200">
@@ -37,7 +37,7 @@ export default function Cart() {
         <div className="mt-6 flex justify-end">
           <Link
             href="./checkout"
-            className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all"
+            className="bg-[#6ed8bf] hover:bg-[#4bb199] text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all"
           >
             Realizar Pedido
           </Link>
