@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useState } from "react"
-import branding from "@/config/branding.json"
+import branding from "@/config/themes.json"
 import Logo from "public/nuevo_logo_cejblan.webp"
 import Image from "next/image"
 

@@ -13,7 +13,7 @@ import { TiThMenu, TiTimes } from "react-icons/ti" // Iconos hamburguesa
 import DoNotShowAdmin from "@/app/admin/components/DoNotShowAdmin"
 import { useBranding } from "@/hooks/useBranding"
 import { Hoverable } from "@/hooks/hoverable"
-import branding from "@/config/branding.json";
+import branding from "@/config/themes.json";
 import Loading1 from "@/components/editable/Loading1";
 import Loading2 from "@/components/editable/Loading2";
 import Loading3 from "@/components/editable/Loading3";
@@ -65,7 +65,7 @@ export default function Navbar2() {
                 alt="Logo"
                 width={200}
                 height={200}
-                className="sm:h-8 w-auto drop-shadow-6xl"
+                className="sm:h-8 w-auto"
               />
             )}
           </Link>
@@ -115,6 +115,7 @@ export default function Navbar2() {
                 as={Link}
                 href="/cart"
                 hoverStyle={{ color: palette[0] }}
+                className="transition-all duration-200"
               >
                 <FaCartShopping className="w-5 h-5" />
               </Hoverable>
@@ -123,6 +124,7 @@ export default function Navbar2() {
                 as={Link}
                 href="/profile"
                 hoverStyle={{ color: palette[0] }}
+                className="transition-all duration-200"
               >
                 <IoPersonSharp className="w-5 h-5" />
               </Hoverable>
@@ -134,6 +136,7 @@ export default function Navbar2() {
                     as={Link}
                     href="/admin"
                     hoverStyle={{ color: palette[0] }}
+                    className="transition-all duration-200"
                   >
                     <MdAdminPanelSettings className="w-5 h-5" />
                   </Hoverable>
@@ -143,6 +146,7 @@ export default function Navbar2() {
                 as="button"
                 onClick={() => signOut({ callbackUrl: "/" })}
                 hoverStyle={{ color: palette[0] }}
+                className="transition-all duration-200"
               >
                 <FaSignOutAlt className="w-5 h-5" />
               </Hoverable>

@@ -17,9 +17,10 @@ import { LiaConnectdevelop } from "react-icons/lia";
 import { LuPackageOpen } from "react-icons/lu";
 import { BsPlugin } from "react-icons/bs";
 import { IoIosArrowBack } from "react-icons/io";
+import { RiStore3Fill } from "react-icons/ri";
 import Image from "next/image";
 import Link from "next/link";
-import branding from "@/config/branding.json";
+import branding from "@/config/themes.json";
 import Loading1 from "@/components/editable/Loading1";
 import Loading2 from "@/components/editable/Loading2";
 import Loading3 from "@/components/editable/Loading3";
@@ -54,6 +55,7 @@ const MAIN_ITEMS = [
   { href: "/admin/deliveries", label: "Entregas", icon: LuPackageOpen, match: /^\/admin\/deliveries/ },
   { href: "/admin/orders", label: "Pedidos", icon: MdBorderColor, match: /^\/admin\/orders/ },
   { href: "/admin/gallery", label: "Galeria", icon: GrGallery, match: /^\/admin\/gallery/ },
+  { href: "/admin/store", label: "Tienda", icon: RiStore3Fill, match: /^\/admin\/store/ },
   { href: "/admin/themes", label: "Temas", icon: FaPaintBrush, match: /^\/admin\/themes/ },
   { href: "/admin/settings", label: "Configurar", icon: VscSettings, match: /^\/admin\/settings/ },
   { href: "/admin/developer", label: "Desarrollar", icon: LiaConnectdevelop, match: /^\/admin\/developer/ },
