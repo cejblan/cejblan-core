@@ -1,4 +1,5 @@
 {
+  "rute": "cms",
   "name": "CMS",
   "longName": "CMS editor vía GitHub",
   "version": "1.0.0",

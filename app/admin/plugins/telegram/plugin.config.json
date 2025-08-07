@@ -1,4 +1,5 @@
 {
+  "rute": "telegram",
   "name": "Telegram",
   "longName": "Bot de Telegram",
   "version": "1.0.0",

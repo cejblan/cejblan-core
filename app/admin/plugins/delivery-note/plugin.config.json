@@ -1,4 +1,5 @@
 {
+  "rute": "delivery-note",
   "name": "Notas",
   "longName": "Notas de Entrega",
   "version": "1.0.0",

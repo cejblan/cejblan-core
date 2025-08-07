@@ -1,4 +1,5 @@
 {
+  "rute": "coins",
   "name": "Monedas",
   "longName": "Monedas de Cambio",
   "version": "1.0.0",

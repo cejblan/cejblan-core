@@ -1,4 +1,5 @@
 {
+  "rute": "shipments",
   "name": "Envios",
   "longName": "Calendario de Envios",
   "version": "1.0.0",
