@@ -4,6 +4,7 @@
   "description": "Permite calcular los precios en base a una tasa de cambio",
   "icon": "PiCoinsFill",
   "iconLib": "pi",
+  "role": ["Admin", "Vendedor", "Desarrollador"],
   "images": ["https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/1753381895523.png","https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/1753381931053.png","https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/1753410655154.png"],
-  "role": ["0"]
+  "price": ["0"]
 }
