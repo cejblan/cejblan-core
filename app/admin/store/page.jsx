@@ -8,6 +8,7 @@ export default function PluginStore() {
   const [showBuyForm, setShowBuyForm] = useState(false);
   const [domain, setDomain] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('credit_card');
+  const [slideIndex, setSlideIndex] = useState(0);
 
   useEffect(() => {
     fetch('/api/admin/plugins')
@@ -16,34 +17,67 @@ export default function PluginStore() {
       .catch(console.error);
   }, []);
 
+  const downloadPlugin = async () => {
+    const res = await fetch('/api/admin/plugins/package', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pluginName: selected.name, domain: domain || '' })
+    });
+    if (!res.ok) return alert('Error al descargar plugin');
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${selected.name}.zip`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // Slider images for modal (only images 2 and 3)
+  const sliderImages = selected?.images?.slice(1, 3) || [];
+
+  const nextSlide = () => {
+    if (!sliderImages.length) return;
+    setSlideIndex(prev => (prev + 1) % sliderImages.length);
+  };
+  const prevSlide = () => {
+    if (!sliderImages.length) return;
+    setSlideIndex(prev => (prev - 1 + sliderImages.length) % sliderImages.length);
+  };
+
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">Tienda de Plugins</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {plugins.map((p) => (
-          <div
-            key={p.name}
-            className="border rounded-lg overflow-hidden shadow hover:shadow-lg cursor-pointer"
-            onClick={() => { setSelected(p); setShowBuyForm(false); }}
-          >
-            <img
-              src={p.images?.[0] || '/placeholder.png'}
-              alt={p.name}
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-4">
-              <h2 className="text-xl font-semibold">{p.name}</h2>
-              <p className="text-sm text-gray-600 line-clamp-2">{p.description}</p>
-              <p className="mt-2 font-bold text-lg">${p.price}</p>
+        {plugins.map(p => {
+          const price = Number(p.price) || 0;
+          return (
+            <div
+              key={p.name}
+              className="bg-white border rounded-lg overflow-hidden shadow hover:shadow-lg cursor-pointer"
+              onClick={() => { setSelected(p); setShowBuyForm(false); setSlideIndex(0); setDomain(''); }}
+            >
+              <div className="w-full aspect-square overflow-hidden">
+                <img
+                  src={p.images?.[0] || '/placeholder.png'}
+                  alt={p.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="p-4">
+                <h2 className="text-xl font-semibold">{p.name}</h2>
+                <p className="text-sm text-gray-600 line-clamp-2">{p.description}</p>
+                <p className="mt-2 font-bold text-lg">${price}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {selected && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full relative">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full relative max-h-[90vh] overflow-y-auto">
             <button
               className="absolute top-3 right-3 text-gray-500 hover:text-black"
               onClick={() => setSelected(null)}
@@ -52,22 +86,43 @@ export default function PluginStore() {
             </button>
             <div className="p-6 space-y-4">
               <h2 className="text-2xl font-bold">{selected.name}</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <img
-                  src={selected.images?.[0] || '/placeholder.png'}
-                  alt={`${selected.name} 1`}
-                  className="w-full h-48 object-cover rounded"
-                />
-                <img
-                  src={selected.images?.[1] || selected.images?.[0] || '/placeholder.png'}
-                  alt={`${selected.name} 2`}
-                  className="w-full h-48 object-cover rounded"
-                />
-              </div>
-              <p className="text-gray-700">{selected.description}</p>
-              <p className="font-bold text-xl">${selected.price}</p>
 
-              {!showBuyForm ? (
+              {/* Slider de imágenes 2 y 3 */}
+              <div className="relative w-full aspect-square overflow-hidden">
+                <img
+                  src={sliderImages[slideIndex] || '/placeholder.png'}
+                  alt={`${selected.name} slider ${slideIndex + 2}`}
+                  className="w-full h-full object-cover rounded"
+                />
+                {sliderImages.length > 1 && (
+                  <>
+                    <button
+                      onClick={prevSlide}
+                      className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-1 rounded-full"
+                    >
+                      ‹
+                    </button>
+                    <button
+                      onClick={nextSlide}
+                      className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-1 rounded-full"
+                    >
+                      ›
+                    </button>
+                  </>
+                )}
+              </div>
+
+              <p className="text-gray-700">{selected.description}</p>
+              <p className="font-bold text-xl">${Number(selected.price) || 0}</p>
+
+              {Number(selected.price) === 0 ? (
+                <button
+                  className="mt-4 px-5 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                  onClick={downloadPlugin}
+                >
+                  Descargar Gratis
+                </button>
+              ) : !showBuyForm ? (
                 <button
                   className="mt-4 px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                   onClick={() => setShowBuyForm(true)}
@@ -101,7 +156,7 @@ export default function PluginStore() {
                   <button
                     type="button"
                     className="w-full px-5 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-                    onClick={() => alert(`Comprando ${selected.name} para ${domain} con ${paymentMethod}`)}
+                    onClick={downloadPlugin}
                   >
                     Confirmar compra
                   </button>
