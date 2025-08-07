@@ -119,7 +119,7 @@ export default function TelegramPanel() {
               />
               <button
                 onClick={handleSend}
-                className="bg-[#6ed8bf] text-white px-3 py-1 rounded"
+                className="bg-[#6ed8bf] hover:bg-[#4bb199] text-white px-3 py-1 rounded"
               >
                 Enviar
               </button>
@@ -199,7 +199,7 @@ export default function TelegramPanel() {
           />
           <button
             onClick={handleSend}
-            className="bg-[#6ed8bf] text-white px-3 py-1 rounded"
+            className="bg-[#6ed8bf] hover:bg-[#4bb199] text-white px-3 py-1 rounded"
           >
             Enviar
           </button>
