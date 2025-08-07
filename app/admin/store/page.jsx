@@ -45,6 +45,9 @@ export default function PluginStore() {
     setSlideIndex(prev => (prev - 1 + sliderImages.length) % sliderImages.length);
   };
 
+  // Compute price values
+  const selectedPrice = selected ? (Number(selected.price) || 0) : 0;
+
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">Tienda de Plugins</h1>
@@ -113,9 +116,9 @@ export default function PluginStore() {
               </div>
 
               <p className="text-gray-700">{selected.description}</p>
-              <p className="font-bold text-xl">${Number(selected.price) || 0}</p>
+              <p className="font-bold text-xl">${selectedPrice}</p>
 
-              {Number(selected.price) === 0 ? (
+              {selectedPrice === 0 ? (
                 <button
                   className="mt-4 px-5 py-2 bg-green-600 text-white rounded hover:bg-green-700"
                   onClick={downloadPlugin}
