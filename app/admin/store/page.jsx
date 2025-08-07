@@ -82,13 +82,23 @@ export default function PluginStore() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full relative max-h-[90vh] overflow-y-auto">
             <button
-              className="absolute top-3 right-3 text-gray-500 hover:text-black"
+              className="absolute top-3 right-3 text-gray-500 hover:text-black font-bold"
               onClick={() => setSelected(null)}
             >
               ✕
             </button>
-            <div className="p-6 space-y-4">
-              <h2 className="text-2xl font-bold">{selected.name}</h2>
+            <div className="p-6 space-y-2">
+              <div className="flex">
+                <img
+                  src={selected.images?.[0] || '/placeholder.png'}
+                  alt={selected.longName}
+                  className="bg-slate-100 border-[1px] border-solid border-slate-300 rounded-full w-9 h-9 object-cover"
+                />
+                <div className="text-left pl-2 block">
+                  <h2 className="text-3xl font-bold text-slate-800">{selected.longName}</h2>
+                  <h2 className="text-lg font-bold text-slate-600">Desarrollador: {selected.developer}</h2>
+                </div>
+              </div>
 
               {/* Slider de imágenes 2 y 3 */}
               <div className="relative w-full aspect-square overflow-hidden">
@@ -116,55 +126,56 @@ export default function PluginStore() {
               </div>
 
               <p className="text-gray-700">{selected.description}</p>
-              <p className="font-bold text-xl">${selectedPrice}</p>
-
-              {selectedPrice === 0 ? (
-                <button
-                  className="mt-4 px-5 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-                  onClick={downloadPlugin}
-                >
-                  Descargar Gratis
-                </button>
-              ) : !showBuyForm ? (
-                <button
-                  className="mt-4 px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                  onClick={() => setShowBuyForm(true)}
-                >
-                  Comprar
-                </button>
-              ) : (
-                <form className="mt-4 space-y-4">
-                  <div>
-                    <label className="block font-medium">Forma de pago</label>
-                    <select
-                      value={paymentMethod}
-                      onChange={e => setPaymentMethod(e.target.value)}
-                      className="w-full p-2 border rounded"
-                    >
-                      <option value="credit_card">Tarjeta de crédito</option>
-                      <option value="paypal">PayPal</option>
-                      <option value="bank_transfer">Transferencia bancaria</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block font-medium">Dominio donde se usará</label>
-                    <input
-                      type="text"
-                      value={domain}
-                      onChange={e => setDomain(e.target.value)}
-                      placeholder="midominio.com"
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
+              <div className="flex items-center">
+                <p className="text-3xl font-bold text-slate-800 ml-auto mr-4">${selectedPrice}</p>
+                {selectedPrice === 0 ? (
                   <button
-                    type="button"
-                    className="w-full px-5 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                    className="bg-[#6ed8bf] hover:bg-[#4bb199] text-white px-5 py-2 rounded mr-auto"
                     onClick={downloadPlugin}
                   >
-                    Confirmar compra
+                    Descargar Gratis
                   </button>
-                </form>
-              )}
+                ) : !showBuyForm ? (
+                  <button
+                    className="bg-[#6ed8bf] hover:bg-[#4bb199] text-white py-1 px-2 rounded-xl mr-auto"
+                    onClick={() => setShowBuyForm(true)}
+                  >
+                    Comprar
+                  </button>
+                ) : (
+                  <form className="space-y-4 mr-auto">
+                    <div>
+                      <label className="block font-medium">Forma de pago</label>
+                      <select
+                        value={paymentMethod}
+                        onChange={e => setPaymentMethod(e.target.value)}
+                        className="w-full p-2 border rounded"
+                      >
+                        <option value="credit_card">Tarjeta de crédito</option>
+                        <option value="paypal">PayPal</option>
+                        <option value="bank_transfer">Transferencia bancaria</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block font-medium">Dominio donde se usará</label>
+                      <input
+                        type="text"
+                        value={domain}
+                        onChange={e => setDomain(e.target.value)}
+                        placeholder="midominio.com"
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      className="bg-[#6ed8bf] hover:bg-[#4bb199] text-white px-5 py-2 rounded w-full"
+                      onClick={downloadPlugin}
+                    >
+                      Confirmar compra
+                    </button>
+                  </form>
+                )}
+              </div>
             </div>
           </div>
         </div>
