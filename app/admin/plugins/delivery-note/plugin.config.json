@@ -1,10 +1,12 @@
 {
   "name": "Notas",
+  "longName": "Notas de Entrega",
   "version": "1.0.0",
   "description": "Permite generar e imprimir notas de entregas",
   "icon": "PiBlueprintFill",
   "iconLib": "pi",
   "role": ["Admin", "Vendedor", "Desarrollador"],
+  "developer": "cejblan",
   "images": ["https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/1753381895523.png","https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/1753381931053.png","https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/1753410655154.png"],
   "price": ["15"]
 }
