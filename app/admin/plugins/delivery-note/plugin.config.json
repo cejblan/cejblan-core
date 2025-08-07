@@ -4,5 +4,7 @@
   "description": "Permite generar e imprimir notas de entregas",
   "icon": "PiBlueprintFill",
   "iconLib": "pi",
-  "role": ["Admin", "Vendedor", "Desarrollador"]
+  "role": ["Admin", "Vendedor", "Desarrollador"],
+  "images": ["https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/1753381895523.png","https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/1753381931053.png"],
+  "price": ["15"]
 }

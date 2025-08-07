@@ -4,5 +4,7 @@
   "description": "Muestra un panel con todos los chats del bot de telegram, se puede hablar con el cliente directamente desde alli. Todos los mensajes son registrados en la base de datos.",
   "icon": "FaTelegram",
   "iconLib": "fa",
-  "role": ["Admin", "Vendedor", "Desarrollador"]
+  "role": ["Admin", "Vendedor", "Desarrollador"],
+  "images": ["https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/1753381895523.png","https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/1753381931053.png"],
+  "price": ["27"]
 }

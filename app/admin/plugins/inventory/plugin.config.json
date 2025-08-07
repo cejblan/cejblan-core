@@ -4,5 +4,7 @@
   "description": "Permite cargar, editar y guardar productos",
   "icon": "MdOutlineInventory",
   "iconLib": "md",
-  "role": ["Admin", "Desarrollador"]
+  "role": ["Admin", "Desarrollador"],
+  "images": ["https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/1753381895523.png","https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/1753381931053.png"],
+  "price": ["21"]
 }
