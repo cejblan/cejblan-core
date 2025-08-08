@@ -30,13 +30,34 @@ export default function PluginStore() {
   // ---- Store handlers ----
 
   const downloadPlugin = async () => {
+    if (!selected) return;
+
+    if (selectedPrice > 0 && !domain) {
+      return alert('Por favor, ingrese el dominio donde se usará el plugin.');
+    }
+
+    // === Si es TRANSFERENCIA ===
+    if (paymentMethod === 'bank_transfer') {
+      setSuccessMessage('Esperando confirmación de transferencia.');
+      setShowBuyForm(false);
+      setShowSuccessModal(true);
+      setSelected(null);
+      return;
+    }
+
+    // === Si es PAYPAL (aún sin integración real) ===
+    if (paymentMethod === 'paypal') {
+      // Aquí deberías redirigir a PayPal o abrir una nueva ventana con la URL de pago
+      window.open('https://www.paypal.com/pay?amount=' + selectedPrice, '_blank');
+      return;
+    }
+
+    // === Si es GRATIS o TARJETA DE CRÉDITO ===
     const payload = {
       pluginName: selected.name,
       rute: selected.rute,
+      domain: selectedPrice > 0 ? domain : undefined,
     };
-    if (Number(selected.price) > 0) {
-      payload.domain = domain;
-    }
 
     const res = await fetch('/api/admin/plugins/package', {
       method: 'POST',
@@ -58,7 +79,6 @@ export default function PluginStore() {
     a.click();
     URL.revokeObjectURL(url);
 
-    // Cerrar modal y mostrar mensaje de éxito
     setSelected(null);
     setShowBuyForm(false);
     setSuccessMessage('Su plugin ha sido descargado correctamente. ¡Disfrute su producto!');
@@ -300,7 +320,7 @@ export default function PluginStore() {
                           className="bg-[#6ed8bf] hover:bg-[#4bb199] text-white px-5 py-2 rounded w-full"
                           onClick={downloadPlugin}
                         >
-                          Confirmar compra
+                          {paymentMethod === 'bank_transfer' ? 'Enviar instrucciones de pago' : 'Confirmar compra'}
                         </button>
                       </form>
                     )}
@@ -323,6 +343,34 @@ export default function PluginStore() {
                 <button
                   onClick={() => setShowSuccessModal(false)}
                   className="bg-[#6ed8bf] hover:bg-[#4bb199] text-white px-4 py-2 rounded"
+                >
+                  Cerrar
+                </button>
+              </div>
+            </div>
+          )}
+          {/* === MODAL DE TRANSFERENCIA === */}
+          {paymentMethod === 'bank_transfer' && showSuccessModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 text-center">
+                <h2 className="text-2xl font-bold text-yellow-600 mb-4">
+                  Transferencia pendiente
+                </h2>
+                <p className="text-gray-700 mb-4">
+                  Para completar su compra, realice una transferencia a la siguiente cuenta:
+                </p>
+                <div className="bg-gray-100 text-left p-4 rounded text-sm">
+                  <p><strong>Banco:</strong> Banco de Ejemplo</p>
+                  <p><strong>Cuenta:</strong> 123456789</p>
+                  <p><strong>Titular:</strong> Tu Nombre o Empresa</p>
+                  <p><strong>Referencia:</strong> {selected?.name} - {domain}</p>
+                </div>
+                <p className="text-sm text-gray-500 mt-4">
+                  Una vez confirmado el pago, recibirá el plugin por correo electrónico.
+                </p>
+                <button
+                  onClick={() => setShowSuccessModal(false)}
+                  className="mt-6 bg-[#6ed8bf] hover:bg-[#4bb199] text-white px-4 py-2 rounded"
                 >
                   Cerrar
                 </button>
