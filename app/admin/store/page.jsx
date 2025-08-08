@@ -9,11 +9,14 @@ export default function PluginStore() {
   const [domain, setDomain] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('credit_card');
   const [slideIndex, setSlideIndex] = useState(0);
+  const [showSuccessModal, setShowSuccessModal] = useState(false); // NUEVO ESTADO
 
   // Installer state
   const [installMode, setInstallMode] = useState(false);
   const [file, setFile] = useState(null);
   const [installMessage, setInstallMessage] = useState('');
+
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     if (!installMode) {
@@ -46,6 +49,7 @@ export default function PluginStore() {
       console.error('Error al descargar plugin:', text);
       return alert('Error al descargar plugin');
     }
+
     const blob = await res.blob();
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -53,6 +57,12 @@ export default function PluginStore() {
     a.download = `${selected.rute}.zip`;
     a.click();
     URL.revokeObjectURL(url);
+
+    // Cerrar modal y mostrar mensaje de éxito
+    setSelected(null);
+    setShowBuyForm(false);
+    setSuccessMessage('Su plugin ha sido descargado correctamente. ¡Disfrute su producto!');
+    setShowSuccessModal(true);
   };
 
   const sliderImages = selected?.images?.slice(1, 3) || [];
@@ -99,8 +109,8 @@ export default function PluginStore() {
 
     const json = await res.json();
     if (json.success) {
-      setInstallMessage(`Plugin instalado en "${json.folder}" correctamente.`);
-      // Refresh plugin list after install
+      setSuccessMessage(`Plugin instalado correctamente en "${json.folder}".`);
+      setShowSuccessModal(true);
       setInstallMode(false);
     } else {
       setInstallMessage(`Fallo instalación: ${json.error}`);
@@ -296,6 +306,26 @@ export default function PluginStore() {
                     )}
                   </div>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* === MODAL DE ÉXITO === */}
+          {showSuccessModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 text-center">
+                <h2 className="text-2xl font-bold text-green-700 mb-4">
+                  ¡Éxito!
+                </h2>
+                <p className="text-gray-700 mb-6">
+                  {successMessage}
+                </p>
+                <button
+                  onClick={() => setShowSuccessModal(false)}
+                  className="bg-[#6ed8bf] hover:bg-[#4bb199] text-white px-4 py-2 rounded"
+                >
+                  Cerrar
+                </button>
               </div>
             </div>
           )}
