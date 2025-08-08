@@ -29,7 +29,7 @@ export default function PluginStore() {
   const downloadPlugin = async () => {
     const payload = {
       pluginName: selected.name,
-      ruta: selected.ruta,
+      rute: selected.rute,
     };
     if (Number(selected.price) > 0) {
       payload.domain = domain;
@@ -50,7 +50,7 @@ export default function PluginStore() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${selected.ruta}.zip`;
+    a.download = `${selected.rute}.zip`;
     a.click();
     URL.revokeObjectURL(url);
   };
