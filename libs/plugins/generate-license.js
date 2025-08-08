@@ -10,6 +10,13 @@ function generateLicense(domain) {
     issuedAt: Date.now(),
     valid: true,
     forever: true,
+    message: `
+Gracias por utilizar este plugin.
+
+Por favor, respeta el trabajo de los desarrolladores de código abierto, así como el trabajo honrado de quienes venden sus soluciones.
+
+Apoyar el software legalmente permite que más herramientas útiles continúen existiendo y mejorando para todos.
+    `.trim()
   };
 
   const licenseString = JSON.stringify(license);
