@@ -1,25 +1,21 @@
 import fs from "fs";
 import path from "path";
-import AdmZip from "adm-zip";
-import crypto from "crypto";
 import fetch from "node-fetch";
+import AdmZip from "adm-zip";
+import unzipper from "unzipper";
 
 const UPDATE_SERVER = "http://localhost:3330/api/versions/update-info";
-const CORE_PATH = path.join(process.cwd(), "core");
-const BACKUP_PATH = path.join(process.cwd(), "backups");
-const PACKAGE_JSON_PATH = path.join(process.cwd(), "package.json");
+const ROOT_PATH = process.cwd();
+const BACKUP_PATH = path.join(ROOT_PATH, "backups");
+const PACKAGE_JSON_PATH = path.join(ROOT_PATH, "package.json");
 
 // === GET: Verificar si hay una nueva versión ===
 export async function GET() {
   try {
-    // Obtener info de actualización desde el servidor remoto
     const res = await fetch(UPDATE_SERVER);
-    if (!res.ok) {
-      throw new Error(`Error al obtener info de actualización: ${res.status}`);
-    }
+    if (!res.ok) throw new Error(`Error al obtener info de actualización: ${res.status}`);
     const updateInfo = await res.json();
 
-    // Leer versión desde package.json
     const packageJson = JSON.parse(fs.readFileSync(PACKAGE_JSON_PATH, "utf8"));
     const currentVersion = packageJson.version || "0.0.0";
 
@@ -42,50 +38,50 @@ export async function GET() {
 // === POST: Descargar e instalar nueva versión ===
 export async function POST() {
   try {
-    // Obtener info de actualización
     const res = await fetch(UPDATE_SERVER);
-    if (!res.ok) {
-      throw new Error(`Error al obtener info de actualización: ${res.status}`);
-    }
+    if (!res.ok) throw new Error(`Error al obtener info de actualización: ${res.status}`);
     const updateInfo = await res.json();
 
-    const zipPath = path.join(process.cwd(), "update.zip");
+    const zipPath = path.join(ROOT_PATH, "update.zip");
 
-    // Descargar archivo
+    // Descargar ZIP
     const zipRes = await fetch(updateInfo.url);
-    if (!zipRes.ok) {
-      throw new Error(`Error al descargar el ZIP: ${zipRes.status}`);
-    }
-    const fileStream = fs.createWriteStream(zipPath);
-    await new Promise((resolve, reject) => {
-      zipRes.body.pipe(fileStream);
-      zipRes.body.on("error", reject);
-      fileStream.on("finish", resolve);
-    });
+    if (!zipRes.ok) throw new Error(`Error al descargar el ZIP: ${zipRes.status}`);
+    const buffer = Buffer.from(await zipRes.arrayBuffer());
+    fs.writeFileSync(zipPath, buffer);
+    console.log("ZIP descargado.");
 
-    // Verificar integridad (MD5)
-    const hash = crypto.createHash("md5").update(fs.readFileSync(zipPath)).digest("hex");
-    if (hash !== updateInfo.hash) {
-      fs.unlinkSync(zipPath);
-      throw new Error("Archivo corrupto: el hash no coincide");
-    }
-
-    // Crear backup del core actual
-    if (!fs.existsSync(BACKUP_PATH)) fs.mkdirSync(BACKUP_PATH);
+    // Crear backup de la raíz
+    if (!fs.existsSync(BACKUP_PATH)) fs.mkdirSync(BACKUP_PATH, { recursive: true });
+    const backupZipPath = path.join(BACKUP_PATH, `backup-${Date.now()}.zip`);
     const backupZip = new AdmZip();
-    backupZip.addLocalFolder(CORE_PATH);
-    backupZip.writeZip(path.join(BACKUP_PATH, `core-backup-${Date.now()}.zip`));
+    backupZip.addLocalFolder(ROOT_PATH, "", (filename) => {
+      // Excluir backups y ZIP temporal
+      return !filename.includes("backups") && !filename.includes("update.zip");
+    });
+    backupZip.writeZip(backupZipPath);
+    console.log("Backup creado en:", backupZipPath);
 
-    // Reemplazar core con el nuevo
-    const zip = new AdmZip(zipPath);
-    zip.extractAllTo(CORE_PATH, true);
+    // Extraer ZIP directamente en la raíz
+    const directory = await unzipper.Open.buffer(buffer);
+    await Promise.all(directory.files.map(async (file) => {
+      if (file.type === "File") {
+        const filePath = path.join(ROOT_PATH, file.path);
+        const dirPath = path.dirname(filePath);
+        if (!fs.existsSync(dirPath)) fs.mkdirSync(dirPath, { recursive: true });
+        const content = await file.buffer();
+        fs.writeFileSync(filePath, content);
+      }
+    }));
+
+    console.log("ZIP extraído.");
 
     // Actualizar versión en package.json
     const packageJson = JSON.parse(fs.readFileSync(PACKAGE_JSON_PATH, "utf8"));
     packageJson.version = updateInfo.version;
     fs.writeFileSync(PACKAGE_JSON_PATH, JSON.stringify(packageJson, null, 2), "utf8");
 
-    // Borrar archivo temporal
+    // Borrar ZIP temporal
     fs.unlinkSync(zipPath);
 
     return new Response(JSON.stringify({
