@@ -152,7 +152,7 @@ export default function AdminPage() {
               {loadingUpdate ? "Actualizando..." : "Actualizar ahora"}
             </button>
           ) : (
-            <div className="mt-4 text-green-600 font-bold flex gap-2">
+            <div className="mt-2 text-green-600 font-bold flex gap-2">
               <FaHeartCircleCheck className="ml-auto my-auto" />
               <p className="mr-auto">El sistema está actualizado</p>
             </div>
