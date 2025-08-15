@@ -24,7 +24,7 @@ export default function Client404() {
             <p className="max-[420px]:text-2xl text-3xl mb-3">Lo sentimos, no podemos encontrar lo que buscas.</p>
             <button
               onClick={() => router.back()}
-              className="bg-[#6ed8bf] max-[420px]:text-xl text-2xl text-[#1e293b] hover:text-[#4bb199] py-1 px-2 rounded-xl shadow-6xl underline">
+              className="bg-[#6ed8bf] max-[420px]:text-xl text-2xl text-[#1e293b] hover:text-[#1e856d] py-1 px-2 rounded-xl shadow-6xl underline">
               Regresar a la página anterior
             </button>
           </div>

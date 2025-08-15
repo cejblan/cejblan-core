@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -7,7 +7,6 @@ import Countdown from "@/components/Countdown";
 import { useEffect, useState } from "react";
 import { FaTools } from "react-icons/fa";
 import { FaHeartCircleCheck } from "react-icons/fa6";
-import { PiDiamondsFourFill } from "react-icons/pi";
 
 export default function AdminPage() {
   const { data: session, status } = useSession();
@@ -15,7 +14,7 @@ export default function AdminPage() {
   const [code, setCode] = useState(null);
   const [initialTime, setInitialTime] = useState(null);
 
-  // === Estado para Cejblan Update System ===
+  // Estado para Cejblan Update System
   const [updateInfo, setUpdateInfo] = useState(null);
   const [loadingUpdate, setLoadingUpdate] = useState(false);
 
@@ -29,7 +28,7 @@ export default function AdminPage() {
     fetchProfile();
   }, [session]);
 
-  // === Funciones para Cejblan Update System ===
+  // Verifica actualizaciones disponibles
   async function checkUpdates() {
     try {
       const res = await fetch("/api/versions/update");
@@ -40,15 +39,25 @@ export default function AdminPage() {
     }
   }
 
+  // Instala la actualización desde GitHub
   async function installUpdate() {
     setLoadingUpdate(true);
     try {
-      const res = await fetch("/api/versions/update", { method: "POST" });
-      const data = await res.json();
-      alert(data.message);
+      const resGit = await fetch("/api/versions/update-to-github", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          zipUrl: updateInfo.zipUrl, // ← asegurarse que viene del checkUpdates()
+          commitMessage: `Actualización desde CMS a ${updateInfo.latestVersion}`,
+          description: updateInfo.changelog || ""
+        }),
+      });
+
+      const resultGit = await resGit.json();
+      alert(resultGit.message || "Actualización enviada a GitHub");
       checkUpdates();
-    } catch (error) {
-      console.error("Error instalando actualización:", error);
+    } catch (err) {
+      console.error("Error enviando cambios a GitHub:", err);
     } finally {
       setLoadingUpdate(false);
     }
@@ -69,7 +78,6 @@ export default function AdminPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: session.user.email, code: aleatorio }),
       });
-      const json = await res.json();
       if (res.ok) setInitialTime(59);
     } catch (error) {
       console.error("Error:", error);
@@ -122,20 +130,23 @@ export default function AdminPage() {
     <>
       <div className="bg-white text-slate-800 max-[420px]:p-2 p-4 mb-4 rounded-xl">
         <h1 className="max-[420px]:text-2xl text-5xl font-bold">¡Bienvenido a CejBlan!</h1>
-        <p className="max-[420px]:text-xl text-2xl font-semibold">Versión: 1.0.0</p>
+        {updateInfo ? (
+          <p className="max-[420px]:text-xl text-2xl font-semibold">
+            Versión actual: <span className="font-bold">{updateInfo.currentVersion}</span>
+          </p>
+        ) : (
+          <p className="text-gray-500">Cargando versión...</p>
+        )}
       </div>
 
-      {/* === Sección de Cejblan Update System === */}
+      {/* Sección de Cejblan Update System */}
       {updateInfo && (
         <div className="bg-white text-slate-800 max-[420px]:p-2 p-4 mb-4 rounded-xl">
           <div className="max-[420px]:text-2xl text-4xl font-bold mb-3 flex gap-2">
             <FaTools className="ml-auto my-auto" />
             <h2 className="mr-auto">Cejblan Update System</h2>
           </div>
-          <p className="text-lg font-medium">
-            Versión actual: <span className="font-bold">{updateInfo.currentVersion}</span>
-          </p>
-          <p className="text-lg font-medium">
+          <p className="max-[420px]:text-xl text-2xl font-semibold">
             Última versión: <span className="font-bold">{updateInfo.latestVersion}</span>
           </p>
           <p className="text-base mt-2 text-gray-600">{updateInfo.changelog}</p>
