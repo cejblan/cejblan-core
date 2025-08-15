@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import fetch from "node-fetch";
 
+const SERVER_URL = "https://cejblan.vercel.app/";
 const UPDATE_SERVER = "https://cejblan.vercel.app/api/versions/update-info";
 const ROOT_PATH = process.cwd();
 const PACKAGE_JSON_PATH = path.join(ROOT_PATH, "package.json");
@@ -20,6 +21,7 @@ export async function GET() {
       currentVersion,
       latestVersion: updateInfo.version,
       changelog: updateInfo.changelog,
+      zipUrl: SERVER_URL + updateInfo.url,
       hasUpdate: updateInfo.version !== currentVersion
     }), { status: 200 });
 
