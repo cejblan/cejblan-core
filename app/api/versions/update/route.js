@@ -5,7 +5,7 @@ import fetch from "node-fetch";
 const SERVER_URL = "https://cejblan.vercel.app/";
 const UPDATE_SERVER = "https://cejblan.vercel.app/api/versions/update-info";
 const ROOT_PATH = process.cwd();
-const PACKAGE_JSON_PATH = path.join(ROOT_PATH, "package.json");
+const UPDATE_JSON_PATH = path.join(ROOT_PATH, "update.json");
 
 // === GET: Verificar si hay una nueva versión ===
 export async function GET() {
@@ -14,8 +14,8 @@ export async function GET() {
     if (!res.ok) throw new Error(`Error al obtener info de actualización: ${res.status}`);
     const updateInfo = await res.json();
 
-    const packageJson = JSON.parse(fs.readFileSync(PACKAGE_JSON_PATH, "utf8"));
-    const currentVersion = packageJson.version || "0.0.0";
+    const updateJson = JSON.parse(fs.readFileSync(UPDATE_JSON_PATH, "utf8"));
+    const currentVersion = updateJson.version || "0.0.0";
 
     return new Response(JSON.stringify({
       currentVersion,
