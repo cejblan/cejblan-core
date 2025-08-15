@@ -4,7 +4,7 @@ import fetch from "node-fetch";
 import AdmZip from "adm-zip";
 import unzipper from "unzipper";
 
-const UPDATE_SERVER = "http://localhost:3330/api/versions/update-info";
+const UPDATE_SERVER = "https://cejblan.vercel.app/api/versions/update-info";
 const ROOT_PATH = process.cwd();
 const BACKUP_PATH = path.join(ROOT_PATH, "backups");
 const PACKAGE_JSON_PATH = path.join(ROOT_PATH, "package.json");
