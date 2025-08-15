@@ -47,10 +47,12 @@ export default function AdminPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          version: updateInfo.latestVersion,
-          commitMessage: `Actualización desde CMS a ${updateInfo.latestVersion}`
+          zipUrl: updateInfo.zipUrl, // ← asegurarse que viene del checkUpdates()
+          commitMessage: `Actualización desde CMS a ${updateInfo.latestVersion}`,
+          description: updateInfo.changelog || ""
         }),
       });
+
       const resultGit = await resGit.json();
       alert(resultGit.message || "Actualización enviada a GitHub");
       checkUpdates();
