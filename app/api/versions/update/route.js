@@ -20,6 +20,8 @@ export async function GET() {
     return new Response(JSON.stringify({
       currentVersion,
       latestVersion: updateInfo.version,
+      currentDate: updateJson.date,
+      latestDate: updateInfo.date,
       changelog: updateInfo.changelog,
       zipUrl: SERVER_URL + updateInfo.url,
       hasUpdate: updateInfo.version !== currentVersion
