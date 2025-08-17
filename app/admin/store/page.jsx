@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { PiMagnifyingGlassBold } from 'react-icons/pi';
+import Image from 'next/image';
+import ImageNotSupported from "public/ImageNotSupported.webp"
 
 /**
  * Cliente: lee plugins desde la tienda oficial y redirige a la tienda
@@ -383,14 +385,20 @@ export default function PluginStore() {
       {/* MODAL DETALLE */}
       {selected && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl relative max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl relative max-h-[90vh] overflow-y-auto">
             <button className="absolute top-3 right-3 text-slate-500 hover:text-black font-bold" onClick={() => setSelected(null)}>
               ✕
             </button>
 
             <div className="p-6 space-y-6">
               <div className="flex items-center gap-3">
-                <img src={selected.images?.[0] || '/placeholder.png'} alt={selected.longName || selected.name} className="w-14 h-14 rounded-lg border border-slate-200 object-cover bg-slate-50" />
+                <Image
+                  src={selected.images?.[0] || ImageNotSupported}
+                  alt={selected.longName || selected.name}
+                  className="w-14 h-14 rounded-lg border border-slate-200 object-cover bg-slate-50"
+                  width="100"
+                  height="100"
+                />
                 <div>
                   <h2 className="text-2xl font-bold text-slate-900 leading-tight">{selected.longName || selected.name}</h2>
                   <p className="text-sm text-slate-600">
@@ -400,7 +408,13 @@ export default function PluginStore() {
               </div>
 
               <div className="relative w-full aspect-video overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
-                <img src={sliderImages[slideIndex] || '/placeholder.png'} alt={`${selected.name} slider ${slideIndex + 2}`} className="w-full h-full object-cover" />
+                <Image
+                  src={sliderImages[slideIndex] || ImageNotSupported}
+                  alt={`${selected.name} slider ${slideIndex + 2}`}
+                  className="w-full h-full object-cover"
+                  width="100"
+                  height="100"
+                />
                 {sliderImages.length > 1 && (
                   <>
                     <button onClick={prevSlide} className="absolute top-1/2 left-3 -translate-y-1/2 bg-black/50 text-white px-2 py-1 rounded-full">
@@ -562,7 +576,13 @@ function PluginList({ plugins, loading, onSelect }) {
             <div className="flex flex-col sm:flex-row gap-4 p-4">
               <div className="shrink-0">
                 <div className="w-16 h-16 rounded-lg overflow-hidden border border-slate-200 bg-slate-50">
-                  <img src={p.images?.[0] || '/placeholder.png'} alt={p.name} className="w-full h-full object-cover" />
+                  <Image
+                    src={p.images?.[0] || ImageNotSupported}
+                    alt={p.name}
+                    className="w-full h-full object-cover"
+                    width="100"
+                    height="100"
+                  />
                 </div>
               </div>
 
