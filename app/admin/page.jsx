@@ -131,9 +131,20 @@ export default function AdminPage() {
       <div className="bg-white text-slate-800 max-[420px]:p-2 p-4 mb-4 rounded-xl">
         <h1 className="max-[420px]:text-2xl text-5xl font-bold">¡Bienvenido a CejBlan!</h1>
         {updateInfo ? (
-          <p className="max-[420px]:text-xl text-2xl font-semibold">
-            Versión actual: <span className="font-bold">{updateInfo.currentVersion}</span>
-          </p>
+          <div>
+            <p className="max-[420px]:text-xl text-2xl font-semibold">
+              Versión actual: <span className="font-bold">{updateInfo.currentVersion}</span>
+            </p>
+            <p className="max-[420px]:text-sm text-lg font-semibold">
+            Instalada: <span className="font-bold">
+                {new Date(updateInfo.currentDate).toLocaleDateString('es-ES', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric',
+                })}
+              </span>
+            </p>
+          </div>
         ) : (
           <p className="text-gray-500">Cargando versión...</p>
         )}
@@ -148,6 +159,15 @@ export default function AdminPage() {
           </div>
           <p className="max-[420px]:text-xl text-2xl font-semibold">
             Última versión: <span className="font-bold">{updateInfo.latestVersion}</span>
+          </p>
+          <p className="max-[420px]:text-sm text-lg font-semibold">
+            Publicada: <span className="font-bold">
+              {new Date(updateInfo.latestDate).toLocaleDateString('es-ES', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+              })}
+            </span>
           </p>
           <p className="text-base mt-2 text-gray-600">{updateInfo.changelog}</p>
 
