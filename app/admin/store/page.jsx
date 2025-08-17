@@ -261,7 +261,7 @@ export default function PluginStore() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => loadPlugins()}
-            className="bg-white hover:bg-gray-200 rounded-lg border border-slate-200 px-3 py-2 text-sm transition"
+            className="bg-white hover:bg-gray-100 rounded-lg border border-slate-200 px-3 py-2 text-sm transition"
             title="Recargar lista de plugins"
           >
             Recargar
