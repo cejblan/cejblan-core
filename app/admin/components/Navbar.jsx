@@ -216,7 +216,7 @@ export default function NavbarAdmin({ children, plugins = [] }) {
 
       <div className="pt-5 flex transition-all duration-300">
         <div
-          className={`bg-slate-800 text-white text-left text-sm transition-all duration-300 overflow-y-auto ${isOpen ? "w-20" : "w-0"
+          className={`bg-slate-800 text-white text-left text-sm transition-all duration-300 overflow-y-auto ${isOpen ? "w-24" : "w-0"
             }`}
         >
           {getVisibleItems().map(({ href, label, icon: Icon, match }) => (
