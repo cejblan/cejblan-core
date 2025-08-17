@@ -411,9 +411,9 @@ export default function PluginStore() {
                 <Image
                   src={sliderImages[slideIndex] || ImageNotSupported}
                   alt={`${selected.name} slider ${slideIndex + 2}`}
-                  className="w-full h-full object-cover"
-                  width="100"
-                  height="100"
+                  className="w-full h-full object-contain"
+                  width="400"
+                  height="400"
                 />
                 {sliderImages.length > 1 && (
                   <>
