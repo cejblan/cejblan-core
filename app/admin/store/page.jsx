@@ -183,7 +183,7 @@ export default function PluginStore() {
   const openPluginInStore = (p, opts = {}) => {
     // Construimos URL del plugin / tienda y añadimos parámetro `q` con nombre/slug,
     // para que la tienda pueda pre-llenar su buscador.
-    const url = getPluginStoreUrl(p);
+    const url = "cejblan-core/store";
     const urlObj = new URL(url, STORE_BASE);
     if (opts.method) urlObj.searchParams.set('paymentMethod', opts.method);
     const q = (p?.name || p?.rute || p?.slug || '').trim();
