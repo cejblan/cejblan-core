@@ -181,16 +181,18 @@ export default function PluginStore() {
   // ---- ACCIONES DE COMPRA/DESCARGA (cliente) ----
   // En la versión cliente abrimos la página del plugin en la tienda oficial
   const openPluginInStore = (p, opts = {}) => {
+    // Construimos URL del plugin / tienda y añadimos parámetro `q` con nombre/slug,
+    // para que la tienda pueda pre-llenar su buscador.
     const url = getPluginStoreUrl(p);
-    // Si queremos incluir query params (por ejemplo método de pago), se pueden añadir:
     const urlObj = new URL(url, STORE_BASE);
     if (opts.method) urlObj.searchParams.set('paymentMethod', opts.method);
+    const q = (p?.name || p?.rute || p?.slug || '').trim();
+    if (q) urlObj.searchParams.set('q', q);
     // Abrir en nueva pestaña
     window.open(urlObj.toString(), '_blank');
     // cerramos el modal local si está abierto
     setSelected(null);
     setShowBuyForm(false);
-    // No mostramos modales locales de compra/transferencia
   };
 
   // ---- Instalador (presente en cliente) ----
@@ -434,48 +436,13 @@ export default function PluginStore() {
                   <p className="text-3xl font-bold text-slate-900 ml-0">${selectedPrice}</p>
 
                   {/* En el cliente, al pulsar descargar/comprar abrimos la tienda en otra pestaña */}
-                  {selectedPrice === 0 ? (
-                    <a
-                      href="https://cejblan.vercel.app/cejblan-core/store"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="rounded-lg bg-[#6ed8bf] px-5 py-2 text-white hover:bg-[#4bb199] transition"
-                    >
-                      Ver en tienda
-                    </a>
-                  ) : !showBuyForm ? (
-                    <a
-                      href="https://cejblan.vercel.app/cejblan-core/store"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="rounded-lg bg-[#6ed8bf] px-5 py-2 text-white hover:bg-[#4bb199] transition"
-                    >
-                      Ver en tienda
-                    </a>
-                  ) : (
-                    // Si se llegara a usar showBuyForm, el confirmar también abriría la tienda
-                    <form className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full" onSubmit={(e) => { e.preventDefault(); openPluginInStore(selected, { method: paymentMethod }); }}>
-                      <div className="col-span-1">
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Forma de pago</label>
-                        <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)} className="w-full rounded-md border border-slate-300 p-2">
-                          <option value="credit_card">Tarjeta de crédito</option>
-                          <option value="paypal">PayPal</option>
-                          <option value="bank_transfer">Transferencia bancaria</option>
-                        </select>
-                      </div>
+                  <button
+                    onClick={() => openPluginInStore(selected)}
+                    className="rounded-lg bg-[#6ed8bf] px-5 py-2 text-white hover:bg-[#4bb199] transition"
+                  >
+                    Ver en tienda
+                  </button>
 
-                      <div className="col-span-1">
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Dominio donde se usará</label>
-                        <input type="text" value={domain} onChange={(e) => setDomain(e.target.value)} placeholder="midominio.com" className="w-full rounded-md border border-slate-300 p-2" />
-                      </div>
-
-                      <div className="col-span-1 sm:col-span-2">
-                        <button type="submit" className="w-full rounded-lg bg-[#6ed8bf] px-5 py-2 text-white hover:bg-[#4bb199] transition">
-                          {paymentMethod === 'bank_transfer' ? 'Ir a tienda (transferencia)' : 'Ir a tienda (confirmar)'}
-                        </button>
-                      </div>
-                    </form>
-                  )}
                 </div>
               </div>
             </div>
