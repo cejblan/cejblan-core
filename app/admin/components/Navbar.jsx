@@ -55,7 +55,6 @@ const MAIN_ITEMS = [
   { href: "/admin/deliveries", label: "Entregas", icon: LuPackageOpen, match: /^\/admin\/deliveries/ },
   { href: "/admin/orders", label: "Pedidos", icon: MdBorderColor, match: /^\/admin\/orders/ },
   { href: "/admin/gallery", label: "Galeria", icon: GrGallery, match: /^\/admin\/gallery/ },
-  { href: "/admin/store", label: "Tienda", icon: RiStore3Fill, match: /^\/admin\/store/ },
   { href: "/admin/themes", label: "Temas", icon: FaPaintBrush, match: /^\/admin\/themes/ },
   { href: "/admin/settings", label: "Configurar", icon: VscSettings, match: /^\/admin\/settings/ },
   { href: "/admin/developer", label: "Desarrollar", icon: LiaConnectdevelop, match: /^\/admin\/developer/ },
@@ -230,7 +229,7 @@ export default function NavbarAdmin({ children, plugins = [] }) {
               {isActive(href, match) && <VscTriangleLeft className="text-slate-200 ml-auto w-2 h-2" />}
             </Link>
           ))}
-          {(role !== "vendedor" && role !== "delivery") && loadedPlugins.length > 0 && (
+          {(role !== "vendedor" && role !== "delivery") && (
             <>
               <button
                 onClick={() => setIsOpenPluginMenu(prev => !prev)}
@@ -242,7 +241,18 @@ export default function NavbarAdmin({ children, plugins = [] }) {
                   className={`text-slate-200 ml-auto w-2 h-2 transition-transform duration-200 ${isOpenPluginMenu ? "-rotate-90" : ""}`}
                 />
               </button>
-
+              {isOpenPluginMenu && loadedPlugins && (
+                <Link
+                  href="/admin/store"
+                  className={`text-xs hover:bg-slate-600 hover:text-[#6ed8bf] py-[6px] pl-3 border-t border-slate-600 flex items-center ${isActive ? "bg-slate-700" : ""}`}
+                >
+                  <RiStore3Fill className="mr-1 w-2 h-2" />
+                  <h3>Tienda</h3>
+                  {isActive("/admin/store", /^\/admin\/store/) && (
+                    <VscTriangleLeft className="text-slate-200 ml-auto w-2 h-2" />
+                  )}
+                </Link>
+              )}
               {isOpenPluginMenu && loadedPlugins
                 .filter(plugin => {
                   if (!plugin.role) return true;
@@ -257,8 +267,7 @@ export default function NavbarAdmin({ children, plugins = [] }) {
                     <Link
                       key={plugin.slug}
                       href={`/admin/${plugin.slug}`}
-                      className={`text-xs hover:bg-slate-600 hover:text-[#6ed8bf] py-[6px] pl-3 border-t border-slate-600 flex items-center ${isActive ? "bg-slate-700" : ""
-                        }`}
+                      className={`text-xs hover:bg-slate-600 hover:text-[#6ed8bf] py-[6px] pl-3 border-t border-slate-600 flex items-center ${isActive ? "bg-slate-700" : ""}`}
                     >
                       {plugin.Icon && <plugin.Icon className="mr-1 w-2 h-2" />}
                       <h3>{plugin.name}</h3>
