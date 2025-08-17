@@ -5,12 +5,6 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'www.yanitzaproducciones.online',
-        port: '', // Si necesitas especificar un puerto
-        pathname: '/', // Si necesitas especificar una ruta
-      },
-      {
-        protocol: 'https',
-        hostname: 'res.cloudinary.com',
       },
       {
         protocol: 'https',
