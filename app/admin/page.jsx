@@ -136,7 +136,7 @@ export default function AdminPage() {
               Versión actual: <span className="font-bold">{updateInfo.currentVersion}</span>
             </p>
             <p className="max-[420px]:text-sm text-lg font-semibold">
-              Publicada: <span className="font-bold">
+            Instalada: <span className="font-bold">
                 {new Date(updateInfo.currentDate).toLocaleDateString('es-ES', {
                   day: 'numeric',
                   month: 'long',
