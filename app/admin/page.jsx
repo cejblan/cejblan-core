@@ -146,7 +146,7 @@ export default function AdminPage() {
             </p>
           </div>
         ) : (
-          <p className="text-gray-500">Cargando versión...</p>
+          <p className="text-xl text-gray-500 font-bold animate-pulse">Cargando versión...</p>
         )}
       </div>
 

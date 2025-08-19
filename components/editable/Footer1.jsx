@@ -36,7 +36,7 @@ export default function Footer1() {
           >
             Políticas de Privacidad
           </Hoverable>
-          - {process.env.NEXT_PUBLIC_SITE_NAME} - © Copyright 2025 - Desarrollado por{" "}
+          - {process.env.NEXT_PUBLIC_SITE_NAME} - © Copyright 2024-{new Date().getFullYear()} - Desarrollado por{" "}
           <Hoverable
             as={Link}
             href="https://www.linkedin.com/in/cejblan"
