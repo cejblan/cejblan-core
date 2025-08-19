@@ -53,7 +53,7 @@ export default function Footer2() {
         </div>
 
         <p className="text-sm px-4">
-          Desarrollado con <strong>React</strong>, <strong>Next.js</strong> y <strong>TailwindCSS</strong> — © Copyright 2025 —{" "}
+          Desarrollado con <strong>React</strong>, <strong>Next.js</strong> y <strong>TailwindCSS</strong> — © Copyright 2024-{new Date().getFullYear()} —{" "}
           <Hoverable
             as={Link}
             href="https://www.linkedin.com/in/cejblan"
