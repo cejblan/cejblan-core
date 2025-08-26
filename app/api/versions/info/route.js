@@ -1,4 +1,4 @@
-const UPDATE_SERVER = "https://cejblan.vercel.app//api/versions/update-info";
+const UPDATE_SERVER = "https://cejblan.vercel.app/api/versions/update-info";
 
 export async function GET() {
   try {
