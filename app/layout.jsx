@@ -69,7 +69,7 @@ export default function RootLayout({ children }) {
           crossOrigin="anonymous"
         ></script>
       </head>
-      <body className="text-center select-none">
+      <body className="bg-gray-100 text-center select-none">
         <Providers>
           {navbar}
           <Fondo>{children}</Fondo>
