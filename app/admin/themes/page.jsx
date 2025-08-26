@@ -170,7 +170,7 @@ export default function ThemesPage() {
             Guardar cambios
           </button>
           <span
-            className="w-full sm:w-auto px-3 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 font-bold cursor-pointer"
+            className="w-full sm:w-auto px-3 py-2 rounded-lg bg-orange-600 text-white hover:bg-orange-700 font-bold cursor-pointer"
             onClick={() => setMostrarConfirmacionMerge(true)}
           >
             Publicar en producción
