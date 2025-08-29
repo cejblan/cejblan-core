@@ -46,7 +46,7 @@ export default function OrdersComponent() {
 
   // ===START_RETURN===
   return (
-    <div className="px-2 py-4">
+    <section className="px-2 py-4">
       <div className="grid gap-2">
         {currentOrders.length > 0 ? (
           currentOrders.map((order) => (
@@ -79,7 +79,7 @@ export default function OrdersComponent() {
       <p className="text-center font-bold pb-2 mt-1">
         Página {currentPage} de {Math.ceil(orders.length / itemsPerPage)}
       </p>
-    </div>
+    </section>
   );
   // ===END_RETURN===
 }

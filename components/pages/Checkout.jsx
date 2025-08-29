@@ -303,268 +303,270 @@ export default function Checkout() {
 
   return (
     // ===START_RETURN===
-    <form onSubmit={handleSubmit}>
-      <Titulos texto="Datos del Pedido" />
-      <div className="max-[420px]:block grid grid-cols-8 gap-2 justify-center py-2 max-[420px]:px-2 px-4">
-        <div className="bg-white p-2 rounded-xl shadow-6xl max-[420px]:mb-2 h-fit w-full col-start-1 col-end-3">
-          <h2 className="block text-slate-700 font-medium mb-1">Tu Carrito</h2>
-          {isLoading ? (
-            <p className="text-lg font-medium">Cargando productos...</p>
-          ) : (
-            <div className="grid grid-cols-2 gap-1">
-              {groupedProducts.map((product, index) => (
-                <ProductCardAdmin product={product} key={index} />
+    <section>
+      <form onSubmit={handleSubmit}>
+        <Titulos texto="Datos del Pedido" />
+        <div className="max-[420px]:block grid grid-cols-8 gap-2 justify-center py-2 max-[420px]:px-2 px-4">
+          <div className="bg-white p-2 rounded-xl shadow-6xl max-[420px]:mb-2 h-fit w-full col-start-1 col-end-3">
+            <h2 className="block text-slate-700 font-medium mb-1">Tu Carrito</h2>
+            {isLoading ? (
+              <p className="text-lg font-medium">Cargando productos...</p>
+            ) : (
+              <div className="grid grid-cols-2 gap-1">
+                {groupedProducts.map((product, index) => (
+                  <ProductCardAdmin product={product} key={index} />
+                ))}
+              </div>
+            )}
+            <div className="mt-2 text-slate-700 text-lg font-semibold">
+              <p>Total productos: <PrecioProducto precio={totalPrice.toFixed(2)} format={0} /></p>
+              {data[0]?.deliveryMethod?.includes("Delivery") && (
+                <p>Costo de delivery: <PrecioProducto precio={(isFreeDelivery ? 0 : deliveryCost).toFixed(2)} format={0} /></p>
+              )}
+              <p className="text-xl mt-1">Total a pagar: <PrecioProducto precio={finalTotal.toFixed(2)} format={0} /></p>
+            </div>
+          </div>
+          <div className="bg-white p-2 rounded-xl shadow-6xl max-[420px]:mb-2 h-fit w-full col-start-3 col-end-5">
+            <div className="mb-1">
+              <h2 className="block text-slate-700 font-medium mb-1">Nombre y Apellido:</h2>
+              <h2 className="block bg-slate-100 text-slate-500 text-center border border-slate-400 py-1 max-[420px]:px-1 px-2 w-full rounded-xl">
+                {data[0]?.name}
+              </h2>
+            </div>
+            <div className="mb-1">
+              <h2 className="block text-slate-700 font-medium mb-1">Correo Electrónico:</h2>
+              <h2 className="block bg-slate-100 text-slate-500 text-center border border-slate-400 py-1 max-[420px]:px-1 px-2 w-full rounded-xl">
+                {data[0]?.email}
+              </h2>
+            </div>
+            <div className="mb-1">
+              <label htmlFor="phoneNumberSelected" className="block text-slate-700 font-medium mb-1">
+                Número telefónico:
+              </label>
+              <select
+                id="phoneNumberSelected"
+                name="phoneNumberSelected"
+                onChange={handleChange}
+                className="bg-slate-100 text-center border border-slate-400 py-1 px-2 rounded-xl w-full"
+                required
+              >
+                <option value="">Selecciona el Número</option>
+                <option value={showPhoneNumber}>{showPhoneNumber}</option>
+                {data[0].phoneNumberDos &&
+                  <option value={showPhoneNumberDos}>{showPhoneNumberDos}</option>
+                }
+              </select>
+            </div>
+          </div>
+          <div className="bg-white p-2 rounded-xl shadow-6xl max-[420px]:mb-2 h-fit w-full col-start-5 col-end-7">
+            <div className="mb-1">
+              <label htmlFor="paymentMethod" className="block text-slate-700 font-medium mb-1">
+                Forma de Pago:
+              </label>
+              <select
+                id="paymentMethod"
+                name="paymentMethod"
+                value={data[0]?.paymentMethod}
+                onChange={handleChange}
+                className="bg-slate-100 text-center border border-slate-400 py-1 px-2 w-full rounded-xl"
+                required
+              >
+                <option value="">Seleccione una opción</option>
+                {dataCheckout[0][0]?.map((option, index) => (
+                  <option key={index} value={option.name}>{option.name}</option>
+                ))}
+              </select>
+              {dataCheckout[0][0]?.map((option, index) => (
+                data[0]?.paymentMethod === option.name && (
+                  <p key={index} className="block bg-slate-100 text-slate-500 text-center border border-slate-400 py-1 max-[420px]:px-1 px-2 mt-1 w-full rounded-xl">
+                    {option.data}
+                  </p>
+                )
               ))}
             </div>
-          )}
-          <div className="mt-2 text-slate-700 text-lg font-semibold">
-            <p>Total productos: <PrecioProducto precio={totalPrice.toFixed(2)} format={0} /></p>
-            {data[0]?.deliveryMethod?.includes("Delivery") && (
-              <p>Costo de delivery: <PrecioProducto precio={(isFreeDelivery ? 0 : deliveryCost).toFixed(2)} format={0} /></p>
-            )}
-            <p className="text-xl mt-1">Total a pagar: <PrecioProducto precio={finalTotal.toFixed(2)} format={0} /></p>
-          </div>
-        </div>
-        <div className="bg-white p-2 rounded-xl shadow-6xl max-[420px]:mb-2 h-fit w-full col-start-3 col-end-5">
-          <div className="mb-1">
-            <h2 className="block text-slate-700 font-medium mb-1">Nombre y Apellido:</h2>
-            <h2 className="block bg-slate-100 text-slate-500 text-center border border-slate-400 py-1 max-[420px]:px-1 px-2 w-full rounded-xl">
-              {data[0]?.name}
-            </h2>
-          </div>
-          <div className="mb-1">
-            <h2 className="block text-slate-700 font-medium mb-1">Correo Electrónico:</h2>
-            <h2 className="block bg-slate-100 text-slate-500 text-center border border-slate-400 py-1 max-[420px]:px-1 px-2 w-full rounded-xl">
-              {data[0]?.email}
-            </h2>
-          </div>
-          <div className="mb-1">
-            <label htmlFor="phoneNumberSelected" className="block text-slate-700 font-medium mb-1">
-              Número telefónico:
-            </label>
-            <select
-              id="phoneNumberSelected"
-              name="phoneNumberSelected"
-              onChange={handleChange}
-              className="bg-slate-100 text-center border border-slate-400 py-1 px-2 rounded-xl w-full"
-              required
-            >
-              <option value="">Selecciona el Número</option>
-              <option value={showPhoneNumber}>{showPhoneNumber}</option>
-              {data[0].phoneNumberDos &&
-                <option value={showPhoneNumberDos}>{showPhoneNumberDos}</option>
-              }
-            </select>
-          </div>
-        </div>
-        <div className="bg-white p-2 rounded-xl shadow-6xl max-[420px]:mb-2 h-fit w-full col-start-5 col-end-7">
-          <div className="mb-1">
-            <label htmlFor="paymentMethod" className="block text-slate-700 font-medium mb-1">
-              Forma de Pago:
-            </label>
-            <select
-              id="paymentMethod"
-              name="paymentMethod"
-              value={data[0]?.paymentMethod}
-              onChange={handleChange}
-              className="bg-slate-100 text-center border border-slate-400 py-1 px-2 w-full rounded-xl"
-              required
-            >
-              <option value="">Seleccione una opción</option>
-              {dataCheckout[0][0]?.map((option, index) => (
-                <option key={index} value={option.name}>{option.name}</option>
-              ))}
-            </select>
-            {dataCheckout[0][0]?.map((option, index) => (
-              data[0]?.paymentMethod === option.name && (
-                <p key={index} className="block bg-slate-100 text-slate-500 text-center border border-slate-400 py-1 max-[420px]:px-1 px-2 mt-1 w-full rounded-xl">
-                  {option.data}
-                </p>
-              )
-            ))}
-          </div>
-          {data[0]?.paymentMethod === "Dólares" && (
-            <>
-              <div className="mb-1">
-                <label htmlFor="photoTicket" className="block text-slate-700 font-medium mb-1">
-                  Foto del Billete:
-                </label>
-                <div className="grid grid-cols-1">
-                  <div className="relative">
-                    <Image
-                      src={file ? URL.createObjectURL(file) : ImageNotSupported}
-                      className="rounded-md drop-shadow-6xl m-auto h-fit"
-                      alt={data[0]?.name}
-                      width={200} height={200}
-                    />
-                    <label className="text-xs absolute max-[420px]:top-1/3 top-2/3 left-0 w-full">
-                      <span className="bg-[#6ed8bf] hover:bg-[#4bb199] text-white py-1 px-3 rounded-xl shadow-6xl mx-auto w-fit cursor-pointer block">Subir</span>
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        id="photoTicket"
-                        name="photoTicket"
-                        className="bg-white py-1 px-2 rounded-md"
-                        onChange={handleChange2}
-                        style={{ display: "none" }}
-                        required
+            {data[0]?.paymentMethod === "Dólares" && (
+              <>
+                <div className="mb-1">
+                  <label htmlFor="photoTicket" className="block text-slate-700 font-medium mb-1">
+                    Foto del Billete:
+                  </label>
+                  <div className="grid grid-cols-1">
+                    <div className="relative">
+                      <Image
+                        src={file ? URL.createObjectURL(file) : ImageNotSupported}
+                        className="rounded-md drop-shadow-6xl m-auto h-fit"
+                        alt={data[0]?.name}
+                        width={200} height={200}
                       />
-                    </label>
+                      <label className="text-xs absolute max-[420px]:top-1/3 top-2/3 left-0 w-full">
+                        <span className="bg-[#6ed8bf] hover:bg-[#4bb199] text-white py-1 px-3 rounded-xl shadow-6xl mx-auto w-fit cursor-pointer block">Subir</span>
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          id="photoTicket"
+                          name="photoTicket"
+                          className="bg-white py-1 px-2 rounded-md"
+                          onChange={handleChange2}
+                          style={{ display: "none" }}
+                          required
+                        />
+                      </label>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </>
-          )}
-        </div>
-        <div className="bg-white p-2 rounded-xl shadow-6xl max-[420px]:mb-2 h-fit w-full col-start-7 col-end-9">
-          <div className="mb-1">
-            <label htmlFor="deliveryMethod" className="block text-slate-700 font-medium mb-1">
-              Forma de Entrega:
-            </label>
-            <select
-              id="deliveryMethod"
-              name="deliveryMethod"
-              value={data[0]?.deliveryMethod}
-              onChange={handleChange}
-              className="bg-slate-100 text-center border border-slate-400 py-1 px-2 w-full rounded-xl"
-              required
-            >
-              <option value="">Seleccione una opción</option>
-              {dataCheckout[1][0]?.map((option, index) => (
-                <option key={index} value={option.name}>{option.name}</option>
-              ))}
-            </select>
-            {dataCheckout[1][0]?.map((option, index) => (
-              data[0]?.deliveryMethod === option.name && (
-                <p key={index} className="block bg-slate-100 text-slate-500 text-center border border-slate-400 py-1 max-[420px]:px-1 px-2 mt-1 w-full rounded-xl">
-                  {option.data?.length === 1 && !isNaN(option.data)
-                    ? `${option.data}$`
-                    : option.data}
-                </p>
-              )
-            ))}
-          </div>
-          {data[0]?.deliveryMethod?.includes("Delivery") && (
-            <>
-              <div className="mb-1">
-                <p className="block text-slate-700 font-medium mb-1">
-                  Ubicate en el Mapa:
-                </p>
-                {data[0].latitude && data[0].longitude ? (
-                  <div className="m-auto h-48 w-48">
-                    <Maps
-                      latitude={data[0]?.latitude}
-                      longitude={data[0]?.longitude}
-                      onPositionChange={handlePositionChange} />
-                  </div>
-                ) : (
-                  <p className="text-center m-auto">Cargando ubicación...</p>
-                )}
-              </div>
-              <div className="mb-1">
-                <label htmlFor="address" className="block text-slate-700 font-medium mb-1">
-                  Notas de Dirección:
-                </label>
-                <input
-                  type="text"
-                  id="address"
-                  name="address"
-                  placeholder="Puntos de Referencia, etc."
-                  value={data[0]?.address || ""}
-                  onChange={handleChange}
-                  className="bg-slate-100 text-center border border-slate-400 py-1 px-2 w-full rounded-xl"
-                  required />
-              </div>
-            </>
-          )}
-        </div>
-
-        {data[0]?.deliveryMethod?.includes("Delivery") && (
-          <div className="bg-white p-2 rounded-xl shadow-6xl h-fit w-full col-start-3 col-end-7 mb-2">
-            <label className="block text-slate-700 font-medium mb-1">
-              Fecha de Entrega:
-            </label>
-            <button
-              type="button"
-              onClick={() => setShowDatePicker(!showDatePicker)}
-              className="bg-[#6ed8bf] hover:bg-[#4bb199] text-white font-semibold py-1 px-3 rounded"
-            >
-              {deliveryDate
-                ? moment(deliveryDate).format("dddd, D [de] MMMM [a las] HH:mm")
-                : "Seleccionar día y hora"}
-            </button>
-
-            {showDatePicker && (
-              <div className="mt-2 border border-slate-300 rounded p-2 bg-white shadow-md">
-                <input
-                  type="date"
-                  className="border px-2 py-1 rounded mb-2 w-full"
-                  min={moment().format("YYYY-MM-DD")}
-                  onChange={(e) => {
-                    setSelectedDate(e.target.value);
-                    setSelectedHour("");
-                  }}
-                  required
-                />
-                {selectedDate && (
-                  <select
-                    className="w-full border px-2 py-1 rounded"
-                    value={selectedHour}
-                    onChange={(e) => {
-                      setSelectedHour(e.target.value);
-                      const combined = moment(`${selectedDate} ${e.target.value}`, "YYYY-MM-DD HH:mm");
-                      setDeliveryDate(combined.toISOString());
-                      setShowDatePicker(false);
-                    }}
-                    required
-                  >
-                    <option value="">Selecciona la hora</option>
-                    {allowedHours.map((hour) => {
-                      const label = moment(hour, "HH:mm").format("h:mm A");
-                      return (
-                        <option key={hour} value={hour}>
-                          {label}
-                        </option>
-                      );
-                    })}
-                  </select>
-                )}
-              </div>
+              </>
             )}
           </div>
-        )}
-
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className={`bg-[#6ed8bf] hover:bg-[#4bb199] text-xl font-bold text-white py-1 px-2 rounded-xl shadow-6xl mb-2 mx-auto w-fit col-start-1 col-end-9 block ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-        >
-          {isSubmitting ? "Enviando..." : "Enviar Pedido"}
-        </button>
-      </div>
-      {
-        isFreeDelivery && data[0]?.deliveryMethod?.includes("Delivery") && showFreeDeliveryModal && (
-          <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-gradient-to-br from-pink-200 via-yellow-100 to-green-200 p-6 rounded-2xl shadow-2xl max-w-sm text-center border-4 border-yellow-300 animate-pulse">
-              <h2 className="text-2xl font-bold text-green-700 mb-2">¡Felicidades! 🎉</h2>
-              <p className="text-lg text-slate-800">
-                Tu pedido tiene <strong>Delivery Gratis</strong> por superar {freeDeliveryLimit}$.
-              </p>
-              <p className="mt-2 text-slate-600">
-                Solo elige la opción de entrega que desees para continuar.
-              </p>
-              <button
-                onClick={() => setShowFreeDeliveryModal(false)}
-                className="mt-4 bg-green-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-green-600 shadow-md"
+          <div className="bg-white p-2 rounded-xl shadow-6xl max-[420px]:mb-2 h-fit w-full col-start-7 col-end-9">
+            <div className="mb-1">
+              <label htmlFor="deliveryMethod" className="block text-slate-700 font-medium mb-1">
+                Forma de Entrega:
+              </label>
+              <select
+                id="deliveryMethod"
+                name="deliveryMethod"
+                value={data[0]?.deliveryMethod}
+                onChange={handleChange}
+                className="bg-slate-100 text-center border border-slate-400 py-1 px-2 w-full rounded-xl"
+                required
               >
-                ¡Entendido!
-              </button>
+                <option value="">Seleccione una opción</option>
+                {dataCheckout[1][0]?.map((option, index) => (
+                  <option key={index} value={option.name}>{option.name}</option>
+                ))}
+              </select>
+              {dataCheckout[1][0]?.map((option, index) => (
+                data[0]?.deliveryMethod === option.name && (
+                  <p key={index} className="block bg-slate-100 text-slate-500 text-center border border-slate-400 py-1 max-[420px]:px-1 px-2 mt-1 w-full rounded-xl">
+                    {option.data?.length === 1 && !isNaN(option.data)
+                      ? `${option.data}$`
+                      : option.data}
+                  </p>
+                )
+              ))}
             </div>
+            {data[0]?.deliveryMethod?.includes("Delivery") && (
+              <>
+                <div className="mb-1">
+                  <p className="block text-slate-700 font-medium mb-1">
+                    Ubicate en el Mapa:
+                  </p>
+                  {data[0].latitude && data[0].longitude ? (
+                    <div className="m-auto h-48 w-48">
+                      <Maps
+                        latitude={data[0]?.latitude}
+                        longitude={data[0]?.longitude}
+                        onPositionChange={handlePositionChange} />
+                    </div>
+                  ) : (
+                    <p className="text-center m-auto">Cargando ubicación...</p>
+                  )}
+                </div>
+                <div className="mb-1">
+                  <label htmlFor="address" className="block text-slate-700 font-medium mb-1">
+                    Notas de Dirección:
+                  </label>
+                  <input
+                    type="text"
+                    id="address"
+                    name="address"
+                    placeholder="Puntos de Referencia, etc."
+                    value={data[0]?.address || ""}
+                    onChange={handleChange}
+                    className="bg-slate-100 text-center border border-slate-400 py-1 px-2 w-full rounded-xl"
+                    required />
+                </div>
+              </>
+            )}
           </div>
-        )
-      }
-    </form >
+
+          {data[0]?.deliveryMethod?.includes("Delivery") && (
+            <div className="bg-white p-2 rounded-xl shadow-6xl h-fit w-full col-start-3 col-end-7 mb-2">
+              <label className="block text-slate-700 font-medium mb-1">
+                Fecha de Entrega:
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowDatePicker(!showDatePicker)}
+                className="bg-[#6ed8bf] hover:bg-[#4bb199] text-white font-semibold py-1 px-3 rounded"
+              >
+                {deliveryDate
+                  ? moment(deliveryDate).format("dddd, D [de] MMMM [a las] HH:mm")
+                  : "Seleccionar día y hora"}
+              </button>
+
+              {showDatePicker && (
+                <div className="mt-2 border border-slate-300 rounded p-2 bg-white shadow-md">
+                  <input
+                    type="date"
+                    className="border px-2 py-1 rounded mb-2 w-full"
+                    min={moment().format("YYYY-MM-DD")}
+                    onChange={(e) => {
+                      setSelectedDate(e.target.value);
+                      setSelectedHour("");
+                    }}
+                    required
+                  />
+                  {selectedDate && (
+                    <select
+                      className="w-full border px-2 py-1 rounded"
+                      value={selectedHour}
+                      onChange={(e) => {
+                        setSelectedHour(e.target.value);
+                        const combined = moment(`${selectedDate} ${e.target.value}`, "YYYY-MM-DD HH:mm");
+                        setDeliveryDate(combined.toISOString());
+                        setShowDatePicker(false);
+                      }}
+                      required
+                    >
+                      <option value="">Selecciona la hora</option>
+                      {allowedHours.map((hour) => {
+                        const label = moment(hour, "HH:mm").format("h:mm A");
+                        return (
+                          <option key={hour} value={hour}>
+                            {label}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className={`bg-[#6ed8bf] hover:bg-[#4bb199] text-xl font-bold text-white py-1 px-2 rounded-xl shadow-6xl mb-2 mx-auto w-fit col-start-1 col-end-9 block ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+          >
+            {isSubmitting ? "Enviando..." : "Enviar Pedido"}
+          </button>
+        </div>
+        {
+          isFreeDelivery && data[0]?.deliveryMethod?.includes("Delivery") && showFreeDeliveryModal && (
+            <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50">
+              <div className="bg-gradient-to-br from-pink-200 via-yellow-100 to-green-200 p-6 rounded-2xl shadow-2xl max-w-sm text-center border-4 border-yellow-300 animate-pulse">
+                <h2 className="text-2xl font-bold text-green-700 mb-2">¡Felicidades! 🎉</h2>
+                <p className="text-lg text-slate-800">
+                  Tu pedido tiene <strong>Delivery Gratis</strong> por superar {freeDeliveryLimit}$.
+                </p>
+                <p className="mt-2 text-slate-600">
+                  Solo elige la opción de entrega que desees para continuar.
+                </p>
+                <button
+                  onClick={() => setShowFreeDeliveryModal(false)}
+                  className="mt-4 bg-green-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-green-600 shadow-md"
+                >
+                  ¡Entendido!
+                </button>
+              </div>
+            </div>
+          )
+        }
+      </form >
+    </section>
     // ===END_RETURN===
   )
 }

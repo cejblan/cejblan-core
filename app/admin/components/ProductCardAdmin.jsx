@@ -13,8 +13,8 @@ export default function ProductCardAdmin({ product }) {
         <div key={product.id} className="relative">
           <h3 className="font-medium absolute right-0">{paddedId}</h3>
           <Image src={product.image || ImageNotSupported} alt="Product 1" className="max-[420px]:min-w-10 min-w-12 max-[420px]:max-w-10 max-w-12 max-[420px]:min-h-10 min-h-12 max-[420px]:max-h-10 max-h-12 object-scale-down rounded-xl shadow-xl m-auto mb-1" width={100} height={100} />
-          <div className="text-sm">
-            <h3 className="font-medium">{product.name}</h3>
+          <div>
+            <h3>{product.name}</h3>
           </div>
         </div>
       </Link>
@@ -25,8 +25,8 @@ export default function ProductCardAdmin({ product }) {
         <div key={product.id} className="relative">
           <h3 className="font-medium absolute right-0">{paddedId}</h3>
           <Image src={product.image || ImageNotSupported} alt="Product 1" className="max-[420px]:min-w-10 min-w-12 max-[420px]:max-w-10 max-w-12 max-[420px]:min-h-10 min-h-12 max-[420px]:max-h-10 max-h-12 object-scale-down rounded-xl shadow-xl m-auto mb-1" width={100} height={100} />
-          <div className="text-sm">
-            <h3 className="font-medium">{product.name}</h3>
+          <div>
+            <h3>{product.name}</h3>
           </div>
         </div>
       </Link>
