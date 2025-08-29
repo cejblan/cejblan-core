@@ -15,7 +15,7 @@ export default function Cart() {
 
   return (
     // ===START_RETURN===
-    <div className="p-4 sm:p-6 max-w-6xl mx-auto">
+    <section className="px-4 sm:px-6 max-w-6xl mx-auto">
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm text-left border-collapse rounded-xl overflow-hidden shadow-md">
           <thead className="bg-slate-100 text-slate-700 uppercase text-xs font-semibold">
@@ -43,7 +43,7 @@ export default function Cart() {
           </Link>
         </div>
       )}
-    </div>
+    </section>
     // ===END_RETURN===
   );
 }

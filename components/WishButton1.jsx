@@ -16,7 +16,6 @@ export const HandleWish1 = async (e, data, session) => {
 
     // Refrescar el token sin redirigir
     await fetch("/api/auth/session?update=true");
-    window.location.reload();
 
   } catch (error) {
     console.error("Error al manejar la wishlist:", error);

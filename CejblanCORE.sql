@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: bbgcbcnrrmonslx6dtaj-mysql.services.clever-cloud.com:3306
--- Tiempo de generación: 04-08-2025 a las 18:36:18
+-- Tiempo de generación: 29-08-2025 a las 17:03:10
 -- Versión del servidor: 8.4.2-2
 -- Versión de PHP: 8.2.29
 
@@ -154,24 +154,6 @@ INSERT INTO `payments` (`id`, `name`, `data`, `status`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `plugins_marketplace`
---
-
-CREATE TABLE `plugins_marketplace` (
-  `id` int NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `slug` varchar(100) NOT NULL,
-  `icon` varchar(10) DEFAULT NULL,
-  `author_id` int NOT NULL,
-  `description` text,
-  `file_path` varchar(255) DEFAULT NULL,
-  `approved` tinyint(1) DEFAULT '0',
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `products`
 --
 
@@ -189,6 +171,13 @@ CREATE TABLE `products` (
   `date` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Volcado de datos para la tabla `products`
+--
+
+INSERT INTO `products` (`id`, `code_bill`, `name`, `description`, `price`, `wholesale_price`, `iva`, `category`, `quantity`, `image`, `date`) VALUES
+(1, 'prueba', 'RESISTENCIA DE DISCO SOLIDO 6\" 220V 1500', 'Resistencia De Disco Solido 6\" 220V 1500w', 28.00, 22.40, NULL, 'Productos', 0, 'https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/1755448017934.png', '2025-06-24 19:44:00');
+
 -- --------------------------------------------------------
 
 --
@@ -202,6 +191,31 @@ CREATE TABLE `qualification` (
   `user` varchar(33) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `value` int(1) UNSIGNED ZEROFILL NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `sales`
+--
+
+CREATE TABLE `sales` (
+  `id` bigint UNSIGNED NOT NULL,
+  `plugin_name` varchar(255) DEFAULT NULL,
+  `rute` varchar(255) DEFAULT NULL,
+  `domain` varchar(255) DEFAULT NULL,
+  `provider` varchar(50) DEFAULT NULL,
+  `amount` decimal(12,2) DEFAULT NULL,
+  `currency` varchar(10) DEFAULT NULL,
+  `paypal_order_id` varchar(255) DEFAULT NULL,
+  `paypal_capture_id` varchar(255) DEFAULT NULL,
+  `payer_name` varchar(255) DEFAULT NULL,
+  `payer_email` varchar(255) DEFAULT NULL,
+  `payer_id` varchar(255) DEFAULT NULL,
+  `status` varchar(50) DEFAULT NULL,
+  `capture_response` json DEFAULT NULL,
+  `external_ref` varchar(255) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -226,12 +240,10 @@ INSERT INTO `settings` (`id`, `name`, `description`, `value`) VALUES
 (3, 'nombre_tienda', 'Registro para editar el nombre de la tienda en la factura', 'CejblanCMS'),
 (4, 'rif_tienda', 'Registro para editar el RIF de la tienda en la factura', 'RIF por defecto'),
 (5, 'direccion_tienda', 'Registro para editar la dirección de la tienda en la factura', 'Dirección por defecto'),
-(6, 'paleta_colores', 'Paleta de colores del sitio web elegida por el usuario', '[\"#6ed8bf\",\"#4bb199\",\"#1e293b\",\"#ffffff\",\"#f3f4f6\",\"#e2e8f0\"]'),
-(7, 'logo_sitio', 'Logo de la aplicación', 'https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/nuevo_logo_cejblan2.webp'),
-(8, 'working_hours', 'Horario de trabajo', '09:00-17:00'),
-(9, 'delivery_hours', 'Horas permitidas para el Delivery', '12:00,18:00'),
-(10, 'free_delivery', 'Limite de costo para aplicar el Delivery Gratis', '5'),
-(11, 'free_delivery_activated', 'Delivery Gratis Activado o Desactivado', 'Activado');
+(7, 'working_hours', 'Horario de trabajo', '09:00-17:00'),
+(8, 'delivery_hours', 'Horas permitidas para el Delivery', '12:00,18:00'),
+(9, 'free_delivery', 'Limite de costo para aplicar el Delivery Gratis', '5'),
+(10, 'free_delivery_activated', 'Delivery Gratis Activado o Desactivado', 'Activado');
 
 -- --------------------------------------------------------
 
@@ -246,6 +258,47 @@ CREATE TABLE `telegram_messages` (
   `from_bot` tinyint(1) NOT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `telegram_messages`
+--
+
+INSERT INTO `telegram_messages` (`id`, `chat_id`, `text`, `from_bot`, `created_at`) VALUES
+(1, 6039953539, '335146', 0, '2025-08-06 03:17:08'),
+(2, 6039953539, '<b>Hola, Francisco</b>. Tu cuenta ha sido enlazada correctamente con el bot. Ahora podré entregarte los datos de tus pedidos por aquí 😏. Recuerda completar los datos del perfil para que puedas comprar en nuestra tienda 🥰', 1, '2025-08-06 03:17:09'),
+(3, 6039953539, '<b>Tu pedido es el: #1</b>\n  \nDetalles del pedido:\n📛 Nombre: cejblan\n📧 Correo: cejblan@gmail.com\n📱 Teléfono: +584142245444\n\n🔎 Productos:\n   ✅ <a href=\"https://cejblan-core-dev.vercel.app/products/1\">1</a>\n #️⃣ Cantidad:\n   ✅ 2\n  \n💰 Total: 56$\n💳 Pago: Transferencia\n📦 Entrega: Retiro 1\n📍 Dirección: Direccion\n\n📆 Fecha: 28/08/2025\n⏳ Estado: PROCESANDO\n', 1, '2025-08-28 20:27:17'),
+(4, 6039953539, '<b>Tu pedido es el: #2</b>\n  \nDetalles del pedido:\n📛 Nombre: cejblan\n📧 Correo: cejblan@gmail.com\n📱 Teléfono: +584142245444\n\n🔎 Productos:\n   ✅ <a href=\"https://cejblan-core-dev.vercel.app/products/2\">2</a>\n #️⃣ Cantidad:\n   ✅ 1\n  \n💰 Total: 0$\n💳 Pago: Efectivo\n📦 Entrega: Retiro 2\n📍 Dirección: Direccion\n\n📆 Fecha: 29/08/2025\n⏳ Estado: PROCESANDO\n', 1, '2025-08-29 15:54:36');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `transfer_orders`
+--
+
+CREATE TABLE `transfer_orders` (
+  `id` bigint UNSIGNED NOT NULL,
+  `plugin_name` varchar(255) NOT NULL,
+  `rute` varchar(255) DEFAULT NULL,
+  `domain` varchar(255) DEFAULT NULL,
+  `amount` decimal(12,2) DEFAULT NULL,
+  `provider` varchar(50) DEFAULT 'bank_transfer',
+  `status` varchar(50) DEFAULT 'pending',
+  `notes` text,
+  `external_ref` varchar(255) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `paid_at` datetime DEFAULT NULL,
+  `paid_by` varchar(255) DEFAULT NULL,
+  `admin_notes` text
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `transfer_orders`
+--
+
+INSERT INTO `transfer_orders` (`id`, `plugin_name`, `rute`, `domain`, `amount`, `provider`, `status`, `notes`, `external_ref`, `created_at`, `paid_at`, `paid_by`, `admin_notes`) VALUES
+(1, 'CMS', 'cms', 'cejblan.com', 27.00, 'bank_transfer', 'pending', NULL, NULL, '2025-08-25 15:26:30', NULL, NULL, NULL),
+(2, 'CMS', 'cms', 'cejblan.com', 27.00, 'bank_transfer', 'pending', NULL, NULL, '2025-08-25 15:28:14', NULL, NULL, NULL),
+(3, 'CMS', 'cms', 'cejblan.com', 27.00, 'bank_transfer', 'pending', NULL, NULL, '2025-08-25 16:54:23', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -278,8 +331,22 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `image`, `rol`, `phoneCode`, `phoneNumber`, `phoneCodeDos`, `phoneNumberDos`, `address`, `latitude`, `longitude`, `code`, `expiresAt`, `chatId`, `verified`, `date`) VALUES
-(0001, 'cejblan', 'cejblan@gmail.com', '', 'Desarrollador', 414, NULL, NULL, NULL, 'Guatire', '10.4722296', '-66.5419982', NULL, NULL, NULL, 0, '2024-11-20 00:09:57'),
+(0003, 'Francisco González', 'benfran21ramon1999@gmail.com', NULL, 'Cliente', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, '2025-08-06 03:07:10'),
+(0001, 'cejblan', 'cejblan@gmail.com', '', 'Desarrollador', 414, 2245444, NULL, NULL, 'Guatire', '10.4702723', '-66.5436872', NULL, NULL, '6039953539', 1, '2024-11-20 00:09:57'),
 (0002, 'Nanci Quintero Amaricua', 'namaricua35@gmail.com', '', 'Admin', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, '2025-07-09 13:06:16');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `webhook_events`
+--
+
+CREATE TABLE `webhook_events` (
+  `id` bigint UNSIGNED NOT NULL,
+  `event_type` varchar(255) DEFAULT NULL,
+  `resource` json DEFAULT NULL,
+  `received_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -328,13 +395,6 @@ ALTER TABLE `payments`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indices de la tabla `plugins_marketplace`
---
-ALTER TABLE `plugins_marketplace`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `slug` (`slug`);
-
---
 -- Indices de la tabla `products`
 --
 ALTER TABLE `products`
@@ -345,6 +405,14 @@ ALTER TABLE `products`
 --
 ALTER TABLE `qualification`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `sales`
+--
+ALTER TABLE `sales`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_paypal_order_id` (`paypal_order_id`),
+  ADD KEY `idx_provider_created_at` (`provider`,`created_at`);
 
 --
 -- Indices de la tabla `settings`
@@ -360,11 +428,27 @@ ALTER TABLE `telegram_messages`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indices de la tabla `transfer_orders`
+--
+ALTER TABLE `transfer_orders`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_status` (`status`),
+  ADD KEY `idx_created_at` (`created_at`);
+
+--
 -- Indices de la tabla `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`email`),
   ADD UNIQUE KEY `UNIQUE` (`id`);
+
+--
+-- Indices de la tabla `webhook_events`
+--
+ALTER TABLE `webhook_events`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_event_type` (`event_type`),
+  ADD KEY `idx_received_at` (`received_at`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -401,12 +485,6 @@ ALTER TABLE `payments`
   MODIFY `id` int(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT de la tabla `plugins_marketplace`
---
-ALTER TABLE `plugins_marketplace`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT de la tabla `products`
 --
 ALTER TABLE `products`
@@ -419,6 +497,12 @@ ALTER TABLE `qualification`
   MODIFY `id` int(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `sales`
+--
+ALTER TABLE `sales`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `settings`
 --
 ALTER TABLE `settings`
@@ -428,13 +512,25 @@ ALTER TABLE `settings`
 -- AUTO_INCREMENT de la tabla `telegram_messages`
 --
 ALTER TABLE `telegram_messages`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT de la tabla `transfer_orders`
+--
+ALTER TABLE `transfer_orders`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `webhook_events`
+--
+ALTER TABLE `webhook_events`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

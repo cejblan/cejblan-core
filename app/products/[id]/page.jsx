@@ -101,14 +101,13 @@ export default async function ProductPage({ params }) {
 
           <Image
             src={product.image}
-            className="w-full h-full object-cover max-[420px]:rounded-b-xl md:rounded-bl-none md:rounded-r-xl shadow-6xl"
+            className="w-full h-full object-cover max-[420px]:rounded-b-xl md:rounded-bl-none md:rounded-r-xl drop-shadow-6xl"
             alt={product.name}
             width={300}
             height={300}
           />
         </div>
       </div>
-
     </>
   );
 }
