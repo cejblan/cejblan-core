@@ -1,6 +1,6 @@
 {
   "palette": [
-    "#6ed8bf",
+    "#6eb0d8",
     "#4bb199",
     "#1e856d",
     "#64748b",
@@ -10,7 +10,10 @@
     "#f3f4f6",
     "#e2e8f0"
   ],
-  "logo": "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/nuevo_logo_cejblan2.webp",
+  "logo": "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/Logo2.png",
+  "logo2": "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/Logo1.png",
+  "logo3": "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/Logo3.png",
+  "fondo": "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/fondo02.jpg",
   "navbar": "navbar4",
   "footer": "footer2",
   "loading": "loading2"
