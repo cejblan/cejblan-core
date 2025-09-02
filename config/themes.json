@@ -1,8 +1,8 @@
 {
   "palette": [
     "#6eb0d8",
-    "#3c8fc3",
-    "#16699c",
+    "#4bb199",
+    "#1e856d",
     "#64748b",
     "#475569",
     "#1e293b",
@@ -12,7 +12,7 @@
   ],
   "logo": "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/Logo2.png",
   "logo2": "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/Logo1.png",
-  "logo3": "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/Logo1.png",
+  "logo3": "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/Logo3.png",
   "fondo": "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/fondo02.jpg",
   "navbar": "navbar4",
   "footer": "footer2",
