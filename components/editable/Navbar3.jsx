@@ -9,9 +9,9 @@ import { TiThMenu, TiTimes } from "react-icons/ti";
 import { PiMagnifyingGlassBold } from "react-icons/pi";
 import { FaCartShopping, FaBookOpen } from "react-icons/fa6";
 import { IoIosHeart } from "react-icons/io";
-import { IoLogoOctocat, IoPersonSharp } from "react-icons/io5";
+import { IoPersonSharp } from "react-icons/io5";
 import { MdAdminPanelSettings } from "react-icons/md";
-import { FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
+import { FaShoppingBag, FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
 import DoNotShowAdmin from "@/app/admin/components/DoNotShowAdmin";
 import SearchBar from "./SearchBar";
 import { useBranding } from "@/hooks/useBranding";
@@ -40,7 +40,7 @@ export default function Navbar3() {
   const { data: session, status } = useSession();
   const pathname = usePathname();
   const [onClick, setOnClick] = useState(false);
-  const { logo, palette, loading } = useBranding();
+  const { logo3, palette, loading } = useBranding();
 
   const handleClick = () => setIsOpen(prev => !prev);
   const Open = () => setOnClick(prev => !prev);
@@ -89,7 +89,7 @@ export default function Navbar3() {
               >
                 {[
                   { href: "/", label: "Inicio", icon: <FaBookOpen /> },
-                  { href: "/products", label: "Productos", icon: <IoLogoOctocat /> },
+                  { href: "/products", label: "Productos", icon: <FaShoppingBag /> },
                   { href: "/wishlist", label: "Favoritos", icon: <IoIosHeart /> },
                   { href: "/cart", label: "Carrito", icon: <FaCartShopping /> },
                   { href: "/orders", label: "Pedidos", icon: <MdBorderColor /> },
@@ -131,13 +131,13 @@ export default function Navbar3() {
 
         {/* Logo central */}
         <Link href="/" className="col-start-5 col-end-9 text-center">
-          {logo && (
+          {logo3 && (
             <Image
-              src={logo}
+              className="m-auto w-auto"
+              src={logo3}
               alt="Logo"
-              width={160}
-              height={160}
-              className="mx-auto w-32 h-auto object-contain"
+              width={100}
+              height={100}
             />
           )}
         </Link>

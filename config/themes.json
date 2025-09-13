@@ -1,6 +1,6 @@
 {
   "palette": [
-    "#6eb0d8",
+    "#6ed8bf",
     "#4bb199",
     "#1e856d",
     "#64748b",
@@ -14,7 +14,10 @@
   "logo2": "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/Logo1.png",
   "logo3": "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/Logo3.png",
   "fondo": "https://9mtfxauv5xssy4w3.public.blob.vercel-storage.com/fondo02.jpg",
+  "img404": "https://txegfo4m2usf9ivg.public.blob.vercel-storage.com/Gato-Pensativo.png",
+  "img500": "https://txegfo4m2usf9ivg.public.blob.vercel-storage.com/Gato-Sorprendido.png",
   "navbar": "navbar4",
   "footer": "footer2",
-  "loading": "loading2"
+  "loading": "loading2",
+  "background": "home"
 }

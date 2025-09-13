@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { FcOpenedFolder } from "react-icons/fc";
+import Image from "next/image";
 
 export default function GaleriaModal({
   abierto,
@@ -18,12 +19,15 @@ export default function GaleriaModal({
       const res = await fetch(`/api/cms/images?page=${paginaGaleria}&limit=${porPagina}`);
       const data = await res.json();
       const agrupadas = {};
-      (data.imagenes || []).forEach((img) => {
+
+      // ✅ usar data.items en lugar de data.imagenes
+      (data.items || []).forEach((img) => {
         const partes = img.pathname.split("/");
         const folder = partes.length > 1 ? partes.slice(0, -1).join("/") : "/";
         if (!agrupadas[folder]) agrupadas[folder] = [];
         agrupadas[folder].push(img);
       });
+
       setImagenes(agrupadas);
       setTotalPaginasGaleria(data.totalPaginas || 1);
     } catch (err) {
@@ -65,7 +69,11 @@ export default function GaleriaModal({
                       onClose();
                     }}
                   >
-                    <img src={img.url} alt={img.pathname} className="object-cover w-full h-full" />
+                    <Image
+                      src={img.url}
+                      alt={img.pathname}
+                      className="object-scale-down w-full h-full"
+                    />
                   </div>
                 ))}
               </div>

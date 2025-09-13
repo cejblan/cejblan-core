@@ -10,7 +10,7 @@ import ProductCard from "@/components/editable/ProductCard";
 export default function ProductsComponent() {
   const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1); // Estado para la página actual
-  const itemsPerPage = 9; // Número de productos por página
+  const itemsPerPage = 21; // Número de productos por página
 
   // buscador y filtros (tomados de la apariencia del segundo código)
   const [searchQuery, setSearchQuery] = useState("");
@@ -113,7 +113,7 @@ export default function ProductsComponent() {
               LoadProducts(setProducts);
               scrollToTodos();
             }}
-            className="bg-white hover:bg-gray-200 rounded-lg border border-slate-200 px-3 py-2 text-sm transition"
+            className="bg-white hover:bg-gray-300 rounded-lg border border-slate-200 px-3 py-2 text-sm transition"
             title="Recargar lista de productos"
           >
             Recargar
@@ -145,19 +145,19 @@ export default function ProductsComponent() {
         <div className="flex items-center gap-2 text-sm">
           <button
             onClick={() => setActiveFilter("all")}
-            className={`px-3 py-1.5 rounded-full border ${activeFilter === "all" ? "bg-slate-900 text-white border-slate-900" : "bg-white hover:bg-slate-50 border-slate-300"}`}
+            className={`px-3 py-1.5 rounded-full border ${activeFilter === "all" ? "bg-slate-900 text-white border-slate-900" : "bg-white hover:bg-gray-300 border-slate-300"}`}
           >
             Todos
           </button>
           <button
             onClick={() => setActiveFilter("free")}
-            className={`px-3 py-1.5 rounded-full border ${activeFilter === "free" ? "bg-slate-900 text-white border-slate-900" : "bg-white hover:bg-slate-50 border-slate-300"}`}
+            className={`px-3 py-1.5 rounded-full border ${activeFilter === "free" ? "bg-slate-900 text-white border-slate-900" : "bg-white hover:bg-gray-300 border-slate-300"}`}
           >
             Gratuitos
           </button>
           <button
             onClick={() => setActiveFilter("paid")}
-            className={`px-3 py-1.5 rounded-full border ${activeFilter === "paid" ? "bg-slate-900 text-white border-slate-900" : "bg-white hover:bg-slate-50 border-slate-300"}`}
+            className={`px-3 py-1.5 rounded-full border ${activeFilter === "paid" ? "bg-slate-900 text-white border-slate-900" : "bg-white hover:bg-gray-300 border-slate-300"}`}
           >
             Pagos
           </button>
@@ -177,7 +177,7 @@ export default function ProductsComponent() {
       {/* Todos (paginados) */}
       <div ref={todosRef} className="mt-10">
         <SectionHeader title={`Todos (${filteredProducts.length})`} />
-        <div className="mt-4 grid max-[420px]:grid-cols-1 grid-cols-3 gap-4 justify-center items-start pb-4 px-3">
+        <div className="mt-4 grid max-[420px]:grid-cols-1 grid-cols-3 gap-4 justify-center items-start pb-4">
           {currentProducts.length > 0 ? (
             // Aquí usamos ProductCard para cada producto (manteniendo la lógica de carga original)
             currentProducts.map((product) => (

@@ -7,7 +7,7 @@ import { useBranding } from "@/hooks/useBranding"
 import { Hoverable } from "@/hooks/hoverable"
 
 export default function Footer2() {
-  const { palette, logo, loading } = useBranding()
+  const { palette, logo, logo2, loading } = useBranding()
 
   if (loading) return null
 
@@ -23,14 +23,24 @@ export default function Footer2() {
         }}
       >
         <div className="flex flex-col sm:flex-row justify-center items-center gap-3 mb-3">
-          <div className="flex gap-6 justify-center">
+          <div className="flex gap-1 justify-center">
             {logo && (
-              <Image
-                src={logo}
-                alt="Logo"
-                width={300}
-                height={300}
-              />
+              <>
+                <Image
+                  className="m-auto w-auto"
+                  src={logo}
+                  alt="Logo"
+                  width={100}
+                  height={100}
+                />
+                <Image
+                  className="m-auto w-auto drop-shadow-7xl"
+                  src={logo2}
+                  alt="Logo"
+                  width={100}
+                  height={100}
+                />
+              </>
             )}
           </div>
 

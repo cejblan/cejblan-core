@@ -9,8 +9,10 @@ import { RiSubtractFill, RiAddFill } from "react-icons/ri";
 import { CheckWish } from "@/components/CheckWish";
 import { HandleWish1 } from "@/components/WishButton1";
 import { HandleWish2 } from "@/components/WishButton2";
+import branding from "@/config/themes.json";
 
 export default function Buttons(product) {
+  const { palette } = branding;
   const { data: session } = useSession(); // Obtener la sesión actual del usuario
   const [isInWishlist, setIsInWishlist] = useState(false); // Estado para wishlist
   const form = useRef(null);
@@ -134,7 +136,10 @@ export default function Buttons(product) {
           ref={form}
         >
           <button
-            className="text-white bg-[#6ed8bf] hover:bg-[#4bb199] max-[420px]:text-lg text-3xl font-bold p-1 rounded-xl shadow-6xl"
+            className="text-white max-[420px]:text-lg text-3xl font-bold p-1 rounded-xl shadow-6xl"
+            style={{ backgroundColor: palette[1] }} // palette[1] reemplaza #6ed8bf
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = palette[2]; }} // hover -> palette[2] reemplaza #4bb199
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = palette[1]; }}
           >
             <IoIosHeart />
           </button>
@@ -146,7 +151,10 @@ export default function Buttons(product) {
           ref={form}
         >
           <button
-            className="text-white bg-[#6ed8bf] hover:bg-[#4bb199] max-[420px]:text-lg text-3xl font-bold p-1 rounded-xl shadow-6xl"
+            className="text-white max-[420px]:text-lg text-3xl font-bold p-1 rounded-xl shadow-6xl"
+            style={{ backgroundColor: palette[1] }} // palette[1] reemplaza #6ed8bf
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = palette[2]; }} // hover -> palette[2] reemplaza #4bb199
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = palette[1]; }}
           >
             <IoIosHeartEmpty />
           </button>

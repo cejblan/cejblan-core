@@ -24,19 +24,28 @@ export async function POST(req) {
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
 
-      const match = line.match(/^(.*?)\s{2,}(-?\d+)\s{2,}([\d.,]+)\s{2,}([\d.,]+)/);
+      // RegEx actualizada: permitir signo negativo en los grupos numéricos
+      const match = line.match(/^(.*?)\s{2,}(-?[\d.,]+)\s{2,}(-?[\d.,]+)\s{2,}(-?[\d.,]+)/);
       if (!match) continue;
 
       let [_, codigo, descripcion, existencia, costo] = match;
 
-      // Extraer valorInventario y código desde existencia
-      const decimalPart = existencia.split('.')[1] || '00000';
+      // Manejar posible signo negativo en 'existencia'
+      const existenciaTrim = existencia.trim();
+      const existenciaSign = existenciaTrim.startsWith('-') ? '-' : '';
+      const existenciaAbs = existenciaSign ? existenciaTrim.slice(1) : existenciaTrim;
+
+      // Extraer valorInventario y código desde existencia (usando la parte absoluta, luego reaplicar signo)
+      const parts = existenciaAbs.split('.');
+      const integerPart = parts[0] || '0';
+      const decimalPart = parts[1] || '00000';
+
       const id = decimalPart.slice(-5);
-      const valorInventario = existencia.split('.')[0] + '.' + decimalPart.slice(0, decimalPart.length - 5);
+      const valorInventario = existenciaSign + integerPart + '.' + decimalPart.slice(0, Math.max(0, decimalPart.length - 5));
 
       const nombre = codigo;
-      const cantidadNorm = descripcion.replace(',', '.');
-      const precioNorm = costo.replace(',', '.');
+      const cantidadNorm = descripcion.replace(',', '.'); // conserva '-' si existe
+      const precioNorm = costo.replace(',', '.'); // conserva '-' si existe
 
       rows.push({
         id,

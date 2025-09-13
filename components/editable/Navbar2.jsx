@@ -36,7 +36,7 @@ export default function Navbar2() {
   const { data: session, status } = useSession()
   const pathname = usePathname()
   const Loading = getLoadingComponent(branding.loading);
-  const { palette, logo, loading } = useBranding()
+  const { palette, logo3, loading } = useBranding()
 
   if (status === "loading" || loading) return <Loading zIndex={50} />
 
@@ -57,15 +57,15 @@ export default function Navbar2() {
         }}
       >
         {/* Logo */}
-        <div className="flex items-center">
+        <div className="flex items-center max-w-20">
           <Link href="/">
-            {logo && (
+            {logo3 && (
               <Image
-                src={logo}
-                alt="Logo"
-                width={200}
-                height={200}
-                className="sm:h-8 w-auto"
+                className="m-auto w-auto"
+                src={logo3}
+                alt={`Logo ${process.env.NEXT_PUBLIC_SITE_NAME}`}
+                width={100}
+                height={100}
               />
             )}
           </Link>

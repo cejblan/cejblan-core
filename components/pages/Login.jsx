@@ -5,8 +5,6 @@ import { useRouter } from "next/navigation";
 import Image from "next/image"
 import Link from "next/link"
 import React from "react"
-import Logo from "public/nuevo_logo_cejblan.webp"
-import Logo2 from "public/logo_cejblan_2.webp"
 import branding from "@/config/themes.json";
 import Loading1 from "@/components/editable/Loading1";
 import Loading2 from "@/components/editable/Loading2";
@@ -28,8 +26,9 @@ function getLoadingComponent(name) {
 export default function Login() {
   const { data: session } = useSession();
   const router = useRouter();
+  const { loading, logo, logo2 } = branding
 
-  const Loading = getLoadingComponent(branding.loading);
+  const Loading = getLoadingComponent(loading);
 
   if (session) {
     router.push("/");
@@ -45,13 +44,13 @@ export default function Login() {
         <Link href={process.env.NEXT_PUBLIC_SITE_URL} className="mb-2">
           <Image
             className="rounded-full shadow-6xl m-auto"
-            src={Logo}
+            src={logo}
             alt={`Desarrollado por ${process.env.NEXT_PUBLIC_SITE_NAME}`}
-            width={81}
-            height={81} />
+            width={100}
+            height={100} />
           <Image
-            className="rounded-full drop-shadow-6xl m-auto"
-            src={Logo2}
+            className="drop-shadow-xl m-auto"
+            src={logo2}
             alt={`Desarrollado por ${process.env.NEXT_PUBLIC_SITE_NAME}`}
             width={100}
             height={100} />

@@ -35,22 +35,81 @@ export async function GET() {
 
 export async function POST(req) {
   try {
-    const { palette, logo, navbar, footer, loading } = await req.json();
+    const { palette, logo, logo2, logo3, fondo, img404, img500, navbar, footer, loading, background } = await req.json();
 
+    // Validaciones básicas
     if (!Array.isArray(palette) || typeof logo !== "string") {
-      return NextResponse.json({ error: "Datos inválidos (palette o logo)" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Datos inválidos (palette o logo)" },
+        { status: 400 }
+      );
     }
 
     if (
       typeof navbar !== "string" ||
       typeof footer !== "string" ||
-      typeof loading !== "string"
-    ) {
-      return NextResponse.json({ error: "Datos inválidos (navbar, footer o loading)" }, { status: 400 });
+      typeof loading !== "string" ||
+      typeof background !== "string"
+      ) {
+      return NextResponse.json(
+        { error: "Datos inválidos (navbar, footer o loading)" },
+        { status: 400 }
+      );
     }
 
-    const newData = { palette, logo, navbar, footer, loading };
-    const contentEncoded = Buffer.from(JSON.stringify(newData, null, 2)).toString("base64");
+    if (logo2 && typeof logo2 !== "string") {
+      return NextResponse.json(
+        { error: "Datos inválidos (logo2 debe ser string)" },
+        { status: 400 }
+      );
+    }
+
+    if (logo3 && typeof logo3 !== "string") {
+      return NextResponse.json(
+        { error: "Datos inválidos (logo3 debe ser string)" },
+        { status: 400 }
+      );
+    }
+
+    if (fondo && typeof fondo !== "string") {
+      return NextResponse.json(
+        { error: "Datos inválidos (fondo debe ser string)" },
+        { status: 400 }
+      );
+    }
+
+    if (img404 && typeof img404 !== "string") {
+      return NextResponse.json(
+        { error: "Datos inválidos (img404 debe ser string)" },
+        { status: 400 }
+      );
+    }
+
+    if (img500 && typeof img500 !== "string") {
+      return NextResponse.json(
+        { error: "Datos inválidos (img500 debe ser string)" },
+        { status: 400 }
+      );
+    }
+
+    // Construcción de datos nuevos (incluye img404 e img500)
+    const newData = {
+      palette,
+      logo,
+      logo2: logo2 || "",
+      logo3: logo3 || "",
+      fondo: fondo || "",
+      img404: img404 || "",
+      img500: img500 || "",
+      navbar,
+      footer,
+      loading,
+      background,
+    };
+
+    const contentEncoded = Buffer.from(
+      JSON.stringify(newData, null, 2)
+    ).toString("base64");
 
     const sha = await getFileSHA();
 

@@ -80,6 +80,7 @@ export default function Checkout() {
   const isFreeDelivery = freeDeliveryLimit !== null && totalPrice >= freeDeliveryLimit;
 
   const Loading = getLoadingComponent(branding.loading);
+  const { palette } = branding; // <-- paleta disponible aquí
 
   let deliveryCost = 0;
   if (!isFreeDelivery && selectedDelivery && selectedDelivery.data?.length === 1 && !isNaN(selectedDelivery.data)) {
@@ -399,7 +400,14 @@ export default function Checkout() {
                         width={200} height={200}
                       />
                       <label className="text-xs absolute max-[420px]:top-1/3 top-2/3 left-0 w-full">
-                        <span className="bg-[#6ed8bf] hover:bg-[#4bb199] text-white py-1 px-3 rounded-xl shadow-6xl mx-auto w-fit cursor-pointer block">Subir</span>
+                        <span
+                          className="text-white py-1 px-3 rounded-xl shadow-6xl mx-auto w-fit cursor-pointer block"
+                          style={{ backgroundColor: palette[1] }} // palette[1] reemplaza #6ed8bf
+                          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = palette[2]; }} // hover -> palette[2] reemplaza #4bb199
+                          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = palette[1]; }}
+                        >
+                          Subir
+                        </span>
                         <input
                           ref={fileInputRef}
                           type="file"
@@ -488,7 +496,10 @@ export default function Checkout() {
               <button
                 type="button"
                 onClick={() => setShowDatePicker(!showDatePicker)}
-                className="bg-[#6ed8bf] hover:bg-[#4bb199] text-white font-semibold py-1 px-3 rounded"
+                className="text-white font-semibold py-1 px-3 rounded"
+                style={{ backgroundColor: palette[1] }} // palette[1] reemplaza #6ed8bf
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = palette[2]; }} // hover -> palette[2] reemplaza #4bb199
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = palette[1]; }}
               >
                 {deliveryDate
                   ? moment(deliveryDate).format("dddd, D [de] MMMM [a las] HH:mm")
@@ -538,8 +549,11 @@ export default function Checkout() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`bg-[#6ed8bf] hover:bg-[#4bb199] text-xl font-bold text-white py-1 px-2 rounded-xl shadow-6xl mb-2 mx-auto w-fit col-start-1 col-end-9 block ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+            className={`text-xl font-bold text-white py-1 px-2 rounded-xl shadow-6xl mb-2 mx-auto w-fit col-start-1 col-end-9 block ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
               }`}
+            style={{ backgroundColor: palette[1] }} // palette[1] reemplaza #6ed8bf
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = palette[2]; }} // hover -> palette[2] reemplaza #4bb199
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = palette[1]; }}
           >
             {isSubmitting ? "Enviando..." : "Enviar Pedido"}
           </button>

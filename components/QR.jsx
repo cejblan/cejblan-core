@@ -24,7 +24,7 @@ export default function QR({ id, name, image }) {
         <div className={`m-auto justify-center flex ${isOpen ? "hidden" : ""}`}>
           <Image
             src={image || ImageNotSupported}
-            className="max-[420px]:min-w-12 min-w-14 max-[420px]:max-w-12 max-w-14 max-[420px]:min-h-12 min-h-14 max-[420px]:max-h-12 max-h-14 w-auto h-auto rounded-xl drop-shadow-6xl object-scale-down"
+            className="max-[420px]:min-w-10 min-w-12 max-[420px]:max-w-12 max-w-14 max-[420px]:min-h-10 min-h-12 max-[420px]:max-h-12 max-h-14 p-1 w-auto h-auto rounded-xl drop-shadow-6xl object-scale-down"
             alt={name || "Imagen no disponible"}
             width={100}
             height={100}

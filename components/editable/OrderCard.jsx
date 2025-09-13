@@ -1,7 +1,9 @@
 import Link from "next/link";
 import PrecioProducto from "@/components/editable/PrecioProducto";
+import branding from "@/config/themes.json";
 
 export default function OrderCard({ order }) {
+  const { palette } = branding;
   const moment = require("moment");
   const date = moment(order.date).subtract(4, "hours").format("DD/MM/YYYY");
 
@@ -23,7 +25,10 @@ export default function OrderCard({ order }) {
         <p><strong>Productos:</strong> {order.productsIds}</p>
         <p><strong>Cantidad:</strong> {order.productsQuantity}</p>
         <p><strong>Total:</strong>{" "}
-          <span className="text-[#6ed8bf] font-bold">
+          <span
+            className="font-bold"
+            style={{ color: palette[1] }} // reemplazo de #6ed8bf
+          >
             <PrecioProducto precio={order.totalPrice} format={0} />
           </span>
         </p>
@@ -39,7 +44,13 @@ export default function OrderCard({ order }) {
             <Link
               href={order.image}
               target="_blank"
-              className="text-[#6ed8bf] underline hover:text-[#4bb199]"
+              className="underline"
+              style={{
+                color: palette[1],            // reemplazo de #6ed8bf
+                "--tw-hover-color": palette[2] // reemplazo de hover #4bb199
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.color = palette[2]}
+              onMouseLeave={(e) => e.currentTarget.style.color = palette[1]}
             >
               Ver
             </Link>
@@ -65,7 +76,6 @@ export default function OrderCard({ order }) {
         {order.deliveryMethod?.includes("Delivery") && order.deliveryName && (
           <p><strong>Repartidor:</strong> {order.deliveryName}</p>
         )}
-
       </div>
 
       {/* Fecha y estado */}
@@ -82,12 +92,19 @@ export default function OrderCard({ order }) {
           </>
         )}
         <p className="mt-2 font-semibold text-slate-500">Estado</p>
-        <p className={`text-lg font-bold ${order.status === "COMPLETADO"
-          ? "text-green-600"
-          : order.status === "PROCESANDO"
-            ? "text-[#6ed8bf]"
-            : "text-red-600"
-          }`}>{order.status}</p>
+        <p
+          className={`text-lg font-bold ${order.status === "COMPLETADO"
+              ? "text-green-600"
+              : order.status === "PROCESANDO"
+                ? "" // aquí reemplazamos con dinámico
+                : "text-red-600"
+            }`}
+          style={{
+            color: order.status === "PROCESANDO" ? palette[1] : undefined // reemplazo de #6ed8bf
+          }}
+        >
+          {order.status}
+        </p>
       </div>
     </div>
   );

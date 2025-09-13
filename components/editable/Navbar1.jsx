@@ -9,9 +9,9 @@ import { TiThMenu, TiTimes } from "react-icons/ti";
 import { PiMagnifyingGlassBold } from "react-icons/pi";
 import { FaCartShopping, FaBookOpen } from "react-icons/fa6";
 import { IoIosHeart } from "react-icons/io";
-import { IoLogoOctocat, IoPersonSharp } from "react-icons/io5";
+import { IoPersonSharp } from "react-icons/io5";
 import { MdAdminPanelSettings } from "react-icons/md";
-import { FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
+import { FaShoppingBag, FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
 import DoNotShowAdmin from "@/app/admin/components/DoNotShowAdmin";
 import SearchBar from "./SearchBar";
 import { useBranding } from "@/hooks/useBranding";
@@ -41,7 +41,7 @@ export default function Navbar1() {
   const pathname = usePathname();
   const [onClick, setOnClick] = useState(false);
   const Loading = getLoadingComponent(branding.loading);
-  const { logo, palette, loading } = useBranding();
+  const { logo3, palette, loading } = useBranding();
 
   const handleClick = () => setIsOpen(prev => !prev);
   const Open = () => setOnClick(prev => !prev);
@@ -96,7 +96,7 @@ export default function Navbar1() {
               >
                 {[
                   { href: "/", label: "Inicio", icon: <FaBookOpen /> },
-                  { href: "/products", label: "Productos", icon: <IoLogoOctocat /> },
+                  { href: "/products", label: "Productos", icon: <FaShoppingBag /> },
                   { href: "/wishlist", label: "Favoritos", icon: <IoIosHeart />, mobileOnly: true },
                   { href: "/cart", label: "Carrito", icon: <FaCartShopping />, mobileOnly: true },
                   { href: "/orders", label: "Pedidos", icon: <MdBorderColor /> },
@@ -169,13 +169,13 @@ export default function Navbar1() {
         {/* Logo */}
         <Link href="/" className="max-[420px]:col-start-2 max-[420px]:col-end-6 col-start-5 col-end-9 z-10">
           <div className="flex">
-            {logo && (
+            {logo3 && (
               <Image
-                className="m-auto max-[420px]:w-full w-3/5 h-3/5"
-                src={logo}
+                className="m-auto w-auto"
+                src={logo3}
                 alt={`Logo ${process.env.NEXT_PUBLIC_SITE_NAME}`}
-                width={200}
-                height={200}
+                width={100}
+                height={100}
               />
             )}
           </div>

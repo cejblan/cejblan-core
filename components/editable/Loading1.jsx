@@ -2,11 +2,10 @@
 "use client"
 
 import Image from "next/image"
-import Logo from "public/nuevo_logo_cejblan.webp"
 import branding from "@/config/themes.json"
 
 export default function Loading1({ zIndex }) {
-  const { palette } = branding
+  const { palette, logo } = branding
 
   return (
     // ===START_RETURN===
@@ -21,10 +20,10 @@ export default function Loading1({ zIndex }) {
       <div className="relative max-[420px]:bottom-2">
         <Image
           className="p-4 w-full"
-          src={Logo}
+          src={logo}
           alt="Logo de la tienda"
-          width={200}
-          height={200}
+          width={100}
+          height={100}
         />
         <div className="flex justify-center items-center">
           <p className="animate-dots">Cargando</p>

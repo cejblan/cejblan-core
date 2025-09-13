@@ -4,6 +4,8 @@ import { HiOutlineStar, HiStar } from "react-icons/hi2";
 import Image from "next/image";
 import Titulos from "@/components/editable/Titulos";
 import PrecioProducto from "@/components/editable/PrecioProducto";
+import branding from "@/config/themes.json";
+import ImageNotSupported from "@/public/ImageNotSupported.webp"
 
 async function loadProduct(productId) {
   const [productData] = await conexion.query(
@@ -69,6 +71,7 @@ export async function generateMetadata({ params }) {
 export default async function ProductPage({ params }) {
   const { id } = await params;
   const product = await loadProduct(id);
+  const { palette } = branding;
 
   const average = calculateAverage(product.qualifications);
   const totalRatings = product.qualifications.length; // Número total de calificaciones
@@ -86,10 +89,18 @@ export default async function ProductPage({ params }) {
             </div>
 
             <div className="mt-6"> {/* Botones abajo */}
-              <p className="text-[#6ed8bf] text-xl text-left font-bold pl-1 mt-2">Categoría:
+              <p
+                className="text-xl text-left font-bold pl-1 mt-2"
+                style={{ color: palette[1] }} // reemplazo de #6ed8bf
+              >
+                Categoría:
                 <span className="text-slate-700 ml-1">{product.category}</span>
               </p>
-              <p className="text-[#6ed8bf] text-xl text-left font-bold flex items-center pl-1">Calificación:
+              <p
+                className="text-xl text-left font-bold flex items-center pl-1"
+                style={{ color: palette[1] }} // reemplazo de #6ed8bf
+              >
+                Calificación:
                 <span className="text-slate-700 ml-1 flex justify-center items-center">
                   {renderStars(average)}
                   <span className="ml-1 text-slate-600 text-base">({totalRatings} Cliente{totalRatings === 1 ? '' : 's'})</span>
@@ -100,7 +111,7 @@ export default async function ProductPage({ params }) {
           </div>
 
           <Image
-            src={product.image}
+            src={product.image || ImageNotSupported}
             className="w-full h-full object-cover max-[420px]:rounded-b-xl md:rounded-bl-none md:rounded-r-xl drop-shadow-6xl"
             alt={product.name}
             width={300}
