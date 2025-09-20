@@ -100,10 +100,18 @@ export default function Gallery() {
   const menuRef = useRef(null);
 
   // Drag & drop
-  const [draggingFiles, setDraggingFiles] = useState(false);
-  const dropRef = useRef(null);
+  const [draggingFiles, setDraggingFiles] = useState(false); // para mostrar overlay de upload en dropRef
+  const dropRef = useRef(null); // AHORA: solo el recuadro central captura archivos del sistema
   const dragCounter = useRef(0);
   const globalDragCounter = useRef(0);
+
+  // Nuevo: arrastre interno (mover imagenes entre carpetas)
+  const [draggingInternal, setDraggingInternal] = useState(false);
+  const draggingItemRef = useRef(null); // referencia al item que se está arrastrando (interno)
+  const [folderHoverPath, setFolderHoverPath] = useState(null); // carpeta que se destaca
+
+  // Contadores por carpeta para evitar flicker (enter/leave en hijos)
+  const folderDragCountersRef = useRef({});
 
   useEffect(() => setPathInput(currentFolder ? currentFolder : '/'), [currentFolder]);
 
@@ -117,11 +125,15 @@ export default function Gallery() {
     const onClick = () => setMenuVisible(false);
     const onKey = (e) => {
       if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C') && menuVisible && menuItem && menuItem.url) {
-        navigator.clipboard.writeText(menuItem.url).then(() => alert('URL copiada (atajo)')).catch(() => { });
+        navigator.clipboard.writeText(menuItem.url).then(() => { /* no alert */ }).catch(() => { });
       }
       if (e.key === 'Escape') {
         setMenuVisible(false);
         setDraggingFiles(false);
+        // limpiar arrastre interno si estaba activo
+        setDraggingInternal(false);
+        draggingItemRef.current = null;
+        setFolderHoverPath(null);
       }
     };
     window.addEventListener('click', onClick);
@@ -203,7 +215,7 @@ export default function Gallery() {
         entriesPromises.push(traverseFileTree(entry, ''));
       } else {
         const f = itemsDT[i].getAsFile();
-        if (f) entriesPromises.push(Promise.resolve([{ file: f, relativePath: f.name }]));
+        if (f) entriesPromises.push(Promise.resolve([{ file: f, relativePath: f.name } ]));
       }
     }
 
@@ -258,6 +270,8 @@ export default function Gallery() {
     } catch (err) {
       console.error('Error fetch upload:', err);
       alert('Error inesperado al subir');
+    } finally {
+      setDraggingFiles(false);
     }
   };
 
@@ -265,7 +279,7 @@ export default function Gallery() {
     handleFilesUpload(e.target.files);
   };
 
-  // Drag & drop handlers (wrapper)
+  // Drag & drop handlers (wrapper) -> ahora aplican SOLO al recuadro central (dropRef)
   useEffect(() => {
     const dropEl = dropRef.current;
     if (!dropEl) return;
@@ -273,7 +287,10 @@ export default function Gallery() {
     const onDragEnter = (e) => {
       e.preventDefault();
       dragCounter.current += 1;
-      setDraggingFiles(true);
+      const types = e.dataTransfer?.types;
+      if (types && (types.includes && types.includes('Files') || types.contains && types.contains('Files'))) {
+        setDraggingFiles(true);
+      }
     };
 
     const onDragOver = (e) => {
@@ -296,8 +313,13 @@ export default function Gallery() {
       dragCounter.current = 0;
       globalDragCounter.current = 0;
       setDraggingFiles(false);
-      const filesWithPaths = await getFilesFromDataTransfer(e.dataTransfer);
-      handleFilesUpload(filesWithPaths);
+
+      const types = e.dataTransfer?.types;
+      if (types && (types.includes && types.includes('Files') || types.contains && types.contains('Files'))) {
+        const filesWithPaths = await getFilesFromDataTransfer(e.dataTransfer);
+        await handleFilesUpload(filesWithPaths);
+        return;
+      }
     };
 
     dropEl.addEventListener('dragenter', onDragEnter);
@@ -313,24 +335,27 @@ export default function Gallery() {
     };
   }, [currentFolder]);
 
+  // window listeners para arrastres globales (solo para detectar si hay archivos arrastrados)
   useEffect(() => {
     const onWindowDragEnter = (e) => {
       const types = e.dataTransfer?.types;
       if (types && (types.includes && types.includes('Files') || types.contains && types.contains('Files'))) {
         globalDragCounter.current += 1;
-        setDraggingFiles(true);
       }
     };
     const onWindowDragOver = (e) => {
-      e.preventDefault();
       const types = e.dataTransfer?.types;
-      if (types && (types.includes && types.includes('Files') || types.contains && types.contains('Files'))) setDraggingFiles(true);
+      if (types && (types.includes && types.includes('Files') || types.contains && types.contains('Files'))) {
+        e.preventDefault();
+      }
     };
     const onWindowDragLeave = (e) => {
       const types = e.dataTransfer?.types;
       if (types && (types.includes && types.includes('Files') || types.contains && types.contains('Files'))) {
         globalDragCounter.current = Math.max(0, globalDragCounter.current - 1);
-        if (globalDragCounter.current === 0 && dragCounter.current === 0) setDraggingFiles(false);
+        if (globalDragCounter.current === 0 && dragCounter.current === 0) {
+          setDraggingFiles(false);
+        }
       }
     };
     const onWindowDrop = () => {
@@ -414,14 +439,28 @@ export default function Gallery() {
   };
 
   // centralizo eliminarArchivo para que lo use todo el código
-  const eliminarArchivo = async (pathname) => {
+  const eliminarArchivo = async (pathname, isFolder = false) => {
     try {
-      // No confirm aquí: la confirmación la hace quien llama (handleContextDelete)
-      await fetch(`/api/cms/images?pathname=${encodeURIComponent(pathname)}`, { method: "DELETE" });
+      const qs = isFolder
+        ? `?pathname=${encodeURIComponent(pathname)}`
+        : `?pathname=${encodeURIComponent(pathname)}`;
+
+      const res = await fetch(`/api/cms/images${qs}`, { method: "DELETE" });
+
+      if (!res.ok) {
+        let txt = '';
+        try {
+          txt = await res.text();
+        } catch (e) {
+          txt = `HTTP ${res.status}`;
+        }
+        throw new Error(txt || `HTTP ${res.status}`);
+      }
+
       await cargarItems();
     } catch (err) {
       console.error('Error al eliminar archivo:', err);
-      alert('Error al eliminar archivo');
+      alert('Error al eliminar archivo: ' + (err.message || 'error inesperado'));
     }
   };
 
@@ -432,7 +471,6 @@ export default function Gallery() {
     setCrop({ x: 0, y: 0 });
     setZoom(1);
     setCroppedAreaPixels(null);
-    // por defecto abrimos en modo libre; usuario puede activar 1:1 con el boton
     setCropAspect(undefined);
     setCropModalOpen(true);
     setMenuVisible(false);
@@ -441,7 +479,7 @@ export default function Gallery() {
   const handleContextCopyUrl = async (it) => {
     const item = it || menuItem;
     if (!item || !item.url) { setMenuVisible(false); return; }
-    try { await navigator.clipboard.writeText(item.url); alert('URL copiada'); } catch { alert('Error copiando URL'); } finally { setMenuVisible(false); }
+    try { await navigator.clipboard.writeText(item.url); } catch { /* ignore */ } finally { setMenuVisible(false); }
   };
 
   const handleContextDelete = async (it) => {
@@ -454,20 +492,23 @@ export default function Gallery() {
     }
 
     try {
-      // si es archivo (típico) reutilizar eliminarArchivo
       if (item.pathname) {
-        await eliminarArchivo(item.pathname);
+        await eliminarArchivo(item.pathname, item.type === 'folder');
         setMenuVisible(false);
         return;
       }
 
-      // fallback: borrado directo
-      await fetch(`/api/cms/images?pathname=${encodeURIComponent(item.pathname)}`, { method: "DELETE" });
+      if (item.name) {
+        await eliminarArchivo(item.name, item.type === 'folder');
+        setMenuVisible(false);
+        return;
+      }
+
       setMenuVisible(false);
-      await cargarItems();
+      alert('No se encontró información de ruta para eliminar el elemento.');
     } catch (err) {
       console.error('Error eliminando:', err);
-      alert('Error al eliminar');
+      alert('Error al eliminar: ' + (err.message || 'unexpected'));
       setMenuVisible(false);
     }
   };
@@ -476,19 +517,32 @@ export default function Gallery() {
     const item = it || menuItem;
     if (!item) { setMenuVisible(false); return; }
     const defaultName = item.name || item.pathname.split('/').pop();
-    const nuevo = prompt('Nuevo nombre (incluye extensión):', defaultName);
+    const nuevo = prompt('Nuevo nombre (puedes incluir carpeta si deseas mover):', defaultName);
     if (!nuevo) { setMenuVisible(false); return; }
-    const payload = { oldPathname: item.pathname, newPathname: nuevo };
+
+    let wantsMove = false;
+    if (nuevo.includes('/')) {
+      wantsMove = confirm('El nombre incluye una carpeta. ¿Deseas mover el archivo a esa carpeta? Aceptar = mover, Cancelar = solo renombrar en la misma carpeta.');
+    }
+
+    const payload = { oldPathname: item.pathname, newPathname: nuevo, allowMove: wantsMove, allowOverwrite: false };
     try {
       const res = await fetch(`/api/cms/images`, {
         method: 'PATCH',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
-      if (!res.ok) { const txt = await res.text(); alert('Error renombrando: ' + txt); }
-      else {
+      if (!res.ok) {
+        const txt = await res.text();
+        if (res.status === 409) alert('Error renombrando: destino ya existe.'); else alert('Error renombrando: ' + txt);
+      } else {
         const data = await res.json();
-        if (data.success) { alert('Renombrado correctamente'); await cargarItems(); } else alert('Error renombrando: ' + (data.error || 'unknown'));
+        if (data.success) {
+          // NO mostrar alert de éxito (se actualiza la UI en vivo)
+          await cargarItems();
+        } else {
+          alert('Error renombrando: ' + (data.error || 'unknown'));
+        }
       }
     } catch (err) {
       console.error('Error rename:', err); alert('Error inesperado renombrando');
@@ -500,14 +554,16 @@ export default function Gallery() {
     if (!item) { setMenuVisible(false); return; }
     const target = prompt('Mover a carpeta (ruta relativa, ejemplo: carpeta/subcarpeta). Dejar vacío para raíz:', '');
     if (target === null) { setMenuVisible(false); return; }
-    const payload = { pathname: item.pathname, targetFolder: target.trim() };
-    const form = new FormData(); form.append('payload', JSON.stringify(payload));
+    const payload = { oldPathname: item.pathname, newPathname: (target ? `${String(target).replace(/^\/+|\/+$/g, '')}/${item.name}` : item.name), allowMove: true, allowOverwrite: false };
     try {
-      const res = await fetch(`/api/cms/images?action=move`, { method: 'POST', body: form });
+      const res = await fetch(`/api/cms/images`, { method: 'PATCH', headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       if (!res.ok) { const txt = await res.text(); alert('Error moviendo: ' + txt); }
       else {
         const data = await res.json();
-        if (data.success) { alert('Movido correctamente'); await cargarItems(); } else alert('Error moviendo: ' + (data.error || 'unknown'));
+        if (data.success) {
+          // NO mostrar alert de éxito
+          await cargarItems();
+        } else alert('Error moviendo: ' + (data.error || 'unknown'));
       }
     } catch (err) {
       console.error('Error move:', err); alert('Error inesperado moviendo');
@@ -526,40 +582,119 @@ export default function Gallery() {
     }
   };
 
-  // Drop on folder
-  const onDropOnFolder = async (e, folderItem) => {
+  // Drop on folder (detecta tanto archivos del sistema como arrastre interno de items)
+  const handleFolderDrop = async (e, folderItem) => {
     e.preventDefault();
     setDraggingFiles(false);
-    const dt = e.dataTransfer;
-    const filesWithPaths = await getFilesFromDataTransfer(dt);
-    const prefixed = filesWithPaths.map(({ file, relativePath }) => {
-      const safeRel = relativePath || file.name;
-      const rel = `${folderItem.pathname}/${safeRel}`;
-      return { file, relativePath: rel };
-    });
-    await handleFilesUpload(prefixed, null);
+
+    // reset contador para esa carpeta
+    const path = folderItem.pathname;
+    folderDragCountersRef.current[path] = 0;
+    if (folderHoverPath === path) setFolderHoverPath(null);
+
+    // Priorizar arrastre interno si existe
+    const internal = draggingInternal && draggingItemRef.current;
+    if (internal) {
+      const item = draggingItemRef.current;
+      if (!item || !item.pathname) {
+        setDraggingInternal(false);
+        draggingItemRef.current = null;
+        return;
+      }
+
+      const newPath = `${folderItem.pathname}/${item.name}`;
+      const payload = { oldPathname: item.pathname, newPathname: newPath, allowMove: true, allowOverwrite: false };
+      try {
+        const res = await fetch(`/api/cms/images`, {
+          method: 'PATCH',
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) {
+          const txt = await res.text();
+          alert('Error moviendo archivo: ' + txt);
+        } else {
+          const data = await res.json();
+          if (data.success) {
+            // NO alert de éxito
+            setDraggingInternal(false);
+            draggingItemRef.current = null;
+            await cargarItems();
+          } else {
+            alert('Error moviendo archivo: ' + (data.error || 'unknown'));
+          }
+        }
+      } catch (err) {
+        console.error('Error moviendo (interno):', err);
+        alert('Error inesperado moviendo archivo');
+      } finally {
+        setDraggingInternal(false);
+        draggingItemRef.current = null;
+      }
+      return;
+    }
+
+    // si vienen archivos del sistema -> subirlos dentro de la carpeta
+    const types = e.dataTransfer?.types;
+    if (types && (types.includes && types.includes('Files') || types.contains && types.contains('Files'))) {
+      const filesWithPaths = await getFilesFromDataTransfer(e.dataTransfer);
+      const prefixed = filesWithPaths.map(({ file, relativePath }) => {
+        const safeRel = relativePath || file.name;
+        const rel = `${folderItem.pathname}/${safeRel}`;
+        return { file, relativePath: rel };
+      });
+      await handleFilesUpload(prefixed, null);
+    }
+  };
+
+  // ---------- NUEVO: crear carpeta desde UI ----------
+  const createFolder = async () => {
+    const name = prompt('Nombre de la nueva carpeta (solo nombre, sin slashes):');
+    if (!name) return;
+    const clean = String(name).replace(/^\/+|\/+$/g, '').trim();
+    if (!clean) { alert('Nombre inválido'); return; }
+    if (clean.includes('..')) { alert('Nombre inválido'); return; }
+
+    const folderPath = currentFolder ? `${currentFolder}/${clean}` : clean;
+
+    try {
+      const res = await fetch(`/api/cms/images?action=createFolder&folder=${encodeURIComponent(folderPath)}`, { method: 'POST' });
+      if (!res.ok) {
+        if (res.status === 409) alert('Carpeta ya existe');
+        else {
+          const txt = await res.text();
+          alert('Error creando carpeta: ' + txt);
+        }
+        return;
+      }
+      const data = await res.json();
+      if (data.success) {
+        // NO mostrar alert de éxito (se actualiza la UI en vivo)
+        setPagina(1);
+        await cargarItems();
+      } else {
+        alert('Error creando carpeta: ' + (data.error || 'unknown'));
+      }
+    } catch (err) {
+      console.error('Error creando carpeta:', err);
+      alert('Error inesperado creando carpeta');
+    }
   };
 
   // ---------- CROP / OVERLAY logic ----------
-
-  // onCropComplete for 1:1 mode (única definición)
   const onCropComplete = useCallback((_, croppedPixels) => {
     setCroppedAreaPixels(croppedPixels);
   }, []);
 
-  // Inicializa overlay usando mediaSize provisto por react-easy-crop
   const initOverlayFromMedia = useCallback((mediaSize) => {
     if (!cropContainerRef.current || !mediaSize) return;
 
     const containerW = cropContainerRef.current.clientWidth;
-    // mediaSize.width/height refleja cómo react-easy-crop dibuja la imagen a zoom=1 con objectFit="contain"
     const displayedW = mediaSize.width;
     const displayedH = mediaSize.height;
 
-    // ajustar la altura del contenedor a displayedH
     setCropContainerHeightPx(Math.round(displayedH));
 
-    // overlay default = cubrir toda la imagen pintada
     const left = Math.max(0, Math.round((containerW - displayedW) / 2));
     const top = Math.max(0, Math.round((cropContainerRef.current.clientHeight - displayedH) / 2));
     const width = Math.round(displayedW);
@@ -568,28 +703,24 @@ export default function Gallery() {
     setOverlayBox({ left, top, width, height });
   }, []);
 
-  // handler onMediaLoaded de react-easy-crop
   const onMediaLoadedHandler = useCallback((mediaSize) => {
-    // mediaSize suele traer: {width, height, naturalWidth, naturalHeight}
     setMediaInfo(mediaSize || null);
     setMinZoom(1);
     setZoom(1);
-    // init overlay si estamos en modo libre
     if (cropAspect === undefined) {
       initOverlayFromMedia(mediaSize);
     } else {
-      // si es 1:1 forzamos contenedor cuadrado: width x width
       const containerWidth = cropContainerRef.current?.clientWidth || Math.min(window.innerWidth * 0.9, 800);
       setCropContainerHeightPx(Math.round(containerWidth));
     }
   }, [cropAspect, initOverlayFromMedia]);
 
-  // overlay interactions
+  // overlay interactions (igual que antes)
   const onOverlayMouseDown = (e) => {
     e.preventDefault();
     if (!overlayBox) return;
     const target = e.target;
-    if (target && target.dataset && target.dataset.handle) return; // handle will start a resize
+    if (target && target.dataset && target.dataset.handle) return;
     isDraggingRef.current = true;
     dragStartRef.current = {
       mouseX: e.clientX,
@@ -682,21 +813,18 @@ export default function Gallery() {
     window.removeEventListener('mouseup', overlayMouseUp);
   };
 
-  // remover listeners si el componente se desmonta (seguridad)
   useEffect(() => {
     return () => {
       window.removeEventListener('mousemove', overlayMouseMove);
       window.removeEventListener('mouseup', overlayMouseUp);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Confirm crop (mode free => compute pixel crop from overlay + mediaInfo)
+  // Confirm crop (igual que antes)
   const handleCropConfirmOverlay = async () => {
     if (!imagenSeleccionada) return;
     try {
       if (cropAspect === undefined) {
-        // modo libre -> overlayBox -> pixelCrop basado en mediaInfo
         if (!overlayBox || !mediaInfo || !cropContainerRef.current) {
           alert('Información insuficiente para recortar (overlay o mediaInfo faltante).');
           return;
@@ -706,15 +834,12 @@ export default function Gallery() {
         const containerW = containerRect.width;
         const containerH = containerRect.height;
 
-        // displayed image size = mediaInfo.width/height * zoom
         const displayedW = (mediaInfo.width || mediaInfo.naturalWidth) * zoom;
         const displayedH = (mediaInfo.height || mediaInfo.naturalHeight) * zoom;
 
-        // image offset dentro del contenedor (centrado horizontal y verticalmente)
         const imageLeft = Math.max(0, (containerW - displayedW) / 2);
         const imageTop = Math.max(0, (containerH - displayedH) / 2);
 
-        // caja relativa a la imagen
         let relLeft = overlayBox.left - imageLeft;
         let relTop = overlayBox.top - imageTop;
         let relW = overlayBox.width;
@@ -725,7 +850,6 @@ export default function Gallery() {
         relW = Math.max(1, Math.min(relW, displayedW - relLeft));
         relH = Math.max(1, Math.min(relH, displayedH - relTop));
 
-        // factor entre imagen renderizada y dimensiones naturales
         const natW = mediaInfo.naturalWidth || (mediaInfo.width || displayedW);
         const natH = mediaInfo.naturalHeight || (mediaInfo.height || displayedH);
         const scaleX = natW / displayedW;
@@ -760,7 +884,6 @@ export default function Gallery() {
           alert('Error al subir imagen recortada');
         }
       } else {
-        // modo 1:1 -> usamos croppedAreaPixels
         if (!croppedAreaPixels) { alert('Aún no hay área recortada'); return; }
         const file = await getCroppedImg(imagenSeleccionada.url, croppedAreaPixels);
         const form = new FormData();
@@ -790,7 +913,6 @@ export default function Gallery() {
     }
   };
 
-  // wrapper used by confirm button
   const handleCropConfirm = async () => {
     await handleCropConfirmOverlay();
   };
@@ -805,10 +927,8 @@ export default function Gallery() {
       setCrop({ x: 0, y: 0 });
       setZoom(1);
       setCroppedAreaPixels(null);
-      // por defecto libre
       setCropAspect(undefined);
       setCropModalOpen(true);
-      // onMediaLoaded provisto por Cropper ajustará overlay/altura cuando la imagen cargue
     }
   };
 
@@ -830,6 +950,23 @@ export default function Gallery() {
     setPagina(1);
   };
 
+  // ---------- NUEVOS: handlers para arrastrar tiles internamente ----------
+  const handleItemDragStart = (e, item) => {
+    try {
+      e.dataTransfer.setData('application/x-gallery-item', JSON.stringify({ pathname: item.pathname, name: item.name }));
+    } catch (err) {}
+    e.dataTransfer.effectAllowed = 'move';
+    draggingItemRef.current = item;
+    setDraggingInternal(true);
+  };
+
+  const handleItemDragEnd = (e) => {
+    draggingItemRef.current = null;
+    setDraggingInternal(false);
+    setFolderHoverPath(null);
+  };
+
+  // ---------- RENDER ----------
   return (
     <div className="p-4" onContextMenu={(e) => e.preventDefault()}>
       <h1 className="text-2xl font-bold mb-4">Galería Multimedia</h1>
@@ -843,6 +980,9 @@ export default function Gallery() {
         <form onSubmit={onPathSubmit} className="mt-3 sm:mt-0 flex items-center gap-2">
           <input value={pathInput} onChange={(e) => setPathInput(e.target.value)} className="border rounded px-2 py-1 text-sm w-64" placeholder="/ (raíz) o carpeta/subcarpeta" />
           <button type="submit" className="bg-white px-3 py-1 rounded hover:bg-gray-300">Ir</button>
+
+          {/* NUEVO: boton crear carpeta */}
+          <button type="button" onClick={createFolder} className="ml-2 bg-white px-3 py-1 rounded hover:bg-gray-300">Crear carpeta</button>
         </form>
 
         <div className="ml-auto">
@@ -852,33 +992,80 @@ export default function Gallery() {
 
       <div className="mb-2 text-sm text-gray-600">Ruta actual: <span className="font-mono">{currentFolder ? currentFolder : '/'}</span></div>
 
-      {/* Drag & drop overlay wrapper */}
-      <div ref={dropRef} className="relative">
-        {draggingFiles && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
-            <div className="bg-white/90 border-2 border-dashed border-slate-400 rounded-lg p-8 text-center pointer-events-none shadow-lg max-w-[90%]">
-              <div className="text-lg font-semibold mb-1">Suelta los archivos para subir</div>
-              <div className="text-sm text-slate-600">Se subirán a: <span className="font-mono">{currentFolder || '/'}</span></div>
-            </div>
+      {/* NUEVO: recuadro central que captura archivos del sistema (drop zone) */}
+      <div className="relative mb-6 flex justify-center">
+        <div
+          ref={dropRef}
+          className="w-[min(900px,90%)] h-40 border-2 border-dashed rounded-lg flex items-center justify-center bg-white/50"
+        >
+          <div className="text-center pointer-events-none">
+            <div className="font-medium">Arrastra archivos aquí para subir</div>
+            <div className="text-sm text-slate-600">Se subirán a: <span className="font-mono">{currentFolder || '/'}</span></div>
+            <div className="text-xs text-slate-500 mt-1">(Este recuadro captura solo archivos del sistema, no arrastres internos de la galería)</div>
           </div>
-        )}
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {items.map((item, i) => (
+          {/* overlay dentro del dropRef cuando arrastran archivos del sistema */}
+          {draggingFiles && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/80 rounded-lg pointer-events-none">
+              <div className="text-center">
+                <div className="text-lg font-semibold mb-1">Suelta los archivos para subir</div>
+                <div className="text-sm text-slate-600">Se subirán a: <span className="font-mono">{currentFolder || '/'}</span></div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* GRID */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        {items.map((item, i) => {
+          const isFolder = item.type === 'folder';
+          const folderHighlight = isFolder && folderHoverPath === item.pathname ? 'ring-4 ring-sky-400 border-2 border-sky-400' : '';
+
+          return (
             <div
               key={i}
               tabIndex={0}
               onKeyDown={(e) => onTileKeyDown(e, item, e.currentTarget)}
               onDoubleClick={() => onDoubleClickItem(item)}
               onContextMenu={(e) => handleContextMenu(e, item)}
-              onDragEnter={(e) => { e.preventDefault(); dragCounter.current += 1; setDraggingFiles(true); }}
-              onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; }}
-              onDragLeave={(e) => { e.preventDefault(); dragCounter.current = Math.max(0, dragCounter.current - 1); if (dragCounter.current === 0 && globalDragCounter.current === 0) setDraggingFiles(false); }}
-              onDrop={(e) => item.type === 'folder' ? onDropOnFolder(e, item) : undefined}
-              className="relative w-full aspect-square border rounded-2xl overflow-hidden bg-slate-100 flex items-center justify-center cursor-pointer select-none focus:ring-2 focus:ring-sky-400"
-              title={item.type === 'folder' ? item.pathname : item.name}
+              onDragEnter={(e) => {
+                if (draggingInternal && isFolder) {
+                  const path = item.pathname;
+                  const curr = folderDragCountersRef.current[path] || 0;
+                  folderDragCountersRef.current[path] = curr + 1;
+                  setFolderHoverPath(path);
+                }
+              }}
+              onDragOver={(e) => {
+                if (draggingInternal && isFolder) {
+                  e.preventDefault();
+                  e.dataTransfer.dropEffect = 'move';
+                  // reafirmar highlight para estabilidad
+                  setFolderHoverPath(item.pathname);
+                }
+              }}
+              onDragLeave={(e) => {
+                if (draggingInternal && isFolder) {
+                  const path = item.pathname;
+                  const curr = folderDragCountersRef.current[path] || 0;
+                  const next = Math.max(0, curr - 1);
+                  folderDragCountersRef.current[path] = next;
+                  if (next === 0 && folderHoverPath === path) setFolderHoverPath(null);
+                }
+              }}
+              onDrop={(e) => {
+                if (isFolder) {
+                  handleFolderDrop(e, item);
+                }
+              }}
+              draggable={!isFolder}
+              onDragStart={(e) => { if (!isFolder) handleItemDragStart(e, item); }}
+              onDragEnd={(e) => { if (!isFolder) handleItemDragEnd(e); }}
+              className={`relative w-full aspect-square border rounded-2xl overflow-hidden bg-slate-100 flex items-center justify-center cursor-pointer select-none focus:ring-2 focus:ring-sky-400 ${folderHighlight}`}
+              title={isFolder ? item.pathname : item.name}
             >
-              {item.type === 'folder' ? (
+              {isFolder ? (
                 <div className="flex flex-col items-center gap-2">
                   <FcOpenedFolder className="text-5xl" />
                   <span className="text-sm break-all text-center px-2">{item.name}</span>
@@ -887,7 +1074,6 @@ export default function Gallery() {
                 <NextImage src={item.url} alt={item.pathname} className="object-scale-down w-full h-full" width={100} height={100} />
               )}
 
-              {/* burger menu visible only on small screens */}
               <button
                 onClick={(e) => openMenuFromButton(e, item)}
                 className="absolute top-2 right-2 z-20 md:hidden bg-white/80 hover:bg-white rounded p-1"
@@ -896,8 +1082,8 @@ export default function Gallery() {
                 <FiMenu size={16} />
               </button>
             </div>
-          ))}
-        </div>
+          );
+        })}
       </div>
 
       {/* Context menu */}
@@ -941,7 +1127,7 @@ export default function Gallery() {
         />
       )}
 
-      {/* Cropper modal */}
+      {/* Cropper modal (sin cambios funcionales) */}
       {cropModalOpen && imagenSeleccionada && (
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl w-full max-w-3xl max-h-[90vh] overflow-auto p-4">
@@ -951,7 +1137,6 @@ export default function Gallery() {
                 <button
                   onClick={() => {
                     setCropAspect(1);
-                    // onMediaLoaded reajustará el contenedor cuando corresponda
                   }}
                   className={`px-3 py-1 rounded ${cropAspect === 1 ? 'bg-slate-800 text-white' : 'bg-slate-200 text-black'}`}
                 >
@@ -992,7 +1177,6 @@ export default function Gallery() {
                 onMediaLoaded={onMediaLoadedHandler}
               />
 
-              {/* Overlay (modo libre) — borde + cuadrícula que sigue en tiempo real los bordes ajustables */}
               {cropAspect === undefined && overlayBox && (
                 <div
                   ref={overlayRef}
@@ -1003,19 +1187,15 @@ export default function Gallery() {
                     width: overlayBox.width,
                     height: overlayBox.height,
                     boxSizing: 'border-box',
-                    cursor: 'default', // no arrastre completo
+                    cursor: 'default',
                     background: 'rgba(255,255,255,0.02)',
                     position: 'absolute'
                   }}
-                // NO onMouseDown aquí: dejamos sólo los handles para resize
                 >
-                  {/* Cuadrícula proporcional (3x3) — pointerEvents none para no bloquear handles */}
                   <div style={{ position: 'absolute', left: 0, right: 0, top: '33.3333%', height: 1, background: 'rgba(255,255,255,0.6)', pointerEvents: 'none', zIndex: 10 }} />
                   <div style={{ position: 'absolute', left: 0, right: 0, top: '66.6666%', height: 1, background: 'rgba(255,255,255,0.6)', pointerEvents: 'none', zIndex: 10 }} />
                   <div style={{ position: 'absolute', top: 0, bottom: 0, left: '33.3333%', width: 1, background: 'rgba(255,255,255,0.6)', pointerEvents: 'none', zIndex: 10 }} />
                   <div style={{ position: 'absolute', top: 0, bottom: 0, left: '66.6666%', width: 1, background: 'rgba(255,255,255,0.6)', pointerEvents: 'none', zIndex: 10 }} />
-
-                  {/* Mantengo tus handles EXACTAMENTE como los tenías — zIndex alto para que sean clicables */}
                   {['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'].map((h) => (
                     <div
                       key={h}
@@ -1028,7 +1208,7 @@ export default function Gallery() {
                         background: 'white',
                         borderRadius: 2,
                         transform: 'translate(-50%,-50%)',
-                        zIndex: 40, // arriba de la cuadrícula
+                        zIndex: 40,
                         left: h.includes('w') ? '0%' : h.includes('e') ? '100%' : '50%',
                         top: h.includes('n') ? '0%' : h.includes('s') ? '100%' : '50%',
                         cursor: h === 'n' || h === 's' ? 'ns-resize' : h === 'e' || h === 'w' ? 'ew-resize' : 'nwse-resize',
@@ -1037,7 +1217,6 @@ export default function Gallery() {
                     />
                   ))}
 
-                  {/* Medidas (opcional, como ya tenías) */}
                   <div style={{ position: 'absolute', right: 6, bottom: 6, fontSize: 12, color: 'white', background: 'rgba(0,0,0,0.4)', padding: '2px 6px', borderRadius: 6, zIndex: 50 }}>
                     {overlayBox.width} × {overlayBox.height}
                   </div>

@@ -30,18 +30,39 @@ export async function POST(req) {
 
       let [_, codigo, descripcion, existencia, costo] = match;
 
-      // Manejar posible signo negativo en 'existencia'
+      // --- BLOQUE REEMPLAZADO: detectar y normalizar ambos formatos
       const existenciaTrim = existencia.trim();
       const existenciaSign = existenciaTrim.startsWith('-') ? '-' : '';
-      const existenciaAbs = existenciaSign ? existenciaTrim.slice(1) : existenciaTrim;
+      let existenciaAbs = existenciaSign ? existenciaTrim.slice(1) : existenciaTrim;
 
-      // Extraer valorInventario y código desde existencia (usando la parte absoluta, luego reaplicar signo)
+      // Si contiene coma -> asumimos formato "puntos = miles" y "coma = decimal" (ej: 3.236,5000000001)
+      // Si NO contiene coma -> asumimos formato "punto = decimal" (ej: 56.0000001)
+      if (existenciaAbs.includes(',')) {
+        // quitar puntos de miles y convertir coma decimal a punto
+        existenciaAbs = existenciaAbs.replace(/\./g, '').replace(',', '.');
+      } else {
+        // quitar comas si existieran por si acaso; mantener punto como separador decimal
+        existenciaAbs = existenciaAbs.replace(/,/g, '');
+      }
+
+      // Ahora separar parte entera y decimal (con '.' como separador)
       const parts = existenciaAbs.split('.');
-      const integerPart = parts[0] || '0';
-      const decimalPart = parts[1] || '00000';
+      const integerPartRaw = parts[0] || '0';
+      const decimalPartRaw = (parts[1] || '').replace(/\D/g, ''); // sólo dígitos
 
-      const id = decimalPart.slice(-5);
-      const valorInventario = existenciaSign + integerPart + '.' + decimalPart.slice(0, Math.max(0, decimalPart.length - 5));
+      // CORRECCIÓN: rellenar a la izquierda para mantener el valor numérico correcto (ej '1' -> '00000001')
+      const decimalPaddedLeft = decimalPartRaw.padStart(8, '0');
+      const id = decimalPartRaw.length >= 8 ? decimalPartRaw.slice(-8) : decimalPaddedLeft;
+
+      // Parte decimal que queda a la izquierda del id (para construir valorInventario)
+      const valorDecimalLeft = decimalPartRaw.length > 8 ? decimalPartRaw.slice(0, decimalPartRaw.length - 8) : '';
+
+      // Limpiar la parte entera por si hay caracteres inesperados
+      const integerPart = (integerPartRaw || '0').replace(/\D/g, '') || '0';
+
+      // Construir valorInventario: sólo agregar el punto si hay parte decimal izquierda
+      const valorInventario = existenciaSign + integerPart + (valorDecimalLeft ? '.' + valorDecimalLeft : '');
+      // --- FIN BLOQUE REEMPLAZADO
 
       const nombre = codigo;
       const cantidadNorm = descripcion.replace(',', '.'); // conserva '-' si existe
