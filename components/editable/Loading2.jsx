@@ -1,11 +1,10 @@
 "use client"
 import { useEffect, useState } from "react"
 import branding from "@/config/themes.json"
-import Logo from "public/nuevo_logo_cejblan.webp"
 import Image from "next/image"
 
 export default function Loading3({ zIndex }) {
-  const { palette } = branding
+  const { palette, logo } = branding
   const [bubbles, setBubbles] = useState([])
 
   useEffect(() => {
@@ -55,10 +54,10 @@ export default function Loading3({ zIndex }) {
       <div className="relative z-10 text-center flex flex-col items-center">
         <Image
           className="w-[140px] h-auto mb-4"
-          src={Logo}
+          src={logo}
           alt="Logo tienda"
-          width={200}
-          height={200}
+          width={100}
+          height={100}
         />
         <p className="animate-dots text-2xl">Cargando</p>
       </div>

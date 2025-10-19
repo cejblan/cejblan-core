@@ -1,11 +1,10 @@
 "use client"
 
 import Image from "next/image"
-import Logo from "public/nuevo_logo_cejblan.webp"
 import branding from "@/config/themes.json"
 
 export default function Loading2({ zIndex }) {
-  const { palette } = branding
+  const { palette, logo } = branding
 
   return (
     // ===START_RETURN===
@@ -20,10 +19,10 @@ export default function Loading2({ zIndex }) {
       <div className="bg-white/10 border border-white/20 backdrop-blur-md rounded-2xl shadow-xl p-6 max-w-xs w-full text-center animate-fade-in">
         <Image
           className="mx-auto mb-4 w-32 h-32 object-contain drop-shadow-xl"
-          src={Logo}
+          src={logo}
           alt="Logo de la tienda"
-          width={128}
-          height={128}
+          width={100}
+          height={100}
         />
         <p className="text-lg font-mono tracking-wider">
           Cargando

@@ -3,295 +3,1244 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import NextImage from 'next/image';
 import { FcOpenedFolder } from "react-icons/fc";
+import { FiEdit, FiMove, FiTrash2, FiCopy, FiType, FiMenu } from 'react-icons/fi';
+import ModalImagenesDuplicadas from './ModalImagenesDuplicadas';
+import Cropper from 'react-easy-crop';
+
+/** Helper para generar File desde croppedAreaPixels */
+async function getCroppedImg(imageSrc, pixelCrop) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.crossOrigin = 'anonymous';
+    image.src = imageSrc;
+    image.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round(pixelCrop.width));
+      canvas.height = Math.max(1, Math.round(pixelCrop.height));
+      const ctx = canvas.getContext('2d');
+
+      ctx.drawImage(
+        image,
+        Math.round(pixelCrop.x),
+        Math.round(pixelCrop.y),
+        Math.round(pixelCrop.width),
+        Math.round(pixelCrop.height),
+        0,
+        0,
+        Math.round(pixelCrop.width),
+        Math.round(pixelCrop.height)
+      );
+
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          reject(new Error('No se pudo generar el blob del recorte'));
+          return;
+        }
+        const file = new File([blob], 'recorte.png', { type: 'image/png' });
+        resolve(file);
+      }, 'image/png', 0.95);
+    };
+    image.onerror = (err) => reject(err);
+  });
+}
 
 export default function Gallery() {
-  const [imagenes, setImagenes] = useState([]);
+  // ---------- Estado principal (preservo todo lo original y agrego lo nuevo) ----------
+  const [items, setItems] = useState([]);
   const [pagina, setPagina] = useState(1);
   const [totalPaginas, setTotalPaginas] = useState(1);
+
+  // Cropper state
   const [imagenSeleccionada, setImagenSeleccionada] = useState(null);
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [cropAspect, setCropAspect] = useState(undefined); // undefined = libre, 1 = 1:1
+
+  // minZoom & container ref
+  const [minZoom, setMinZoom] = useState(1); // estrategia: zoom=1 corresponde a mediaSize (contain)
+  const cropContainerRef = useRef(null);
+  const [cropContainerHeightPx, setCropContainerHeightPx] = useState(null);
+
+  // mediaInfo provisto por react-easy-crop en onMediaLoaded
+  const [mediaInfo, setMediaInfo] = useState(null); // { width, height, naturalWidth, naturalHeight }
+
+  // Overlay (modo libre): posicion y tamaño en px relativos al contenedor
+  const [overlayBox, setOverlayBox] = useState(null); // { left, top, width, height }
+  const overlayRef = useRef(null);
+
+  // interacción overlay
+  const isDraggingRef = useRef(false);
+  const dragStartRef = useRef(null);
+  const isResizingRef = useRef(false);
+  const resizeDirRef = useRef(null);
+  const resizeStartRef = useRef(null);
+
+  // legacy crop box (no usado por react-easy-crop modal)
   const [cropBox, setCropBox] = useState({ top: 50, left: 50, width: 200, height: 200 });
   const imgContainerRef = useRef(null);
-  const isResizing = useRef(null);
-  const isDragging = useRef(false);
-  const dragStart = useRef({ x: 0, y: 0 });
+  const isResizingLegacy = useRef(null);
+  const isDraggingLegacy = useRef(false);
   const [aspect, setAspect] = useState('libre');
+
   const porPagina = 36;
 
-  useEffect(() => {
-    if (imagenSeleccionada && imgContainerRef.current) {
-      const img = imgContainerRef.current.querySelector('img');
-      if (!img) return;
-      const updateBox = () => {
-        const rect = img.getBoundingClientRect();
-        const containerRect = imgContainerRef.current.getBoundingClientRect();
-        const left = rect.left - containerRect.left;
-        const top = rect.top - containerRect.top;
-        const width = rect.width;
-        const height = rect.height;
-        const size = Math.min(width, height);
-        if (aspect === '1:1') {
-          setCropBox({ top: top + (height - size) / 2, left: left + (width - size) / 2, width: size, height: size });
-        } else {
-          setCropBox({ top, left, width: Math.max(100, width * 0.6), height: Math.max(100, height * 0.6) });
-        }
-      };
-      updateBox();
-    }
-  }, [imagenSeleccionada, aspect]);
+  // Navigation / uploads / conflicts
+  const [currentFolder, setCurrentFolder] = useState('');
+  const [pathInput, setPathInput] = useState('');
+  const [showConflictsModal, setShowConflictsModal] = useState(false);
+  const [conflictsData, setConflictsData] = useState([]);
+  const [uploadFilesBuffer, setUploadFilesBuffer] = useState([]);
+
+  // Context menu
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [menuPos, setMenuPos] = useState({ x: 0, y: 0 });
+  const [menuItem, setMenuItem] = useState(null);
+  const menuRef = useRef(null);
+
+  // Drag & drop
+  const [draggingFiles, setDraggingFiles] = useState(false); // para mostrar overlay de upload en dropRef
+  const dropRef = useRef(null); // AHORA: solo el recuadro central captura archivos del sistema
+  const dragCounter = useRef(0);
+  const globalDragCounter = useRef(0);
+
+  // Nuevo: arrastre interno (mover imagenes entre carpetas)
+  const [draggingInternal, setDraggingInternal] = useState(false);
+  const draggingItemRef = useRef(null); // referencia al item que se está arrastrando (interno)
+  const [folderHoverPath, setFolderHoverPath] = useState(null); // carpeta que se destaca
+
+  // Contadores por carpeta para evitar flicker (enter/leave en hijos)
+  const folderDragCountersRef = useRef({});
+
+  useEffect(() => setPathInput(currentFolder ? currentFolder : '/'), [currentFolder]);
 
   useEffect(() => {
-    cargarImagenes();
-  }, [pagina]);
+    cargarItems();
+    setMenuVisible(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pagina, currentFolder]);
 
-  const cargarImagenes = async () => {
+  useEffect(() => {
+    const onClick = () => setMenuVisible(false);
+    const onKey = (e) => {
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C') && menuVisible && menuItem && menuItem.url) {
+        navigator.clipboard.writeText(menuItem.url).then(() => { /* no alert */ }).catch(() => { });
+      }
+      if (e.key === 'Escape') {
+        setMenuVisible(false);
+        setDraggingFiles(false);
+        // limpiar arrastre interno si estaba activo
+        setDraggingInternal(false);
+        draggingItemRef.current = null;
+        setFolderHoverPath(null);
+      }
+    };
+    window.addEventListener('click', onClick);
+    window.addEventListener('keydown', onKey);
+    return () => {
+      window.removeEventListener('click', onClick);
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [menuVisible, menuItem]);
+
+  useEffect(() => {
+    if (!menuVisible) return;
+    requestAnimationFrame(() => {
+      const el = menuRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      let { x, y } = menuPos;
+      const padding = 8;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      if (x + rect.width + padding > vw) x = Math.max(padding, vw - rect.width - padding);
+      if (y + rect.height + padding > vh) y = Math.max(padding, vh - rect.height - padding);
+      if (x !== menuPos.x || y !== menuPos.y) setMenuPos({ x, y });
+    });
+  }, [menuVisible, menuPos]);
+
+  // ----- Helpers (uploads, drag/drop, traverse) -----
+  const cargarItems = async () => {
     try {
-      const res = await fetch(`/api/cms/images?page=${pagina}&limit=${porPagina}`);
+      const folderQuery = currentFolder ? `&folder=${encodeURIComponent(currentFolder)}` : '';
+      const res = await fetch(`/api/cms/images?page=${pagina}&limit=${porPagina}${folderQuery}`);
       const data = await res.json();
-
-      const agrupadas = {};
-
-      (data.imagenes || []).forEach(img => {
-        const partes = img.pathname.split('/');
-        const folder = partes.length > 1 ? partes.slice(0, -1).join('/') : '/';
-        if (!agrupadas[folder]) agrupadas[folder] = [];
-        agrupadas[folder].push(img);
-      });
-
-      setImagenes(agrupadas);
+      setItems(data.items || []);
       setTotalPaginas(data.totalPaginas || 1);
     } catch (err) {
       console.error('Error al cargar imágenes:', err);
     }
   };
 
-  const iniciarResize = (lado) => {
-    isResizing.current = lado;
+  const traverseFileTree = (itemEntry, path = '') => {
+    return new Promise((resolve) => {
+      if (itemEntry.isFile) {
+        itemEntry.file(file => {
+          resolve([{ file, relativePath: path + file.name }]);
+        });
+      } else if (itemEntry.isDirectory) {
+        const dirReader = itemEntry.createReader();
+        let entries = [];
+        const readEntries = () => {
+          dirReader.readEntries(async (results) => {
+            if (!results.length) {
+              const promises = entries.map(en => traverseFileTree(en, path + itemEntry.name + '/'));
+              const nested = await Promise.all(promises);
+              resolve(nested.flat());
+            } else {
+              entries = entries.concat(Array.from(results));
+              readEntries();
+            }
+          });
+        };
+        readEntries();
+      } else {
+        resolve([]);
+      }
+    });
   };
 
-  const moverBorde = useCallback((e) => {
-    if (!imgContainerRef.current) return;
-    const deltaX = e.movementX;
-    const deltaY = e.movementY;
-    const imgEl = imgContainerRef.current.querySelector('img');
-    const container = imgEl?.getBoundingClientRect();
-    const parent = imgContainerRef.current.getBoundingClientRect();
-    if (!container || !parent) return;
-
-    const containerWidth = container.width;
-    const containerHeight = container.height;
-
-    if (!container) return;
-
-    if (isResizing.current) {
-      setCropBox(box => {
-        const newBox = { ...box };
-        if (isResizing.current === 'top') {
-          const newTop = box.top + deltaY;
-          const newHeight = box.height - deltaY;
-          if (newTop >= 0 && newHeight >= 20) {
-            newBox.top = newTop;
-            newBox.height = newHeight;
-          }
-        } else if (isResizing.current === 'bottom') {
-          const newHeight = box.height + deltaY;
-          if (box.top + newHeight <= containerHeight && newHeight >= 20) {
-            newBox.height = newHeight;
-          }
-        } else if (isResizing.current === 'left') {
-          const newLeft = box.left + deltaX;
-          const newWidth = box.width - deltaX;
-          if (newLeft >= 0 && newLeft + newWidth <= container.width && newWidth >= 20) {
-            newBox.left = newLeft;
-            newBox.width = newWidth;
-          }
-        } else if (isResizing.current === 'right') {
-          const newWidth = box.width + deltaX;
-          if (box.left + newWidth <= containerWidth && newWidth >= 20) {
-            newBox.width = newWidth;
-          }
-        }
-        return newBox;
-      });
-    } else if (isDragging.current) {
-      setCropBox(box => {
-        const newLeft = box.left + deltaX;
-        const newTop = box.top + deltaY;
-        return {
-          ...box,
-          left: Math.max(0, Math.min(newLeft, container.width - box.width)),
-          top: Math.max(0, Math.min(newTop, container.height - box.height))
-        };
-      });
+  const getFilesFromDataTransfer = async (dataTransfer) => {
+    const itemsDT = dataTransfer.items;
+    if (!itemsDT) {
+      return Array.from(dataTransfer.files).map(f => ({ file: f, relativePath: f.name }));
     }
-  }, []);
 
-  useEffect(() => {
-    const onMouseUp = () => {
-      isResizing.current = null;
-      isDragging.current = false;
-    };
-    window.addEventListener('mouseup', onMouseUp);
-    return () => window.removeEventListener('mouseup', onMouseUp);
-  }, []);
+    const entriesPromises = [];
+    for (let i = 0; i < itemsDT.length; i++) {
+      const it = itemsDT[i];
+      const entry = it.webkitGetAsEntry ? it.webkitGetAsEntry() : null;
+      if (entry) {
+        entriesPromises.push(traverseFileTree(entry, ''));
+      } else {
+        const f = itemsDT[i].getAsFile();
+        if (f) entriesPromises.push(Promise.resolve([{ file: f, relativePath: f.name } ]));
+      }
+    }
 
-  const handleUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const nested = await Promise.all(entriesPromises);
+    return nested.flat();
+  };
+
+  const handleFilesUpload = async (filesArrayOrList, targetFolder = null) => {
+    let filesList = [];
+
+    if (filesArrayOrList instanceof DataTransfer) {
+      const items = await getFilesFromDataTransfer(filesArrayOrList);
+      filesList = items;
+    } else if (filesArrayOrList && filesArrayOrList.length && filesArrayOrList[0] instanceof File) {
+      filesList = Array.from(filesArrayOrList).map(f => ({ file: f, relativePath: f.name }));
+    } else if (filesArrayOrList && filesArrayOrList.length && filesArrayOrList[0].file) {
+      filesList = Array.from(filesArrayOrList);
+    } else {
+      filesList = Array.from(filesArrayOrList || []).map(f => ({ file: f, relativePath: f.name }));
+    }
+
+    if (filesList.length === 0) return;
+
+    setUploadFilesBuffer(filesList);
 
     const formData = new FormData();
-    formData.append("image", file);
-
-    const res = await fetch("/api/cms/images", {
-      method: "POST",
-      body: formData,
+    filesList.forEach(({ file, relativePath }, idx) => {
+      const safeRel = relativePath || file.name || `upload-${Date.now()}-${idx}`;
+      formData.append('images', file, safeRel);
     });
 
-    const data = await res.json();
-    if (data.secure_url) {
-      setPagina(1); // opcional, si quieres volver a la primera
-      await cargarImagenes(); // ✅ recarga la galería sin recargar toda la página
+    const folderQuery = (targetFolder !== null ? `?folder=${encodeURIComponent(targetFolder)}` : (currentFolder ? `?folder=${encodeURIComponent(currentFolder)}` : ''));
+
+    try {
+      const res = await fetch(`/api/cms/images?action=check${folderQuery}`, { method: 'POST', body: formData });
+      if (res.status === 409) {
+        const data = await res.json();
+        setConflictsData(data.conflicts || []);
+        setShowConflictsModal(true);
+        return;
+      }
+      if (!res.ok) {
+        const text = await res.text();
+        alert('Error al subir: ' + text);
+        return;
+      }
+      const data = await res.json();
+      if (data.uploads) {
+        setPagina(1);
+        await cargarItems();
+      }
+    } catch (err) {
+      console.error('Error fetch upload:', err);
+      alert('Error inesperado al subir');
+    } finally {
+      setDraggingFiles(false);
     }
   };
 
-  const aplicarRecorte = async () => {
-    const img = new window.Image();
-    img.crossOrigin = 'anonymous';
-    img.src = imagenSeleccionada.url;
+  const handleUploadInputChange = (e) => {
+    handleFilesUpload(e.target.files);
+  };
 
-    img.onload = async () => {
-      // Medidas reales de la imagen
-      const naturalWidth = img.naturalWidth;
-      const naturalHeight = img.naturalHeight;
+  // Drag & drop handlers (wrapper) -> ahora aplican SOLO al recuadro central (dropRef)
+  useEffect(() => {
+    const dropEl = dropRef.current;
+    if (!dropEl) return;
 
-      // Tamaño mostrado en pantalla
-      const domImg = imgContainerRef.current.querySelector('img');
-      const domRect = domImg.getBoundingClientRect();
+    const onDragEnter = (e) => {
+      e.preventDefault();
+      dragCounter.current += 1;
+      const types = e.dataTransfer?.types;
+      if (types && (types.includes && types.includes('Files') || types.contains && types.contains('Files'))) {
+        setDraggingFiles(true);
+      }
+    };
 
-      const scaleX = naturalWidth / domRect.width;
-      const scaleY = naturalHeight / domRect.height;
+    const onDragOver = (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'copy';
+      if (dragCounter.current <= 0) {
+        dragCounter.current = 1;
+        setDraggingFiles(true);
+      }
+    };
 
-      // Coordenadas del recorte en la imagen real
-      const realLeft = cropBox.left * scaleX;
-      const realTop = cropBox.top * scaleY;
-      const realWidth = cropBox.width * scaleX;
-      const realHeight = cropBox.height * scaleY;
+    const onDragLeave = (e) => {
+      e.preventDefault();
+      dragCounter.current = Math.max(0, dragCounter.current - 1);
+      if (dragCounter.current === 0 && globalDragCounter.current === 0) setDraggingFiles(false);
+    };
 
-      const canvas = document.createElement('canvas');
-      canvas.width = realWidth;
-      canvas.height = realHeight;
-      const ctx = canvas.getContext('2d');
+    const onDrop = async (e) => {
+      e.preventDefault();
+      dragCounter.current = 0;
+      globalDragCounter.current = 0;
+      setDraggingFiles(false);
 
-      ctx.drawImage(
-        img,
-        realLeft,
-        realTop,
-        realWidth,
-        realHeight,
-        0,
-        0,
-        realWidth,
-        realHeight
-      );
+      const types = e.dataTransfer?.types;
+      if (types && (types.includes && types.includes('Files') || types.contains && types.contains('Files'))) {
+        const filesWithPaths = await getFilesFromDataTransfer(e.dataTransfer);
+        await handleFilesUpload(filesWithPaths);
+        return;
+      }
+    };
 
-      canvas.toBlob(async (blob) => {
-        if (!blob) return alert('No se pudo generar el recorte');
+    dropEl.addEventListener('dragenter', onDragEnter);
+    dropEl.addEventListener('dragover', onDragOver);
+    dropEl.addEventListener('dragleave', onDragLeave);
+    dropEl.addEventListener('drop', onDrop);
 
-        const formData = new FormData();
-        formData.append('file', new File([blob], 'recorte.png', { type: 'image/png' }));
+    return () => {
+      dropEl.removeEventListener('dragenter', onDragEnter);
+      dropEl.removeEventListener('dragover', onDragOver);
+      dropEl.removeEventListener('dragleave', onDragLeave);
+      dropEl.removeEventListener('drop', onDrop);
+    };
+  }, [currentFolder]);
 
-        const res = await fetch('/api/cms/images/crop', {
-          method: 'POST',
-          body: formData,
+  // window listeners para arrastres globales (solo para detectar si hay archivos arrastrados)
+  useEffect(() => {
+    const onWindowDragEnter = (e) => {
+      const types = e.dataTransfer?.types;
+      if (types && (types.includes && types.includes('Files') || types.contains && types.contains('Files'))) {
+        globalDragCounter.current += 1;
+      }
+    };
+    const onWindowDragOver = (e) => {
+      const types = e.dataTransfer?.types;
+      if (types && (types.includes && types.includes('Files') || types.contains && types.contains('Files'))) {
+        e.preventDefault();
+      }
+    };
+    const onWindowDragLeave = (e) => {
+      const types = e.dataTransfer?.types;
+      if (types && (types.includes && types.includes('Files') || types.contains && types.contains('Files'))) {
+        globalDragCounter.current = Math.max(0, globalDragCounter.current - 1);
+        if (globalDragCounter.current === 0 && dragCounter.current === 0) {
+          setDraggingFiles(false);
+        }
+      }
+    };
+    const onWindowDrop = () => {
+      globalDragCounter.current = 0;
+      dragCounter.current = 0;
+      setDraggingFiles(false);
+    };
+
+    window.addEventListener('dragenter', onWindowDragEnter);
+    window.addEventListener('dragover', onWindowDragOver);
+    window.addEventListener('dragleave', onWindowDragLeave);
+    window.addEventListener('drop', onWindowDrop);
+
+    return () => {
+      window.removeEventListener('dragenter', onWindowDragEnter);
+      window.removeEventListener('dragover', onWindowDragOver);
+      window.removeEventListener('dragleave', onWindowDragLeave);
+      window.removeEventListener('drop', onWindowDrop);
+    };
+  }, []);
+
+  const commitUploads = async (actions) => {
+    const filesList = uploadFilesBuffer || [];
+    const formData = new FormData();
+    filesList.forEach(({ file, relativePath }, idx) => {
+      const safeRel = relativePath || file.name || `upload-${Date.now()}-${idx}`;
+      formData.append('images', file, safeRel);
+    });
+    formData.append('actions', JSON.stringify(actions));
+
+    const folderQuery = currentFolder ? `?folder=${encodeURIComponent(currentFolder)}` : '';
+    try {
+      const res = await fetch(`/api/cms/images?action=commit${folderQuery}`, { method: 'POST', body: formData });
+      if (!res.ok) {
+        const txt = await res.text();
+        alert('Error al confirmar subidas: ' + txt);
+        return;
+      }
+      const data = await res.json();
+      if (data.uploads) {
+        setShowConflictsModal(false);
+        setUploadFilesBuffer([]);
+        setConflictsData([]);
+        setPagina(1);
+        await cargarItems();
+      }
+    } catch (err) {
+      console.error('Error commit uploads:', err);
+      alert('Error inesperado al confirmar subidas');
+    }
+  };
+
+  // ---------- Context menu handlers ----------
+  const openMenuAt = (x, y, item) => {
+    setMenuItem(item);
+    setMenuPos({ x, y });
+    setMenuVisible(true);
+  };
+
+  const handleContextMenu = (e, item) => {
+    e.preventDefault();
+    e.stopPropagation();
+    let x = e.clientX;
+    let y = e.clientY;
+    const menuWidth = menuRef.current?.offsetWidth || 220;
+    const menuHeight = menuRef.current?.offsetHeight || 180;
+    const padding = 8;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    if (x + menuWidth + padding > vw) x = Math.max(padding, vw - menuWidth - padding);
+    if (y + menuHeight + padding > vh) y = Math.max(padding, vh - menuHeight - padding);
+    openMenuAt(x, y, item);
+  };
+
+  const openMenuFromButton = (e, item) => {
+    e.stopPropagation();
+    const rect = e.currentTarget.getBoundingClientRect();
+    let x = rect.right - 8;
+    let y = rect.bottom + 4;
+    openMenuAt(x, y, item);
+  };
+
+  // centralizo eliminarArchivo para que lo use todo el código
+  const eliminarArchivo = async (pathname, isFolder = false) => {
+    try {
+      const qs = isFolder
+        ? `?pathname=${encodeURIComponent(pathname)}`
+        : `?pathname=${encodeURIComponent(pathname)}`;
+
+      const res = await fetch(`/api/cms/images${qs}`, { method: "DELETE" });
+
+      if (!res.ok) {
+        let txt = '';
+        try {
+          txt = await res.text();
+        } catch (e) {
+          txt = `HTTP ${res.status}`;
+        }
+        throw new Error(txt || `HTTP ${res.status}`);
+      }
+
+      await cargarItems();
+    } catch (err) {
+      console.error('Error al eliminar archivo:', err);
+      alert('Error al eliminar archivo: ' + (err.message || 'error inesperado'));
+    }
+  };
+
+  const handleContextEdit = (it) => {
+    const item = it || menuItem;
+    if (!item) return;
+    setImagenSeleccionada(item);
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+    setCroppedAreaPixels(null);
+    setCropAspect(undefined);
+    setCropModalOpen(true);
+    setMenuVisible(false);
+  };
+
+  const handleContextCopyUrl = async (it) => {
+    const item = it || menuItem;
+    if (!item || !item.url) { setMenuVisible(false); return; }
+    try { await navigator.clipboard.writeText(item.url); } catch { /* ignore */ } finally { setMenuVisible(false); }
+  };
+
+  const handleContextDelete = async (it) => {
+    const item = it || menuItem;
+    if (!item) { setMenuVisible(false); return; }
+
+    if (!confirm('¿Eliminar? Esta acción no se puede deshacer.')) {
+      setMenuVisible(false);
+      return;
+    }
+
+    try {
+      if (item.pathname) {
+        await eliminarArchivo(item.pathname, item.type === 'folder');
+        setMenuVisible(false);
+        return;
+      }
+
+      if (item.name) {
+        await eliminarArchivo(item.name, item.type === 'folder');
+        setMenuVisible(false);
+        return;
+      }
+
+      setMenuVisible(false);
+      alert('No se encontró información de ruta para eliminar el elemento.');
+    } catch (err) {
+      console.error('Error eliminando:', err);
+      alert('Error al eliminar: ' + (err.message || 'unexpected'));
+      setMenuVisible(false);
+    }
+  };
+
+  const handleContextRename = async (it) => {
+    const item = it || menuItem;
+    if (!item) { setMenuVisible(false); return; }
+    const defaultName = item.name || item.pathname.split('/').pop();
+    const nuevo = prompt('Nuevo nombre (puedes incluir carpeta si deseas mover):', defaultName);
+    if (!nuevo) { setMenuVisible(false); return; }
+
+    let wantsMove = false;
+    if (nuevo.includes('/')) {
+      wantsMove = confirm('El nombre incluye una carpeta. ¿Deseas mover el archivo a esa carpeta? Aceptar = mover, Cancelar = solo renombrar en la misma carpeta.');
+    }
+
+    const payload = { oldPathname: item.pathname, newPathname: nuevo, allowMove: wantsMove, allowOverwrite: false };
+    try {
+      const res = await fetch(`/api/cms/images`, {
+        method: 'PATCH',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) {
+        const txt = await res.text();
+        if (res.status === 409) alert('Error renombrando: destino ya existe.'); else alert('Error renombrando: ' + txt);
+      } else {
+        const data = await res.json();
+        if (data.success) {
+          // NO mostrar alert de éxito (se actualiza la UI en vivo)
+          await cargarItems();
+        } else {
+          alert('Error renombrando: ' + (data.error || 'unknown'));
+        }
+      }
+    } catch (err) {
+      console.error('Error rename:', err); alert('Error inesperado renombrando');
+    } finally { setMenuVisible(false); }
+  };
+
+  const handleContextMove = async (it) => {
+    const item = it || menuItem;
+    if (!item) { setMenuVisible(false); return; }
+    const target = prompt('Mover a carpeta (ruta relativa, ejemplo: carpeta/subcarpeta). Dejar vacío para raíz:', '');
+    if (target === null) { setMenuVisible(false); return; }
+    const payload = { oldPathname: item.pathname, newPathname: (target ? `${String(target).replace(/^\/+|\/+$/g, '')}/${item.name}` : item.name), allowMove: true, allowOverwrite: false };
+    try {
+      const res = await fetch(`/api/cms/images`, { method: 'PATCH', headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      if (!res.ok) { const txt = await res.text(); alert('Error moviendo: ' + txt); }
+      else {
+        const data = await res.json();
+        if (data.success) {
+          // NO mostrar alert de éxito
+          await cargarItems();
+        } else alert('Error moviendo: ' + (data.error || 'unknown'));
+      }
+    } catch (err) {
+      console.error('Error move:', err); alert('Error inesperado moviendo');
+    } finally { setMenuVisible(false); }
+  };
+
+  // Tile keyboard context menu
+  const onTileKeyDown = (e, item, ref) => {
+    const isContextKey = e.key === 'ContextMenu' || (e.shiftKey && e.key === 'F10');
+    if (isContextKey) {
+      e.preventDefault();
+      const rect = ref?.getBoundingClientRect?.();
+      const cx = rect ? (rect.left + rect.right) / 2 : window.innerWidth / 2;
+      const cy = rect ? (rect.top + rect.bottom) / 2 : window.innerHeight / 2;
+      openMenuAt(cx, cy, item);
+    }
+  };
+
+  // Drop on folder (detecta tanto archivos del sistema como arrastre interno de items)
+  const handleFolderDrop = async (e, folderItem) => {
+    e.preventDefault();
+    setDraggingFiles(false);
+
+    // reset contador para esa carpeta
+    const path = folderItem.pathname;
+    folderDragCountersRef.current[path] = 0;
+    if (folderHoverPath === path) setFolderHoverPath(null);
+
+    // Priorizar arrastre interno si existe
+    const internal = draggingInternal && draggingItemRef.current;
+    if (internal) {
+      const item = draggingItemRef.current;
+      if (!item || !item.pathname) {
+        setDraggingInternal(false);
+        draggingItemRef.current = null;
+        return;
+      }
+
+      const newPath = `${folderItem.pathname}/${item.name}`;
+      const payload = { oldPathname: item.pathname, newPathname: newPath, allowMove: true, allowOverwrite: false };
+      try {
+        const res = await fetch(`/api/cms/images`, {
+          method: 'PATCH',
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
         });
+        if (!res.ok) {
+          const txt = await res.text();
+          alert('Error moviendo archivo: ' + txt);
+        } else {
+          const data = await res.json();
+          if (data.success) {
+            // NO alert de éxito
+            setDraggingInternal(false);
+            draggingItemRef.current = null;
+            await cargarItems();
+          } else {
+            alert('Error moviendo archivo: ' + (data.error || 'unknown'));
+          }
+        }
+      } catch (err) {
+        console.error('Error moviendo (interno):', err);
+        alert('Error inesperado moviendo archivo');
+      } finally {
+        setDraggingInternal(false);
+        draggingItemRef.current = null;
+      }
+      return;
+    }
 
+    // si vienen archivos del sistema -> subirlos dentro de la carpeta
+    const types = e.dataTransfer?.types;
+    if (types && (types.includes && types.includes('Files') || types.contains && types.contains('Files'))) {
+      const filesWithPaths = await getFilesFromDataTransfer(e.dataTransfer);
+      const prefixed = filesWithPaths.map(({ file, relativePath }) => {
+        const safeRel = relativePath || file.name;
+        const rel = `${folderItem.pathname}/${safeRel}`;
+        return { file, relativePath: rel };
+      });
+      await handleFilesUpload(prefixed, null);
+    }
+  };
+
+  // ---------- NUEVO: crear carpeta desde UI ----------
+  const createFolder = async () => {
+    const name = prompt('Nombre de la nueva carpeta (solo nombre, sin slashes):');
+    if (!name) return;
+    const clean = String(name).replace(/^\/+|\/+$/g, '').trim();
+    if (!clean) { alert('Nombre inválido'); return; }
+    if (clean.includes('..')) { alert('Nombre inválido'); return; }
+
+    const folderPath = currentFolder ? `${currentFolder}/${clean}` : clean;
+
+    try {
+      const res = await fetch(`/api/cms/images?action=createFolder&folder=${encodeURIComponent(folderPath)}`, { method: 'POST' });
+      if (!res.ok) {
+        if (res.status === 409) alert('Carpeta ya existe');
+        else {
+          const txt = await res.text();
+          alert('Error creando carpeta: ' + txt);
+        }
+        return;
+      }
+      const data = await res.json();
+      if (data.success) {
+        // NO mostrar alert de éxito (se actualiza la UI en vivo)
+        setPagina(1);
+        await cargarItems();
+      } else {
+        alert('Error creando carpeta: ' + (data.error || 'unknown'));
+      }
+    } catch (err) {
+      console.error('Error creando carpeta:', err);
+      alert('Error inesperado creando carpeta');
+    }
+  };
+
+  // ---------- CROP / OVERLAY logic ----------
+  const onCropComplete = useCallback((_, croppedPixels) => {
+    setCroppedAreaPixels(croppedPixels);
+  }, []);
+
+  const initOverlayFromMedia = useCallback((mediaSize) => {
+    if (!cropContainerRef.current || !mediaSize) return;
+
+    const containerW = cropContainerRef.current.clientWidth;
+    const displayedW = mediaSize.width;
+    const displayedH = mediaSize.height;
+
+    setCropContainerHeightPx(Math.round(displayedH));
+
+    const left = Math.max(0, Math.round((containerW - displayedW) / 2));
+    const top = Math.max(0, Math.round((cropContainerRef.current.clientHeight - displayedH) / 2));
+    const width = Math.round(displayedW);
+    const height = Math.round(displayedH);
+
+    setOverlayBox({ left, top, width, height });
+  }, []);
+
+  const onMediaLoadedHandler = useCallback((mediaSize) => {
+    setMediaInfo(mediaSize || null);
+    setMinZoom(1);
+    setZoom(1);
+    if (cropAspect === undefined) {
+      initOverlayFromMedia(mediaSize);
+    } else {
+      const containerWidth = cropContainerRef.current?.clientWidth || Math.min(window.innerWidth * 0.9, 800);
+      setCropContainerHeightPx(Math.round(containerWidth));
+    }
+  }, [cropAspect, initOverlayFromMedia]);
+
+  // overlay interactions (igual que antes)
+  const onOverlayMouseDown = (e) => {
+    e.preventDefault();
+    if (!overlayBox) return;
+    const target = e.target;
+    if (target && target.dataset && target.dataset.handle) return;
+    isDraggingRef.current = true;
+    dragStartRef.current = {
+      mouseX: e.clientX,
+      mouseY: e.clientY,
+      box: { ...overlayBox }
+    };
+    window.addEventListener('mousemove', overlayMouseMove);
+    window.addEventListener('mouseup', overlayMouseUp);
+  };
+
+  const onHandleMouseDown = (e, dir) => {
+    e.preventDefault();
+    e.stopPropagation();
+    isResizingRef.current = true;
+    resizeDirRef.current = dir;
+    resizeStartRef.current = {
+      mouseX: e.clientX,
+      mouseY: e.clientY,
+      box: { ...overlayBox }
+    };
+    window.addEventListener('mousemove', overlayMouseMove);
+    window.addEventListener('mouseup', overlayMouseUp);
+  };
+
+  const overlayMouseMove = (e) => {
+    if (!overlayBox || !cropContainerRef.current) return;
+    const containerRect = cropContainerRef.current.getBoundingClientRect();
+    const containerW = containerRect.width;
+    const containerH = containerRect.height;
+    const minSize = 20;
+
+    if (isDraggingRef.current && dragStartRef.current) {
+      const dx = e.clientX - dragStartRef.current.mouseX;
+      const dy = e.clientY - dragStartRef.current.mouseY;
+      let newLeft = dragStartRef.current.box.left + dx;
+      let newTop = dragStartRef.current.box.top + dy;
+      newLeft = Math.max(0, Math.min(newLeft, containerW - overlayBox.width));
+      newTop = Math.max(0, Math.min(newTop, containerH - overlayBox.height));
+      setOverlayBox((prev) => ({ ...prev, left: Math.round(newLeft), top: Math.round(newTop) }));
+      return;
+    }
+
+    if (isResizingRef.current && resizeStartRef.current) {
+      const dir = resizeDirRef.current;
+      const dx = e.clientX - resizeStartRef.current.mouseX;
+      const dy = e.clientY - resizeStartRef.current.mouseY;
+      let { left, top, width, height } = resizeStartRef.current.box;
+      const forceSquare = false;
+
+      if (dir.includes('e')) {
+        width = Math.max(minSize, Math.min(containerW - left, Math.round(width + dx)));
+        if (forceSquare) height = width;
+      }
+      if (dir.includes('s')) {
+        height = Math.max(minSize, Math.min(containerH - top, Math.round(height + dy)));
+        if (forceSquare) width = height;
+      }
+      if (dir.includes('w')) {
+        const newLeft = Math.max(0, Math.min(left + dx, left + width - minSize));
+        const diff = left - newLeft;
+        left = newLeft;
+        width = Math.max(minSize, Math.round(width + diff));
+        if (forceSquare) height = width;
+      }
+      if (dir.includes('n')) {
+        const newTop = Math.max(0, Math.min(top + dy, top + height - minSize));
+        const diff = top - newTop;
+        top = newTop;
+        height = Math.max(minSize, Math.round(height + diff));
+        if (forceSquare) width = height;
+      }
+
+      left = Math.max(0, Math.min(left, containerW - minSize));
+      top = Math.max(0, Math.min(top, containerH - minSize));
+      width = Math.max(minSize, Math.min(width, containerW - left));
+      height = Math.max(minSize, Math.min(height, containerH - top));
+
+      setOverlayBox({ left: Math.round(left), top: Math.round(top), width: Math.round(width), height: Math.round(height) });
+      return;
+    }
+  };
+
+  const overlayMouseUp = () => {
+    isDraggingRef.current = false;
+    isResizingRef.current = false;
+    resizeDirRef.current = null;
+    resizeStartRef.current = null;
+    dragStartRef.current = null;
+    window.removeEventListener('mousemove', overlayMouseMove);
+    window.removeEventListener('mouseup', overlayMouseUp);
+  };
+
+  useEffect(() => {
+    return () => {
+      window.removeEventListener('mousemove', overlayMouseMove);
+      window.removeEventListener('mouseup', overlayMouseUp);
+    };
+  }, []);
+
+  // Confirm crop (igual que antes)
+  const handleCropConfirmOverlay = async () => {
+    if (!imagenSeleccionada) return;
+    try {
+      if (cropAspect === undefined) {
+        if (!overlayBox || !mediaInfo || !cropContainerRef.current) {
+          alert('Información insuficiente para recortar (overlay o mediaInfo faltante).');
+          return;
+        }
+
+        const containerRect = cropContainerRef.current.getBoundingClientRect();
+        const containerW = containerRect.width;
+        const containerH = containerRect.height;
+
+        const displayedW = (mediaInfo.width || mediaInfo.naturalWidth) * zoom;
+        const displayedH = (mediaInfo.height || mediaInfo.naturalHeight) * zoom;
+
+        const imageLeft = Math.max(0, (containerW - displayedW) / 2);
+        const imageTop = Math.max(0, (containerH - displayedH) / 2);
+
+        let relLeft = overlayBox.left - imageLeft;
+        let relTop = overlayBox.top - imageTop;
+        let relW = overlayBox.width;
+        let relH = overlayBox.height;
+
+        relLeft = Math.max(0, Math.min(relLeft, displayedW));
+        relTop = Math.max(0, Math.min(relTop, displayedH));
+        relW = Math.max(1, Math.min(relW, displayedW - relLeft));
+        relH = Math.max(1, Math.min(relH, displayedH - relTop));
+
+        const natW = mediaInfo.naturalWidth || (mediaInfo.width || displayedW);
+        const natH = mediaInfo.naturalHeight || (mediaInfo.height || displayedH);
+        const scaleX = natW / displayedW;
+        const scaleY = natH / displayedH;
+
+        const pixelCrop = {
+          x: Math.round(relLeft * scaleX),
+          y: Math.round(relTop * scaleY),
+          width: Math.round(relW * scaleX),
+          height: Math.round(relH * scaleY)
+        };
+
+        const file = await getCroppedImg(imagenSeleccionada.url, pixelCrop);
+        const form = new FormData();
+        form.append('file', file);
+        form.append('replacePath', imagenSeleccionada.pathname || '');
+
+        const res = await fetch('/api/cms/images/crop', { method: 'POST', body: form });
+        if (!res.ok) {
+          const txt = await res.text();
+          alert('Error al subir imagen recortada: ' + txt);
+          return;
+        }
         const data = await res.json();
         if (data.url) {
           alert('Imagen recortada subida con éxito');
+          setCropModalOpen(false);
           setImagenSeleccionada(null);
-          setPagina(1); // opcional si quieres volver a la primera
-          await cargarImagenes();
+          setPagina(1);
+          await cargarItems();
         } else {
           alert('Error al subir imagen recortada');
         }
-      }, 'image/png');
-    };
+      } else {
+        if (!croppedAreaPixels) { alert('Aún no hay área recortada'); return; }
+        const file = await getCroppedImg(imagenSeleccionada.url, croppedAreaPixels);
+        const form = new FormData();
+        form.append('file', file);
+        form.append('replacePath', imagenSeleccionada.pathname || '');
+
+        const res = await fetch('/api/cms/images/crop', { method: 'POST', body: form });
+        if (!res.ok) {
+          const txt = await res.text();
+          alert('Error al subir imagen recortada: ' + txt);
+          return;
+        }
+        const data = await res.json();
+        if (data.url) {
+          alert('Imagen recortada subida con éxito');
+          setCropModalOpen(false);
+          setImagenSeleccionada(null);
+          setPagina(1);
+          await cargarItems();
+        } else {
+          alert('Error al subir imagen recortada');
+        }
+      }
+    } catch (err) {
+      console.error('Error al generar/subir recorte:', err);
+      alert('Error al generar/subir recorte');
+    }
   };
 
+  const handleCropConfirm = async () => {
+    await handleCropConfirmOverlay();
+  };
+
+  // Abrir modal al editar / doble click
+  const onDoubleClickItem = (item) => {
+    if (item.type === 'folder') {
+      setCurrentFolder(item.pathname);
+      setPagina(1);
+    } else {
+      setImagenSeleccionada(item);
+      setCrop({ x: 0, y: 0 });
+      setZoom(1);
+      setCroppedAreaPixels(null);
+      setCropAspect(undefined);
+      setCropModalOpen(true);
+    }
+  };
+
+  const goUp = () => {
+    if (!currentFolder) return;
+    const parts = currentFolder.split('/');
+    parts.pop();
+    const parent = parts.join('/');
+    setCurrentFolder(parent);
+    setPagina(1);
+  };
+
+  const onPathSubmit = (e) => {
+    e.preventDefault();
+    const val = pathInput.trim();
+    if (val === '/' || val === '') { setCurrentFolder(''); setPagina(1); return; }
+    const cleaned = val.replace(/^\/+|\/+$/g, '');
+    setCurrentFolder(cleaned);
+    setPagina(1);
+  };
+
+  // ---------- NUEVOS: handlers para arrastrar tiles internamente ----------
+  const handleItemDragStart = (e, item) => {
+    try {
+      e.dataTransfer.setData('application/x-gallery-item', JSON.stringify({ pathname: item.pathname, name: item.name }));
+    } catch (err) {}
+    e.dataTransfer.effectAllowed = 'move';
+    draggingItemRef.current = item;
+    setDraggingInternal(true);
+  };
+
+  const handleItemDragEnd = (e) => {
+    draggingItemRef.current = null;
+    setDraggingInternal(false);
+    setFolderHoverPath(null);
+  };
+
+  // ---------- RENDER ----------
   return (
-    <div className="p-4">
+    <div className="p-4" onContextMenu={(e) => e.preventDefault()}>
       <h1 className="text-2xl font-bold mb-4">Galería Multimedia</h1>
-      <div className="mb-4">
+
+      <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:gap-4">
         <label className="inline-flex items-center gap-2 cursor-pointer bg-[#6ed8bf] hover:bg-[#4bb199] text-white px-4 py-2 rounded-full text-sm font-medium shadow">
-          Subir imagen
-          <input type="file" accept="image/*" onChange={handleUpload} className="hidden" />
+          Subir imagen(es)
+          <input type="file" accept="image/*" multiple onChange={handleUploadInputChange} className="hidden" />
         </label>
+
+        <form onSubmit={onPathSubmit} className="mt-3 sm:mt-0 flex items-center gap-2">
+          <input value={pathInput} onChange={(e) => setPathInput(e.target.value)} className="border rounded px-2 py-1 text-sm w-64" placeholder="/ (raíz) o carpeta/subcarpeta" />
+          <button type="submit" className="bg-white px-3 py-1 rounded hover:bg-gray-300">Ir</button>
+
+          {/* NUEVO: boton crear carpeta */}
+          <button type="button" onClick={createFolder} className="ml-2 bg-white px-3 py-1 rounded hover:bg-gray-300">Crear carpeta</button>
+        </form>
+
+        <div className="ml-auto">
+          {currentFolder && (<button onClick={goUp} className="bg-white px-3 py-1 rounded hover:bg-gray-200">↩ Volver</button>)}
+        </div>
       </div>
-      <div className="space-y-6">
-        {Object.entries(imagenes).map(([folder, imgs]) => (
-          <div key={folder}>
-            <div className="flex items-center gap-2 text-lg font-semibold mb-2">
-              <FcOpenedFolder className="text-xl" />
-              <span>{folder === '/' ? 'Raíz' : folder}</span>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {imgs.map((img, i) => (
-                <div key={i} className="relative w-full aspect-square border rounded-2xl overflow-hidden bg-slate-100">
-                  <NextImage src={img.url} alt={img.pathname} className="object-cover w-full h-full" width={200} height={200} />
-                  <button
-                    onClick={async () => {
-                      if (!confirm("¿Eliminar esta imagen?")) return;
-                      await fetch(`/api/cms/images?pathname=${encodeURIComponent(img.pathname)}`, { method: "DELETE" });
-                      await cargarImagenes();
-                    }}
-                    className="absolute top-1 right-1 z-10 bg-red-600 text-white rounded px-1 py-0.5 text-xs hover:bg-red-700"
-                  >
-                    Eliminar
-                  </button>
-                  <button onClick={() => setImagenSeleccionada(img)} className="absolute bottom-5 right-1 z-10 bg-green-600 text-white rounded px-1 py-0.5 text-xs hover:bg-green-500">Recortar</button>
-                  <button onClick={async () => { try { await navigator.clipboard.writeText(img.url); alert("URL copiada"); } catch { alert("Error"); } }} className="absolute bottom-1 right-1 z-10 bg-[#6ed8bf] text-white rounded px-1 py-0.5 text-xs hover:bg-[#4bb199]">Copiar URL</button>
-                </div>
-              ))}
-            </div>
+
+      <div className="mb-2 text-sm text-gray-600">Ruta actual: <span className="font-mono">{currentFolder ? currentFolder : '/'}</span></div>
+
+      {/* NUEVO: recuadro central que captura archivos del sistema (drop zone) */}
+      <div className="relative mb-6 flex justify-center">
+        <div
+          ref={dropRef}
+          className="w-[min(900px,90%)] h-40 border-2 border-dashed rounded-lg flex items-center justify-center bg-white/50"
+        >
+          <div className="text-center pointer-events-none">
+            <div className="font-medium">Arrastra archivos aquí para subir</div>
+            <div className="text-sm text-slate-600">Se subirán a: <span className="font-mono">{currentFolder || '/'}</span></div>
+            <div className="text-xs text-slate-500 mt-1">(Este recuadro captura solo archivos del sistema, no arrastres internos de la galería)</div>
           </div>
-        ))}
-      </div>
-      {/* Modal de recorte */}
-      {imagenSeleccionada && (
-        <div className="fixed inset-0 bg-black bg-opacity-80 z-50 flex justify-center items-center">
-          <div className="relative bg-white rounded-xl p-2 max-w-3xl w-full m-4 max-h-[90vh] overflow-auto z-20" onMouseMove={moverBorde}>
-            <button onClick={() => setImagenSeleccionada(null)} className="absolute top-2 right-2 z-30 text-slate-600 hover:text-black text-xl">✕</button>
-            <h2 className="text-lg font-bold mb-2 z-30">Recorte manual</h2>
-            <div className="relative flex justify-center items-center" style={{ height: '60vh !import' }}>
-              <div ref={imgContainerRef} className="relative max-h-full w-auto">
-                <img src={imagenSeleccionada.url} alt="Recorte" className="max-h-full object-contain" />
-                {/* Fondo oscuro sobre la imagen */}
-                <div className="absolute top-0 left-0 right-0 bottom-0 pointer-events-none z-10">
-                  <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: cropBox.top, backgroundColor: 'rgba(0,0,0,0.5)' }} />
-                  <div style={{ position: 'absolute', top: cropBox.top + cropBox.height, left: 0, width: '100%', height: `calc(100% - ${cropBox.top + cropBox.height}px)`, backgroundColor: 'rgba(0,0,0,0.5)' }} />
-                  <div style={{ position: 'absolute', top: cropBox.top, left: 0, width: cropBox.left, height: cropBox.height, backgroundColor: 'rgba(0,0,0,0.5)' }} />
-                  <div style={{ position: 'absolute', top: cropBox.top, left: cropBox.left + cropBox.width, width: `calc(100% - ${cropBox.left + cropBox.width}px)`, height: cropBox.height, backgroundColor: 'rgba(0,0,0,0.5)' }} />
-                </div>
-                {/* Área de recorte */}
-                <div className="absolute border border-white z-20 cursor-move" style={{ ...cropBox }} onMouseDown={() => { isDragging.current = true; }} />
-                {/* Bordes para redimensionar */}
-                {aspect === 'libre' && ['top', 'bottom', 'left', 'right'].map(lado => (
-                  <div key={lado} onMouseDown={() => iniciarResize(lado)} className={`absolute bg-black cursor-${lado === 'left' || lado === 'right' ? 'ew' : 'ns'}-resize z-30`} style={
-                    lado === 'top' ? { top: cropBox.top - 4, left: cropBox.left, width: cropBox.width, height: 8 } :
-                      lado === 'bottom' ? { top: cropBox.top + cropBox.height - 4, left: cropBox.left, width: cropBox.width, height: 8 } :
-                        lado === 'left' ? { left: cropBox.left - 4, top: cropBox.top, width: 8, height: cropBox.height } :
-                          { left: cropBox.left + cropBox.width - 4, top: cropBox.top, width: 8, height: cropBox.height }
-                  } />
-                ))}
+
+          {/* overlay dentro del dropRef cuando arrastran archivos del sistema */}
+          {draggingFiles && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/80 rounded-lg pointer-events-none">
+              <div className="text-center">
+                <div className="text-lg font-semibold mb-1">Suelta los archivos para subir</div>
+                <div className="text-sm text-slate-600">Se subirán a: <span className="font-mono">{currentFolder || '/'}</span></div>
               </div>
             </div>
-            <div className="mt-2 flex z-30">
-              <div className="flex gap-2">
-                <button onClick={() => setAspect('1:1')} className={`px-3 py-1 rounded ${aspect === '1:1' ? 'bg-slate-800 text-white' : 'bg-slate-200 text-black'}`}>1:1</button>
-                <button onClick={() => setAspect('libre')} className={`px-3 py-1 rounded ${aspect === 'libre' ? 'bg-slate-800 text-white' : 'bg-slate-200 text-black'}`}>Libre</button>
+          )}
+        </div>
+      </div>
+
+      {/* GRID */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        {items.map((item, i) => {
+          const isFolder = item.type === 'folder';
+          const folderHighlight = isFolder && folderHoverPath === item.pathname ? 'ring-4 ring-sky-400 border-2 border-sky-400' : '';
+
+          return (
+            <div
+              key={i}
+              tabIndex={0}
+              onKeyDown={(e) => onTileKeyDown(e, item, e.currentTarget)}
+              onDoubleClick={() => onDoubleClickItem(item)}
+              onContextMenu={(e) => handleContextMenu(e, item)}
+              onDragEnter={(e) => {
+                if (draggingInternal && isFolder) {
+                  const path = item.pathname;
+                  const curr = folderDragCountersRef.current[path] || 0;
+                  folderDragCountersRef.current[path] = curr + 1;
+                  setFolderHoverPath(path);
+                }
+              }}
+              onDragOver={(e) => {
+                if (draggingInternal && isFolder) {
+                  e.preventDefault();
+                  e.dataTransfer.dropEffect = 'move';
+                  // reafirmar highlight para estabilidad
+                  setFolderHoverPath(item.pathname);
+                }
+              }}
+              onDragLeave={(e) => {
+                if (draggingInternal && isFolder) {
+                  const path = item.pathname;
+                  const curr = folderDragCountersRef.current[path] || 0;
+                  const next = Math.max(0, curr - 1);
+                  folderDragCountersRef.current[path] = next;
+                  if (next === 0 && folderHoverPath === path) setFolderHoverPath(null);
+                }
+              }}
+              onDrop={(e) => {
+                if (isFolder) {
+                  handleFolderDrop(e, item);
+                }
+              }}
+              draggable={!isFolder}
+              onDragStart={(e) => { if (!isFolder) handleItemDragStart(e, item); }}
+              onDragEnd={(e) => { if (!isFolder) handleItemDragEnd(e); }}
+              className={`relative w-full aspect-square border rounded-2xl overflow-hidden bg-slate-100 flex items-center justify-center cursor-pointer select-none focus:ring-2 focus:ring-sky-400 ${folderHighlight}`}
+              title={isFolder ? item.pathname : item.name}
+            >
+              {isFolder ? (
+                <div className="flex flex-col items-center gap-2">
+                  <FcOpenedFolder className="text-5xl" />
+                  <span className="text-sm break-all text-center px-2">{item.name}</span>
+                </div>
+              ) : (
+                <NextImage src={item.url} alt={item.pathname} className="object-scale-down w-full h-full" width={100} height={100} />
+              )}
+
+              <button
+                onClick={(e) => openMenuFromButton(e, item)}
+                className="absolute top-2 right-2 z-20 md:hidden bg-white/80 hover:bg-white rounded p-1"
+                aria-label="Abrir menú"
+              >
+                <FiMenu size={16} />
+              </button>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Context menu */}
+      {menuVisible && menuItem && (
+        <div
+          ref={menuRef}
+          className="fixed z-50 bg-white border rounded shadow-lg text-sm"
+          style={{
+            top: menuPos.y,
+            left: menuPos.x,
+            minWidth: 180,
+            maxWidth: 'calc(100vw - 20px)'
+          }}
+          onClick={(e) => e.stopPropagation()}
+          role="menu"
+        >
+          {menuItem.type === 'file' ? (
+            <div>
+              <div className="p-1 hover:bg-slate-100 cursor-pointer flex items-center gap-2" onClick={() => handleContextEdit(menuItem)}><FiEdit /> <span>Editar</span></div>
+              <div className="p-1 hover:bg-slate-100 cursor-pointer flex items-center gap-2" onClick={() => handleContextMove(menuItem)}><FiMove /> <span>Mover</span></div>
+              <div className="p-1 hover:bg-slate-100 cursor-pointer flex items-center gap-2" onClick={() => handleContextRename(menuItem)}><FiType /> <span>Renombrar</span></div>
+              <div className="p-1 hover:bg-slate-100 cursor-pointer flex items-center gap-2" onClick={() => handleContextCopyUrl(menuItem)}><FiCopy /> <span>Copiar URL</span></div>
+              <div className="p-1 hover:bg-slate-100 cursor-pointer flex items-center gap-2 text-red-600" onClick={() => handleContextDelete(menuItem)}><FiTrash2 /> <span>Eliminar</span></div>
+            </div>
+          ) : (
+            <div>
+              <div className="p-1 hover:bg-slate-100 cursor-pointer flex items-center gap-2" onClick={() => handleContextMove(menuItem)}><FiMove /> <span>Mover carpeta</span></div>
+              <div className="p-1 hover:bg-slate-100 cursor-pointer flex items-center gap-2" onClick={() => handleContextRename(menuItem)}><FiType /> <span>Renombrar carpeta</span></div>
+              <div className="p-1 hover:bg-slate-100 cursor-pointer flex items-center gap-2 text-red-600" onClick={() => handleContextDelete(menuItem)}><FiTrash2 /> <span>Eliminar carpeta</span></div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Modal de conflictos */}
+      {showConflictsModal && (
+        <ModalImagenesDuplicadas
+          conflictos={conflictsData}
+          onConfirm={(actions) => commitUploads(actions)}
+          onCerrar={() => { setShowConflictsModal(false); setConflictsData([]); setUploadFilesBuffer([]); }}
+        />
+      )}
+
+      {/* Cropper modal (sin cambios funcionales) */}
+      {cropModalOpen && imagenSeleccionada && (
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl w-full max-w-3xl max-h-[90vh] overflow-auto p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-lg font-semibold">Recorte manual</h2>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    setCropAspect(1);
+                  }}
+                  className={`px-3 py-1 rounded ${cropAspect === 1 ? 'bg-slate-800 text-white' : 'bg-slate-200 text-black'}`}
+                >
+                  1:1
+                </button>
+                <button
+                  onClick={() => {
+                    setCropAspect(undefined);
+                    if (mediaInfo) initOverlayFromMedia(mediaInfo);
+                  }}
+                  className={`px-3 py-1 rounded ${cropAspect === undefined ? 'bg-slate-800 text-white' : 'bg-slate-200 text-black'}`}
+                >
+                  Libre
+                </button>
+                <button onClick={() => { setCropModalOpen(false); setImagenSeleccionada(null); }} className="text-slate-600 hover:text-black">✕</button>
               </div>
-              <div className="flex gap-2 justify-end w-full">
-                <button onClick={aplicarRecorte} className="bg-slate-800 hover:bg-slate-900 text-white px-2 py-1 rounded">Aplicar recorte</button>
-                <button onClick={() => setImagenSeleccionada(null)} className="bg-slate-300 hover:bg-slate-400 text-black px-2 py-1 rounded">Cancelar</button>
+            </div>
+
+            <div
+              ref={cropContainerRef}
+              className="relative w-full bg-black"
+              style={{ height: cropContainerHeightPx ? `${cropContainerHeightPx}px` : '60vh' }}
+            >
+              <Cropper
+                image={imagenSeleccionada.url}
+                crop={crop}
+                zoom={zoom}
+                minZoom={minZoom}
+                maxZoom={3}
+                aspect={1}
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={onCropComplete}
+                cropShape="rect"
+                showGrid={!!cropAspect}
+                objectFit="contain"
+                restrictPosition={true}
+                onMediaLoaded={onMediaLoadedHandler}
+              />
+
+              {cropAspect === undefined && overlayBox && (
+                <div
+                  ref={overlayRef}
+                  className="absolute border-2 border-white/90 shadow-lg"
+                  style={{
+                    left: overlayBox.left,
+                    top: overlayBox.top,
+                    width: overlayBox.width,
+                    height: overlayBox.height,
+                    boxSizing: 'border-box',
+                    cursor: 'default',
+                    background: 'rgba(255,255,255,0.02)',
+                    position: 'absolute'
+                  }}
+                >
+                  <div style={{ position: 'absolute', left: 0, right: 0, top: '33.3333%', height: 1, background: 'rgba(255,255,255,0.6)', pointerEvents: 'none', zIndex: 10 }} />
+                  <div style={{ position: 'absolute', left: 0, right: 0, top: '66.6666%', height: 1, background: 'rgba(255,255,255,0.6)', pointerEvents: 'none', zIndex: 10 }} />
+                  <div style={{ position: 'absolute', top: 0, bottom: 0, left: '33.3333%', width: 1, background: 'rgba(255,255,255,0.6)', pointerEvents: 'none', zIndex: 10 }} />
+                  <div style={{ position: 'absolute', top: 0, bottom: 0, left: '66.6666%', width: 1, background: 'rgba(255,255,255,0.6)', pointerEvents: 'none', zIndex: 10 }} />
+                  {['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'].map((h) => (
+                    <div
+                      key={h}
+                      data-handle={h}
+                      onMouseDown={(ev) => onHandleMouseDown(ev, h)}
+                      style={{
+                        position: 'absolute',
+                        width: 12,
+                        height: 12,
+                        background: 'white',
+                        borderRadius: 2,
+                        transform: 'translate(-50%,-50%)',
+                        zIndex: 40,
+                        left: h.includes('w') ? '0%' : h.includes('e') ? '100%' : '50%',
+                        top: h.includes('n') ? '0%' : h.includes('s') ? '100%' : '50%',
+                        cursor: h === 'n' || h === 's' ? 'ns-resize' : h === 'e' || h === 'w' ? 'ew-resize' : 'nwse-resize',
+                        pointerEvents: 'auto'
+                      }}
+                    />
+                  ))}
+
+                  <div style={{ position: 'absolute', right: 6, bottom: 6, fontSize: 12, color: 'white', background: 'rgba(0,0,0,0.4)', padding: '2px 6px', borderRadius: 6, zIndex: 50 }}>
+                    {overlayBox.width} × {overlayBox.height}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-3 flex flex-col gap-3">
+              <div className="flex items-center gap-3">
+                <label className="text-sm">Zoom</label>
+                <input
+                  type="range"
+                  min={minZoom}
+                  max={3}
+                  step={0.01}
+                  value={zoom}
+                  onChange={(e) => setZoom(Number(e.target.value))}
+                  className="w-full"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <button onClick={() => { setCropModalOpen(false); setImagenSeleccionada(null); }} className="bg-gray-200 px-3 py-1 rounded">Cancelar</button>
+                <button onClick={handleCropConfirm} className="bg-slate-800 text-white px-3 py-1 rounded">Recortar y subir</button>
               </div>
             </div>
           </div>

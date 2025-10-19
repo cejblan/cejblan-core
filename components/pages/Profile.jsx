@@ -21,7 +21,7 @@ const Loading = getLoadingComponent(branding.loading);
 // Cargar Maps dinámicamente con un componente de carga y desactiva SSR
 const Maps = dynamic(() => import("@/components/Maps"), {
   loading: () => <Loading zIndex={40} />,
-  ssr: false, // Solo si necesitas que se cargue solo en el lado del cliente
+  ssr: false,
 });
 
 function getLoadingComponent(name) {
@@ -60,7 +60,7 @@ export default function Profile() {
   const handleChange = (e) => {
     setData([
       {
-        ...dataProfile[0], // Accede al primer elemento del array
+        ...dataProfile[0],
         [e.target.name]: e.target.value,
       }
     ]);
@@ -75,6 +75,7 @@ export default function Profile() {
   };
 
   const Loading = getLoadingComponent(branding.loading);
+  const { palette } = branding;
 
   // Agrega este useEffect para establecer valores iniciales de geolocalización
   useEffect(() => {
@@ -102,7 +103,7 @@ export default function Profile() {
     } finally {
       setIsLoading(false); // Indica que los datos han cargado
     }
-  }, [session?.user?.email]); // ← solo depende del email
+  }, [session?.user?.email]);
 
   useEffect(() => {
     if (session?.user?.email) {
@@ -218,7 +219,10 @@ export default function Profile() {
                     </div>
                     :
                     <button
-                      className="bg-[#6ed8bf] hover:bg-[#4bb199] text-white py-1 px-2 rounded-xl shadow-6xl mx-auto h-fit w-fit block"
+                      className="text-white py-1 px-2 rounded-xl shadow-6xl mx-auto h-fit w-fit block"
+                      style={{ backgroundColor: palette[1] }}
+                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = palette[2]; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = palette[1]; }}
                       onClick={codeVerified}
                     >
                       Generar
@@ -304,7 +308,10 @@ export default function Profile() {
                   </tbody>
                 </table>
                 <button
-                  className="bg-[#6ed8bf] hover:bg-[#4bb199] text-white font-bold py-1 px-2 rounded-xl shadow-6xl mt-2 mx-auto block"
+                  className="text-white font-bold py-1 px-2 rounded-xl shadow-6xl mt-2 mx-auto block"
+                  style={{ backgroundColor: palette[1] }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = palette[2]; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = palette[1]; }}
                   onClick={editData}>
                   Editar Perfil
                 </button>
@@ -445,7 +452,10 @@ export default function Profile() {
                   <p className="text-center m-auto">Cargando ubicación...</p>
                 )}
                 <button
-                  className="bg-[#6ed8bf] hover:bg-[#4bb199] text-white font-bold py-1 px-2 rounded-xl shadow-6xl mt-2 mx-auto block"
+                  className="text-white font-bold py-1 px-2 rounded-xl shadow-6xl mt-2 mx-auto block"
+                  style={{ backgroundColor: palette[1] }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = palette[2]; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = palette[1]; }}
                   onClick={dataSubmit}>
                   Guardar Datos
                 </button>

@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from "react"
 import Titulos from "@/components/editable/Titulos"
 import { LoadProducts } from "../components/LoadProducts"
 import ProductCardAdmin from "../components/ProductCardAdmin"
-import SearchProduct from "@/app/admin/components/SearchProduct"
 import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "@/app/admin/components/ui/dialog"
 import { Button } from "@/app/admin/components/ui/button"
 import PrecioProducto from "@/components/editable/PrecioProducto"
@@ -12,19 +11,21 @@ import ImageNotSupported from "@/public/ImageNotSupported.webp"
 
 export default function ProductsPageAdmin() {
   const [products, setProducts] = useState([])
-  const [searchQuery, setSearchQuery] = useState("")
+  const [productosFiltrados, setProductosFiltrados] = useState(products)
+  const [inputValue, setInputValue] = useState("") // <<-- valor del input en vivo
+  const [searchQuery, setSearchQuery] = useState("") // <<-- valor que realmente filtra
   const [currentPage, setCurrentPage] = useState(1)
   const [catalogOpen, setCatalogOpen] = useState(false)
   const [showBs, setShowBs] = useState(false)
   const [format, setFormat] = useState("tabla")
   const [configOpen, setConfigOpen] = useState(false)
 
-  const [fontH2, setFontH2] = useState("15px")
+  const [fontH2, setFontH2] = useState("12px")
   const [fontTitle, setFontTitle] = useState("9px")
   const [fontTextXS, setFontTextXS] = useState("9px")
   const [fontTable, setFontTable] = useState("12px")
-  const [gridColumns, setGridColumns] = useState("grid4")
-  const [showQuantity, setShowQuantity] = useState(true)
+  const [gridColumns, setGridColumns] = useState("grid5")
+  const [showQuantity, setShowQuantity] = useState(false)
 
   const [paddingCard, setPaddingCard] = useState("6px")
   const [borderCard, setBorderCard] = useState("1px solid #e5e7eb")
@@ -40,7 +41,7 @@ export default function ProductsPageAdmin() {
   const [paddingTextXs, setPaddingTextXs] = useState("0")
   const [marginTextXs, setMarginTextXs] = useState("0")
 
-  const itemsPerPage = 12
+  const itemsPerPage = 24
   const dialogRef = useRef(null)
 
   const sections = ["Generales", "Fuentes", "Tabla", "Cuadrícula", "Tarjeta", "Encabezado", "Texto Secundario"]
@@ -59,14 +60,154 @@ export default function ProductsPageAdmin() {
     }
   }, [configOpen])
 
-  const handleProductSelect = (product) => {
-    setSearchQuery(product.name)
+  // Ejecuta la búsqueda real: actualiza searchQuery (que usa el filtro)
+  const handleSearch = () => {
+    setSearchQuery(inputValue ?? "")
     setCurrentPage(1)
   }
 
-  const productosFiltrados = products.filter((p) =>
-    searchQuery ? p.name.toLowerCase().includes(searchQuery.toLowerCase()) : true
-  )
+  const handleClearSearch = () => {
+    setInputValue("")
+    setSearchQuery("")
+    setCurrentPage(1)
+  }
+
+  const handleProductSelect = (product) => {
+    // Mantener comportamiento: seleccionar producto pone su nombre en input y ejecuta búsqueda
+    const name = product.name ?? ""
+    setInputValue(name)
+    setSearchQuery(name)
+    setCurrentPage(1)
+  }
+
+  // Helper: verifica si un producto coincide con un token (según reglas)
+  const matchesToken = (p, token, exactMode) => {
+    const tok = token.toLowerCase().trim()
+    if (!tok) return false
+
+    const rawId = (p.id ?? p._id ?? "").toString()
+    const rawIdLower = rawId.toLowerCase()
+    const idNoLeadingZeros = rawId.replace(/^0+/, "").toLowerCase()
+    const tokenNoLeadingZeros = tok.replace(/^0+/, "")
+
+    const nameLower = (p.name ?? "").toString().toLowerCase()
+    const descLower = (p.description ?? "").toString().toLowerCase()
+
+    const tokenIsDigits = /^\d+$/.test(tok)
+
+    if (tokenIsDigits) {
+      if (exactMode) {
+        if (rawIdLower === tok) return true
+        if (idNoLeadingZeros && idNoLeadingZeros === tokenNoLeadingZeros) return true
+        if (nameLower === tok || descLower === tok) return true
+        return false
+      } else {
+        if (rawIdLower.includes(tok)) return true
+        if (idNoLeadingZeros && idNoLeadingZeros.includes(tokenNoLeadingZeros)) return true
+        if (nameLower.includes(tok) || descLower.includes(tok)) return true
+        return false
+      }
+    } else {
+      if (exactMode) {
+        if (nameLower.includes(tok)) return true
+        if (descLower.includes(tok)) return true
+        if (rawIdLower.includes(tok)) return true
+        if (idNoLeadingZeros && idNoLeadingZeros.includes(tokenNoLeadingZeros)) return true
+        return false
+      } else {
+        if (nameLower.includes(tok)) return true
+        if (descLower.includes(tok)) return true
+        if (rawIdLower.includes(tok)) return true
+        if (idNoLeadingZeros && idNoLeadingZeros.includes(tokenNoLeadingZeros)) return true
+        return false
+      }
+    }
+  }
+
+  useEffect(() => {
+    const filterProducts = () => {
+      const rawQuery = searchQuery?.toString().trim()
+      if (!rawQuery || rawQuery.length === 0) {
+        setProductosFiltrados(products)
+        return
+      }
+
+      const hasAsterisk = rawQuery.endsWith("*")
+      const withoutAsterisk = hasAsterisk ? rawQuery.slice(0, -1).trim() : rawQuery
+      const qLower = withoutAsterisk.toLowerCase()
+
+      const matchesToken = (p, token, exactMode) => {
+        const tok = token.toLowerCase().trim()
+        if (!tok) return false
+
+        const rawId = (p.id ?? p._id ?? "").toString()
+        const rawIdLower = rawId.toLowerCase()
+        const idNoLeadingZeros = rawId.replace(/^0+/, "").toLowerCase()
+        const tokenNoLeadingZeros = tok.replace(/^0+/, "")
+
+        const nameLower = (p.name ?? "").toString().toLowerCase()
+        const descLower = (p.description ?? "").toString().toLowerCase()
+
+        const tokenIsDigits = /^\d+$/.test(tok)
+
+        if (tokenIsDigits) {
+          if (exactMode) {
+            return (
+              rawIdLower === tok ||
+              (idNoLeadingZeros && idNoLeadingZeros === tokenNoLeadingZeros) ||
+              nameLower === tok ||
+              descLower === tok
+            )
+          } else {
+            return (
+              rawIdLower.includes(tok) ||
+              (idNoLeadingZeros && idNoLeadingZeros.includes(tokenNoLeadingZeros)) ||
+              nameLower.includes(tok) ||
+              descLower.includes(tok)
+            )
+          }
+        } else {
+          if (exactMode) {
+            return (
+              nameLower.includes(tok) ||
+              descLower.includes(tok) ||
+              rawIdLower.includes(tok) ||
+              (idNoLeadingZeros && idNoLeadingZeros.includes(tokenNoLeadingZeros))
+            )
+          } else {
+            return (
+              nameLower.includes(tok) ||
+              descLower.includes(tok) ||
+              rawIdLower.includes(tok) ||
+              (idNoLeadingZeros && idNoLeadingZeros.includes(tokenNoLeadingZeros))
+            )
+          }
+        }
+      }
+
+      const filtrados = products.filter((p) => {
+        if (hasAsterisk && qLower.includes(",,")) {
+          const tokens = qLower.split(",,").map((t) => t.trim()).filter(Boolean)
+          return tokens.every((token) => matchesToken(p, token, true))
+        }
+
+        if (hasAsterisk) {
+          return matchesToken(p, qLower, true)
+        }
+
+        if (qLower.includes(",,")) {
+          const tokens = qLower.split(",,").map((t) => t.trim()).filter(Boolean)
+          return tokens.every((token) => matchesToken(p, token, false))
+        }
+
+        return matchesToken(p, qLower, false)
+      })
+
+      setProductosFiltrados(filtrados)
+    }
+
+    filterProducts()
+  }, [searchQuery, products])
 
   const startIndex = (currentPage - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
@@ -172,10 +313,19 @@ export default function ProductsPageAdmin() {
     <>
       <Titulos texto="Lista de Productos" />
       <div className="flex gap-1 pb-4">
-        <div className="max-w-md ml-auto my-auto">
-          <SearchProduct onSelectProduct={handleProductSelect} onSearchQueryChange={setSearchQuery} />
+        <div className="max-w-md ml-auto my-auto flex gap-2">
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") handleSearch() }}
+            placeholder="Buscar producto..."
+            className="w-full border rounded px-2 py-1"
+          />
+          <Button onClick={handleSearch}>Buscar</Button>
+          <Button variant="outline" onClick={handleClearSearch}>Limpiar</Button>
         </div>
-        <div className="flex justify-center mr-auto">
+        <div className="flex justify-center ml-12 mr-auto">
           <Dialog open={catalogOpen} onOpenChange={setCatalogOpen}>
             <DialogTrigger asChild>
               <Button>Ver Catálogo</Button>

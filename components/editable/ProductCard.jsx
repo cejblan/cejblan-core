@@ -9,11 +9,13 @@ import { CheckWish } from "../CheckWish";
 import { HandleWish1 } from "../WishButton1";
 import { HandleWish2 } from "../WishButton2";
 import EliminarCaracteres from "../EliminarCaracteres";
+import branding from "@/config/themes.json";
 
 export default function ProductCard({ product }) {
   const { data: session } = useSession();
   const [isInWishlist, setIsInWishlist] = useState(false); // Estado para wishlist
   const form = useRef(null);
+  const { palette } = branding;
 
   function iconHeart() {
     if (isInWishlist) {
@@ -56,7 +58,10 @@ export default function ProductCard({ product }) {
             }}
             ref={form}
           >
-            <button className="text-[#6ed8bf] text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center">
+            <button
+              className="text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center"
+              style={{ color: palette[1] }} // palette[1] reemplaza #6ed8bf
+            >
               <IoIosHeart />
             </button>
           </form>
@@ -69,7 +74,10 @@ export default function ProductCard({ product }) {
             }}
             ref={form}
           >
-            <button className="text-[#6ed8bf] text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center">
+            <button
+              className="text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center"
+              style={{ color: palette[1] }} // palette[1] reemplaza #6ed8bf
+            >
               <IoIosHeartEmpty />
             </button>
           </form>
@@ -100,7 +108,10 @@ export default function ProductCard({ product }) {
             }}
             ref={form}
           >
-            <button className="text-[#6ed8bf] text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center">
+            <button
+              className="text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center"
+              style={{ color: palette[1] }} // palette[1] reemplaza #6ed8bf
+            >
               <IoIosHeart />
             </button>
           </form>
@@ -113,7 +124,10 @@ export default function ProductCard({ product }) {
             }}
             ref={form}
           >
-            <button className="text-[#6ed8bf] text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center">
+            <button
+              className="text-3xl cursor-pointer absolute right-1 bottom-1 h-4 w-4 flex justify-center items-center"
+              style={{ color: palette[1] }} // palette[1] reemplaza #6ed8bf
+            >
               <IoIosHeartEmpty />
             </button>
           </form>

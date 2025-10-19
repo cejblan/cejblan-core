@@ -6,6 +6,7 @@ import { HiOutlineStar, HiStar } from "react-icons/hi2";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Titulos from "@/components/editable/Titulos";
+import branding from "@/config/themes.json";
 
 export default function Qualification({ id, name, users }) {
   const [value, setValue] = useState([true, false, false, false, false]);
@@ -13,6 +14,7 @@ export default function Qualification({ id, name, users }) {
   const { data: session } = useSession();
   const router = useRouter();
   const form = useRef(null);
+  const { palette } = branding;
 
   useEffect(() => {
     if (session?.user?.email && users.includes(session.user.email)) {
@@ -61,11 +63,17 @@ export default function Qualification({ id, name, users }) {
     <div className="py-6">
       <Titulos texto="Califica tu apreciación del producto:" />
       <div className="bg-white p-4 rounded-xl mx-auto w-fit">
-        <div className="bg-[#6ed8bf] text-2xl text-white font-bold py-1 px-2 rounded-xl mx-auto w-fit">
+        <div
+          className="text-2xl text-white font-bold py-1 px-2 rounded-xl mx-auto w-fit"
+          style={{ backgroundColor: palette[1] }} // palette[1] reemplaza #6ed8bf
+        >
           {name}
         </div>
         <div className="pt-2 flex justify-center items-center">
-          <BsFillBookmarkStarFill className="text-[#6ed8bf] h-7 w-7" />
+          <BsFillBookmarkStarFill
+            className="h-7 w-7"
+            style={{ color: palette[1] }} // palette[1] reemplaza #6ed8bf
+          />
           {value.map((state, index) => (
             <button
               key={index}
@@ -94,7 +102,14 @@ export default function Qualification({ id, name, users }) {
               className="bg-slate-200 text-slate-800 max-[420px]:text-center py-1 px-2 rounded-md w-full"
             />
           </div>
-          <button className="bg-gradient-to-b from-[#6ed8bf] via-slate-700 to-[#6ed8bf] text-white font-bold py-1 px-2 rounded-xl">
+          <button
+            className="bg-gradient-to-b via-slate-700 text-white font-bold py-1 px-2 rounded-xl"
+            // Usamos las variables CSS que Tailwind usa para gradientes para reemplazar from/to dinámicamente
+            style={{
+              "--tw-gradient-from": palette[1],
+              "--tw-gradient-to": palette[1],
+            }}
+          >
             Enviar
           </button>
         </form>

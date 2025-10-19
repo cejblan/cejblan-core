@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { conexion } from "@/libs/mysql";
 
-// Obtener todos los settings
 export async function GET(req) {
   try {
     const [results] = await conexion.query("SELECT * FROM settings");
+
     return NextResponse.json(results, { status: 200 });
   } catch (error) {
     console.error(error);
@@ -12,7 +12,6 @@ export async function GET(req) {
   }
 }
 
-// Crear nuevo setting
 export async function POST(request) {
   try {
     const description = await request.formData();
@@ -33,16 +32,16 @@ export async function POST(request) {
   }
 }
 
-// Actualizar setting existente
 export async function PUT(request) {
   const body = await request.json();
-  const { name, value } = body;
+  const { name, value, description } = body;
 
   try {
     await conexion.query(
-      "UPDATE settings SET value = ? WHERE name = ?",
-      [value, name]
+      "UPDATE settings SET value = ?, description = ? WHERE name = ?",
+      [value, description, name]
     );
+
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error(error);
@@ -50,7 +49,6 @@ export async function PUT(request) {
   }
 }
 
-// Eliminar setting por id
 export async function DELETE(request) {
   const { searchParams } = new URL(request.url)
   const id = searchParams.get("id")
@@ -61,6 +59,7 @@ export async function DELETE(request) {
 
   try {
     await conexion.query("DELETE FROM settings WHERE id = ?", [id])
+
     return NextResponse.json({ success: true }, { status: 200 })
   } catch (error) {
     console.error(error)

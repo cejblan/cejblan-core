@@ -10,7 +10,7 @@ export const metadata = {
 
 export default function Privacy() {
     return (
-        <section id="privacy" className="bg-white text-justify py-4 px-6 sm:px-8">
+        <section id="privacy" className="text-slate-800 text-justify py-4 px-6 sm:px-8">
             <h2 className="text-3xl text-center font-bold py-3">Política de Privacidad</h2>
             <p>En esta política de privacidad, explicamos cómo recopilamos, utilizamos y compartimos su información personal. Esta política se aplica a todos los usuarios de nuestro sitio web y aplicación.</p>
             <h2>Recopilación de datos:</h2>

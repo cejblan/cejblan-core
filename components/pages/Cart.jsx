@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { useState } from "react";
 import CartCard from "@/components/editable/CartCard";
+import branding from "@/config/themes.json";
 
 export const forceDynamic = "force-dynamic";
 
 export default function Cart() {
+  const { palette } = branding;
   const [hasProducts, setHasProducts] = useState(false);
 
   const handleProducts = (productCount) => {
@@ -24,7 +26,12 @@ export default function Cart() {
               <th className="px-4 py-3 border border-slate-300">Cantidad</th>
               <th className="px-4 py-3 border border-slate-300">Precio</th>
               <th className="px-4 py-3 border border-slate-300">Total</th>
-              <th className="px-4 py-3 border border-slate-300 bg-[#6ed8bf] text-white">Acción</th>
+              <th
+                className="px-4 py-3 border border-slate-300 text-white"
+                style={{ backgroundColor: palette[1] }} // palette[1] reemplaza #6ed8bf
+              >
+                Acción
+              </th>
             </tr>
           </thead>
           <tbody className="bg-white text-slate-900 divide-y divide-slate-200">
@@ -37,7 +44,10 @@ export default function Cart() {
         <div className="mt-6 flex justify-end">
           <Link
             href="./checkout"
-            className="bg-[#6ed8bf] hover:bg-[#4bb199] text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all"
+            className="text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all"
+            style={{ backgroundColor: palette[1] }} // palette[1] reemplaza #6ed8bf
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = palette[2]; }} // hover -> palette[2] reemplaza #4bb199
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = palette[1]; }}
           >
             Realizar Pedido
           </Link>

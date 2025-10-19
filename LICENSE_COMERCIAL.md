@@ -1,4 +1,4 @@
-# LICENCIA COMERCIAL PARA PLUGINS DE MI-TIENDA
+# LICENCIA COMERCIAL PARA PLUGINS DE CEJBLAN-CORE
 
 Copyright (C) 2025 Francisco Ramon Gonzalez Portal
 
@@ -7,7 +7,7 @@ en la carpeta `app/admin/plugins/` de este proyecto.
 
 ### Derechos otorgados:
 - Usar, modificar y desplegar los plugins en proyectos comerciales.
-- Integrar los plugins con el sistema principal “MiTienda”.
+- Integrar los plugins con el sistema principal “Cejblan-Core”.
 
 ### Restricciones:
 - No puedes publicar, compartir ni redistribuir los plugins.
@@ -30,7 +30,7 @@ Visita: www.cejblan.com | Correo: cejblan@gmail.com
 
 ---
 
-# COMMERCIAL LICENSE FOR MI-TIENDA PLUGINS
+# COMMERCIAL LICENSE FOR CEJBLAN-CORE PLUGINS
 
 Copyright (C) 2025 Francisco Ramon Gonzalez Portal
 
@@ -39,7 +39,7 @@ in the `app/admin/plugins/` folder of this project.
 
 ### Granted Rights:
 - Use, modify, and deploy the plugins in commercial projects.
-- Integrate the plugins with the main “MiTienda” system.
+- Integrate the plugins with the main “Cejblan-Core” system.
 
 ### Restrictions:
 - You may not publish, share, or redistribute the plugins.
